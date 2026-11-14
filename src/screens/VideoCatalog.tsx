@@ -1,10 +1,11 @@
 import { APP_NAME } from "../brand";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
 import { videosFor } from "../game/videos";
+import { YouTubeVideo } from "../components/YouTubeVideo";
 
 export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay }: {
   ageBand: AgeBand; name: string; onParents: () => void; onHome: () => void;
@@ -13,13 +14,33 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
   const videos = videosFor(ageBand);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [autoplay, setAutoplay] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const sound = useSoundEnabled();
   const navigation = useContext(ActivityNavigation);
   const selected = videos[index];
+  useEffect(() => {
+    if (countdown === null) return;
+    const timer = window.setTimeout(() => {
+      if (countdown > 1) setCountdown(countdown - 1);
+      else {
+        setCountdown(null);
+        const next = videos[index + 1];
+        if (!next) return;
+        setIndex(index + 1);
+        setAutoplay(true);
+        onOpen(next.id);
+      }
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [countdown, index, videos, onOpen]);
+
   function choose(position: number) {
     uiSound("chirp", sound);
     setIndex(position);
     setPlaying(false);
+    setAutoplay(false);
+    setCountdown(null);
   }
 
   const actions = <div className={playing ? "flex flex-wrap items-center justify-between gap-2" : "video-frame-controls absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2"}>
@@ -40,9 +61,12 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
       onParents={onParents} onHome={onHome} />
     <div className="flex-1 flex flex-col justify-center">
       <div className={`relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden ${playing ? "prototype-frame-video" : "prototype-video-placeholder flex flex-col items-center justify-center p-6 text-center"}`}>
-        {playing && selected ? <iframe key={selected.id} title={selected.title} className="video-player absolute inset-0 w-full h-full"
-          src={`https://www.youtube-nocookie.com/embed/${selected.id}?rel=0&modestbranding=1&playsinline=1`}
-          allow="encrypted-media; picture-in-picture" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /> : <>
+        {playing && selected ? <YouTubeVideo key={selected.id} id={selected.id} title={selected.title} autoplay={autoplay}
+          onPlaying={() => setCountdown(null)}
+          onEnded={() => {
+            if (selected.id === "CH1lo6lwQ6o") onPlay(selected.id);
+            else if (index + 1 < videos.length) setCountdown(5);
+          }} /> : <>
           <div className="absolute top-4 left-4 right-4 flex items-start justify-between gap-3">
             <nav aria-label="Video episodes" className="flex items-center gap-2 min-h-6">
               {videos.length === 0 && <span aria-hidden="true" className="block w-8 h-2.5 rounded-full bg-[#FFD13B]" />}
@@ -69,6 +93,10 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
         </>}
       </div>
       {playing && <div className="mt-4 space-y-3">
+        {countdown !== null && <div className="flex flex-wrap items-center justify-between gap-2">
+          <p role="status" aria-live="polite">Next video in {countdown} seconds</p>
+          <button type="button" className="min-h-12 px-4 rounded-2xl btn-game" onClick={() => setCountdown(null)}>Cancel autoplay</button>
+        </div>}
         <p className="text-xs text-indigo-300">Videos are hosted on YouTube</p>
         {actions}
       </div>}
