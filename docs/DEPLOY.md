@@ -32,3 +32,11 @@ Groq 500/timeout fallbacks passed mocked local tests. No production outage was i
 
 ### Rollback
 Run npx wrangler rollback 5b317da5-5030-4a7b-91a2-43663394078e and confirm the prompt, then check the active version with npx wrangler deployments list and repeat /api/health and smoke checks. This restores the previous deployed Worker/assets/configuration, including its earlier privacy and safety behaviour; it can re-enable parent setup model forwarding. Verify ALLOWED_ORIGINS after rollback. Do not reset Git main or change model secrets to roll back a deployment. Prefer a corrected forward deployment if restoring the older privacy behaviour is unacceptable.
+
+## MyPal audio deployment — 2026-11-15 (Asia/Qyzylorda)
+
+Source main: 328aeb5. Cloudflare version: 7be61eba-41b4-4b73-a357-c64ab4f64f0a. Published with wrangler deploy --keep-vars; secrets were not read or changed. Existing site URL is unchanged.
+
+Regenerated all seven MyPal clips with Piper 1.8.0 / en_US-hifi_tts_92-medium and updated durations. Local Whisper tiny.en recognized “my pal” in all seven. Production title, description, Open Graph and Splash heading/aria show MyPal. All seven production MP3 hashes match local files and decode in Chrome. Typecheck, build and check-content --require-audio passed (139/139 clips).
+
+Rollback: inspect npx wrangler deployments list and run npx wrangler rollback VERSION_ID for the intended previous version. Previous recorded version bd1e316d-3ac9-4250-906d-a30cb3a68da2 restores older frontend/branding/audio as well; prefer a corrected forward deploy. Verify the site and origins afterwards.
