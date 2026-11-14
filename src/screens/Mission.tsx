@@ -1,8 +1,11 @@
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
-import { ActivityHeader } from "../components/ActivityHeader";
+import { ActivityHeader, ActivityNavigation } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
-import { onVolumeChange, playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
+import { CountdownRing, GameButton, SpeechBubble, StarProgress } from "../components/GameUI";
+import { GrownUpsButton } from "../components/GrownUpsButton";
+import { useSoundEnabled } from "../audio/sfx";
+import { playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
   countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
@@ -34,7 +37,8 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
   const [now, setNow] = useState(Date.now);
   const submittedRound = useRef(0);
   const delivered = useRef(false);
-  const avatar = useRef<HTMLDivElement>(null);
+  const sound = useSoundEnabled();
+  const navigation = useContext(ActivityNavigation);
   const navigationOwnsPause = useRef(false);
   const paused = navigationPaused || state.pausedAt !== null;
   const finished = state.phase === "finished";
@@ -79,9 +83,8 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
   }, [paused, finished]);
 
   useEffect(() => {
-    if (session.mode === "lava") playSfx("siren");
-    else playSfx("radio");
-  }, [session.mode]);
+    if (sound) playSfx(session.mode === "lava" ? "siren" : "radio");
+  }, [session.mode, sound]);
 
   useEffect(() => {
     const ids = [
@@ -93,10 +96,6 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
     ];
     void preload(ids.filter((id) => lineFor(id).file));
   }, [session, profile.ageBand, profile.lastMode]);
-
-  useEffect(() => onVolumeChange((volume) => {
-    avatar.current?.style.setProperty("--voice-level", String(volume));
-  }), []);
 
   useEffect(() => {
     if (finished && !delivered.current) {
@@ -152,15 +151,15 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
         modeIntro[session.mode],
       ] : []), ...task.lineIds]
       : [];
-  const { caption, speaking } = useBriefing(briefing, paused || voice.status !== "idle");
+  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle");
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";
 
   useEffect(() => {
-    setMusic(!paused && !finished && voice.status === "idle", { duck: true });
+    setMusic(sound && !paused && !finished && voice.status === "idle", { duck: true });
     return () => setMusic(false);
-  }, [paused, finished, voice.status]);
+  }, [sound, paused, finished, voice.status]);
 
   function togglePause() {
     voice.release(true);
@@ -184,32 +183,32 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
     <main className="shell mission-shell">
       <ActivityHeader title={MODES[session.mode].name} xp={profile.xp + state.points}
         backDisabled={state.phase === "resolving"}
-        onBack={paused ? () => dispatch({ type: "finish", now: Date.now() }) : togglePause}>
+        exitControl={<GrownUpsButton exit disabled={state.phase === "resolving"} onOpen={navigation?.onBack ?? togglePause} />}>
         <button type="button" className="quiet-button" disabled={state.phase === "resolving"} onClick={togglePause}>
           {paused ? "Resume" : "Pause"}
         </button>
       </ActivityHeader>
       <section className="mission-console" aria-label="Mission">
         <div className="mission-stats">
-          <span>Round <strong>{state.round}</strong></span>
+          <StarProgress count={state.round} />
           <span>Mission <strong>{clock(missionSeconds)}</strong></span>
           {isRoadtrip && <span>Score <strong>{state.players.join(" : ")}</strong></span>}
         </div>
-        <div className="timer" data-warm={running && remainingSeconds <= 10}
-          style={{ "--remaining": `${progress * 100}%` } as React.CSSProperties}>
-          <div className="timer-center">
-            <div ref={avatar} className={speaking ? "avatar speaking" : "avatar"} aria-hidden="true"><i /><i /><i /><i /><i /></div>
+        <CountdownRing progress={progress}>
+          <span className="mission-action-badge">{isHunt ? "🔎 FIND!" : isRoadtrip ? "👀 SPOT!" : freezeHold ? "❄️ FREEZE!" : "🌋 THINK!"}</span>
+          <div className="mission-bleep">
+            <Mascot speaking={speaking} mood={recording ? "listening" : isFeedback ? "excited" : session.mode === "lava" ? "surprised" : "detective"}
+              action={freezeHold ? "sneak" : isFeedback ? "clap" : running && !isRoadtrip ? "jump" : "none"} playful />
+          </div>
+          <div className="mission-clock">
             <span className="timer-value">{paused ? "Ⅱ" : isFeedback ? "✦" : clock(remainingSeconds)}</span>
             <span className="timer-label">{paused ? "Paused" : state.phase === "countdown" ? "Get to safety"
               : isFeedback ? "Next up" : state.phase === "resolving" ? "Checking" : "Round time"}</span>
           </div>
-        </div>
-        <div className="caption" aria-live="polite">
-          {paused ? "Ready when you are." : state.phase === "resolving" ? "Mission Control is checking in…" : caption}
-        </div>
-        {running && caption !== assignment && (
-          <p className="assignment">{assignment}</p>
-        )}
+        </CountdownRing>
+        <SpeechBubble className="caption" live>
+          {paused ? "Ready when you are." : state.phase === "resolving" ? "Bleep is checking in…" : caption || assignment}
+        </SpeechBubble>
         {paused ? (
           <div className="mission-actions">
             <button type="button" className="primary-button" onClick={() => {
@@ -228,11 +227,10 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
               <button type="button" key={answer} className="secondary-button"
                 disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>
             )) : (
-              <button type="button" className="primary-button"
-                disabled={!running || freezeHold} onClick={() => completeWithButton()}>I DID IT!</button>
+              <GameButton disabled={!running || freezeHold} onClick={() => completeWithButton()}>✓ I DID IT!</GameButton>
             )}
             {isHunt && (
-              <button type="button" className="secondary-button talk-button" disabled={!running || voice.status === "decoding"}
+              <GameButton tone="sky" className="talk-button" data-recording={recording || undefined} disabled={!running || voice.status === "decoding"}
                 onPointerDown={(event) => {
                   if (!event.isPrimary || event.button !== 0) return;
                   event.currentTarget.setPointerCapture(event.pointerId);
@@ -252,8 +250,8 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
                 }}
                 onBlur={() => voice.release(true)}>
                 {recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
-                  : voice.status === "decoding" ? "Listening…" : "HOLD TO TALK"}
-              </button>
+                  : voice.status === "decoding" ? "Listening…" : "🎙 HOLD TO TALK"}
+              </GameButton>
             )}
           </div>
         )}

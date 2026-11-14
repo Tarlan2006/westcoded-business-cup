@@ -418,3 +418,18 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
   .hub-profile { grid-template-columns: 75px minmax(0, 1fr); }
   .activity-grid, .activity-grid[data-group="learn"] { grid-template-columns: minmax(0, 1fr); }
 }
+
+.mission-shell { width: min(100% - 1.5rem, 730px); user-select: none; }
+.mission-console { gap: .75rem; }
+.mission-bleep { width: 68%; margin-top: -7%; }
+.mission-action-badge { position: absolute; top: 8%; right: -7%; border: 2px solid var(--accent); border-radius: 14px; background: var(--card); padding: .3rem .6rem; font: 600 clamp(.8rem, 2.8vw, 1.05rem) var(--font-heading); color: var(--accent); }
+.mission-clock { position: absolute; bottom: -5%; display: grid; justify-items: center; padding: .22rem .65rem; border: 2px solid var(--border); background: var(--bg-soft); border-radius: 15px; color: var(--text); }
+.mission-clock .timer-value { font-size: clamp(1.55rem, 5vw, 2.1rem); }
+.mission-clock .timer-label { font-size: .7rem; }
+.mission-console .caption { width: min(100%, 550px); max-width: none; margin: .5rem 0 .65rem; min-height: 62px; }
+.mission-actions .game-button { min-height: clamp(64px, 11dvh, 92px); font-size: clamp(.9rem, 4vw, 1.2rem); }
+.mission-actions .talk-button { touch-action: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .talk-button[data-recording] { animation: talk-pulse .9s ease-in-out infinite alternate; }
+}
+@keyframes talk-pulse { to { outline: 5px solid #77d9ff; outline-offset: 4px; } }
