@@ -1,6 +1,7 @@
 import type { Activity } from "../../shared/types";
 import { MODES } from "../game/content";
 import { sketchGameMeta } from "../games/sketch/meta";
+import { spaceGameMeta } from "../games/space/meta";
 import { activeModes, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
 
@@ -16,7 +17,7 @@ export function availableActivities(profile: ChildProfile, preferences: Preferen
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
     { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "×" }] : [];
   const unlocked = profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0;
-  return [quiz, memory, ...older, ...moves, ...(unlocked ? [video] : [])];
+  return [quiz, memory, ...older, spaceGameMeta, ...moves, ...(unlocked ? [video] : [])];
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {

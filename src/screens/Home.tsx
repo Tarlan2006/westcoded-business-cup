@@ -76,8 +76,8 @@ function RankCard({ profile, preferences, onParent }: { profile: ChildProfile; p
   );
 }
 
-export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onSketch, onSpace, onWatch }: {
-  profile: ChildProfile; preferences: Preferences; onParent: () => void; onMission: (mode: Mode) => void;
+export function Hub({ profile, preferences, onParent, onPrivacy, onMission, onQuiz, onMemory, onAsk, onGrid, onSketch, onSpace, onWatch }: {
+  profile: ChildProfile; preferences: Preferences; onParent: () => void; onPrivacy: () => void; onMission: (mode: Mode) => void;
   onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void;
   onSketch: () => void; onSpace: () => void; onWatch: () => void;
 }) {
@@ -142,7 +142,7 @@ export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemor
             </div>
           </section>
         ))}
-        <a className="quiet-button" href="/privacy">Privacy</a>
+        <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
       </div>
     </main>
   );

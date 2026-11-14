@@ -19,10 +19,11 @@ const interests: { value: Preferences["first"]; label: string }[] = [
   { value: "watch", label: "Watch a video" },
 ];
 
-export function ProfileSetup({ profile, profiles, onBack, onSave }: {
+export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   profile?: ChildProfile;
   profiles: ChildProfile[];
   onBack?: () => void;
+  onPrivacy?: () => void;
   onSave: (codename: string, ageBand: AgeBand, preferences: Preferences) => void;
 }) {
   const [ageBand, setAgeBand] = useState(profile?.ageBand);
@@ -98,7 +99,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
         {!editing && step === 2 && <button className="secondary-button" type="button" onClick={() => setStep(1)}>← Back</button>}
         <button className="primary-button" type="submit" disabled={!ageBand}>{editing ? "Save changes" : step === 1 && !onlyVideos ? "Next" : "See activities"}</button>
       </div>
-      <a className="privacy-link" href="/privacy">Privacy</a>
+      <a className="privacy-link" href="/privacy" onClick={onPrivacy ? (event) => { event.preventDefault(); onPrivacy(); } : undefined}>Privacy</a>
     </form>
   );
 

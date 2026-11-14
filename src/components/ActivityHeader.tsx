@@ -1,21 +1,28 @@
 import { createContext, useContext, type ReactNode } from "react";
 
 export const ActivityXp = createContext<number | undefined>(undefined);
+export const ActivityNavigation = createContext<{
+  onBack: () => void; onHome: () => void; breadcrumb: string;
+} | undefined>(undefined);
 
 export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, children }: {
   title: string; xp?: number; onBack?: () => void; backHref?: string; backDisabled?: boolean; children?: ReactNode;
 }) {
   const profileXp = useContext(ActivityXp);
+  const navigation = useContext(ActivityNavigation);
   const total = xp ?? profileXp;
   return (
     <header className="topbar activity-header">
-      <div>
-        {onBack && <button type="button" className="quiet-button" disabled={backDisabled} onClick={onBack}>
+      <div className="flow-header-navigation">
+        {!backHref && (navigation || onBack) && <button type="button" className="quiet-button" disabled={backDisabled} onClick={navigation?.onBack ?? onBack}>
           <span aria-hidden="true">←</span> Back
         </button>}
         {backHref && <a className="quiet-button" href={backHref}>← Back</a>}
+        {navigation && <button type="button" className="quiet-button flow-home-button" disabled={backDisabled} aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
       </div>
-      <span className="activity-header-title">{title}</span>
+      <div className="flow-header-location"><span className="activity-header-title">{title}</span>
+        {navigation && <nav className="flow-breadcrumb" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
+      </div>
       <div className="activity-header-actions">
         {total !== undefined && <span className="xp-chip">{total} XP</span>}
         {children}

@@ -1,8 +1,8 @@
 import { LearnPage } from "./Home";
 
-export function Privacy() {
+export function Privacy({ onBack }: { onBack?: () => void }) {
   return (
-    <LearnPage title="Privacy" backHref="/">
+    <LearnPage title="Privacy" onBack={onBack} backHref={onBack ? undefined : "/"}>
       <article className="panel parent-panel privacy centered-card">
         <h2>Profiles stay on this device</h2>
         <p>Mission Control needs no account, real name, or camera. Your chosen codename, age range, activity preferences, and game progress are saved in this browser. Clear this site’s data in your browser settings to remove them.</p>
