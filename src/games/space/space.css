@@ -155,9 +155,8 @@
 .sp-hero-rocket svg, .sp-quiz-rocket svg { display: block; width: 100%; }
 
 .sp-journey {
-  height: max(770px, calc(100svh - 84px));
-  max-height: 1020px;
-  margin-top: 8px;
+  height: max(640px, calc(100svh - 68px));
+  max-height: 940px;
 }
 
 .sp-scroll {
@@ -175,20 +174,37 @@
   top: 0;
   box-sizing: border-box;
   display: grid;
-  align-content: start;
-  gap: 10px;
-  min-height: calc(100% - var(--sp-track-distance, 3000px));
-  padding: 6px 10px 10px;
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  gap: 4px;
+  height: calc(100% - var(--sp-track-distance, 3000px));
+  padding: 6px 4px 12px;
 }
 
 .sp-scene {
   position: relative;
-  min-height: 224px;
-  height: clamp(224px, 36svh, 420px);
-  overflow: hidden;
-  border-radius: var(--radius, 24px);
-  contain: layout paint;
+  overflow: clip;
 }
+
+.sp-baseline {
+  position: absolute;
+  inset: 85.5% 0 auto;
+  height: 1px;
+  background: var(--sp-line);
+}
+
+.sp-layer[data-tiny-sun] .sp-object-art { visibility: hidden; }
+.sp-sun-dot {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 2px);
+  display: none;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--sp-accent);
+  box-shadow: 0 0 10px 3px var(--sp-star-glow);
+}
+.sp-layer[data-tiny-sun] .sp-sun-dot { display: block; }
 
 .sp-layer {
   position: absolute;
@@ -196,50 +212,60 @@
   width: 100px;
   height: 100px;
   opacity: 0;
-  transform-origin: center;
+  transform-origin: center bottom;
   will-change: transform, opacity;
 }
 
 .sp-object-art { display: block; width: 100%; height: 100%; }
 
-.sp-journey-title { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
-.sp-journey-title h2 { font-size: clamp(1.75rem, 5vw, 2.8rem); line-height: 1; }
-.sp-measure { display: grid; gap: 2px; text-align: right; font-size: .85rem; line-height: 1.15; }
-.sp-measure strong { font-size: clamp(.9rem, 2.8vw, 1.12rem); }
-.sp-measure span { color: var(--sp-muted); }
+.sp-journey-title { text-align: center; }
+.sp-journey-title h2 { font-size: 56px; line-height: 1.04; }
+.sp-journey-title h2 span { display: inline-block; animation: sp-title-fade 220ms ease-out both; }
+@keyframes sp-title-fade { from { opacity: .45; } to { opacity: 1; } }
+.sp-measure { color: var(--sp-muted); font-size: 20px; }
 
-.sp-previous-label {
+.sp-object-caption {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border-radius: var(--radius-pill, 999px);
-  padding: 5px 9px;
-  color: var(--sp-ink);
-  background: var(--sp-paper);
-  font-size: .73rem;
-  font-weight: 800;
+  inset: 0 auto auto 0;
+  opacity: 0;
+  color: var(--sp-caption);
+  font-size: 15px;
+  line-height: 1.15;
+  white-space: nowrap;
+  will-change: transform, opacity;
 }
-.sp-previous-label span { width: 6px; height: 6px; border-radius: 50%; background: var(--sp-accent); }
+.sp-tiny-caption { display: none; }
+.sp-object-caption[data-tiny-sun] .sp-tiny-caption { display: inline; }
+.sp-object-caption[data-callout]::after {
+  position: absolute;
+  top: calc(100% + 3px);
+  left: calc(50% + var(--sp-callout-offset, 0px));
+  width: 1px;
+  height: 11px;
+  background: var(--sp-line-strong);
+  content: "";
+}
 
 .sp-discovery {
   display: flex;
   align-items: center;
-  gap: 8px 16px;
-  min-height: 83px;
-  border: 1px solid var(--sp-line);
-  border-radius: var(--radius, 20px);
-  padding: 9px 12px;
+  justify-content: center;
+  gap: 4px 10px;
+  min-height: 48px;
   color: var(--sp-muted);
-  background: var(--sp-paper);
   font-size: .9rem;
   line-height: 1.32;
 }
-.sp-discovery > div { flex: 1; }
-.sp-game .sp-comparison { margin-bottom: 3px; color: var(--sp-ink); font-weight: 850; }
-.sp-game .sp-range { margin-top: 3px; font-size: .79rem; }
+.sp-game .sp-comparison {
+  justify-self: center;
+  border: 1.5px solid var(--sp-line);
+  border-radius: 24px;
+  padding: 10px 22px;
+  background: var(--sp-paper);
+  color: var(--sp-ink);
+  font-size: 20px;
+  text-align: center;
+}
 .sp-hear { flex: none; }
 
 .sp-stops { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
@@ -325,10 +351,13 @@
   .sp-topbar { min-height: 60px; }
   .sp-intro { grid-template-columns: 1fr; min-height: 0; padding: 24px; }
   .sp-hero { width: min(86%, 300px); }
-  .sp-journey { height: max(635px, calc(100svh - 80px)); }
+  .sp-journey { height: max(575px, calc(100svh - 60px)); }
   .sp-stops { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .sp-sticky { padding-inline: 5px; }
-  .sp-scene { height: clamp(212px, 31svh, 320px); min-height: 212px; }
-  .sp-discovery { padding-inline: 9px; }
+  .sp-journey-title h2 { font-size: 36px; }
+  .sp-measure { font-size: 15px; }
+  .sp-object-caption { font-size: 13px; }
+  .sp-discovery { font-size: 13px; }
+  .sp-game .sp-comparison { padding: 8px 12px; font-size: 16px; }
   .sp-scroll-hint { line-height: 1.2; }
 }

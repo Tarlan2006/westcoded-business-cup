@@ -1,16 +1,22 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ObjectArt } from "./art/ObjectArt";
-import { cameraScale, clamp, compareSizes, formatSize, objects, screenSize, stopCount } from "./scale";
+import { cameraScale, clamp, compareSizes, formatSize, objects, stopCount } from "./scale";
 import "./space.css";
 
 function lerp(from: number, to: number, mix: number) {
   return from + (to - from) * mix;
 }
 
+const types: Record<string, string> = {
+  child: "Person", whale: "Animal", mountain: "Mountain", moon: "Natural satellite",
+  earth: "Planet", jupiter: "Gas giant", sun: "Star", star: "Red supergiant",
+};
+
 function useCamera() {
   const scroller = useRef<HTMLDivElement>(null);
   const scene = useRef<HTMLDivElement>(null);
   const layers = useRef<(HTMLDivElement | null)[]>([]);
+  const captions = useRef<(HTMLSpanElement | null)[]>([]);
   const target = useRef(0);
   const [active, setActive] = useState(0);
 
@@ -44,25 +50,42 @@ function useCamera() {
       const from = Math.floor(current);
       const into = current - from;
       const smooth = into * into * (3 - 2 * into);
-      const viewportPx = Math.min(width, height);
-      const focus = Math.min(viewportPx * .81, width * .64, 245);
+      const mobile = width < 580;
+      const baseline = height * .855;
+      const focus = Math.min(height * .8, width * (mobile ? .72 : .62));
       const kmPerPixel = cameraScale(current / stopCount, focus);
       const placements = [
-        { index: from - 1, x: .16, y: .66, opacity: 1 - smooth, reveal: 1 },
-        { index: from, x: lerp(.57, .16, smooth), y: lerp(.48, .66, smooth), opacity: 1, reveal: 1 },
-        { index: from + 1, x: lerp(.82, .57, smooth), y: lerp(.37, .48, smooth), opacity: smooth, reveal: smooth },
+        { index: from - 1, x: lerp(.145, .02, smooth), opacity: 1 - smooth, incoming: false },
+        { index: from, x: lerp(from === 0 ? .5 : .59, .145, smooth), opacity: 1, incoming: false },
+        { index: from + 1, x: lerp(.84, .59, smooth), opacity: smooth, incoming: true },
       ];
       const visible = placements.filter(({ index, opacity }) => index >= 0 && index <= stopCount && opacity > 0);
       for (const index of visibleLayers) {
-        if (!visible.some((object) => object.index === index)) layers.current[index]?.style.setProperty("opacity", "0");
+        if (visible.some((object) => object.index === index)) continue;
+        layers.current[index]?.style.setProperty("opacity", "0");
+        captions.current[index]?.style.setProperty("opacity", "0");
       }
-      visibleLayers = visible.map(({ index, x, y, opacity, reveal }) => {
+      visibleLayers = visible.map(({ index, x, opacity, incoming }) => {
         const layer = layers.current[index];
+        const caption = captions.current[index];
+        const object = objects[index];
+        const naturalSize = object.diameterKm / kmPerPixel;
+        const tinySun = object.id === "sun" && naturalSize < 6;
+        const size = tinySun ? 4 : clamp(naturalSize, 11, focus * (incoming ? smooth : 1));
+        const horizontal = clamp(x * width, size / 2 + 8, width - size / 2 - 8);
         if (layer) {
-          const diameter = screenSize(objects[index].diameterKm, kmPerPixel, viewportPx);
-          const size = Math.max(2, Math.min(diameter, focus * reveal));
-          layer.style.transform = `translate3d(${x * width}px, ${y * height}px, 0) translate(-50%, -50%) scale(${size / 100})`;
+          layer.style.transform = `translate3d(${horizontal}px, ${baseline}px, 0) translate(-50%, -100%) scale(${tinySun ? 1 : size / 100})`;
           layer.style.opacity = String(opacity);
+          layer.toggleAttribute("data-tiny-sun", tinySun);
+        }
+        if (caption) {
+          const callout = mobile && size < 45;
+          const labelX = clamp(horizontal, 66, width - 66);
+          caption.style.setProperty("--sp-callout-offset", `${horizontal - labelX}px`);
+          caption.style.transform = `translate3d(${labelX}px, ${baseline - (callout ? size + 16 : -7)}px, 0) translate(-50%, ${callout ? "-100%" : "0"})`;
+          caption.style.opacity = opacity >= .76 ? String((opacity - .76) / .24) : "0";
+          caption.toggleAttribute("data-callout", callout);
+          caption.toggleAttribute("data-tiny-sun", tinySun);
         }
         return index;
       });
@@ -113,7 +136,7 @@ function useCamera() {
   }
 
   const step = (direction: number) => goTo(Math.round(target.current) + direction);
-  return { scroller, scene, layers, active, goTo, step };
+  return { scroller, scene, layers, captions, active, goTo, step };
 }
 
 export function Journey({ onFinish, speak, exploreOnly }: {
@@ -121,13 +144,15 @@ export function Journey({ onFinish, speak, exploreOnly }: {
   speak?: (text: string) => Promise<void> | void;
   exploreOnly: boolean;
 }) {
-  const { scroller, scene, layers, active, goTo, step } = useCamera();
+  const { scroller, scene, layers, captions, active, goTo, step } = useCamera();
   const [speaking, setSpeaking] = useState(false);
   const [speechStatus, setSpeechStatus] = useState("");
   const object = objects[active];
   const previous = objects[active - 1];
   const comparison = previous ? compareSizes(object, previous) : "Start here, then see what is bigger.";
-  const measurement = `About ${formatSize(object.diameterKm)}`;
+  const dimension = { height: "tall", length: "long", "height above sea level": "above sea level", diameter: "wide" }[object.measure];
+  const comparisonText = previous?.measure === "diameter" && object.measure === "diameter"
+    ? comparison.replace("times as big as", "times as wide as") : comparison;
 
   useEffect(() => {
     scroller.current?.focus({ preventScroll: true });
@@ -157,27 +182,26 @@ export function Journey({ onFinish, speak, exploreOnly }: {
       <div className="sp-track" style={{ "--sp-track-distance": `${stopCount * 390}px` } as CSSProperties}>
         <section className="sp-sticky" aria-label="Scale viewer">
           <header className="sp-journey-title">
-            <div>
-              <p className="sp-kicker">Stop {active + 1} of {objects.length}</p>
-              <h2 aria-live="polite" aria-atomic="true">{object.name}</h2>
-            </div>
-            <p className="sp-measure"><strong>{measurement}</strong><span>{object.measure}</span></p>
+            <h2 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h2>
+            <p className="sp-measure">{types[object.art]} · about {formatSize(object.diameterKm)} {dimension}</p>
           </header>
           <div className="sp-scene" ref={scene} aria-hidden="true">
-            {objects.map(({ id, art }, index) => <div key={id} className="sp-layer"
-              ref={(element) => { layers.current[index] = element; }}>
-              <ObjectArt art={art} />
-            </div>)}
-            {previous && <div className="sp-previous-label"><span />{previous.name}</div>}
+            <div className="sp-baseline" />
+            {objects.map(({ id, name, art }, index) => (
+              <div key={id}>
+                <div className="sp-layer" ref={(element) => { layers.current[index] = element; }}>
+                  <ObjectArt art={art} />
+                  {id === "sun" && <i className="sp-sun-dot" />}
+                </div>
+                <span className="sp-object-caption" ref={(element) => { captions.current[index] = element; }}>
+                  {name}{id === "sun" && <span className="sp-tiny-caption"> (a tiny dot!)</span>}
+                </span>
+              </div>
+            ))}
           </div>
+          <p className="sp-comparison">{comparisonText}</p>
           <div className="sp-discovery">
-            <div>
-              <p className="sp-comparison">{comparison}</p>
-              <p>{object.fact}</p>
-              {object.rangeKm && <p className="sp-range">
-                Estimated range: {formatSize(object.rangeKm[0])} to {formatSize(object.rangeKm[1])}.
-              </p>}
-            </div>
+            <p>{object.fact}{object.rangeKm && <> Estimated range: {formatSize(object.rangeKm[0])} to {formatSize(object.rangeKm[1])}.</>}</p>
             {speak && <button className="sp-button sp-button-soft sp-hear" type="button" aria-disabled={speaking}
               onClick={() => void hearFact()}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
