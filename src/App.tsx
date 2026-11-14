@@ -5,6 +5,7 @@ import { SoundEnabled } from "./audio/sfx";
 import { ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
 import { LeaveGameDialog } from "./components/LeaveGameDialog";
 import { NextUp } from "./components/NextUp";
+import { RewardCard } from "./components/RewardCard";
 import { nextActivities } from "./components/activitySuggestions";
 import { MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
@@ -277,10 +278,7 @@ export default function App() {
     }
     if (screen.name === "reward") {
       return <LearnPage title="Nice work, agent!" onBack={goHome}>
-        <div className="panel learn-card">
-          <h2 className="flow-earned">+{screen.points} XP</h2>
-          <p className="flow-progress-note">{profile.xp} total XP · {profile.streak} day streak</p>
-        </div>
+        <RewardCard profile={profile} points={screen.points} />
         {nextUp(screen.activity, () => openActivity(screen.activity, screen.topic))}
       </LearnPage>;
     }
