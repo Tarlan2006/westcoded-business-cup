@@ -69,7 +69,7 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
           <Mascot pose="jump" size={120} />
           {["earth", "jupiter", "star"].map((art) => <div key={art}><ObjectArt art={art} /></div>)}
         </div>
-        <h2 tabIndex={-1} ref={resultTitle}>What a journey!</h2>
+        <h1 tabIndex={-1} ref={resultTitle}>What a journey!</h1>
         <p>You zoomed from a child all the way to {objects.at(-1)?.name}.</p>
         <p className="sp-result-score">+{points} XP</p>
         <p>{exploreOnly ? "8 XP for exploring" : `8 XP for exploring · ${correct} out of 5 quiz answers right`}</p>

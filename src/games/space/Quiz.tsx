@@ -45,7 +45,7 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
       <div className="sp-quiz-title">
         <div>
           <p className="sp-kicker">Question {index + 1} of {questions.length}</p>
-          <h2 id={headingId} ref={heading} tabIndex={-1}>Which is bigger?</h2>
+          <h1 id={headingId} ref={heading} tabIndex={-1}>Which is bigger?</h1>
         </div>
         <div className="sp-quiz-rocket"><Mascot pose="point" size={64} /></div>
       </div>

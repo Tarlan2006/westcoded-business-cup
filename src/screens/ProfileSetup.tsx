@@ -72,7 +72,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
           </div>
         </div>
         <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
-          className="profile-local-profile hidden sm:inline-block shrink-0 px-3 py-1 rounded-full text-xs font-extrabold" aria-label="Privacy · saved on this device"><SetupIcon name="shield" /> Saved on this phone</a>
+          className="profile-local-profile hidden sm:inline-block shrink-0 px-3 py-1 rounded-full text-xs font-extrabold" aria-label="Saved on this phone · Privacy"><SetupIcon name="shield" /> Saved on this phone</a>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -33,10 +33,10 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-white wrap-anywhere">Way to go, Agent {name}!</h1>
 
         {part && <button type="button" aria-label={`Open Spaceship Garage. New ship part: ${part.name}`} onClick={() => setGarage(true)}
-          className="relative mx-auto w-44 h-44 rounded-3xl bg-linear-to-b from-[#6C47FF] to-[#2A1F8A] border-4 border-[#FFD13B] flex flex-col items-center justify-center p-4 shadow-lg">
+          className="relative mx-auto w-44 max-w-full h-44 rounded-3xl bg-linear-to-b from-[#6C47FF] to-[#2A1F8A] border-4 border-[#FFD13B] flex flex-col items-center justify-center p-4 shadow-lg">
           <span aria-hidden="true" className="text-6xl mb-1 animate-bounce">{part.icon}</span>
           <span className="text-xs font-black uppercase tracking-wider text-[#FFD13B]">New Ship Part</span>
-          <span className="font-display font-bold text-base text-white">{part.name}</span>
+          <span className="font-display font-bold text-base text-white max-w-full wrap-anywhere">{part.name}</span>
         </button>}
 
         <div className="bg-[#2A1F8A] rounded-2xl p-4 border-2 border-[#5946E3]">

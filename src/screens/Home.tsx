@@ -1,9 +1,9 @@
-import { useState, type ReactNode } from "react";
+import { lazy, Suspense, useState, type ReactNode } from "react";
 import type { Activity } from "../../shared/types";
 import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { availableActivities, orderedGroups, startingActivity, type ActivitySuggestion } from "../components/activitySuggestions";
-import { Garage } from "../components/Garage";
+const Garage = lazy(() => import("../components/Garage").then(module => ({ default: module.Garage })));
 import { ActivityIcon, HubTile, LockedTile } from "../components/GameUI";
 import { lockedGames } from "../game/premium";
 import { Mascot } from "../components/Mascot";
@@ -85,6 +85,6 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
       </section>
       <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
     </div>
-    {garage && <Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} />}
+    {garage && <Suspense fallback={<p role="status">Getting things ready.</p>}><Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} /></Suspense>}
   </main>;
 }

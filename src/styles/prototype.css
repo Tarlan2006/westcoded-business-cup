@@ -202,3 +202,26 @@
   .prototype :is(.countdown-circle, .btn-game, .hub-tile) { transition: none; }
   .prototype :is(.btn-game:active, .hub-tile:active, .hub-tile:hover) { transform: none; }
 }
+
+/* Minimum touch areas; retain the existing palette, typography and layout. */
+.prototype button, .prototype input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; min-width: 44px; }
+.prototype .prototype-parent-button, .prototype .profile-location { min-height: 44px; }
+.prototype a[href="/privacy"] { min-height: 44px; min-width: 44px; align-content: center; }
+.prototype-screen { min-height: 100dvh; }
+@media (prefers-reduced-motion: reduce) {
+  .prototype *, .prototype *::before, .prototype *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Allow short landscape screens and enlarged text to scroll normally. */
+#screen-greeting, #screen-splash { position: relative; inset: auto; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+
+@media (width < 40rem) {
+  .prototype .profile-setup-form a[href="/privacy"]:not(.profile-local-profile) { display: inline-flex; align-items: center; }
+}
+/* Let navigation wrap before enlarged text can overlap the Home control. */
+@media (max-width: 600px) {
+  .topbar.activity-header { display: flex; flex-wrap: wrap; }
+  .activity-header .flow-header-navigation { flex: 0 1 auto; min-width: 0; flex-wrap: wrap; }
+  .activity-header .activity-header-actions { flex: 1 1 8.75rem; }
+  .activity-header .flow-header-location { order: 2; flex-basis: 100%; }
+}

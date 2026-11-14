@@ -208,7 +208,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
       <div className="sp-track" style={{ "--sp-track-distance": `${stopCount * 390}px` } as CSSProperties}>
         <section className="sp-sticky" aria-label="Scale viewer">
           <header className="sp-journey-title">
-            <h2 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h2>
+            <h1 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h1>
             <p className="sp-measure">{types[object.art]} · about {formatSize(object.diameterKm)} {dimension}</p>
           </header>
           <div className="sp-scene" ref={scene} style={{ "--sp-art-size": `${artSize}px` } as CSSProperties} aria-hidden="true">

@@ -14,7 +14,7 @@ import { nextActivities } from "./components/activitySuggestions";
 import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { Hub, LearnPage } from "./screens/Home";
-import { Privacy } from "./screens/Parent";
+const Privacy = lazy(() => import("./screens/Parent").then(module => ({ default: module.Privacy })));
 const Plans = lazy(() => import("./screens/Plans").then(module => ({ default: module.Plans })));
 const ProfileSetup = lazy(() => import("./screens/ProfileSetup").then(module => ({ default: module.ProfileSetup })));
 import { SessionComplete } from "./screens/SessionComplete";

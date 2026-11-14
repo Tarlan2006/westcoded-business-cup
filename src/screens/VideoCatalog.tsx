@@ -102,7 +102,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
             <span className="px-3 py-1 rounded-full bg-black/40 text-xs font-black text-indigo-200">{selected ? "Watch on YouTube ✨" : "Videos coming soon ✨"}</span>
           </div>
           <div className="video-frame-content space-y-3 max-w-md">
-            {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={`Open video: ${selected.title}`}
+            {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={`Open video: ${selected.title}. Watch video · Plays on YouTube`}
               onClick={() => {
                 if (session && !session.canStartActivity()) return;
                 setPlaying(true);

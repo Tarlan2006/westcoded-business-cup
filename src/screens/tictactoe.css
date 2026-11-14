@@ -195,3 +195,5 @@
 .ttt-cloud-face { color: #163657; }
 .ttt-cloud { fill: #b5e3ff; stroke: #64b4f1; }
 .ttt-room[data-result="O"] .ttt-cell[data-winning="true"] { color: var(--sky-text); }
+/* Keep the score readable when the device's text size is enlarged. */
+.ttt-score { white-space: normal; text-align: center; }

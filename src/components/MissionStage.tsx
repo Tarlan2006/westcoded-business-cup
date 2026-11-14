@@ -44,7 +44,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
       <SessionClock id="sessionClockDisplay" fallback={<div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Time left">{clock}</div>} />
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {paused && navigation && <button type="button" className="prototype-parent-button" aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
         {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled || session?.finishing} onOpen={onExit} />
       </div>

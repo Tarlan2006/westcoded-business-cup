@@ -42,7 +42,7 @@ export function startingActivity(profile: ChildProfile, preferences: Preferences
       if (quizBank.some((item) => item.ageBand === profile.ageBand && item.topic === "animals")) return { ...quiz, topic: "animals" };
     }
     if (interests.includes("Art") && profile.ageBand === "6-8") return sketchGameMeta;
-    if (interests.includes("Space") || priorities.includes("science")) return spaceGameMeta;
+    if (profile.ageBand === "6-8" && (interests.includes("Space") || priorities.includes("science"))) return spaceGameMeta;
     return profile.ageBand === "6-8" ? ask : quiz;
   }
   const mode = preferences.location === "car" ? "roadtrip" : "hunt";

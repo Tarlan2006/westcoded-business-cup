@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Chains } from "./Chains";
 import { APP_NAME } from "../brand";
 import { Mascot } from "./Mascot";
@@ -32,7 +32,7 @@ export function LockedTile({ icon, title, children, onClick }: { icon: string; t
   const timer = useRef(0);
   useEffect(() => () => window.clearTimeout(timer.current), []);
   return <button className="activity-tile hub-tile locked-tile" type="button" data-rattling={rattling || undefined}
-    aria-label={`${title}, locked. See ${APP_NAME} Plus plans`} onClick={() => {
+    aria-description={`Locked. See ${APP_NAME} Plus plans`} onClick={() => {
       if (rattling) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return onClick();
       setRattling(true);
@@ -48,19 +48,6 @@ export function Chip({ selected, children, ...props }: ButtonHTMLAttributes<HTML
   return <button {...props} type="button" className="game-chip" aria-pressed={selected}>{children}</button>;
 }
 
-export function Segmented<T extends string | number>({ options, value, onChange, required }: {
-  options: readonly { value: T; label: string; detail?: string }[];
-  value: T | undefined; onChange: (value: T) => void; required?: boolean;
-}) {
-  const name = useId();
-  return <div className="game-segmented">{options.map((option) => (
-    <label className="game-segment" key={option.value}>
-      <input type="radio" name={name} required={required} checked={value === option.value} onChange={() => onChange(option.value)} />
-      <span>{option.label}{option.detail && <small>{option.detail}</small>}</span>
-    </label>
-  ))}</div>;
-}
-
 export function SpeechBubble({ children, className = "", live }: { children: ReactNode; className?: string; live?: boolean }) {
   return <div className={`speech-bubble ${className}`} aria-live={live ? "polite" : undefined}>{children}</div>;
 }
@@ -70,20 +57,4 @@ export function ParticlePop({ hearts = false }: { hearts?: boolean }) {
   return <span className="particle-pop" aria-hidden="true">{sparks.map((spark, i) => (
     <i key={i} style={{ rotate: `${i * 45}deg` }}>{hearts ? "♥" : spark}</i>
   ))}</span>;
-}
-
-export function StarProgress({ count }: { count: number }) {
-  return <span className="star-progress" aria-label={`Round ${count}`}><b aria-hidden="true">★</b> Round <strong>{count}</strong></span>;
-}
-
-export function CountdownRing({ progress, children }: { progress: number; children: ReactNode }) {
-  const remaining = Math.max(0, Math.min(1, progress));
-  return <div className="countdown" data-time-tone={remaining > .5 ? "mint" : remaining > .2 ? "gold" : "coral"}>
-    <svg viewBox="0 0 200 200" aria-hidden="true">
-      <circle className="countdown-track" cx="100" cy="100" r="92" />
-      <circle className="countdown-fill" cx="100" cy="100" r="92" pathLength="100"
-        strokeDasharray={`${remaining * 100} 100`} transform="rotate(-90 100 100)" />
-    </svg>
-    {children}
-  </div>;
 }
