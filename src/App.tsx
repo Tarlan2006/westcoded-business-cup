@@ -9,9 +9,8 @@ import { PrototypeFrame } from "./components/PrototypeFrame";
 import { NextUp } from "./components/NextUp";
 import { RewardCard } from "./components/RewardCard";
 import { nextActivities } from "./components/activitySuggestions";
-import { MODES, tasksFor } from "./game/content";
+import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
-import { videosFor } from "./game/videos";
 import { Ask } from "./screens/Ask";
 import { Hub, LearnPage } from "./screens/Home";
 import { Memory } from "./screens/Memory";
@@ -36,7 +35,7 @@ type Screen =
   | { name: "quiz"; id: string; topic?: string }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
   | { name: "reward"; points: number; video: boolean; activity: Activity; topic?: string }
-  | { name: "video"; id?: string }
+  | { name: "video"; id: string }
   | { name: "mission"; session: Session; profile: Profile }
   | { name: "results"; session: Session; profile: Profile; result: MissionState };
 
@@ -56,7 +55,7 @@ function breadcrumb(screen: Screen): string {
     case "sketch": return "Learn › Sketch Artist";
     case "space": return "Learn › Space Scale";
     case "reward": return "Learn › Results";
-    case "video": return screen.id ? "Watch › Video library › Video" : "Watch › Video library";
+    case "video": return "Watch › Video library";
     default: return "Activities";
   }
 }
@@ -204,20 +203,9 @@ export default function App() {
       setScreen({ name: "mission", profile: selected, session });
     }
 
-    function rewardVideo() {
-      if (profile) setProgress(rewardActivity(crypto.randomUUID(), profile.id, "video", 5));
-    }
-
-    function openVideo(id: string) {
-      if (!profile || !videosFor(profile.ageBand).some((video) => video.id === id)) return;
-      if (profile.ageBand === "3-5" && !(profile.activities?.quiz ?? 0)) return;
-      rewardVideo();
-      setScreen({ name: "video", id });
-    }
-
     function openActivity(activity: Activity, topic?: string) {
       if (activity === "hunt" || activity === "roadtrip" || activity === "lava") setScreen({ name: "setup", mode: activity });
-      else if (activity === "video") setScreen({ name: "video" });
+      else if (activity === "video") setScreen({ name: "video", id: crypto.randomUUID() });
       else if (activity === "quiz" && topic) setScreen({ name: "quiz", id: crypto.randomUUID(), topic });
       else startLearn(activity);
     }
@@ -231,7 +219,8 @@ export default function App() {
     }
     if (screen.name === "mission") {
       const { session, profile } = screen;
-      return <Mission key={session.id} session={session} profile={profile} navigationPaused={pendingNavigation !== null} onFinish={(result) => {
+      return <Mission key={session.id} session={session} profile={profile} navigationPaused={pendingNavigation !== null}
+        onExit={() => setScreen({ name: "parent" }, true)} onFinish={(result) => {
         const memory = result.done ? `Completed ${result.done} rounds in ${session.mode}.` : `Played ${session.mode}.`;
         const updated = rewardActivity(session.id, profile.id, session.mode, result.points, {
           mode: session.mode, memory: result.loreNote || memory,
@@ -245,7 +234,8 @@ export default function App() {
       }} />;
     }
     if (screen.name === "results") {
-      return <MissionSummary session={screen.session} profile={screen.profile} state={screen.result} onBack={goHome}>
+      return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome}
+        onReplay={() => launch(screen.session.mode, profile, screen.session.durationMinutes)}>
         {nextUp(screen.session.mode, () => launch(screen.session.mode, profile, screen.session.durationMinutes))}
       </MissionSummary>;
     }
@@ -288,12 +278,14 @@ export default function App() {
       </LearnPage>;
     }
     if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
-      return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goBack} onOpen={openVideo} />;
+      return <VideoCatalog ageBand={profile.ageBand} name={preferences.nickname ?? codenameFor(profile.codenameId)} onHome={goHome}
+        onParents={() => setScreen({ name: "parent" })} onOpen={(video) => setProgress(rewardActivity(`${screen.id}:${video}`, profile.id, "video", 5))}
+        onPlay={() => profile.ageBand === "1-2" ? goHome() : startLearn("quiz")} />;
     }
     return <Hub profile={profile} preferences={preferences} onToggleSound={toggleSound} onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
       onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={(topic) => openActivity("quiz", topic)}
       onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
       onSketch={() => startLearn("sketch")} onSpace={() => startLearn("space")}
-      onWatch={() => setScreen({ name: "video" })} />;
+      onWatch={() => openActivity("video")} />;
   }
 }

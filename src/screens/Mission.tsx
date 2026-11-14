@@ -1,35 +1,29 @@
-import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
-import { ActivityHeader, ActivityNavigation } from "../components/ActivityHeader";
-import { Mascot } from "../components/Mascot";
-import { CountdownRing, GameButton, SpeechBubble, StarProgress } from "../components/GameUI";
-import { GrownUpsButton } from "../components/GrownUpsButton";
+import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 import { useSoundEnabled } from "../audio/sfx";
 import { playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
-  countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
+  countdownLine, lineFor, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
 } from "../game/content";
 import { advanceMission, createMission, selectTurn, timeUp } from "../game/mission";
 import type { Mission as MissionState, Player, Session } from "../game/mission";
+import { missionDemo } from "../game/missionDemo";
 import { useBriefing, within } from "../game/useBriefing";
 import { usePushToTalk } from "../game/usePushToTalk";
 import { useWakeLock } from "../game/useWakeLock";
-import { rankName } from "../state/progress";
-
-function clock(seconds: number) {
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-}
 
 interface Props {
   session: Session;
   profile: Profile;
   onFinish: (state: MissionState) => void;
+  onExit: () => void;
   /** Temporarily suspend play while the host confirms navigation. */
   navigationPaused?: boolean;
 }
 
-export function Mission({ session, profile, onFinish, navigationPaused = false }: Props) {
+export function Mission({ session, profile, onFinish, onExit, navigationPaused = false }: Props) {
   const [state, dispatch] = useReducer(
     (current: MissionState, action: Parameters<typeof advanceMission>[1]) => advanceMission(current, action, session),
     session, (session) => createMission(session, Date.now()),
@@ -38,7 +32,6 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
   const submittedRound = useRef(0);
   const delivered = useRef(false);
   const sound = useSoundEnabled();
-  const navigation = useContext(ActivityNavigation);
   const navigationOwnsPause = useRef(false);
   const paused = navigationPaused || state.pausedAt !== null;
   const finished = state.phase === "finished";
@@ -151,9 +144,7 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
         modeIntro[session.mode],
       ] : []), ...task.lineIds]
       : [];
-  // Play timed cues immediately even on devices where the live voice takes longer to synthesize.
-  const timedCue = state.phase === "countdown" || isFeedback;
-  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle", timedCue);
+  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle", true);
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";
@@ -181,111 +172,45 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
     void submit("", player, answer);
   }
 
-  return (
-    <main className="shell mission-shell">
-      <ActivityHeader title={MODES[session.mode].name} xp={profile.xp + state.points}
-        backDisabled={state.phase === "resolving"}
-        exitControl={<GrownUpsButton exit disabled={state.phase === "resolving"} onOpen={navigation?.onBack ?? togglePause} />}>
-        <button type="button" className="quiet-button" disabled={state.phase === "resolving"} onClick={togglePause}>
-          {paused ? "Resume" : "Pause"}
-        </button>
-      </ActivityHeader>
-      <section className="mission-console" aria-label="Mission">
-        <div className="mission-stats">
-          <StarProgress count={state.round} />
-          <span>Mission <strong>{clock(missionSeconds)}</strong></span>
-          {isRoadtrip && <span>Score <strong>{state.players.join(" : ")}</strong></span>}
-        </div>
-        <CountdownRing progress={progress}>
-          <span className="mission-action-badge">{isHunt ? "🔎 FIND!" : isRoadtrip ? "👀 SPOT!" : freezeHold ? "❄️ FREEZE!" : "🌋 THINK!"}</span>
-          <div className="mission-bleep">
-            <Mascot speaking={speaking} mood={recording ? "listening" : isFeedback ? "excited" : session.mode === "lava" ? "surprised" : "detective"}
-              action={freezeHold ? "sneak" : isFeedback ? "clap" : running && !isRoadtrip ? "jump" : "none"} playful />
-          </div>
-          <div className="mission-clock">
-            <span className="timer-value">{paused ? "Ⅱ" : isFeedback ? "✦" : clock(remainingSeconds)}</span>
-            <span className="timer-label">{paused ? "Paused" : state.phase === "countdown" ? "Get to safety"
-              : isFeedback ? "Next up" : state.phase === "resolving" ? "Checking" : "Round time"}</span>
-          </div>
-        </CountdownRing>
-        <SpeechBubble className="caption" live>
-          {paused ? "Ready when you are." : state.phase === "resolving" ? "Bleep is checking in…" : caption || assignment}
-        </SpeechBubble>
-        {paused ? (
-          <div className="mission-actions">
-            <button type="button" className="primary-button" onClick={() => {
-              const now = Date.now();
-              setNow(now);
-              dispatch({ type: "resume", now });
-            }}>Resume mission</button>
-            <button type="button" className="secondary-button" onClick={() => dispatch({ type: "finish", now: Date.now() })}>End mission</button>
-          </div>
-        ) : (
-          <div className="mission-actions">
-            {isRoadtrip ? ([1, 2] as const).map((player) => (
-              <button key={player} type="button" className={player === 1 ? "primary-button" : "secondary-button"}
-                disabled={!running} onClick={() => completeWithButton(player)}>Player {player} spotted it!</button>
-            )) : choices ? choices.choices.map((answer) => (
-              <button type="button" key={answer} className="secondary-button"
-                disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>
-            )) : (
-              <GameButton disabled={!running || freezeHold} onClick={() => completeWithButton()}><span aria-hidden="true">✓</span> I DID IT!</GameButton>
-            )}
-            {isHunt && (
-              <GameButton tone="sky" className="talk-button" data-recording={recording || undefined} disabled={!running || voice.status === "decoding"}
-                onPointerDown={(event) => {
-                  if (!event.isPrimary || event.button !== 0) return;
-                  event.currentTarget.setPointerCapture(event.pointerId);
-                  startVoice();
-                }}
-                onPointerUp={() => voice.release()}
-                onPointerCancel={voice.cancelHold}
-                onLostPointerCapture={voice.cancelHold}
-                onContextMenu={(event) => event.preventDefault()}
-                onKeyDown={(event) => {
-                  if (event.key !== " " && event.key !== "Enter") return;
-                  event.preventDefault();
-                  if (!event.repeat) startVoice();
-                }}
-                onKeyUp={(event) => {
-                  if (event.key === " " || event.key === "Enter") voice.release();
-                }}
-                onBlur={voice.cancelHold}>
-                {recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
-                  : voice.status === "decoding" ? "Listening…" : <><span aria-hidden="true">🎙</span> HOLD TO TALK</>}
-              </GameButton>
-            )}
-          </div>
-        )}
-        {voice.message && isHunt && !paused && <p className="voice-message" role="status">{voice.message}</p>}
-      </section>
-    </main>
-  );
-}
+  const demo = missionDemo(task, state.phase === "countdown");
+  const doneButton = `${missionButtonStyle} btn-mint text-[#062C1E]`;
+  const quickReplies = choices ? choices.choices.map((answer) => <button type="button" key={answer} className={missionReplyStyle}
+    disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>) : isHunt
+    ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>🔎 Found it!</button> : undefined;
 
-export function Results({ state, profile, session, onBack }: {
-  state: MissionState; profile: Profile; session: Session; onBack: () => void;
-}) {
-  useEffect(() => {
-    playSfx("fanfare");
-  }, []);
-  const { caption } = useBriefing([outroLine], false);
-  return (
-    <main className="shell narrow-shell">
-      <ActivityHeader title={MODES[session.mode].name} xp={profile.xp} onBack={onBack} />
-      <section className="panel results">
-        <Mascot mood="happy" />
-        <h1>Mission <em>complete.</em></h1>
-        <p>{rankName(profile.rank)} · {caption}</p>
-        <dl className="result-stats">
-          <div><dt>Completed rounds</dt><dd>{state.done}</dd></div>
-          <div><dt>XP earned</dt><dd>+{state.points}</dd></div>
-          <div><dt>Total XP</dt><dd>{profile.xp}</dd></div>
-          <div><dt>Day streak</dt><dd>{profile.streak}</dd></div>
-        </dl>
-        {session.mode === "roadtrip" && <p>Player 1: {state.players[0]} · Player 2: {state.players[1]}</p>}
-        <button type="button" className="primary-button" onClick={onBack}>Back to activities <span aria-hidden="true">↗</span></button>
-      </section>
-    </main>
-  );
+  return <MissionStage round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}
+    {...demo} mood={recording ? "listening" : isFeedback ? state.feedback === timeUp ? "surprised" : "excited" : demo.mood}
+    action={isFeedback ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={isFeedback && state.feedback !== timeUp}
+    onExit={onExit} exitDisabled={state.phase === "resolving"}
+    toolbar={<button type="button" className="prototype-parent-button" disabled={state.phase === "resolving"} onClick={togglePause}>{paused ? "Resume" : "Pause"}</button>}
+    prompt={paused ? "Ready when you are." : state.phase === "resolving" ? "Bleep is checking in…" : running ? assignment : caption || assignment}
+    replies={!paused && state.phase === "round" ? quickReplies : undefined}
+    status={isHunt && !paused ? voice.message : isRoadtrip ? `Player 1: ${state.players[0]} · Player 2: ${state.players[1]}` : undefined}
+    controls={paused ? <>
+      <button type="button" className={doneButton} onClick={togglePause}>Resume mission</button>
+      <button type="button" className={`${missionButtonStyle} btn-purple text-white`} onClick={() => dispatch({ type: "finish", now: Date.now() })}>End mission</button>
+    </> : isRoadtrip ? ([1, 2] as const).map((player) => <button key={player} type="button"
+      className={player === 1 ? doneButton : `${missionButtonStyle} btn-sky text-white`}
+      disabled={!running} onClick={() => completeWithButton(player)}>Player {player} spotted it!</button>) : <>
+      <button type="button" className={`${doneButton}${isHunt ? "" : " col-span-2"}`}
+        disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> I DID IT!</button>
+      {isHunt && <button type="button" className={`${missionButtonStyle} btn-sky text-white talk-button${recording ? " voice-pulse" : ""}`}
+        disabled={!running || voice.status === "decoding"}
+        onPointerDown={(event) => {
+          if (!event.isPrimary || event.button !== 0) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          startVoice();
+        }}
+        onPointerUp={() => voice.release()} onPointerCancel={voice.cancelHold} onLostPointerCapture={voice.cancelHold}
+        onContextMenu={(event) => event.preventDefault()} onKeyDown={(event) => {
+          if (event.key !== " " && event.key !== "Enter") return;
+          event.preventDefault();
+          if (!event.repeat) startVoice();
+        }} onKeyUp={(event) => {
+          if (event.key === " " || event.key === "Enter") voice.release();
+        }} onBlur={voice.cancelHold}>
+        <span aria-hidden="true">🎙️</span>{recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
+          : voice.status === "decoding" ? "Listening…" : "TALK"}
+      </button>}
+    </>} />;
 }

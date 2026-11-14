@@ -215,6 +215,37 @@
 .prototype-screen { min-height: 100svh; }
 .prototype-screen[hidden] { display: none; }
 
+.prototype-parent-button {
+  position: relative;
+  overflow: hidden;
+  border-radius: .75rem;
+  border: 1px solid #5946e3;
+  padding: .5rem .875rem;
+  background: #2a1f8a;
+  color: #e0e7ff;
+  font-size: .75rem;
+  line-height: 1rem;
+  font-weight: 800;
+  white-space: nowrap;
+  touch-action: none;
+  -webkit-touch-callout: none;
+}
+.prototype-parent-button:hover { background: #3729ad; }
+.prototype-parent-button:disabled { opacity: .55; }
+
+.prototype-frame-video { min-height: 200px; }
+.prototype-video-placeholder { min-height: 224px; }
+.prototype-countdown { width: min(18rem, calc(100vw - 2rem)); aspect-ratio: 1; height: auto; }
+.prototype .mission-stats { flex-wrap: nowrap; }
+.prototype-countdown .countdown-fill { stroke-width: 16; stroke: var(--countdown-stroke); }
+.prototype-parent-button:is([aria-label="Hold: Exit"], [aria-label^="Parents"]) { min-height: 32px; }
+.prototype-garage { margin: auto; max-height: calc(100dvh - 32px); overflow-y: auto; color: white; }
+.prototype-garage::backdrop { background: rgb(0 0 0 / .7); backdrop-filter: blur(4px); }
+@media (width >= 40rem) { .prototype-countdown { width: 20rem; } }
+@media (width < 40rem) {
+  .prototype-video-placeholder { min-height: 300px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .prototype :is(.animate-bounce, .prototype-particle),
   .prototype-bleep :is(.bleep-float, .bleep-antenna, .arm-left, .arm-right, [class*="action-"], .bleep-tickle),

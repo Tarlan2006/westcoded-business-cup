@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 /** Accidental taps never open settings. Pointer and keyboard share one timer. */
-export function GrownUpsButton({ onOpen, exit = false, disabled = false }: { onOpen: () => void; exit?: boolean; disabled?: boolean }) {
+export function GrownUpsButton({ onOpen, exit = false, variant = "default", disabled = false }: {
+  onOpen: () => void; exit?: boolean; variant?: "default" | "parents" | "exit"; disabled?: boolean;
+}) {
+  const exiting = exit || variant === "exit";
   const [progress, setProgress] = useState(0);
   const frame = useRef<number | null>(null);
   const source = useRef<string | null>(null);
@@ -20,7 +23,7 @@ export function GrownUpsButton({ onOpen, exit = false, disabled = false }: { onO
     const began = performance.now();
     const tick = (now: number) => {
       if (source.current !== input) return;
-      const amount = Math.min(1, (now - began) / (exit ? 1400 : 1500));
+      const amount = Math.min(1, (now - began) / (exiting ? 1400 : 1500));
       setProgress(amount);
       if (amount === 1) { reset(); open.current(); }
       else frame.current = requestAnimationFrame(tick);
@@ -33,10 +36,10 @@ export function GrownUpsButton({ onOpen, exit = false, disabled = false }: { onO
     return () => { if (frame.current !== null) cancelAnimationFrame(frame.current); document.removeEventListener("visibilitychange", hidden); };
   }, []);
 
-  return <div className="flow-grownups">
-    <button type="button" className="flow-hold-button" disabled={disabled}
+  return <div className={variant === "default" ? "flow-grownups" : undefined}>
+    <button type="button" className={variant === "default" ? "flow-hold-button" : "prototype-parent-button"} disabled={disabled}
       style={{ "--flow-hold-progress": `${progress * 360}deg` } as CSSProperties}
-      aria-label={exit ? "Hold: Exit" : "Grown-ups settings, press and hold for one and a half seconds"}
+      aria-label={exiting ? "Hold: Exit" : variant === "parents" ? "Parents, press and hold" : "Grown-ups settings, press and hold for one and a half seconds"}
       onClick={(event) => event.preventDefault()} onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         if (!event.isPrimary || event.button !== 0) return;
@@ -52,8 +55,9 @@ export function GrownUpsButton({ onOpen, exit = false, disabled = false }: { onO
       onKeyUp={(event) => {
         if (event.key === "Enter" || event.key === " ") { event.preventDefault(); reset(); }
       }} onBlur={reset}>
-      <span>{exit ? "Hold: Exit" : "🔒 Grown-ups"}</span>
+      <span>{exiting ? "Hold: Exit" : variant === "parents" ? "👨‍👩‍👧 Parents" : "🔒 Grown-ups"}</span>
+      {variant !== "default" && <span className="absolute bottom-0 left-0 h-1 bg-[#FF7849]" style={{ width: `${progress * 100}%` }} aria-hidden="true" />}
     </button>
-    {!exit && <span className="flow-hold-hint">Press and hold</span>}
+    {variant === "default" && !exiting && <span className="flow-hold-hint">Press and hold</span>}
   </div>;
 }
