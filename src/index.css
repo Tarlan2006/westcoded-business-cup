@@ -225,7 +225,6 @@ select, .gate-answer input {
 .primary-button { color: #152011; background: var(--accent); }
 .primary-button:hover:not(:disabled) { background: #ecffbf; }
 .secondary-button { border: 1px solid #537168; background: #142529; }
-.quota { text-align: center; color: var(--muted); font-size: .75rem; }
 
 .mission-shell { width: min(100% - 2rem, 660px); }
 .mission-console { display: grid; justify-items: center; margin: 1rem auto 0; gap: clamp(.65rem, 2vh, 1.2rem); text-align: center; }

@@ -28,33 +28,6 @@ export function ParentGate({ onPass, onBack }: { onPass: () => void; onBack: () 
   );
 }
 
-function paymentLink() {
-  try {
-    const url = new URL(import.meta.env.VITE_PAYMENT_LINK ?? "");
-    if (url.protocol === "https:") return url.href;
-  } catch {
-    // Checkout is optional during development.
-  }
-  return undefined;
-}
-
-export function Unlock({ onBack }: { onBack: () => void }) {
-  const link = paymentLink();
-  return (
-    <main className="shell narrow-shell">
-      <header className="topbar"><span className="wordmark">Mission Control</span></header>
-      <section className="panel parent-panel">
-        <h1>Unlock missions</h1>
-        <p>You’ve used your two free missions today. More free missions will be available tomorrow.</p>
-        {link
-          ? <a className="primary-button" href={link}>Continue to Stripe</a>
-          : <p>Checkout is currently unavailable.</p>}
-        <button type="button" className="quiet-button" onClick={onBack}>Back to setup</button>
-      </section>
-    </main>
-  );
-}
-
 export function Privacy() {
   return (
     <main className="shell narrow-shell">
@@ -65,8 +38,6 @@ export function Privacy() {
         <p>Mission Control needs no account, real name, or camera. Your chosen codename, age range, and game progress are saved in this browser. Clear this site’s data in your browser settings to remove them.</p>
         <h2>Voice is optional</h2>
         <p>The microphone is used for a round only when you hold the talk button and allow access. Cloudflare Workers AI transcribes the audio for that request. When Groq is enabled, it receives words from the game’s vocabulary to choose the next response. Mission Control saves neither audio nor transcripts to the profile. Avoid saying names or other personal details. You can play every mission with buttons.</p>
-        <h2>Checkout</h2>
-        <p>A parent can open the Stripe checkout from the Unlock screen. Stripe handles any details entered there.</p>
       </article>
     </main>
   );

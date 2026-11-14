@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Откройте [localhost:5173](http://localhost:5173) и нажмите **Start mission**. Состояние Worker можно проверить через `GET /api/health`.
+Откройте [localhost:5173](http://localhost:5173) и нажмите **Start mission**. Все режимы бесплатны, количество миссий не ограничено. Состояние Worker можно проверить через `GET /api/health`.
 
 В Scavenger Hunt кнопка **HOLD TO TALK** отправляет WAV длительностью до восьми секунд в `POST /api/stt` для распознавания через Workers AI. `POST /api/turn` выбирает реплику и задание через Groq. При недоступности модели игра выбирает следующий ход локально. Кнопка **I DID IT!** работает без доступа к микрофону.
 

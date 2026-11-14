@@ -4,15 +4,15 @@ import { unlock } from "./audio/engine";
 import { tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { Mission, Results } from "./screens/Mission";
-import { ParentGate, Privacy, Unlock } from "./screens/Parent";
+import { ParentGate, Privacy } from "./screens/Parent";
 import { Setup, type SetupOptions } from "./screens/Setup";
-import { finishMission, readProgress, remainingMissions, saveProfile, startMission } from "./state/progress";
+import { finishMission, readProgress, saveProfile } from "./state/progress";
 
 type Screen =
-  | { name: "setup" | "unlock" }
+  | { name: "setup" }
   | { name: "mission"; session: Session; profile: Profile }
   | { name: "results"; session: Session; profile: Profile; result: MissionState }
-  | { name: "gate"; destination: "unlock" | "setup"; back: Screen };
+  | { name: "gate"; back: Extract<Screen, { name: "results" }> };
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: "setup" });
@@ -20,21 +20,10 @@ export default function App() {
   const launchPending = useRef(false);
   if (window.location.pathname.replace(/\/$/, "") === "/privacy") return <Privacy />;
 
-  function openGate(destination: "setup" | "unlock") {
-    setScreen({ name: "gate", destination, back: screen });
-  }
-
   function launch(options: SetupOptions) {
     if (launchPending.current) return;
     launchPending.current = true;
     const id = crypto.randomUUID();
-    const usage = startMission(id);
-    if (!usage) {
-      setProgress(readProgress());
-      launchPending.current = false;
-      openGate("unlock");
-      return;
-    }
     const profile = saveProfile(options.codenameId, options.ageBand);
     setProgress(readProgress());
     const tasks = tasksFor(options.mode, options.ageBand);
@@ -57,17 +46,12 @@ export default function App() {
     }} />;
   }
   if (screen.name === "results") {
-    return <Results session={screen.session} profile={screen.profile} state={screen.result} onBack={() => openGate("setup")} />;
+    return <Results session={screen.session} profile={screen.profile} state={screen.result}
+      onBack={() => setScreen({ name: "gate", back: screen })} />;
   }
   if (screen.name === "gate") {
-    return <ParentGate onPass={() => setScreen({ name: screen.destination })} onBack={() => setScreen(screen.back)} />;
+    return <ParentGate onPass={() => setScreen({ name: "setup" })} onBack={() => setScreen(screen.back)} />;
   }
-  if (screen.name === "unlock") return <Unlock onBack={() => setScreen({ name: "setup" })} />;
 
-  return <Setup profiles={progress.profiles} selectedId={progress.selectedId} remaining={remainingMissions(progress)}
-    onStart={launch} onUnlock={() => {
-      const current = readProgress();
-      setProgress(current);
-      if (!remainingMissions(current)) openGate("unlock");
-    }} />;
+  return <Setup profiles={progress.profiles} selectedId={progress.selectedId} onStart={launch} />;
 }

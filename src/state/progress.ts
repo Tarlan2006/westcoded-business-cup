@@ -1,14 +1,12 @@
 import type { AgeBand, Mode, Profile } from "../../shared/types";
 
 const storageKey = "mission-control.progress";
-export const freeMissions = 2;
 const rankThresholds = [0, 30, 100, 250, 500];
 const ranks = ["Recruit", "Scout", "Field Agent", "Special Agent", "Commander"];
 
 interface Progress {
   profiles: Profile[];
   selectedId?: string;
-  usage?: { day: string; count: number; lastSession: string };
   lastFinished?: string;
 }
 
@@ -25,7 +23,10 @@ export function readProgress(): Progress {
     const raw = localStorage.getItem(storageKey);
     if (!raw) return cached;
     const progress = JSON.parse(raw) as Progress | null;
-    if (Array.isArray(progress?.profiles)) cached = progress;
+    if (Array.isArray(progress?.profiles)) {
+      const { profiles, selectedId, lastFinished } = progress;
+      cached = { profiles, selectedId, lastFinished };
+    }
   } catch {
     // An unavailable or unreadable store still allows play in this tab.
   }
@@ -42,11 +43,6 @@ function saveProgress(progress: Progress) {
   return progress;
 }
 
-export function remainingMissions(progress: Progress, date = new Date()) {
-  const used = progress.usage?.day === localDay(date) ? progress.usage.count : 0;
-  return Math.max(0, freeMissions - used);
-}
-
 export function rankName(rank: number) {
   return ranks[rank] ?? ranks[0];
 }
@@ -60,17 +56,6 @@ export function saveProfile(codenameId: string, ageBand: AgeBand) {
   const profiles = progress.profiles.filter((entry) => entry.id !== profile.id);
   saveProgress({ ...progress, selectedId: profile.id, profiles: [...profiles, profile] });
   return profile;
-}
-
-export function startMission(sessionId: string, date = new Date()) {
-  const progress = readProgress();
-  if (progress.usage?.lastSession === sessionId) return progress;
-  const remaining = remainingMissions(progress, date);
-  if (!remaining) return null;
-  return saveProgress({
-    ...progress,
-    usage: { day: localDay(date), count: freeMissions - remaining + 1, lastSession: sessionId },
-  });
 }
 
 export function finishMission(sessionId: string, profileId: string, mode: Mode, points: number, memory: string, date = new Date()) {

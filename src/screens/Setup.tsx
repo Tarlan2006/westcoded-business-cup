@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { AgeBand, Mode, Profile } from "../../shared/types";
 import { codenames, lineFor, MODES, recallLine } from "../game/content";
-import { freeMissions, rankName } from "../state/progress";
+import { rankName } from "../state/progress";
 
 export interface SetupOptions {
   codenameId: string;
@@ -13,12 +13,10 @@ export interface SetupOptions {
 interface Props {
   profiles: Profile[];
   selectedId?: string;
-  remaining: number;
   onStart: (options: SetupOptions) => void;
-  onUnlock: () => void;
 }
 
-export function Setup({ profiles, selectedId, remaining, onStart, onUnlock }: Props) {
+export function Setup({ profiles, selectedId, onStart }: Props) {
   const saved = profiles.find((profile) => profile.id === selectedId);
   const [codenameId, setCodenameId] = useState(saved && codenames.includes(saved.codenameId) ? saved.codenameId : codenames[0]);
   const [ageBand, setAgeBand] = useState<AgeBand>(saved?.ageBand ?? "6-8");
@@ -57,8 +55,7 @@ export function Setup({ profiles, selectedId, remaining, onStart, onUnlock }: Pr
         </div>
         <form className="panel setup-form" onSubmit={(event) => {
           event.preventDefault();
-          if (remaining) onStart({ codenameId, ageBand, mode, durationMinutes });
-          else onUnlock();
+          onStart({ codenameId, ageBand, mode, durationMinutes });
         }}>
           <h2>Mission setup</h2>
           <div className="form-row">
@@ -113,8 +110,7 @@ export function Setup({ profiles, selectedId, remaining, onStart, onUnlock }: Pr
             {inCar ? "Passengers only. Stay buckled and keep the driver focused."
               : "An adult should supervise. Clear the floor, walk, and keep both feet on the ground."}
           </p>
-          <button className="primary-button" type="submit">{remaining ? "Start mission" : "Unlock"} <span aria-hidden="true">↗</span></button>
-          <p className="quota">{remaining} of {freeMissions} free missions left today</p>
+          <button className="primary-button" type="submit">Start mission <span aria-hidden="true">↗</span></button>
         </form>
       </section>
     </main>
