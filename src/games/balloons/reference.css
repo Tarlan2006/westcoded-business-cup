@@ -1,0 +1,81 @@
+/* Screen geometry from balloon_count_design_reference.html. Game behaviour stays in balloons.css. */
+@font-face { font-family: "Balloon Fredoka"; src: url("./fonts/Fredoka-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Balloon Nunito"; src: url("./fonts/Nunito-ExtraBold.ttf") format("truetype"); font-weight: 800; font-style: normal; font-display: swap; }
+.bl-game { padding: 0; min-height: max(844px, 100dvh); background-color: #0f0a3c; background-image: radial-gradient(1.5px 1.5px at 6% 6%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 14% 40%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 22% 74%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 30% 16%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 38% 92%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 46% 30%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 54% 62%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 62% 10%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 70% 84%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 78% 44%, #fff 50%, transparent 51%), radial-gradient(1.2px 1.2px at 86% 20%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 94% 70%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 10% 92%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 90% 50%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 50% 48%, #fff 50%, transparent 51%), radial-gradient(circle at 20% 10%, #24187a 0%, #0f0a3c00 65%); }
+.bl-shell { max-width: 1280px; min-height: inherit; }
+.bl-game { background-size: auto; background-repeat: no-repeat; }
+.bl-header { position: absolute; top: 20px; left: 20px; right: 20px; height: 48px; min-height: 48px; }
+.bl-back, .bl-home { height: 48px; min-height: 48px; border-radius: 24px; color: #c7d2fe; box-shadow: none; }
+.bl-game .bl-back { padding: 0 18px; font: 800 16px var(--bl-body); }
+.bl-home { width: 48px; padding: 11px; }
+.bl-home svg { width: 22px; height: 22px; stroke: #c7d2fe; }
+.bl-xp { height: 40px; min-height: 40px; padding: 0 14px; border: 2px solid #ffd13b; background: #ffd13b29; color: #ffd13b; box-shadow: none; font: 800 15px var(--bl-body); }
+.bl-title { position: absolute; left: 20px; right: 20px; top: 84px; margin: 0; }
+.bl-title .bl-breadcrumb { font: 700 13px/1.5 var(--bl-body); color: #a5b4fc; letter-spacing: .04em; margin: 0; }
+.bl-breadcrumb span { margin: 0 2px; }
+.bl-title h1 { margin: 2px 0 0; font: 600 38px/1.2 var(--bl-heading); letter-spacing: normal; }
+.bl-title > p:last-child { margin: 2px 0 0; font: 700 16px/1.5 var(--bl-body); color: #c7d2fe; }
+.bl-roundbar { position: absolute; left: 20px; right: 20px; top: 186px; width: auto; margin: 0; gap: 14px; }
+.bl-round { flex-direction: row; align-items: center; gap: 14px; }
+.bl-round strong { font: 800 14px/1.4 var(--bl-body); color: #c7d2fe; }
+.bl-dots { gap: 5px; }
+.bl-dots i { flex-shrink: 0; }
+.bl-timer { max-width: 210px; margin-left: auto; min-width: 50px; gap: 10px; }
+.bl-timer b { min-width: 34px; font-weight: 700; text-align: left; }
+.bl-track { height: 20px; border: 2px solid #4c35de; border-radius: 8px; }
+.bl-play-area { position: absolute; top: 226px; left: 20px; right: 20px; display: block; }
+.bl-scene { width: calc(100% + 6px); height: 476px; }
+.bl-primary-slot { position: absolute; top: 480px; left: 0; right: 0; display: block; min-height: 44px; padding: 0; }
+.bl-game .bl-primary { width: 100%; min-height: 44px; height: 44px; padding: 0 16px; font: 700 16px/1.2 var(--bl-heading); }
+.bl-companion { position: absolute; top: 530px; left: 0; right: 0; display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 10px; padding: 0; }
+.bl-companion > .bl-bleep { width: 64px; }
+.bl-bubble { flex: 1; max-width: none; padding: 12px 16px; border-radius: 20px; background: #fff; border: 3px solid #e2e8f0; box-shadow: 0 5px 0 #cbd5e1; color: #1e293b; font: 700 15px/1.25 var(--bl-heading); text-align: left; }
+.bl-bubble::before { display: none; }
+.bl-desktop-tip { display: none; }
+.bl-bleep .mascot g[fill="#2ce69b"] { fill: #38bdf8; stroke: #38bdf8; }
+.bl-bleep[data-mood="excited"] .mascot g[fill="#2ce69b"] ellipse { fill: #ffd13b; stroke: #ffd13b; }
+.bl-bleep[data-mood="oops"] .mascot g[fill="#2ce69b"] { fill: #ff7849; stroke: #ff7849; }
+.bl-game[data-stage="final"] .bl-play-area, .bl-game[data-stage="final"] .bl-roundbar { visibility: hidden; }
+.bl-game:is([data-stage="answer"], [data-stage="result"], [data-stage="final"]) .bl-play-area { top: 232px; }
+.bl-game:is([data-stage="answer"], [data-stage="result"], [data-stage="final"]) .bl-scene { width: 100%; height: 196px; overflow: visible; }
+.bl-answer-panel { padding: 0 6px; justify-content: center; gap: 4px; }
+.bl-answer-panel h2 { margin: 0; font: 600 26px/1.2 var(--bl-heading); }
+.bl-answer-bleep { order: -1; }
+.bl-answer-bleep .bl-bleep { width: 120px; }
+.bl-answers { position: absolute; top: 217px; left: -3px; width: calc(100% + 6px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.bl-answer { width: 100%; height: 100px; border-radius: 24px; }
+.bl-answer[data-result="correct"] { border-color: #fff; box-shadow: 0 6px 0 #0f8f60, 0 0 24px #2ce69b99; }
+.bl-answer[data-result="wrong"] { box-shadow: 0 6px 0 #1b0b22; }
+.bl-answer[data-result="muted"] { opacity: 1; color: #a59ddd; }
+.bl-check { top: -8px; right: -8px; background: #2ce69b; border-color: #fff; color: #062c1e; }
+.bl-game[data-stage="result"] .bl-primary-slot { top: 468px; }
+.bl-game[data-stage="result"] .bl-primary { min-height: 58px; height: 58px; font-size: 20px; }
+.bl-game:is([data-stage="answer"], [data-stage="result"]) .bl-companion { top: 534px; }
+.bl-final-shade { position: absolute; z-index: 4; inset: 0; min-height: 844px; padding: 150px 28px 24px; border-radius: 0; background: #0906268c; pointer-events: none; }
+.bl-final { display: flex; flex-direction: column; gap: 0; width: 334px; max-width: 100%; padding: 28px 22px 24px; background: #1c145c; border: 4px solid #ffd13b; border-radius: 28px; box-shadow: 0 14px 40px #0008; pointer-events: auto; }
+.bl-final > .bl-bleep { width: 150px; margin: 0 0 6px; }
+.bl-final h2 { margin: 0; font: 600 30px/1.2 var(--bl-heading); }
+.bl-stars { gap: 6px; margin: 14px 0; line-height: 1; }
+.bl-stars > span, .bl-stars svg { display: block; width: 38px; height: 38px; }
+.bl-stars [data-earned="true"] { filter: none; }
+.bl-earned { margin: 0 0 18px; font: 800 22px/1.4 var(--bl-body); }
+.bl-final .bl-primary { height: 58px; min-height: 58px; font-size: 20px; }
+.bl-game .bl-again { width: 100%; height: 50px; margin-top: 16px; padding: 0; border: 2px solid #4c35de; border-radius: 16px; color: #c7d2fe; font: 800 16px var(--bl-body); }
+@media (min-width: 1024px) {
+  .bl-game { min-height: max(720px, 100dvh); }
+  .bl-shell { --bl-left: clamp(20px, calc((100vw - 1040px) / 2), 120px); --bl-scene-width: min(760px, calc(100vw - var(--bl-left) - 340px)); }
+  .bl-title { left: var(--bl-left); }
+  .bl-roundbar { left: var(--bl-left); right: auto; width: var(--bl-scene-width); }
+  .bl-play-area, .bl-game:is([data-stage="answer"], [data-stage="result"], [data-stage="final"]) .bl-play-area { top: 236px; left: var(--bl-left); right: auto; width: var(--bl-scene-width); }
+  .bl-scene { height: 446px; }
+  .bl-companion, .bl-game:is([data-stage="answer"], [data-stage="result"]) .bl-companion { top: 0; left: calc(100% + 20px); right: auto; width: 300px; flex-direction: column; gap: 18px; align-items: center; }
+  .bl-companion > .bl-bleep { width: 220px; }
+  .bl-bubble { order: -1; flex: none; width: 100%; font-size: 20px; padding: 16px 20px; border-radius: 22px; box-shadow: 0 6px 0 #cbd5e1; text-align: center; }
+  .bl-desktop-tip { display: inline; }.bl-mobile-tip { display: none; }
+  .bl-primary-slot, .bl-game[data-stage="result"] .bl-primary-slot { top: 366px; left: calc(100% + 20px); right: auto; width: 300px; }
+  .bl-game .bl-primary { height: 58px; min-height: 58px; font-size: 20px; }
+  .bl-answers { width: 350px; left: calc(50% - 175px); }
+  .bl-final-shade { padding-top: 90px; min-height: 720px; }
+  .bl-final { width: 400px; }
+}
+@media (max-width: 359px) { .bl-roundbar { gap: 8px; }.bl-round { gap: 8px; }.bl-dots { gap: 4px; }.bl-final h2 { font-size: 26px; } }

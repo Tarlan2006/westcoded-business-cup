@@ -1,0 +1,5 @@
+# Exclude isolated module words from Tailwind's automatic scanner.
+# Track intended source/assets explicitly with git add -f.
+/*
+!/.gitignore
+/.build/

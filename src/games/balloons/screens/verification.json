@@ -1,0 +1,15 @@
+{
+  "results": [
+    "390px 3-5: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 20 XP, replay, Home, keyboard and no overflow",
+    "390px 6-8: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 20 XP, replay, Home, keyboard and no overflow",
+    "1280px 3-5: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 20 XP, replay, Home, keyboard and no overflow",
+    "1280px 6-8: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 20 XP, replay, Home, keyboard and no overflow",
+    "0/5 and 5/5 results: 8 and 28 XP; onComplete once per run; throwing optional speech is safe; normal/reduced motion; no game API, uploads or storage writes"
+  ],
+  "browserErrors": [],
+  "gameplayRequests": [],
+  "testFixtureModuleLoads": [
+    "http://127.0.0.1:5176/src/games/balloons/testHost.tsx"
+  ],
+  "physicalPhoneTested": false
+}

@@ -1,0 +1,5 @@
+.bl-preview-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; padding: 8px 12px; background: #080522; color: #d8d3f4; font: 700 12px system-ui, sans-serif; }
+.bl-preview-tools button { min-height: 44px; border: 2px solid #4c35de; border-radius: 12px; background: #1c145c; color: #fff; padding: 7px 12px; cursor: pointer; font: inherit; }
+.bl-preview-tools [aria-pressed="true"] { background: #2ce69b; color: #062c1e; border-color: #9ff5cf; }
+.bl-preview-tools button:focus-visible { outline: 3px solid #ffd13b; outline-offset: 3px; }
+.bl-preview-loading { padding: 40px; text-align: center; color: #fff; }
