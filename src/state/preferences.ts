@@ -8,7 +8,7 @@ export const childNeeds = [
   { value: "habits", label: "Healthy habits (water & teeth)" },
   { value: "science", label: "Science & logic curiosity" },
 ] as const;
-export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art"] as const;
+export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
 export type ChildNeed = typeof childNeeds[number]["value"];
 export type ChildInterest = typeof childInterests[number];
 

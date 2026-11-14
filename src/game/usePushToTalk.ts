@@ -13,7 +13,16 @@ interface Recording {
   finish: () => Promise<void>;
 }
 
-export function usePushToTalk(enabled: boolean, submit: (text: string) => void, onUnavailable?: () => void) {
+export type VoiceProblem = "microphone" | "no-speech";
+
+// Missions keep the short defaults; longer answers (a parent's description) can ask
+// for more recording time and a longer wait for the transcript.
+export interface PushToTalkOptions { maxRecordMs?: number; transcribeTimeoutMs?: number }
+
+export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
+  onUnavailable?: (problem: VoiceProblem) => void, options: PushToTalkOptions = {}) {
+  const maxRecordMs = options.maxRecordMs ?? 8000;
+  const transcribeTimeoutMs = options.transcribeTimeoutMs ?? 3900;
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const current = useRef<Recording | null>(null);
@@ -22,8 +31,8 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void, 
   const fallback = useRef(onUnavailable);
   fallback.current = onUnavailable;
 
-  function unavailable(message: string) {
-    if (fallback.current) fallback.current();
+  function unavailable(message: string, problem: VoiceProblem = "microphone") {
+    if (fallback.current) fallback.current(problem);
     else setMessage(message);
   }
 
@@ -60,10 +69,10 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void, 
         try {
           const wav = await stopRecording();
           if (recording.cancel) return;
-          const text = await within(transcribe(wav), 4000, "");
+          const text = await within(transcribe(wav, transcribeTimeoutMs), transcribeTimeoutMs + 100, "");
           if (recording.cancel) return;
           if (text.trim()) onSubmit.current(text);
-          else unavailable("Voice unavailable. Tap I DID IT! to keep playing.");
+          else unavailable("Voice unavailable. Tap I DID IT! to keep playing.", "no-speech");
         } catch {
           if (!recording.cancel) unavailable("Voice unavailable. Tap I DID IT! to keep playing.");
         } finally {
@@ -78,15 +87,15 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void, 
     current.current = recording;
     recording.timer = window.setTimeout(() => {
       release(true);
-      if (fallback.current) fallback.current();
+      if (fallback.current) fallback.current("microphone");
       else setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
     }, 5000);
-    void startRecording().then(() => {
+    void startRecording(maxRecordMs).then(() => {
       window.clearTimeout(recording.timer);
       recording.started = true;
       if (recording.released) return recording.finish();
       setStatus("recording");
-      recording.timer = window.setTimeout(() => release(), 8000);
+      recording.timer = window.setTimeout(() => release(), maxRecordMs);
     }).catch(() => {
       window.clearTimeout(recording.timer);
       if (current.current === recording) {

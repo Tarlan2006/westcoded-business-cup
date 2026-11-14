@@ -1,16 +1,19 @@
-const durationLimit = 8000;
+const defaultDurationLimit = 8000;
+export const maxDurationLimit = 15_000;
 const sampleRate = 16_000;
 const formatChoices = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus"];
 
 interface Capture {
   result: Promise<Blob | null>;
   end: () => void;
+  limitMs: number;
 }
 
 let capture: Capture | undefined;
 let opening = false;
 
-export async function startRecording(): Promise<void> {
+export async function startRecording(limitMs = defaultDurationLimit): Promise<void> {
+  limitMs = Math.min(maxDurationLimit, Math.max(1000, limitMs));
   if (opening || capture) throw new Error("A recording is already in progress.");
   if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
     throw new Error("Microphone recording is unavailable in this browser.");
@@ -52,8 +55,8 @@ export async function startRecording(): Promise<void> {
       };
     });
     recorder.start();
-    timeout = window.setTimeout(end, durationLimit);
-    capture = { result, end };
+    timeout = window.setTimeout(end, limitMs);
+    capture = { result, end, limitMs };
   } catch {
     stream?.getTracks().forEach((track) => track.stop());
     throw new Error("Microphone unavailable. Use I DID IT! to keep playing.");
@@ -77,14 +80,14 @@ export async function stopRecording(): Promise<Blob> {
     // The offline context decodes Safari AAC and Chrome Opus at the WAV sample rate.
     const context = new OfflineAudioContext(1, 1, sampleRate);
     const sound = await context.decodeAudioData(await blob.arrayBuffer());
-    return encodeWav(sound);
+    return encodeWav(sound, active.limitMs);
   } finally {
     capture = undefined;
   }
 }
 
-function encodeWav(sound: AudioBuffer): Blob {
-  const length = Math.min(sound.length, sampleRate * (durationLimit / 1000));
+function encodeWav(sound: AudioBuffer, limitMs: number): Blob {
+  const length = Math.min(sound.length, Math.floor(sampleRate * (limitMs / 1000)));
   const dataSize = length * 2;
   const wav = new ArrayBuffer(44 + dataSize);
   const view = new DataView(wav);

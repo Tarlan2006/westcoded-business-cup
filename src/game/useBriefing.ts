@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { playQueue, speakFallback, stopSpeech } from "../audio/engine";
+import { hostVoiceReady, playQueue, speakFallback, stopSpeech } from "../audio/engine";
 import { lineFor } from "./content";
 
 let playback: Promise<void> = Promise.resolve();
@@ -29,7 +29,7 @@ export function useBriefing(ids: string[], paused: boolean) {
         const line = lineFor(id);
         setSpoken({ key, caption: line.text, speaking: true });
         try {
-          if (line.file) {
+          if (line.file && !hostVoiceReady()) {
             try {
               await playQueue([id]);
               continue;

@@ -3,7 +3,7 @@
 import { Buffer } from "node:buffer";
 import { maxTranscriptLength } from "./turn-contract";
 
-const maxSamples = 16_000 * 8;
+const maxSamples = 16_000 * 15;
 const maxDataSize = maxSamples * 2;
 export const maxWavBytes = maxDataSize + 1024;
 

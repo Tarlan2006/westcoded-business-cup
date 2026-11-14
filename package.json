@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "hono": "^4.0.0",
+    "pocket-tts-js": "^0.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -122,7 +122,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
                 <ActivityTile tone="learn" icon="?" title="Quiz" onClick={() => onQuiz()}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
                 <ActivityTile tone="mint" icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
                 {!preschool && <>
-                  <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>
+                  <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about anything you wonder.</ActivityTile>
                   <ActivityTile tone="mint" icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>
                 </>}
                 {sketchGameMeta.ageBands.some((ageBand) => ageBand === profile.ageBand) &&

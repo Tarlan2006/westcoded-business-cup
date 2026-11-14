@@ -1,2 +1,6 @@
+# Optional. Free key from console.groq.com: fastest answers in Ask.
 GROQ_API_KEY=
+# Optional. Groq model; default openai/gpt-oss-120b.
 LLM_MODEL=
+# Optional. Workers AI model used when Groq is not set or fails; default @cf/openai/gpt-oss-120b.
+WORKERS_AI_MODEL=

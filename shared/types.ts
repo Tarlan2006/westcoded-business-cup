@@ -5,6 +5,19 @@ export type Activity = Mode | "video" | "quiz" | "ask" | "memory" | "tic-tac-toe
 export interface AskRequest {
   question: string;
   ageBand: AgeBand;
+  topics?: string[];       // ids from shared/topics.ts, the child's favorite topics
+  history?: { question: string; answer: string }[]; // last exchanges on this screen, for follow-ups
+}
+
+// What the AI filled in from a parent's quick description (POST /api/setup).
+export interface SetupSuggestion {
+  ageBand?: AgeBand;
+  minutes?: 10 | 20 | 30;
+  location?: "home" | "car";
+  topics: string[];       // topic ids from shared/topics.ts
+  needs?: string[];       // values from childNeeds in src/state/preferences.ts
+  first?: "any" | "active" | "learn" | "watch";
+  summary: string;
 }
 
 export interface AskResponse {

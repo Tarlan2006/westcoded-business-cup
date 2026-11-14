@@ -13,9 +13,9 @@ async function post(path: string, body: BodyInit, contentType: string, timeout: 
   return response.json();
 }
 
-export async function transcribe(wav: Blob): Promise<string> {
+export async function transcribe(wav: Blob, timeoutMs = 3900): Promise<string> {
   try {
-    const result = await post("/api/stt", wav, "audio/wav", 3900) as { text?: unknown } | null;
+    const result = await post("/api/stt", wav, "audio/wav", timeoutMs) as { text?: unknown } | null;
     return typeof result?.text === "string" ? result.text.trim().slice(0, maxTranscriptLength) : "";
   } catch {
     return "";

@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
 import type { AskRequest, AskResponse } from "../../shared/types";
+import { suggestedQuestions, type TopicId } from "../../shared/topics";
 import { speakFallback, stopSpeech } from "../audio/engine";
 import { usePushToTalk } from "../game/usePushToTalk";
 import { LearnPage } from "./Home";
 import { useSoundEnabled } from "../audio/sfx";
 import { GameButton, SpeechBubble } from "../components/GameUI";
 
-async function askServer(question: string, controller: AbortController): Promise<AskResponse> {
+type Exchange = { question: string; answer: string };
+
+async function askServer(question: string, topics: TopicId[], history: Exchange[], controller: AbortController): Promise<AskResponse> {
   try {
     const response = await fetch("/api/ask", {
       method: "POST", cache: "no-store", signal: controller.signal,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, ageBand: "6-8" } satisfies AskRequest),
+      body: JSON.stringify({ question, ageBand: "6-8", topics, history } satisfies AskRequest),
     });
     if (response.ok) {
       const result: Partial<AskResponse> | null = await response.json();
@@ -27,11 +30,14 @@ async function askServer(question: string, controller: AbortController): Promise
   return answerFromFaq(question);
 }
 
-export function Ask({ onBack, onAnswer, onQuiz }: {
-  onBack: () => void; onAnswer: () => void; onQuiz: (topic: string) => void;
+export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
+  topics?: TopicId[]; onBack: () => void; onAnswer: () => void; onQuiz: (topic: string) => void;
 }) {
   const [question, setQuestion] = useState("");
+  const [asked, setAsked] = useState("");
   const [result, setResult] = useState<AskResponse>();
+  // Kept only while this screen is open; never saved.
+  const history = useRef<Exchange[]>([]);
   const [topic, setTopic] = useState("sky and space");
   const [busy, setBusy] = useState(false);
   const [voiceHint, setVoiceHint] = useState("");
@@ -44,7 +50,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     input.current?.focus();
   }
 
-  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text); }, hint);
+  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text); }, hint, { transcribeTimeoutMs: 8000 });
 
   useEffect(() => {
     return () => {
@@ -64,11 +70,13 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     setBusy(true);
     setVoiceHint("");
     setQuestion("");
-    const timeout = window.setTimeout(() => controller.abort(), 6700);
+    const timeout = window.setTimeout(() => controller.abort(), 9000);
     try {
-      const response = await askServer(text, controller);
+      const response = await askServer(text, topics, history.current, controller);
       if (request.current !== controller) return;
+      setAsked(text);
       setResult(response);
+      history.current = response.source === "llm" ? [...history.current, { question: text, answer: response.answer }].slice(-2) : history.current;
       setTopic(quizTopic(text));
       if (response.source !== "refusal") onAnswer();
       if (sound) void speakFallback(response.answer);
@@ -93,9 +101,10 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
 
   return (
     <LearnPage title="Ask Mission Control" onBack={onBack}>
-      <p className="learn-description">Ask about science or nature. Try “Why is the sky blue?”</p>
+      <p className="learn-description">Ask about anything: space, animals, how things work, or your favorite hero. Hold the button and talk!</p>
       {result ? (
         <section className="panel learn-card">
+          {asked && <p className="field-label ask-question">You asked: “{asked}”</p>}
           <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
           {sound && <button type="button" className="quiet-button" onClick={() => {
@@ -150,6 +159,10 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
             {busy ? "Thinking…" : "Ask"}
           </button>
           {voiceHint && <p role="status">{voiceHint}</p>}
+          <div className="answer-list ask-suggestions" aria-label="Try asking">
+            {suggestedQuestions(topics).map((idea) => <button key={idea} type="button" className="quiet-button"
+              disabled={busy} onClick={() => { void submit(idea); }}>{idea}</button>)}
+          </div>
         </form>
       )}
       <p className="learn-description text-sm">Mission Control doesn’t save your questions.</p>

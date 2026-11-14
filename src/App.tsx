@@ -25,6 +25,7 @@ import { Space } from "./screens/Space";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
 import { Welcome } from "./screens/Welcome";
+import { topicsFromInterests } from "../shared/topics";
 import { defaultPreferences, type Preferences } from "./state/preferences";
 import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
 
@@ -252,7 +253,7 @@ export default function App() {
       </MissionSummary>;
     }
     if (screen.name === "ask" && profile.ageBand === "6-8") {
-      return <Ask onBack={goBack} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
+      return <Ask topics={topicsFromInterests(preferences.interests)} onBack={goBack} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
         onQuiz={(topic) => setScreen({ name: "quiz", id: crypto.randomUUID(), topic })} />;
     }
     if (screen.name === "quiz" && profile.ageBand !== "1-2") {

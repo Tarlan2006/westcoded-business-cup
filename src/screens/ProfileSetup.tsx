@@ -1,10 +1,12 @@
 import { useState } from "react";
-import type { AgeBand } from "../../shared/types";
+import type { AgeBand, SetupSuggestion } from "../../shared/types";
+import { interestsFromTopics } from "../../shared/topics";
+import { usePushToTalk } from "../game/usePushToTalk";
 import { APP_NAME } from "../brand";
 import { Chip, GameButton, Segmented } from "../components/GameUI";
 import { Mascot } from "../components/Mascot";
 import { codenameFor, codenames } from "../game/content";
-import { childInterests, childNeeds, defaultPreferences, type Preferences } from "../state/preferences";
+import { childInterests, childNeeds, defaultPreferences, type ChildInterest, type ChildNeed, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
 import { LearnPage } from "./Home";
 
@@ -17,6 +19,75 @@ const location = [{ value: "home", label: "🏠 At home" }, { value: "car", labe
 const minutes = [{ value: 10, label: "10 min" }, { value: 20, label: "20 min" }, { value: 30, label: "30 min" }] as const;
 const first = [{ value: "active", label: "Move" }, { value: "learn", label: "Learn" }, { value: "watch", label: "Watch" },
   { value: "any", label: "Surprise us" }] as const;
+
+// Parents can say or type one sentence ("She's 7, loves space and dinosaurs, we have
+// twenty minutes in the car") and the AI fills in the choices below for them to check.
+function QuickDescribe({ onFill }: { onFill: (suggestion: SetupSuggestion) => void }) {
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+
+  async function fill(description: string) {
+    const value = description.trim();
+    if (!value || busy) return;
+    setBusy(true);
+    setNote("");
+    try {
+      const response = await fetch("/api/setup", {
+        method: "POST", cache: "no-store", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: value }), signal: AbortSignal.timeout(10_000),
+      });
+      const result = await response.json() as SetupSuggestion & { error?: string };
+      if (!response.ok || result.error) throw new Error(result.error);
+      onFill(result);
+      setNote(result.summary || "Done! Check the choices below.");
+    } catch {
+      setNote("We couldn't fill it in this time. Please pick the choices below.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const voice = usePushToTalk(!busy, (spoken) => {
+    setText(spoken);
+    void fill(spoken);
+  }, (problem) => setNote(problem === "no-speech"
+    ? "Sorry, Bleep didn't catch that. Hold the button, speak, then let go. Or type instead."
+    : "The microphone is blocked. Allow it in your browser (lock icon by the address), or type instead."),
+  { maxRecordMs: 15_000, transcribeTimeoutMs: 8000 });
+  const listening = voice.status === "opening" || voice.status === "recording";
+
+  return (
+    <section className="quick-describe" aria-labelledby="quick-describe-title">
+      <h2 id="quick-describe-title" className="field-label">In a hurry? Just tell Bleep</h2>
+      <p className="recon-field-hint">For example: “She’s 7, loves space and dinosaurs, needs to burn energy, we have 20 minutes at home.” No names needed.</p>
+      <textarea rows={2} maxLength={600} value={text} disabled={busy}
+        placeholder="Age, what they love, what they need, how much time, where you are"
+        onChange={(event) => setText(event.target.value)} />
+      <div className="quick-describe-actions">
+        <button type="button" className="secondary-button talk-button" disabled={busy || voice.status === "decoding"}
+          data-recording={listening || undefined}
+          onPointerDown={(event) => {
+            if (!event.isPrimary || event.button !== 0) return;
+            event.preventDefault();
+            event.currentTarget.focus({ preventScroll: true });
+            event.currentTarget.setPointerCapture(event.pointerId);
+            voice.start();
+          }}
+          onPointerUp={() => voice.release()}
+          onPointerCancel={voice.cancelHold}
+          onLostPointerCapture={voice.cancelHold}
+          onContextMenu={(event) => event.preventDefault()}>
+          {listening ? "Speak, then let go" : voice.status === "decoding" ? "Understanding…" : "🎤 Hold to talk"}
+        </button>
+        <button type="button" className="primary-button" disabled={busy || !text.trim()} onClick={() => { void fill(text); }}>
+          {busy ? "Filling in…" : "✨ Fill it in for me"}
+        </button>
+      </div>
+      {note && <p role="status" className="quick-describe-note">{note}</p>}
+    </section>
+  );
+}
 
 export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   profile?: ChildProfile;
@@ -40,6 +111,22 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const names = [...new Set([codename, ...codenames.filter((id) => !used.has(id))])].slice(0, 6);
   const displayName = nickname.trim() || codenameFor(codename);
 
+  function applySuggestion(suggestion: SetupSuggestion) {
+    if (suggestion.ageBand) setAge(suggestion.ageBand);
+    const suggestedInterests = interestsFromTopics(suggestion.topics)
+      .filter((item): item is ChildInterest => (childInterests as readonly string[]).includes(item));
+    const suggestedNeeds = (suggestion.needs ?? [])
+      .filter((item): item is ChildNeed => childNeeds.some((need) => need.value === item));
+    setSettings((current) => ({
+      ...current,
+      minutes: suggestion.minutes ?? current.minutes,
+      location: suggestion.location ?? current.location,
+      first: suggestion.first ?? current.first,
+      interests: suggestedInterests.length ? suggestedInterests : current.interests,
+      needs: suggestedNeeds.length ? suggestedNeeds : current.needs,
+    }));
+  }
+
   const form = <form className="recon-form" onSubmit={(event) => {
     event.preventDefault();
     const cleaned = nickname.trim();
@@ -52,6 +139,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       <div>{onBack ? <h2>Tell Bleep About Your Child</h2> : <h1>Tell Bleep About Your Child</h1>}
         <p><span aria-hidden="true">🛡️</span> Stays on this device</p></div>
     </div>
+    <QuickDescribe onFill={applySuggestion} />
     <div className="recon-form-grid">
       <div className="recon-nickname">
         <label htmlFor="recon-nickname" className="field-label">What should Bleep call your child?</label>

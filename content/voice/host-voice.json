@@ -1,0 +1,22 @@
+{
+  "name": "Mission Control host (final)",
+  "approved": "2026-11-14",
+  "engine": "OmniVoice (k2-fsa/OmniVoice, Apache-2.0)",
+  "howToReproduce": "Zero-shot clone: generate(text, ref_audio=host-reference.wav, ref_text=referenceText), then apply post.",
+  "reference": "host-reference.wav",
+  "referenceText": "Hi, agent! Mission Control here. Your first mission: find something soft and blue. Ready? Go! ... Great job! The sky looks blue because tiny bits of air scatter blue light all around.",
+  "designedWith": "female, teenager, high pitch, american accent",
+  "language": "English",
+  "post": {
+    "pitchSemitones": 3,
+    "pitchRatio": 1.1892,
+    "tempo": 0.85,
+    "ffmpeg": "rubberband=pitch=1.1892:tempo=0.85,highpass=f=120,equalizer=f=3500:t=q:w=1:g=3,acompressor=threshold=-20dB:ratio=3:attack=5:release=60,loudnorm=I=-18:TP=-2"
+  },
+  "approvedSample": "host-approved.mp3",
+  "runtime": {
+    "engine": "Kyutai Pocket TTS in the browser (pocket-tts-js, INT8 ONNX, CC-BY-4.0)",
+    "cloneReference": "public/voice/host-reference.mp3 (0.3–8.6 s of host-approved.mp3, already +3 semitones and x0.85)",
+    "code": "src/audio/engine.ts → hostVoice"
+  }
+}
