@@ -1,6 +1,6 @@
 import type { TurnRequest, TurnResponse } from "../shared/types";
 
-export const maxTranscriptLength = 400;
+export const maxTranscriptLength = 300;
 
 export const missionNotes = [
   "The agent recovered the signal.",

@@ -1,6 +1,7 @@
+import { IpLimiter, retryReply } from "./safety";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
-import { createMiddleware } from "hono/factory";
+
 import { ask } from "./ask";
 import { setup } from "./setup";
 import { chooseTurn } from "./groq";
@@ -9,58 +10,48 @@ import { isTurnRequest } from "./turn-contract";
 
 export interface Env {
   AI: Ai;
+  ALLOWED_ORIGINS?: string;
   GROQ_API_KEY?: string;
   LLM_MODEL?: string;
 }
 
 type WorkerEnv = { Bindings: Env };
 const app = new Hono<WorkerEnv>();
-app.route("/", ask);
-app.route("/", setup);
-const windowMs = 60_000;
-const windowCounts = new Map<string, number>();
-let currentWindow = -1;
-
-const limitByIp = createMiddleware<WorkerEnv>(async (c, next) => {
-  const now = Date.now();
-  const window = Math.floor(now / windowMs);
-  if (window !== currentWindow) {
-    currentWindow = window;
-    windowCounts.clear();
-  }
-  const ip = c.req.header("CF-Connecting-IP") ?? "local";
-  const key = `${c.req.path}:${ip}`;
-  const limit = c.req.path === "/api/stt" ? 16 : 40;
-  const count = windowCounts.get(key) ?? 0;
-  if (count >= limit || (!count && windowCounts.size >= 4096)) {
-    c.header("Retry-After", String(Math.ceil((windowMs - now % windowMs) / 1000)));
-    return c.json({ error: "Too many requests" }, 429);
-  }
-  windowCounts.set(key, count + 1);
-  c.header("Cache-Control", "no-store");
-  await next();
+const limiter = new IpLimiter();
+app.use("/api/*", async (c,next) => {
+ c.header("Cache-Control","no-store"); c.header("Vary","Origin");
+ const origin=c.req.header("Origin");
+ const allowed=(c.env.ALLOWED_ORIGINS ?? "https://mission-control.tarlan-b06.workers.dev").split(",").map(s=>s.trim());
+ if(origin && !allowed.includes(origin)) return c.json({error:"Let's return to the game."},403);
+ if(origin) c.header("Access-Control-Allow-Origin",origin);
+ if(c.req.method === "OPTIONS") { c.header("Access-Control-Allow-Methods","GET, POST, OPTIONS"); c.header("Access-Control-Allow-Headers","Content-Type"); return c.body(null,204); }
+ if(c.req.method === "POST" && !limiter.take(c.req.header("CF-Connecting-IP") ?? "local")) {
+  c.header("Retry-After","60"); const message="Let's take a little break and try again soon!";
+  return c.json(c.req.path === "/api/ask" ? {answer:message,source:"refusal"} : c.req.path === "/api/stt" ? {text:"",message} : {error:message},429);
+ }
+ await next();
 });
-
+app.route("/",ask); app.route("/",setup);
 app.get("/api/health", (c) => c.json({ ok: true, time: new Date().toISOString() }));
 
-app.post("/api/stt", limitByIp, bodyLimit({
+app.post("/api/stt", bodyLimit({
   maxSize: maxWavBytes,
-  onError: (c) => c.json({ error: "WAV exceeds eight seconds" }, 413),
+  onError: (c) => c.json({ error: "Please use a shorter recording." }, 413),
 }), async (c) => {
   if (c.req.header("Content-Type")?.split(";")[0].trim().toLowerCase() !== "audio/wav") {
-    return c.json({ error: "Expected audio/wav" }, 415);
+    return c.json({ text: "", message: retryReply });
   }
   const wav = await c.req.arrayBuffer();
-  if (!validWav(wav)) return c.json({ error: "Expected 16 kHz mono 16-bit PCM WAV up to eight seconds" }, 400);
+  if (!validWav(wav)) return c.json({ text: "", message: retryReply });
   try {
     const text = await recognizeSpeech(c.env.AI, wav);
-    return c.json({ text });
+    return c.json(text ? {text} : {text:"",message:retryReply});
   } catch {
-    return c.json({ error: "Speech recognition unavailable" }, 503);
+    return c.json({text:"",message:retryReply});
   }
 });
 
-app.post("/api/turn", limitByIp, bodyLimit({
+app.post("/api/turn", bodyLimit({
   maxSize: 16_384,
   onError: (c) => c.json({ error: "Turn request is too large" }, 413),
 }), async (c) => {

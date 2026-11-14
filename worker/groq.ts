@@ -21,7 +21,7 @@ export async function chooseTurn(request: TurnRequest, key?: string, model?: str
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      signal: AbortSignal.timeout(3000),
+      signal: AbortSignal.timeout(8000),
       headers: { Authorization: `Bearer ${key.trim()}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         model: model.trim(),

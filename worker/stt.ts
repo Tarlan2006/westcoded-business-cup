@@ -1,5 +1,6 @@
 /// <reference types="node" />
 
+import { deadline, unsafe } from "./safety";
 import { Buffer } from "node:buffer";
 import { maxTranscriptLength } from "./turn-contract";
 
@@ -40,9 +41,9 @@ export function validWav(wav: ArrayBuffer) {
 
 export async function recognizeSpeech(ai: Ai, wav: ArrayBuffer): Promise<string> {
   const audio = Buffer.from(wav).toString("base64");
-  const { text } = await ai.run("@cf/openai/whisper-large-v3-turbo", {
+  const { text } = await deadline(ai.run("@cf/openai/whisper-large-v3-turbo", {
     audio, task: "transcribe", language: "en", vad_filter: true,
-  });
+  }));
   if (typeof text !== "string") throw new Error("Invalid speech recognition response");
-  return text.trim().slice(0, maxTranscriptLength);
+  return unsafe(text) ? "" : text.trim().slice(0, maxTranscriptLength);
 }
