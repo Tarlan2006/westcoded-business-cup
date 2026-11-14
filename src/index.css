@@ -133,8 +133,6 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .welcome-footer { text-align: center; }
 .welcome-footer a { display: inline-flex; min-width: 48px; min-height: 48px; align-items: center; justify-content: center; color: var(--primary); text-decoration: underline; }
 
-.intake-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 550px); gap: clamp(1rem, 5vw, 4rem); }
-.intake-intro > p { max-width: 38ch; font-size: 1.15rem; color: var(--muted); margin-bottom: 1rem; }
 .age-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem; }
 .age-choice { position: relative; cursor: pointer; }
 .age-choice input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
@@ -159,6 +157,9 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .video-player { display: block; width: 100%; min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-sm); background: var(--bg-soft); }
 .learn-card { display: grid; gap: .9rem; }
 .learn-card > .quiet-button { justify-self: start; }
+.quiz-card { text-align: center; }
+.quiz-card > .quiet-button, .quiz-card > .field-label { justify-self: center; }
+.privacy-link { justify-self: start; display: inline-flex; align-items: center; min-width: 48px; min-height: 48px; color: var(--primary); text-decoration: underline; }
 .answer-list { display: grid; gap: .55rem; }
 .answer-list button { min-height: 64px; font-size: 1.1rem; }
 .answer-list [data-result="correct"] { color: var(--success-text); background: var(--mint); border-color: var(--success); }
@@ -186,7 +187,6 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .result-stats dd { color: var(--primary); font: 600 1.65rem var(--font-heading); }
 
 @media (max-width: 700px) {
-  .intake-layout { grid-template-columns: 1fr; }
   .topbar { min-height: 62px; }
   .activity-header .quiet-button { padding-inline: .55rem; font-size: .84rem; }
   .activity-header-actions { gap: .3rem; }

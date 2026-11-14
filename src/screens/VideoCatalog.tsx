@@ -10,7 +10,7 @@ export function VideoCatalog({ ageBand, id, onBack, onOpen }: {
   return (
     <LearnPage title="Video library" onBack={onBack}>
       {selected ? (
-        <div className="panel video-panel">
+        <div className="panel video-panel centered-card">
           <h2>{selected.title}</h2>
           <iframe
             className="video-player"

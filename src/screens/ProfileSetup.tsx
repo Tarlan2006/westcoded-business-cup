@@ -32,14 +32,8 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
   const onlyVideos = ageBand === "1-2";
 
   return (
-    <LearnPage title={onBack ? "Parent settings" : "Set up your day"} onBack={onBack} wide>
-      <div className="intake-layout">
-        <div className="intake-intro">
-          <p>Pick an age and tell us where you’re playing. We’ll show activities that fit.</p>
-          <div className="radar" aria-hidden="true"><span /><span /><span /><i /></div>
-          <a className="quiet-button" href="/privacy">Privacy</a>
-        </div>
-        <form className="panel setup-form intake-form" onSubmit={(event) => {
+    <LearnPage title={onBack ? "Parent settings" : "Set up your day"} onBack={onBack}>
+        <form className="panel setup-form centered-card" onSubmit={(event) => {
           event.preventDefault();
           if (ageBand) onSave(codename, ageBand, onlyVideos ? { ...preferences, first: "watch" } : preferences);
         }}>
@@ -93,9 +87,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
               </div>
             </fieldset>
           </>}
-          <button className="primary-button" type="submit">Show activities <span aria-hidden="true">↗</span></button>
+          <button className="primary-button" type="submit">Save and show activities</button>
+          <a className="privacy-link" href="/privacy">Privacy</a>
         </form>
-      </div>
     </LearnPage>
   );
 }

@@ -30,7 +30,7 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
 
   return (
     <LearnPage title={topic ? "Quick quiz" : "Quiz"} onBack={onBack}>
-      {current && <section className="panel learn-card">
+      {current && <section className="panel learn-card centered-card quiz-card">
         <p className="field-label">Question {index + 1} of {quiz.length}</p>
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{current.question}</h2>
