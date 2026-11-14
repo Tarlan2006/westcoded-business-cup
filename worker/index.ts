@@ -21,7 +21,7 @@ const limiter = new IpLimiter();
 app.use("/api/*", async (c,next) => {
  c.header("Cache-Control","no-store"); c.header("Vary","Origin");
  const origin=c.req.header("Origin");
- const allowed=(c.env.ALLOWED_ORIGINS ?? "https://mission-control.tarlan-b06.workers.dev").split(",").map(s=>s.trim());
+ const allowed=(c.env.ALLOWED_ORIGINS ?? "https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173").split(",").map(s=>s.trim());
  if(origin && !allowed.includes(origin)) return c.json({error:"Let's return to the game."},403);
  if(origin) c.header("Access-Control-Allow-Origin",origin);
  if(c.req.method === "OPTIONS") { c.header("Access-Control-Allow-Methods","GET, POST, OPTIONS"); c.header("Access-Control-Allow-Headers","Content-Type"); return c.body(null,204); }

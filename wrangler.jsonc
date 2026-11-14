@@ -1,18 +1,25 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "mission-control",
+  "name": "mypal",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-14",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
   "ai": {
     "binding": "AI"
   },
   "observability": {
     "enabled": true
+  },
+  "vars": {
+    "ALLOWED_ORIGINS": "https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173"
   }
 }

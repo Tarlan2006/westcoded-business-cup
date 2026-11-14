@@ -1,5 +1,9 @@
 # Deployment
 
+Current production URL: https://mypal.tarlan-b06.workers.dev. Worker name: `mypal` (renamed in place on 2026-11-15; immutable Worker ID unchanged). Current version: 53ee54d5-9ee4-474e-abb0-d867601591fe. Wrangler configuration now records the new name and allowed production/dev origins. Use `wrangler deploy --keep-vars` for subsequent deployments. Earlier URLs below are historical records; the old workers.dev address is no longer the canonical site.
+
+Verified after rename: Chrome title/Splash/meta, all seven MyPal audio hashes and decoding, Ask HTTP 200, own/dev Origin HTTP 200, foreign Origin HTTP 403. Application secrets were not read or changed. Browser profiles are origin-scoped: the new URL starts with its own localStorage; records from the old URL are not automatically transferred.
+
 1. Install Node 24, run npm i, then npm run typecheck, npm run build, npm run check-content and npx tsx scripts/worker-tests.ts.
 2. Authenticate with npx wrangler login. Keep the existing Worker name, asset configuration and AI binding. This task does not modify Wrangler or Vite configuration.
 3. Set GROQ_API_KEY using npx wrangler secret put GROQ_API_KEY. Set LLM_MODEL using npx wrangler secret put LLM_MODEL to a model enabled in your Groq account. Hunt falls back locally without both. Ask can use the existing Cloudflare AI binding without a Groq key.
