@@ -1,1 +1,1 @@
-export const APP_NAME = "Mission Control";
+export const APP_NAME = 'MyPal';

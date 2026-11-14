@@ -24,7 +24,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
     else if (stage === 3) greeting.current?.focus({ preventScroll: true });
   }, [stage, repeat, onContinue]);
 
-  if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label="Loading Mission Control">
+  if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label={`Loading ${APP_NAME}`}>
     <div className="w-40 h-40 mb-6 drop-shadow-lg"><PrototypeBleep variant="splash" /></div>
     <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#6C47FF] tracking-tight mb-2">{APP_NAME}</h1>
     <p className="text-slate-400 font-extrabold text-sm tracking-widest uppercase mb-6" role="status">{status[Math.min(stage, 2)]}</p>

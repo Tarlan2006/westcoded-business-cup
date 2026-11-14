@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
 import type { AskRequest, AskResponse } from "../../shared/types";
@@ -100,7 +101,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
     ? "Release to ask" : voice.status === "decoding" ? "Transcribing…" : "Hold to talk";
 
   return (
-    <LearnPage title="Ask Mission Control" onBack={onBack}>
+    <LearnPage title={`Ask ${APP_NAME}`} onBack={onBack}>
       <p className="learn-description">Ask about anything: space, animals, how things work, or your favorite hero. Hold the button and talk!</p>
       {result ? (
         <section className="panel learn-card">
@@ -165,7 +166,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           </div>
         </form>
       )}
-      <p className="learn-description text-sm">Mission Control doesn’t save your questions.</p>
+      <p className="learn-description text-sm">{APP_NAME} doesn’t save your questions.</p>
     </LearnPage>
   );
 }

@@ -53,9 +53,9 @@ function breadcrumb(screen: Screen): string {
     case "mission": return `Move › ${MODES[screen.session.mode].name}`;
     case "results": return `Move › ${MODES[screen.session.mode].name} › Results`;
     case "toddler": return "Watch › Play with Bleep";
-    case "quiz": return screen.topic ? "Learn › Ask Mission Control › Quick quiz" : "Learn › Quiz";
+    case "quiz": return screen.topic ? `Learn › Ask ${APP_NAME} › Quick quiz` : "Learn › Quiz";
     case "memory": return "Learn › Memory";
-    case "ask": return "Learn › Ask Mission Control";
+    case "ask": return `Learn › Ask ${APP_NAME}`;
     case "tic-tac-toe": return "Learn › Tic-tac-toe";
     case "sketch": return "Learn › Sketch Artist";
     case "space": return "Learn › Space Scale";

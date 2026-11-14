@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand.ts";
 /** Run against a built app with FLOW_SITE_URL and the existing Playwright runtime. */
 import assert from "node:assert/strict";
 import { mkdir, readFile } from "node:fs/promises";
@@ -38,7 +39,7 @@ async function fresh(width, height, captures = false) {
   await page.route("**/api/turn", (route) => route.fulfill({ status: 503, json: {} }));
   await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ body: "<p>Video player fixture</p>", contentType: "text/html" }));
   await page.goto(base);
-  const splash = page.getByRole("main", { name: "Loading Mission Control", exact: true });
+  const splash = page.getByRole("main", { name: `Loading ${APP_NAME}`, exact: true });
   await splash.waitFor();
   if (captures) await shot(page, "splash");
   await page.locator("#screen-greeting").waitFor();

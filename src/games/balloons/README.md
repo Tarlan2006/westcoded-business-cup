@@ -1,6 +1,6 @@
 # Balloon Count
 
-A five-round counting game for ages 3–5 and 6–8. Mission Control loads it from the Learn section. The standalone preview uses the same game.
+A five-round counting game for ages 3–5 and 6–8. MyPal loads it from the Learn section. The standalone preview uses the same game.
 
 ## Preview
 

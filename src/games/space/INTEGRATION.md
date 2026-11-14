@@ -1,4 +1,4 @@
-# Connect Space Scale to Mission Control
+# Connect Space Scale to MyPal
 
 The module can run via `dev/space-preview.html`. Follow these steps when adding it to the production app.
 
