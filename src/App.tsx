@@ -10,13 +10,14 @@ import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
 import { Quiz } from "./screens/Quiz";
 import { Setup, type SetupOptions } from "./screens/Setup";
+import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
 import { readProgress, rewardActivity, saveProfile } from "./state/progress";
 
 type Screen =
   | { name: "home" | "setup" | "learn" | "parent" | "ask" }
   | { name: "quiz"; id: string; topic?: string }
-  | { name: "memory"; id: string }
+  | { name: "memory" | "tic-tac-toe"; id: string }
   | { name: "reward"; points: number; video: boolean }
   | { name: "video" }
   | { name: "mission"; session: Session; profile: Profile }
@@ -42,14 +43,14 @@ export default function App() {
   if (!profile) return <Welcome onChoose={(ageBand) => chooseProfile(codenames[0], ageBand)} />;
 
   const goLearn = () => setScreen({ name: "learn" });
-  function startLearn(name: "quiz" | "memory" | "ask") {
+  function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe") {
     void unlock().catch(() => {});
     if (name === "ask") {
       setScreen({ name });
       return;
     }
     const id = crypto.randomUUID();
-    setScreen(name === "quiz" ? { name: "quiz", id } : { name: "memory", id });
+    setScreen(name === "quiz" ? { name: "quiz", id } : { name, id });
   }
 
   function earn(id: string, activity: Activity, points: number, video = false) {
@@ -102,7 +103,8 @@ export default function App() {
   if (screen.name === "learn") {
     return <LearnHome profile={profile} onBack={goHome} onQuiz={() => startLearn("quiz")}
       onMemory={() => startLearn("memory")}
-      onAsk={profile.ageBand === "6-8" ? () => startLearn("ask") : undefined} />;
+      onAsk={profile.ageBand === "6-8" ? () => startLearn("ask") : undefined}
+      onGrid={profile.ageBand === "6-8" ? () => startLearn("tic-tac-toe") : undefined} />;
   }
   if (screen.name === "ask" && profile.ageBand === "6-8") {
     return <Ask onBack={goLearn} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
@@ -114,7 +116,17 @@ export default function App() {
       onComplete={(points) => earn(screen.id, "quiz", points, profile.ageBand === "3-5")} />;
   }
   if (screen.name === "memory") {
-    return <Memory key={screen.id} pairs={4} onBack={goLearn} onComplete={() => earn(screen.id, "memory", 20)} />;
+    return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
+      onBack={goLearn} onComplete={() => earn(screen.id, "memory", 20)} />;
+  }
+  if (screen.name === "tic-tac-toe" && profile.ageBand === "6-8") {
+    return <TicTacToe key={screen.id} onBack={goLearn} onComplete={(won) => {
+      if (won) earn(screen.id, "tic-tac-toe", 20);
+      else {
+        setProgress(rewardActivity(screen.id, profile.id, "tic-tac-toe", 0));
+        goLearn();
+      }
+    }} />;
   }
   if (screen.name === "reward") {
     return <LearnPage title="Nice work, agent!" onBack={goLearn}>

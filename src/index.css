@@ -284,6 +284,10 @@ select, .gate-answer input {
 .memory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
 .memory-card { min-height: 52px; aspect-ratio: 1; border: 1px solid var(--edge); border-radius: 10px; background: #162a2b; color: var(--accent); font-size: clamp(1.5rem, 7vw, 3rem); }
 .memory-card.face-up { opacity: 1; background: #26382d; }
+.tic-grid { display: grid; grid-template-columns: repeat(3, minmax(48px, 1fr)); gap: .5rem; width: min(100%, 420px); }
+.tic-grid [data-mark] { opacity: 1; }
+.tic-grid [data-mark="O"] { color: #a9d9ef; }
+.tic-grid [data-winning] { border-color: var(--accent); background: #26382d; }
 .learn-card textarea { width: 100%; resize: vertical; padding: .85rem; border: 1px solid var(--edge); border-radius: 8px; background: #0b1519; }
 .learn-card .talk-button { min-height: 68px; }
 .ask-answer { font-size: clamp(1.15rem, 3vw, 1.5rem); line-height: 1.45; }
