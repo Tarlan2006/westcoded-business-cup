@@ -84,9 +84,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </fieldset>
 
       <div>
-        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Anything {APP_NAME} should know? (Optional)</label>
+        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's interests (Optional)</label>
         <textarea id="profileNotesInput" rows={2} maxLength={600} autoComplete="off" value={notes} onChange={(event) => setNotes(event.target.value)}
-          placeholder="Example: loves dinosaurs. Afraid of loud sounds."
+          placeholder="Example: loves dinosaurs and space rockets."
           className="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm" />
         <p className="mt-1 text-xs text-indigo-300">Stays on this device. Never sent to a server.</p>
       </div>
