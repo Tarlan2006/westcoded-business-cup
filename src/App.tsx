@@ -15,12 +15,12 @@ import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { Hub, LearnPage } from "./screens/Home";
 import { Privacy } from "./screens/Parent";
-import { Plans } from "./screens/Plans";
-import { ProfileSetup } from "./screens/ProfileSetup";
+const Plans = lazy(() => import("./screens/Plans").then(module => ({ default: module.Plans })));
+const ProfileSetup = lazy(() => import("./screens/ProfileSetup").then(module => ({ default: module.ProfileSetup })));
 import { SessionComplete } from "./screens/SessionComplete";
-import { Setup } from "./screens/Setup";
-import { Sketch } from "./screens/Sketch";
-import { Space } from "./screens/Space";
+const Setup = lazy(() => import("./screens/Setup").then(module => ({ default: module.Setup })));
+const Sketch = lazy(() => import("./screens/Sketch").then(module => ({ default: module.Sketch })));
+const Space = lazy(() => import("./screens/Space").then(module => ({ default: module.Space })));
 import { Welcome } from "./screens/Welcome";
 import type { TopicId } from "../shared/topics";
 import { defaultPreferences, type Preferences } from "./state/preferences";
@@ -128,7 +128,14 @@ export default function App() {
     if (privacy || ["home", "parent", "privacy", "plans", "setup", "results", "reward"].includes(current.screen.name)) finishActivity();
   }, [finishing, current.screen.name, finishActivity, privacy]);
 
-  useEffect(() => { document.title = APP_NAME; }, []);
+  useEffect(() => {
+    const section = privacy ? "Privacy" : session?.complete ? "Session complete" : welcoming ? "" : !session ? "Parent Setup" : breadcrumb(current.screen);
+    document.title = section ? section + " · " + APP_NAME : APP_NAME;
+    const description = privacy ? "How MyPal handles local child settings, optional voice input and questions."
+      : section ? section + " with MyPal: playful adventures for children and their grown-ups."
+      : "MyPal: playful adventures, learning games and friendly voice guidance with MyPal for children and their grown-ups.";
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+  }, [privacy, session?.complete, !!session, welcoming, current.screen.name]);
 
   function toggleSound() {
     const enabled = !sound;

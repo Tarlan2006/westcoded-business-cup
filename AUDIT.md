@@ -43,3 +43,11 @@ Further stage results, screenshots, scanner output, cleanup decisions and before
 - API-01: total cloud-answer fallback deadline is seven seconds. Existing friendly 200 refusal/empty-speech bodies remain intentional, backwards-compatible successful safe responses; malformed turn requests, oversized requests, foreign origins, rate limits and missing APIs use 4xx/5xx.
 - Worker regression tests pass, including private paths, HTTPS redirect, header policy, ignored parent context, injection, CORS and mocked provider failure. Typecheck/build pass. No Cloudflare settings/secrets or production deployment changed.
 - SEO scanner before: 48/100, two errors and eight warnings; [full report](docs/audit/seo-before.md). External scanner timestamps follow its UTC clock; this audit uses the user's local date.
+
+## Stage 3 — metadata and loading
+
+- Added canonical, OpenGraph description/type/URL/dimensions, Twitter large card, robots and sitemap for the two actual public URLs. Internal games are intentionally not advertised as nonexistent routes.
+- Generated `public/og-image.png` at exactly 1200×630 from existing mascot art, brand palette, font and greeting. No new visual identity. Messaging-client cache refresh is not tested without those accounts.
+- Privacy has server-rendered unique metadata for crawlers. App state changes update document title/description. Critical existing WOFF2 fonts are preloaded; existing `font-display: swap` remains.
+- Plans, Parent Setup, mission Setup, Sketch/Space wrappers now load lazily. Main bundle drops from Vite 96.70 KB gzip to 93.26 KB at this stage. All game code and behavior are retained.
+- Typecheck and build pass. HTTP headers/statuses were exercised against the built local Worker on port 5181.

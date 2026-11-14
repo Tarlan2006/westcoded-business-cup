@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mypal.tarlan-b06.workers.dev/sitemap.xml

@@ -84,8 +84,19 @@ app.get("*", async c => {
   const url = new URL(c.req.url);
   if (/(^|\/)\.(env|git)(\/|$|\.)|\.map$/.test(url.pathname)) return c.text("Not found", 404);
   if (!c.env.ASSETS) return c.text("Not found", 404);
-  if (url.pathname === "/privacy" || url.pathname === "/privacy/") url.pathname = "/";
-  return c.env.ASSETS.fetch(new Request(url, c.req.raw));
+  const privacy = url.pathname === "/privacy" || url.pathname === "/privacy/";
+  if (privacy) url.pathname = "/";
+  const response = await c.env.ASSETS.fetch(new Request(url, c.req.raw));
+  if (!privacy || response.status !== 200) return response;
+  const title = "Privacy · MyPal";
+  const description = "How MyPal handles local child settings, optional voice input and questions.";
+  return new HTMLRewriter()
+    .on("title", { element: el => { el.setInnerContent(title); } })
+    .on('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]', { element: el => { el.setAttribute("content", description); } })
+    .on('meta[property="og:title"],meta[name="twitter:title"]', { element: el => { el.setAttribute("content", title); } })
+    .on('link[rel="canonical"]', { element: el => { el.setAttribute("href", "https://mypal.tarlan-b06.workers.dev/privacy"); } })
+    .on('meta[property="og:url"]', { element: el => { el.setAttribute("content", "https://mypal.tarlan-b06.workers.dev/privacy"); } })
+    .transform(response);
 });
 
 export default app;
