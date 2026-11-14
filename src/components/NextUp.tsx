@@ -1,6 +1,6 @@
 import type { Activity } from "../../shared/types";
 import type { ActivitySuggestion } from "./activitySuggestions";
-import { GameButton, HubTile } from "./GameUI";
+import { ActivityIcon, GameButton, HubTile } from "./GameUI";
 
 export function NextUp({ options, onReplay, onChoose, onHome }: {
   options: ActivitySuggestion[]; onReplay: () => void; onChoose: (activity: Activity, topic?: string) => void; onHome: () => void;
@@ -10,7 +10,7 @@ export function NextUp({ options, onReplay, onChoose, onHome }: {
       <GameButton onClick={onReplay}>↻ Play again</GameButton></div>
     <h3 className="field-label">Try next</h3>
     <div className="flow-next-grid">{options.map((option) => <HubTile key={option.activity} title={option.title}
-      icon={option.icon} tone={option.activity === "video" ? "watch" : "learn"} onClick={() => onChoose(option.activity, option.topic)}>
+      icon={<ActivityIcon item={option} />} tone={option.activity === "video" ? "watch" : "learn"} onClick={() => onChoose(option.activity, option.topic)}>
       {option.description}
     </HubTile>)}</div>
     <button className="flow-home-link" type="button" onClick={onHome}>Back to activities</button>

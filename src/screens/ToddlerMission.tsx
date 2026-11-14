@@ -2,7 +2,7 @@ import { APP_NAME } from "../brand";
 import { useEffect, useRef, useState } from "react";
 import { useClipSpeech } from "../audio/useClipSpeech";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
-import type { BleepAction, BleepMood } from "../components/Mascot";
+import type { MascotAction, MascotMood } from "../components/Mascot";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 
 const rounds = [
@@ -16,7 +16,7 @@ const rounds = [
     shortPrompt: "What does the cow say? 🐮", speech: "Look, a friendly cow! What does the cow say? Moooo!",
     replies: ["🐮 Moooo!", "🐶 Woof!"], praise: "Moooo! Amazing job! ⭐" },
 ] as const satisfies ReadonlyArray<{
-  seconds: number; demoEmoji: string; demoWord: string; prop: string; action: BleepAction; mood: BleepMood;
+  seconds: number; demoEmoji: string; demoWord: string; prop: string; action: MascotAction; mood: MascotMood;
   shortPrompt: string; speech: string; replies: readonly string[]; praise: string;
 }>;
 

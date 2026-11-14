@@ -8,6 +8,7 @@ import { usePushToTalk } from "../game/usePushToTalk";
 import { LearnPage } from "./Home";
 import { useSoundEnabled } from "../audio/sfx";
 import { GameButton, SpeechBubble } from "../components/GameUI";
+import { Mascot } from "../components/Mascot";
 
 type Exchange = { question: string; answer: string };
 
@@ -106,7 +107,10 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
       {result ? (
         <section className="panel learn-card">
           {asked && <p className="field-label ask-question">You asked: “{asked}”</p>}
-          <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
+          <div className="ask-host">
+            <Mascot pose="tablet" className="ask-mascot" eager />
+            <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
+          </div>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
           {sound && <button type="button" className="quiet-button" onClick={() => {
             stopSpeech();
@@ -125,6 +129,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           event.preventDefault();
           void submit(question);
         }}>
+          <Mascot pose={busy || voice.status === "decoding" ? "tablet" : "point"} className="ask-mascot-large" eager />
           <GameButton tone="sky" className="talk-button" data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding"}
             onPointerDown={(event) => {
               if (!event.isPrimary || event.button !== 0) return;

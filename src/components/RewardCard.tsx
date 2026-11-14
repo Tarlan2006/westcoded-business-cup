@@ -20,7 +20,7 @@ export function RewardCard({ profile, points, mission, children }: {
 
   return <section className="panel recon-reward" aria-label={mission ? "Mission complete" : "Activity reward"}>
     <ParticlePop />
-    <div className="reward-bleep"><Mascot mood="excited" action="clap" /></div>
+    <div className="reward-mascot"><Mascot pose="jump" /></div>
     <div className="reward-main">
       <p className="reward-ribbon">{mission ? "You did it!" : "All done!"}</p>
       <Heading>Way to go, Agent {name}!</Heading>

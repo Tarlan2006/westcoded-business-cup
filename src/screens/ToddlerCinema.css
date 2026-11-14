@@ -52,7 +52,7 @@
 .toddler-intermission h2 { font-size:clamp(22px,4vw,36px); margin:0 0 8px; line-height:1.1 }
 .toddler-intermission>p:not(.toddler-eyebrow) { font-size:12px; color:#d4c9ee; margin:0 0 12px }
 .toddler-break-art { display:flex; align-items:center; gap:18px; margin-bottom:8px }
-.toddler-break-art>.prototype-bleep { width:clamp(90px,14vw,160px) }
+.toddler-break-art>.mypal-mascot { width:clamp(90px,14vw,160px) }
 .toddler-count { font-family:'Fredoka',sans-serif; font-size:clamp(60px,9vw,104px); line-height:1; color:#ffe7aa; width:1.2em; font-weight:600; font-variant-numeric:tabular-nums }
 .toddler-break-track { flex-shrink:0; width:min(220px,70%); height:5px; border-radius:99px; background:#ffffff1c; overflow:hidden; margin:4px 0 10px }
 .toddler-break-track>span { display:block; height:100%; border-radius:inherit; background:#b3f4d8; transition:width .1s linear }

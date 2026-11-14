@@ -85,27 +85,6 @@
   transform: translateY(3px) scale(0.99);
 }
 
-/* MyPal Floating & Antenna Animations */
-@keyframes floatMascot {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(2deg); }
-}
-.prototype-bleep .bleep-float {
-  animation: floatMascot 3s ease-in-out infinite;
-}
-
-@keyframes antennaBob {
-  0%, 100% { transform: rotate(-8deg); }
-  50% { transform: rotate(9deg); }
-}
-.prototype-bleep .bleep-antenna {
-  transform-origin: 100px 44px;
-  animation: antennaBob 1.7s ease-in-out infinite;
-}
-.prototype-bleep.bleep-speaking .bleep-antenna {
-  animation: antennaBob 0.3s ease-in-out infinite;
-}
-
 /* Duolingo-style Speech Bubble Tail */
 .speech-bubble-duo {
   position: relative;
@@ -151,54 +130,6 @@
   animation: riseFade 1.1s ease-out forwards;
 }
 
-/* Mascot Physical Body Actions & Talking Tom Style Giggle/Tickle */
-@keyframes clapLeft {
-  0%, 100% { transform: translate(0, 0) rotate(-18deg); }
-  50% { transform: translate(42px, -16px) rotate(28deg); }
-}
-@keyframes clapRight {
-  0%, 100% { transform: translate(0, 0) rotate(18deg); }
-  50% { transform: translate(-42px, -16px) rotate(-28deg); }
-}
-.action-clap .arm-left { animation: clapLeft 0.42s ease-in-out infinite; transform-origin: 30px 128px; }
-.action-clap .arm-right { animation: clapRight 0.42s ease-in-out infinite; transform-origin: 170px 128px; }
-
-@keyframes jumpAction {
-  0%, 100% { transform: translateY(0) scaleY(1); }
-  25% { transform: translateY(6px) scaleY(0.92) scaleX(1.06); }
-  55% { transform: translateY(-24px) scaleY(1.06) scaleX(0.95); }
-}
-.action-jump { animation: jumpAction 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
-
-@keyframes waveArms {
-  0%, 100% { transform: rotate(-45deg); }
-  50% { transform: rotate(-85deg); }
-}
-.action-wave .arm-left { animation: waveArms 0.45s ease-in-out infinite; transform-origin: 36px 115px; }
-
-@keyframes stealthSneak {
-  0%, 100% { transform: translateX(-10px) rotate(-5deg); }
-  50% { transform: translateX(10px) rotate(5deg); }
-}
-.action-sneak { animation: stealthSneak 1.1s ease-in-out infinite; }
-
-@keyframes drinkTilt {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-16deg) translateY(-6px); }
-}
-.action-drink { animation: drinkTilt 1.2s ease-in-out infinite; }
-
-@keyframes tickleGiggle {
-  0%, 100% { transform: rotate(0deg) scale(1); }
-  20% { transform: rotate(-11deg) scale(1.08, 0.94); }
-  40% { transform: rotate(11deg) scale(0.94, 1.08); }
-  60% { transform: rotate(-9deg) scale(1.06, 0.96); }
-  80% { transform: rotate(9deg) scale(0.96, 1.06); }
-}
-.bleep-tickle {
-  animation: tickleGiggle 0.45s ease-in-out 2 !important;
-}
-
 .countdown-circle {
   transition: stroke-dashoffset 0.35s linear, stroke 0.5s ease;
   transform: rotate(-90deg);
@@ -210,11 +141,6 @@
 .prototype :is(input, textarea) { user-select: text; }
 .prototype .profile-location { width: auto; min-height: 2rem; }
 .prototype .btn-game:disabled { background: var(--bg-card-dark); filter: saturate(.45); opacity: .7; }
-.prototype-bleep { display: block; width: 100%; height: 100%; }
-.prototype-bleep > span { height: 100%; }
-.prototype-bleep svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.greeting-wave { transform-origin: 37px 108px; animation: greetingWave .7s ease-in-out infinite; }
-@keyframes greetingWave { 50% { transform: rotate(-18deg); } }
 .prototype-screen { min-height: 100svh; }
 .prototype-screen[hidden] { display: none; }
 
@@ -271,7 +197,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .prototype :is(.animate-bounce, .prototype-particle),
-  .prototype-bleep :is(.bleep-float, .bleep-antenna, .arm-left, .arm-right, .greeting-wave, [class*="action-"], .bleep-tickle),
   .prototype .voice-pulse::before { animation: none !important; }
   .prototype .prototype-particle { display: none; }
   .prototype :is(.countdown-circle, .btn-game, .hub-tile) { transition: none; }

@@ -182,7 +182,7 @@
   background: var(--card);
 }
 
-.memory-guide-bleep { width: 64px; flex: none; }
+.memory-guide-mascot { width: 64px; flex: none; }
 
 .memory-guide .memory-speech {
   isolation: isolate;
@@ -237,7 +237,7 @@
   text-transform: uppercase;
 }
 
-.memory-winner-bleep { width: 110px; margin: 8px auto; }
+.memory-winner-mascot { width: 110px; margin: 8px auto; }
 .memory-victory h2 { margin: 0; font-size: 1.875rem; }
 .memory-xp { margin: 6px 0 16px; color: var(--accent); font: 600 1.625rem/1.15 var(--font-heading); }
 .memory-victory-actions { display: grid; gap: 12px; padding-bottom: 6px; }
@@ -258,7 +258,7 @@
   .memory-view[data-pairs] .memory-card { aspect-ratio: 160 / 190; }
   .memory-view[data-pairs="8"] .memory-card { width: 100%; max-height: max(110px, calc((100dvh - 235px) / 4)); }
   .memory-guide { flex-direction: column; align-self: start; padding: 20px 16px 26px; text-align: center; }
-  .memory-guide-bleep { width: min(100%, 192px); }
+  .memory-guide-mascot { width: min(100%, 192px); }
   .memory-speech.speech-bubble::after {
     inset: -8px auto auto 50%;
     transform: translateX(-50%) rotate(45deg);

@@ -1,7 +1,7 @@
-import type { BleepAction, BleepMood } from "../components/Mascot";
+import type { MascotAction, MascotMood } from "../components/Mascot";
 import type { Task } from "./content";
 
-interface Demo { demoEmoji: string; demoWord: string; prop?: string; action: BleepAction; mood: BleepMood }
+interface Demo { demoEmoji: string; demoWord: string; prop?: string; action: MascotAction; mood: MascotMood }
 
 const huntProps: Record<string, string> = {
   sock: "🧦", pillow: "🛏️", towel: "🟪", book: "📚", yellow: "🟨", circle: "🟠", toy: "🧸",

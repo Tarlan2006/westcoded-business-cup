@@ -2,7 +2,7 @@ import { APP_NAME } from "../../brand";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type JSX } from "react";
 import { GameButton } from "../../components/GameUI";
 import { BalloonArt } from "./BalloonArt";
-import { Bleep } from "./Bleep";
+import { Guide } from "./Guide";
 import { answerOptions, layoutBalloons, pointsFor, roundSpec, type AgeGroup } from "./model";
 import "./balloons.css";
 import "./reference.css";
@@ -148,7 +148,7 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
               })}
             </div> : <div className="bl-answer-panel">
               <h2 tabIndex={-1} ref={heading}>{stage === "answer" ? "How many balloons?" : success ? `Yes! ${round.count} balloons!` : `There were ${round.count}.`}</h2>
-              <div className="bl-answer-bleep"><Bleep mood={mood} /></div>
+              <div className="bl-answer-guide"><Guide mood={mood} /></div>
               <div className="bl-answers" aria-label="Choose a number">
                 {options.map((value) => <button type="button" className="bl-answer" key={value} aria-label={String(value)}
                   aria-disabled={stage !== "answer"} data-result={stage === "result" ? value === round.count ? "correct" : value === picked ? "wrong" : "muted" : undefined}
@@ -160,10 +160,10 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
           <div className="bl-primary-slot">{looking ? <GameButton className="bl-primary" disabled={stage === "fading" || exited} onClick={counted}>I COUNTED!</GameButton>
             : stage === "result" ? <GameButton className="bl-primary" onClick={advance}>NEXT ROUND</GameButton> : null}</div>
         </div>
-        <aside className="bl-companion" aria-label={`${APP_NAME}'s counting tip`}><Bleep mood={mood} /><p className="bl-bubble" aria-live="polite"><span className="bl-mobile-tip">{message}</span><span className="bl-desktop-tip">{looking ? <>Count them all<br />before time runs out!</> : message}</span></p></aside>
+        <aside className="bl-companion" aria-label={`${APP_NAME}'s counting tip`}><Guide mood={mood} /><p className="bl-bubble" aria-live="polite"><span className="bl-mobile-tip">{message}</span><span className="bl-desktop-tip">{looking ? <>Count them all<br />before time runs out!</> : message}</span></p></aside>
       </div>
       {stage === "final" && <div className="bl-final-shade"><section className="bl-final" aria-label="Counting results">
-        <Bleep mood="excited" />
+        <Guide mood="excited" />
         <h2 tabIndex={-1} ref={heading}>You counted {correct} of 5!</h2>
         <div className="bl-stars" aria-label={`${correct} out of 5 stars`}>{wins.map((_, i) => <span key={i} data-earned={i < correct} aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l3 7 7.4.6-5.6 4.8 1.7 7.2L12 17.8 5.5 21.6l1.7-7.2L1.6 9.6 9 9z" fill="currentColor" stroke="#1E1B4B" /></svg></span>)}</div>
         <strong className="bl-earned">+{points} XP</strong>

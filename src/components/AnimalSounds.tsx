@@ -1,7 +1,7 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { playSound, speakFallback, stopSpeech } from "../audio/engine";
 import { APP_NAME } from "../brand";
-import { PrototypeBleep } from "./Mascot";
+import { Mascot } from "./Mascot";
 import "./AnimalSounds.css";
 
 // After a toddler video, MyPal names each animal and says its sound, then the real
@@ -54,7 +54,7 @@ export function AnimalSounds({ sound, onDone }: { sound: boolean; onDone: () => 
   return <div className="animal-sounds" role="region" aria-label="Animal sounds" aria-live="polite">
     <p className="toddler-eyebrow">WHO SAYS WHAT?</p>
     <div className="animal-sounds-stage">
-      <span className="animal-sounds-bleep"><PrototypeBleep variant="greeting" action="wave" speaking={!real} /></span>
+      <span className="animal-sounds-guide"><Mascot pose="point" speaking={!real} /></span>
       <span key={`${animal.id}-${step.phase}`} className={`animal-sounds-animal${real ? " animal-sounds-real" : ""}`} aria-hidden="true">{animal.emoji}</span>
     </div>
     <h2>{real ? `${animal.sound} ${animal.sound}` : `The ${animal.name.toLowerCase()} says ${animal.sound}`}</h2>

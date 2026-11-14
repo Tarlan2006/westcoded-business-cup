@@ -5,6 +5,7 @@ import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
 import { videosFor } from "../game/videos";
+import { Mascot, MascotHead } from "../components/Mascot";
 import { ToddlerCinema } from "./ToddlerCinema";
 import { YouTubeVideo } from "../components/YouTubeVideo";
 
@@ -57,7 +58,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
     </button>
     <button type="button" onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
-      <span aria-hidden="true">🤖</span> Play with {APP_NAME} Now!
+      <MascotHead size={26} className="bg-[#FFD13B]" /> Play with {APP_NAME} Now!
     </button>
   </div>;
 
@@ -87,11 +88,11 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
           <div className="video-frame-content space-y-3 max-w-md">
             {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={`Open video: ${selected.title}`}
               onClick={() => { setPlaying(true); onOpen(selected.id); }}>
-              <span aria-hidden="true" className="block text-6xl sm:text-7xl animate-bounce">{ageBand === "1-2" ? "👏" : ageBand === "3-5" ? "🚀" : "🪐"}</span>
+              <Mascot pose="tablet" className="video-mascot" eager />
               <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
               <span className="block text-xs sm:text-sm font-bold text-indigo-200">▶ Watch video · Plays on YouTube</span>
             </button> : <>
-              <p aria-hidden="true" className="text-6xl sm:text-7xl animate-bounce">{ageBand === "1-2" ? "👏" : "🚀"}</p>
+              <Mascot pose="tablet" className="video-mascot" eager />
               <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">More videos coming soon</h1>
               <p className="text-xs sm:text-sm font-bold text-indigo-200">Play with {APP_NAME} while we get the next episode ready.</p>
             </>}

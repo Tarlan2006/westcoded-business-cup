@@ -2,6 +2,7 @@ import { APP_NAME } from "../brand";
 import { useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
+import { Mascot } from "../components/Mascot";
 import { codenameFor, codenames } from "../game/content";
 import { defaultPreferences, quietTimeGoals, type ChildNeed, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
@@ -47,7 +48,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       }}>
       <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
         <div className="flex items-center gap-3">
-          <div aria-hidden="true" className="w-12 h-12 shrink-0 rounded-2xl bg-[#6C47FF] border-2 border-white/40 flex items-center justify-center text-2xl shadow-md">👨‍👩‍👧</div>
+          <Mascot pose="wave" size={72} eager className="shrink-0" />
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">SET UP IN 1 MINUTE</span>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell {APP_NAME} about your child</h1>

@@ -126,7 +126,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
           <p className="ttt-score">You {scores.X} <span aria-hidden="true">·</span> Computer {scores.O} <span aria-hidden="true">·</span> Ties {scores.tie}</p>
         </div>
         <div className="ttt-host">
-          <div className="ttt-mascot"><Mascot mood={thinking ? "thinking" : result ? "happy" : "idle"} /></div>
+          <div className="ttt-mascot"><Mascot pose={thinking ? "tablet" : result === "X" ? "jump" : "point"} /></div>
           <p className="ttt-bubble" aria-live="polite" aria-atomic="true">
             {message}{result === "tie" && <TieHearts />}
           </p>

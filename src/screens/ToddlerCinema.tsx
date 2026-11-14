@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "../brand";
 import { useSoundEnabled } from "../audio/sfx";
 import { AnimalSounds } from "../components/AnimalSounds";
-import { PrototypeBleep } from "../components/Mascot";
+import { Mascot } from "../components/Mascot";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ToddlerPlayer, type PlayerControls, type VideoStatus } from "../components/ToddlerPlayer";
 import { videosFor } from "../game/videos";
@@ -97,7 +97,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
       <div className="toddler-tv-top"><span><i aria-hidden="true" /> {waiting ? "A LITTLE BREATHER" : "NOW SHOWING"}</span><span>{String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}</span></div>
       <div className="toddler-screen">
         {animalTime ? <AnimalSounds sound={sound} onDone={afterAnimals} /> : waiting ? <div className="toddler-intermission">
-          <div className="toddler-break-art"><PrototypeBleep variant="greeting" action="wave" /><span className="toddler-count" role="timer" aria-label={`${seconds} seconds until the next video`}>{seconds}</span></div>
+          <div className="toddler-break-art"><Mascot pose="tablet" /><span className="toddler-count" role="timer" aria-label={`${seconds} seconds until the next video`}>{seconds}</span></div>
           <p className="toddler-eyebrow">ONE LITTLE PAUSE</p><h2>Wiggle your fingers!</h2>
           <p>Our next little adventure starts in {seconds} seconds.</p>
           <div className="toddler-break-track" role="progressbar" aria-label="Break before next video" aria-valuemin={0} aria-valuemax={10} aria-valuenow={10 - seconds}>
@@ -105,7 +105,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
           </div>
           <button className="toddler-text-button" type="button" onClick={() => { setPending(null); setStopped(true); }}>Stay on a break</button>
         </div> : stopped || status === "error" ? <div className="toddler-intermission toddler-rest">
-          <div className="toddler-rest-mascot"><PrototypeBleep variant="greeting" /></div>
+          <div className="toddler-rest-mascot"><Mascot pose={status === "error" ? "point" : "wave"} /></div>
           <h2>{status === "error" ? "This video needs a little help" : "A lovely little pause"}</h2>
           <p>{status === "error" ? "Check your connection, try again, or choose the next video." : "Ready for another little adventure?"}</p>
           <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? "Try again" : "Watch again"}</button>

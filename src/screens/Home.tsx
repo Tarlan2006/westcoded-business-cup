@@ -4,8 +4,10 @@ import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { availableActivities, orderedGroups, startingActivity, type ActivitySuggestion } from "../components/activitySuggestions";
 import { Garage } from "../components/Garage";
-import { HubTile } from "../components/GameUI";
+import { ActivityIcon, HubTile } from "../components/GameUI";
+import { Mascot } from "../components/Mascot";
 import { PrototypeHeader } from "../components/PrototypeHeader";
+import { APP_NAME } from "../brand";
 import { codenameFor } from "../game/content";
 import type { ActivityGroup, Preferences } from "../state/preferences";
 import { rankName, type ChildProfile } from "../state/progress";
@@ -52,8 +54,12 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
       <button type="button" className="prototype-parent-button" onClick={() => setGarage(true)}>🛸 Garage</button>
     </PrototypeHeader>
     <div className="learn-page">
+      <section className="hub-greeting" aria-label={`${APP_NAME} says hello`}>
+        <Mascot pose="wave" size={96} eager />
+        <p className="hub-greeting-bubble">Hi, {name}! What shall we do today?</p>
+      </section>
       <section className="flow-start panel" aria-labelledby="flow-start-title">
-        <div className="flow-start-icon" aria-hidden="true">{first.icon}</div>
+        <div className="flow-start-icon flow-start-mascot" aria-hidden="true"><Mascot pose="tablet" size={92} eager /></div>
         <div><p className="field-label" id="flow-start-title">Start here</p><h1 className="font-display text-2xl sm:text-3xl font-bold">{first.title}</h1><p>{first.description}</p></div>
         <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>
           Start <span aria-hidden="true">→</span><span className="sr-only"> {first.title}</span>
@@ -63,7 +69,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
         <h2 id={`group-${group}`} className="font-display text-2xl font-bold">{groups[group]}</h2>
         <div className="activity-grid" data-group={group}>
           {options.filter((item) => groupOf(item.activity) === group).map((item) => <HubTile key={item.activity}
-            tone={tileTone[item.activity] ?? "learn"} icon={item.icon} title={item.title} onClick={() => open(item)}>{item.description}</HubTile>)}
+            tone={tileTone[item.activity] ?? "learn"} icon={<ActivityIcon item={item} />} title={item.title} onClick={() => open(item)}>{item.description}</HubTile>)}
         </div>
       </section>)}
       <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>

@@ -2,9 +2,9 @@ import { playQueue, unlock } from "../audio/engine";
 import { useEffect, useRef, useState } from "react";
 import { useSoundEnabled } from "../audio/sfx";
 import { APP_NAME } from "../brand";
-import { PrototypeBleep } from "../components/Mascot";
+import { Mascot } from "../components/Mascot";
 
-const status = [`Waking up ${APP_NAME}...`, "Charging space antennas...", "Ready!"];
+const status = [`Waking up ${APP_NAME}...`, "Packing the backpack...", "Ready!"];
 const progress = [15, 60, 100];
 
 export function Welcome({ repeat, onContinue, onToggleSound }: {
@@ -26,7 +26,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
   }, [stage, repeat, onContinue]);
 
   if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label={`Loading ${APP_NAME}`}>
-    <div className="w-40 h-40 mb-6 drop-shadow-lg"><PrototypeBleep variant="splash" /></div>
+    <div className="mb-6 drop-shadow-lg"><Mascot pose="wave" size={190} eager /></div>
     <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#6C47FF] tracking-tight mb-2">{APP_NAME}</h1>
     <p className="text-slate-400 font-extrabold text-sm tracking-widest uppercase mb-6" role="status">{status[Math.min(stage, 2)]}</p>
     <div className="w-64 h-4 bg-slate-200 rounded-full overflow-hidden p-0.5" role="progressbar" aria-label="Loading progress" aria-valuenow={progress[Math.min(stage, 2)]}>
@@ -43,7 +43,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
       <div className="speech-bubble-duo px-6 py-4 mb-6 animate-bounce">
         <h1 ref={greeting} tabIndex={-1} className="focus:outline-none font-display text-xl sm:text-2xl font-bold text-slate-800">Hey pal! Ready for a screen-free adventure?</h1>
       </div>
-      <div className="w-48 h-48 sm:w-56 sm:h-56"><PrototypeBleep variant="greeting" action="wave" /></div>
+      <Mascot pose="wave" size={230} eager className="drop-shadow-lg" />
     </div>
     <div className="w-full border-t-2 border-slate-200 pt-4 pb-2 flex justify-center sm:justify-end max-w-4xl mx-auto">
       <button type="button" onClick={() => { if (sound) { void unlock().then(() => playQueue(["common_setup_greeting"])).catch(() => {}); } onContinue(); }}

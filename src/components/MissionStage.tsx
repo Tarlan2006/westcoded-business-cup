@@ -3,7 +3,7 @@ import { useContext, useEffect, useRef, useState, type CSSProperties, type React
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
 import { ActivityNavigation } from "./ActivityHeader";
-import { PrototypeBleep, type BleepAction, type BleepMood } from "./Mascot";
+import { Mascot, poseFor, type MascotAction, type MascotMood } from "./Mascot";
 
 export const missionReplyStyle = "px-4 py-2 rounded-2xl bg-[#EDE9FE] hover:bg-[#DDD6FE] border-2 border-[#8B5CF6] text-[#1E1B4B] font-extrabold text-sm sm:text-base transition cursor-pointer";
 export const missionButtonStyle = "relative py-5 px-3 sm:px-4 rounded-3xl btn-game font-display font-bold text-xl sm:text-2xl flex items-center justify-center gap-2.5 cursor-pointer";
@@ -15,10 +15,10 @@ export function PrototypeParticles({ icon, count, x = 50, y = 55 }: { icon: stri
     }}>{icon}</span>);
 }
 
-export function MissionStage({ heading, round, total = 3, seconds, clockSeconds, ratio, demoEmoji, demoWord, prop, action, mood,
+export function MissionStage({ heading, round, total = 3, seconds, clockSeconds, ratio, demoEmoji, demoWord, action, mood,
   speaking, prompt, replies, controls, status, onExit, exitDisabled, toolbar, feedback, paused }: {
   heading?: string; round: number; total?: number; seconds: number; clockSeconds: number; ratio: number;
-  demoEmoji: string; demoWord: string; prop?: string; action?: BleepAction; mood: BleepMood; speaking?: boolean;
+  demoEmoji: string; demoWord: string; prop?: string; action?: MascotAction; mood: MascotMood; speaking?: boolean;
   prompt: string; replies?: ReactNode; controls: ReactNode; status?: string; onExit: () => void; exitDisabled?: boolean;
   toolbar?: ReactNode; feedback?: boolean; paused?: boolean;
 }) {
@@ -72,8 +72,8 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
             uiSound("giggle", sound);
             tickleTimer.current = window.setTimeout(() => setTickled(false), 900);
           }}>
-          <span className="block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl"><PrototypeBleep variant="mission" mood={giggling ? "giggle" : mood}
-            action={paused ? "none" : action} prop={prop} speaking={speaking} tickled={giggling} /></span>
+          <span className={`block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl${giggling ? " mypal-giggle" : ""}`}>
+            <Mascot pose={poseFor(mood, paused ? "none" : action)} speaking={speaking} eager /></span>
         </button>
         {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}

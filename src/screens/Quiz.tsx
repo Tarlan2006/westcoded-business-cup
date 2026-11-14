@@ -4,6 +4,7 @@ import questions from "../../content/quiz.json";
 import { useClipSpeech } from "../audio/useClipSpeech";
 import { useSoundEnabled } from "../audio/sfx";
 import { GameButton } from "../components/GameUI";
+import { Mascot } from "../components/Mascot";
 import { LearnPage } from "./Home";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 
@@ -73,7 +74,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     const seconds = Math.max(0, missionMinutes * 60 - Math.floor((now - startedAt) / 1000));
     return <MissionStage heading="Quiz" round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
       demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord="QUIZ!" prop="💭"
-      action={answer === undefined ? "wave" : "clap"} mood={answer === undefined ? "detective" : "excited"} onExit={onExit}
+      action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
       prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}
       feedback={answer !== undefined}
       replies={current.choices.map((choice) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
@@ -104,6 +105,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
           ))}
         </div>
         {answer !== undefined && <>
+          <Mascot pose={answer === current.answer ? "jump" : "point"} size={120} className="mx-auto" />
           <p role="status">{answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}</p>
           <GameButton onClick={next}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</GameButton>
         </>}

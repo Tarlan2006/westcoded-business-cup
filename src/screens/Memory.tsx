@@ -95,7 +95,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
             })}
           </div>
           <aside className="memory-guide" aria-label={`${APP_NAME}`}>
-            <div className="memory-guide-bleep"><Mascot mood={won ? "excited" : missed ? "surprised" : "happy"} /></div>
+            <div className="memory-guide-mascot"><Mascot pose={won ? "jump" : "point"} /></div>
             <SpeechBubble className="memory-speech" live>
               {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching space friends!"}
             </SpeechBubble>
@@ -105,7 +105,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
           <GameButton className="memory-show-result" onClick={() => victory.current?.showModal()}>Show results</GameButton>
           <dialog className="memory-victory" ref={victory} aria-labelledby={victoryTitle} aria-describedby={victoryReward}>
             <p className="memory-win-label"><span aria-hidden="true">🎉</span> All pairs found!</p>
-            <div className="memory-winner-bleep"><Mascot mood="excited" action="clap" /></div>
+            <div className="memory-winner-mascot"><Mascot pose="jump" /></div>
             <h2 id={victoryTitle}>Great memory!</h2>
             <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true">★</span></p>
             <div className="memory-victory-actions">
