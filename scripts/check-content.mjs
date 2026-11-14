@@ -5,7 +5,8 @@ import { audioDir, audioPath, fileSize, modes, readClips, readManifest, readRows
 
 const requireAudio = process.argv.includes("--require-audio");
 const idPattern = /^[a-z0-9][a-z0-9_-]{0,79}$/;
-const stopList = /\b(?:weapons?|guns?|rifles?|bombs?|explosives?|kill(?:s|ing)?|murder|violence|suicide|self[- ]harm|porn\w*|sex\w*|nude|naked|alcohol|drugs?|poison\w*|knives|knife|scissors|lighters?|balcon(?:y|ies)|outlets?|stair(?:s|case)?|kitchen|jump(?:s|ing)?|unbuckle|unfasten)\b/i;
+const stopList = /\b(?:weapons?|guns?|rifles?|bombs?|explosives?|kill(?:s|ing)?|murder|violence|suicide|self[- ]harm|porn\w*|sex\w*|nude|naked|alcohol|drugs?|poison\w*|knives|knife|scissors|lighters?|balcon(?:y|ies)|outlets?|stair(?:s|case)?|kitchen|jump(?:s|ing)?|unbuckl\w*|unfasten\w*)\b/i;
+const physicalRisk = /\b(?:climb\w*|sprint\w*|run(?:s|ning)?|sharp|hot|matchsticks?|matches)\b/i;
 const ageBands = new Set(["3-5", "6-8", "all"]);
 const kinds = new Set(["intro", "task", "item", "praise", "retry", "transition", "recall", "outro", "codename", "sfx"]);
 
@@ -36,6 +37,11 @@ function verify() {
       assert(line.file === `/audio/${line.mode}/${line.id}.mp3`, `${label}: file must match the mode and ID`);
       assert(Number.isInteger(line.durationMs) && line.durationMs >= 0, `${label}: invalid durationMs`);
       safeText(line.text, label, 140);
+      const instructions = line.text.replace(/\bdon['’]t run\b/gi, "");
+      assert(!physicalRisk.test(instructions), `${label}: unsafe physical cue "${instructions.match(physicalRisk)?.[0]}"`);
+      if (line.mode === "hunt" && line.kind === "task") {
+        assert(/\bwalk\b/i.test(instructions), `${label}: Hunt tasks must remind players to walk`);
+      }
       lineMap.set(line.id, line);
     }
   }
@@ -89,6 +95,10 @@ function verify() {
     assert(topics.has(item.topic), `${label}: topic must match a quiz for ages 6–8`);
     assert(Array.isArray(item.keywords) && item.keywords.length && item.keywords.every((word) => typeof word === "string" && word.trim()), `${label}: invalid keywords`);
     safeText(item.answer, label, 400);
+  }
+  for (const topic of new Set(faq.map((item) => item.topic))) {
+    assert(quiz.filter((question) => question.ageBand === "6-8" && question.topic === topic).length >= 3,
+      `quiz.json: expected three questions on FAQ topic "${topic}"`);
   }
 
   for (const question of [
