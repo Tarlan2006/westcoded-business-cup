@@ -96,6 +96,7 @@ export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemor
       case "ask": return onAsk();
       case "tic-tac-toe": return onGrid();
       case "sketch": return onSketch();
+      case "space": return onSpace();
       case "video": return onWatch();
       default: return onMission(suggestion.activity);
     }

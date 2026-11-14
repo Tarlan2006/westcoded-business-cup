@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { unlock } from "./audio/engine";
 import { ActivityXp } from "./components/ActivityHeader";
+import { NextUp } from "./components/NextUp";
+import { nextActivities } from "./components/activitySuggestions";
 import { tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { videosFor } from "./game/videos";
 import { Ask } from "./screens/Ask";
 import { Hub, LearnPage } from "./screens/Home";
 import { Memory } from "./screens/Memory";
-import { Mission, Results } from "./screens/Mission";
+import { Mission } from "./screens/Mission";
+import { MissionSummary } from "./screens/MissionSummary";
 import { Privacy } from "./screens/Parent";
 import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
@@ -25,7 +28,7 @@ type Screen =
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
-  | { name: "reward"; points: number; video: boolean }
+  | { name: "reward"; points: number; video: boolean; activity: Activity; topic?: string }
   | { name: "video"; id?: string }
   | { name: "mission"; session: Session; profile: Profile }
   | { name: "results"; session: Session; profile: Profile; result: MissionState };
@@ -76,7 +79,7 @@ export default function App() {
     function earn(id: string, activity: Activity, points: number, video = false) {
       if (!profile) return;
       setProgress(rewardActivity(id, profile.id, activity, points));
-      setScreen({ name: "reward", points, video });
+      setScreen({ name: "reward", points, video, activity, topic: screen.name === "quiz" ? screen.topic : undefined });
     }
 
     function launch(mode: Mode, selected: Profile, minutes: number) {
@@ -99,6 +102,16 @@ export default function App() {
       setScreen({ name: "video", id });
     }
 
+    function openActivity(activity: Activity, topic?: string) {
+      if (activity === "hunt" || activity === "roadtrip" || activity === "lava") setScreen({ name: "setup", mode: activity });
+      else if (activity === "video") setScreen({ name: "video" });
+      else if (activity === "quiz" && topic) setScreen({ name: "quiz", id: crypto.randomUUID(), topic });
+      else startLearn(activity);
+    }
+    function nextUp(activity: Activity, replay: () => void) {
+      return <NextUp options={nextActivities(profile, preferences, activity)} onReplay={replay} onChoose={openActivity} onHome={goHome} />;
+    }
+
     if (screen.name === "setup") {
       return <Setup key={screen.mode} initialMode={screen.mode} preferences={preferences} xp={profile.xp}
         onBack={goHome} onStart={(mode, minutes) => launch(mode, profile, minutes)} />;
@@ -119,7 +132,9 @@ export default function App() {
       }} />;
     }
     if (screen.name === "results") {
-      return <Results session={screen.session} profile={screen.profile} state={screen.result} onBack={goHome} />;
+      return <MissionSummary session={screen.session} profile={screen.profile} state={screen.result} onBack={goHome}>
+        {nextUp(screen.session.mode, () => launch(screen.session.mode, profile, screen.session.durationMinutes))}
+      </MissionSummary>;
     }
     if (screen.name === "ask" && profile.ageBand === "6-8") {
       return <Ask onBack={goHome} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
@@ -138,8 +153,7 @@ export default function App() {
       return <TicTacToe key={screen.id} onBack={goHome} onComplete={(won) => {
         if (won) earn(screen.id, "tic-tac-toe", 20);
         else {
-          setProgress(rewardActivity(screen.id, profile.id, "tic-tac-toe", 0));
-          goHome();
+          earn(screen.id, "tic-tac-toe", 0);
         }
       }} />;
     }
@@ -154,12 +168,10 @@ export default function App() {
     if (screen.name === "reward") {
       return <LearnPage title="Nice work, agent!" onBack={goHome}>
         <div className="panel learn-card">
-          <h2>+{screen.points} XP</h2>
-          <p>{profile.xp} total XP · {profile.streak} day streak</p>
-          {screen.video && <button className="primary-button" type="button"
-            onClick={() => setScreen({ name: "video" })}>Open video reward</button>}
-          <button className="quiet-button" type="button" onClick={goHome}>Back to activities</button>
+          <h2 className="flow-earned">+{screen.points} XP</h2>
+          <p className="flow-progress-note">{profile.xp} total XP · {profile.streak} day streak</p>
         </div>
+        {nextUp(screen.activity, () => openActivity(screen.activity, screen.topic))}
       </LearnPage>;
     }
     if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
