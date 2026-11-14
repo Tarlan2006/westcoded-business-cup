@@ -12,7 +12,7 @@ export type MascotAction = "clap" | "jump" | "wave" | "sneak" | "drink" | "none"
 
 // Intrinsic sizes of public/mascot/mypal-*.webp, so the layout never jumps while loading.
 const art: Record<MascotPose, [number, number]> = {
-  wave: [329, 551], jump: [379, 537], tablet: [268, 562], point: [304, 542],
+  wave: [502, 840], jump: [594, 840], tablet: [401, 840], point: [473, 840],
 };
 
 export function poseFor(mood: MascotMood, action: MascotAction = "none"): MascotPose {
