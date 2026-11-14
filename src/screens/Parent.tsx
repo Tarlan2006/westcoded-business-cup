@@ -38,6 +38,10 @@ export function Privacy() {
         <p>Mission Control needs no account, real name, or camera. Your chosen codename, age range, and game progress are saved in this browser. Clear this site’s data in your browser settings to remove them.</p>
         <h2>Voice is optional</h2>
         <p>The microphone is used for a round only when you hold the talk button and allow access. Cloudflare Workers AI transcribes the audio for that request. When Groq is enabled, it receives words from the game’s vocabulary to choose the next response. Mission Control saves neither audio nor transcripts to the profile. Avoid saying names or other personal details. You can play every mission with buttons.</p>
+        <h2>Questions in Learn</h2>
+        <p>Ask Mission Control sends the question text to our server. If Groq is enabled, it receives the question to answer it. Mission Control does not save questions to the profile or record them in its logs. Please leave out names, addresses, schools, and phone numbers.</p>
+        <h2>Video library</h2>
+        <p>When you open a video, its player loads from YouTube. You choose when to start playback.</p>
       </article>
     </main>
   );

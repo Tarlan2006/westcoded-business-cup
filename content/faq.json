@@ -1,0 +1,14 @@
+[
+  { "keywords": ["sky blue", "blue sky", "daytime sky", "sky"], "topic": "sky and space", "answer": "Sunlight has many colors, like a rainbow. Tiny bits of air scatter blue light in all directions, so the sky looks blue." },
+  { "keywords": ["grass green", "green grass", "grass", "leaves"], "topic": "nature and water", "answer": "Grass has a green helper called chlorophyll that catches sunlight. Think of each blade as a little solar panel that helps the grass make food." },
+  { "keywords": ["sleep", "dream", "tired"], "topic": "nature and water", "answer": "Sleep gives your body time to rest and your brain time to sort what you learned. It is a bit like putting your toys back in their boxes after playing." },
+  { "keywords": ["sea salty", "ocean salty", "salt water", "ocean", "salty"], "topic": "nature and water", "answer": "Rivers carry tiny bits of salt from rocks into the sea. When water rises into the air, the salt stays behind, a little like salt left in a bowl after water dries." },
+  { "keywords": ["why rain", "does it rain", "rain", "raindrops"], "topic": "nature and water", "answer": "Clouds are full of tiny drops of water that bump together and grow. When they get heavy enough, they fall like drops from a wet sponge." },
+  { "keywords": ["what are stars", "stars", "star", "sun"], "topic": "sky and space", "answer": "Stars are huge balls of hot gas that make their own light. They look like tiny lights because most are very far away. The Sun is our closest star." },
+  { "keywords": ["moon shine", "moon light", "moon"], "topic": "sky and space", "answer": "The Moon shines because sunlight bounces off its surface. Think of it like a ball lit by a flashlight." },
+  { "keywords": ["night", "day and night", "earth spin"], "topic": "sky and space", "answer": "Earth spins like a top. When your part faces the Sun it is day, and when it turns away it is night." },
+  { "keywords": ["plants grow", "plants", "roots", "seeds"], "topic": "nature and water", "answer": "Plants use sunlight, air, and water to make food and grow. Their roots take in water like little drinking straws." },
+  { "keywords": ["clouds", "cloud"], "topic": "nature and water", "answer": "Clouds are made of tiny drops of water or bits of ice. A cloud is a little like fog floating high above the ground." },
+  { "keywords": ["freeze", "ice", "frozen", "water"], "topic": "nature and water", "answer": "When water gets cold enough, its tiny pieces slow down and lock together to make ice. Think of loose building blocks snapping into a solid shape." },
+  { "keywords": ["rainbow", "rainbows"], "topic": "sky and space", "answer": "When sunlight passes through raindrops, the drops spread its colors out. Each drop is a bit like a tiny piece of shiny glass." }
+]

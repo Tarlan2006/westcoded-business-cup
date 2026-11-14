@@ -3,6 +3,7 @@ import type { Activity, AgeBand, Profile } from "../shared/types";
 import { unlock } from "./audio/engine";
 import { codenames, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
+import { Ask } from "./screens/Ask";
 import { Home, LearnHome, LearnPage, ParentSettings, Welcome } from "./screens/Home";
 import { Memory } from "./screens/Memory";
 import { Mission, Results } from "./screens/Mission";
@@ -13,8 +14,9 @@ import { VideoCatalog } from "./screens/VideoCatalog";
 import { readProgress, rewardActivity, saveProfile } from "./state/progress";
 
 type Screen =
-  | { name: "home" | "setup" | "learn" | "parent" }
-  | { name: "quiz" | "memory"; id: string }
+  | { name: "home" | "setup" | "learn" | "parent" | "ask" }
+  | { name: "quiz"; id: string; topic?: string }
+  | { name: "memory"; id: string }
   | { name: "reward"; points: number; video: boolean }
   | { name: "video" }
   | { name: "mission"; session: Session; profile: Profile }
@@ -40,9 +42,14 @@ export default function App() {
   if (!profile) return <Welcome onChoose={(ageBand) => chooseProfile(codenames[0], ageBand)} />;
 
   const goLearn = () => setScreen({ name: "learn" });
-  function startLearn(name: "quiz" | "memory") {
+  function startLearn(name: "quiz" | "memory" | "ask") {
     void unlock().catch(() => {});
-    setScreen({ name, id: crypto.randomUUID() });
+    if (name === "ask") {
+      setScreen({ name });
+      return;
+    }
+    const id = crypto.randomUUID();
+    setScreen(name === "quiz" ? { name: "quiz", id } : { name: "memory", id });
   }
 
   function earn(id: string, activity: Activity, points: number, video = false) {
@@ -94,10 +101,16 @@ export default function App() {
   }
   if (screen.name === "learn") {
     return <LearnHome profile={profile} onBack={goHome} onQuiz={() => startLearn("quiz")}
-      onMemory={() => startLearn("memory")} />;
+      onMemory={() => startLearn("memory")}
+      onAsk={profile.ageBand === "6-8" ? () => startLearn("ask") : undefined} />;
+  }
+  if (screen.name === "ask" && profile.ageBand === "6-8") {
+    return <Ask onBack={goLearn} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
+      onQuiz={(topic) => setScreen({ name: "quiz", id: crypto.randomUUID(), topic })} />;
   }
   if (screen.name === "quiz") {
-    return <Quiz key={screen.id} ageBand={profile.ageBand} onBack={goLearn}
+    return <Quiz key={screen.id} ageBand={profile.ageBand} topic={screen.topic}
+      onBack={screen.topic ? () => setScreen({ name: "ask" }) : goLearn}
       onComplete={(points) => earn(screen.id, "quiz", points, profile.ageBand === "3-5")} />;
   }
   if (screen.name === "memory") {

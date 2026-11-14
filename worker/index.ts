@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { createMiddleware } from "hono/factory";
+import { ask } from "./ask";
 import { chooseTurn } from "./groq";
 import { maxWavBytes, recognizeSpeech, validWav } from "./stt";
 import { isTurnRequest } from "./turn-contract";
@@ -13,6 +14,7 @@ export interface Env {
 
 type WorkerEnv = { Bindings: Env };
 const app = new Hono<WorkerEnv>();
+app.route("/", ask);
 const windowMs = 60_000;
 const windowCounts = new Map<string, number>();
 let currentWindow = -1;

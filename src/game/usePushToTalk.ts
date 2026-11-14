@@ -13,12 +13,19 @@ interface Recording {
   finish: () => Promise<void>;
 }
 
-export function usePushToTalk(enabled: boolean, submit: (text: string) => void) {
+export function usePushToTalk(enabled: boolean, submit: (text: string) => void, onUnavailable?: () => void) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const current = useRef<Recording | null>(null);
   const onSubmit = useRef(submit);
   onSubmit.current = submit;
+  const fallback = useRef(onUnavailable);
+  fallback.current = onUnavailable;
+
+  function unavailable(message: string) {
+    if (fallback.current) fallback.current();
+    else setMessage(message);
+  }
 
   function release(cancel = false) {
     const recording = current.current;
@@ -50,9 +57,9 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
           const text = await within(transcribe(wav), 4000, "");
           if (recording.cancel) return;
           if (text.trim()) onSubmit.current(text);
-          else setMessage("Voice unavailable. Tap I DID IT! to keep playing.");
+          else unavailable("Voice unavailable. Tap I DID IT! to keep playing.");
         } catch {
-          if (!recording.cancel) setMessage("Voice unavailable. Tap I DID IT! to keep playing.");
+          if (!recording.cancel) unavailable("Voice unavailable. Tap I DID IT! to keep playing.");
         } finally {
           window.clearTimeout(recording.timer);
           if (current.current === recording) {
@@ -65,7 +72,8 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
     current.current = recording;
     recording.timer = window.setTimeout(() => {
       release(true);
-      setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
+      if (fallback.current) fallback.current();
+      else setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
     }, 5000);
     void startRecording().then(() => {
       window.clearTimeout(recording.timer);
@@ -78,7 +86,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
       if (current.current === recording) {
         current.current = null;
         setStatus("idle");
-        if (!recording.cancel) setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
+        if (!recording.cancel) unavailable("Microphone unavailable. Tap I DID IT! to keep playing.");
       }
     });
   }

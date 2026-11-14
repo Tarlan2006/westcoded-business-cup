@@ -2,6 +2,16 @@ export type Mode = "hunt" | "roadtrip" | "lava";
 export type AgeBand = "1-2" | "3-5" | "6-8";
 export type Activity = Mode | "video" | "quiz" | "ask" | "memory" | "tic-tac-toe";
 
+export interface AskRequest {
+  question: string;
+  ageBand: AgeBand;
+}
+
+export interface AskResponse {
+  answer: string;
+  source: "llm" | "faq" | "refusal";
+}
+
 export interface Line {
   id: string;            // уникальный, например "hunt_task_frame_01"
   voice: string;         // "hq" (основной голос MVP)
