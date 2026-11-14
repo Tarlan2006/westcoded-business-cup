@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 const { chromium } = await import(process.env.BALLOONS_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.BALLOONS_PLAYWRIGHT_MODULE).href : "playwright");
 const browser = await chromium.launch({ headless: true, ...(process.env.BALLOONS_CHROME ? { executablePath: process.env.BALLOONS_CHROME } : {}) });
 const base = process.env.BALLOONS_PREVIEW_URL ?? "http://127.0.0.1:5174/dev/balloons-preview.html";
-const output = resolve("src/games/balloons/screens");
+const output = resolve(process.env.FLOW_SCREEN_DIR ?? "src/games/balloons/screens");
 await mkdir(output, { recursive: true });
 const results = [], errors = [], network = [];
 const pass = (message) => { results.push(message); console.log(`PASS ${message}`); };

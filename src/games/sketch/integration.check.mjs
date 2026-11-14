@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const { chromium } = await import(process.env.SKETCH_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.SKETCH_PLAYWRIGHT_MODULE).href : "playwright");
 const browser = await chromium.launch({ headless: true, ...(process.env.SKETCH_CHROME ? { executablePath: process.env.SKETCH_CHROME } : {}) });
 const base = process.env.SKETCH_SITE_URL ?? "http://127.0.0.1:5175";
-const output = fileURLToPath(new URL("./screens/", import.meta.url));
+const output = process.env.FLOW_SCREEN_DIR ? resolve(process.env.FLOW_SCREEN_DIR) : fileURLToPath(new URL("./screens/", import.meta.url));
 await mkdir(output, { recursive: true });
 const errors = [], requests = [], results = [];
 function pass(message) { results.push(message); console.log(`PASS ${message}`); }
@@ -20,6 +20,7 @@ async function open(ageBand, width = 1280) {
     }));
     window.__speech = { texts: [], cancellations: 0, current: null };
     Object.defineProperty(window, "speechSynthesis", { value: {
+      getVoices() { return [{ name: "Test device voice", lang: "en-US", localService: true, default: true }]; },
       speak(utterance) { window.__speech.texts.push(utterance.text); window.__speech.current = utterance; },
       cancel() { window.__speech.cancellations++; const previous = window.__speech.current; window.__speech.current = null; previous?.onend?.(); },
     } });
@@ -33,7 +34,7 @@ async function open(ageBand, width = 1280) {
     if (request.url().includes("/api/") || request.method() === "POST") requests.push(request.url());
   });
   await page.goto(base);
-  await page.getByRole("button", { name: "Grown-ups settings, press and hold for one and a half seconds", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Parents, press and hold", exact: true }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   return { page, context, chunks };
 }
@@ -97,7 +98,7 @@ try {
     await page.getByRole("button", { name: "Start the case" }).click();
     const beforeBack = await page.evaluate(() => window.__speech.cancellations);
     await page.getByRole("button", { name: "Back", exact: true }).click();
-    await page.getByRole("button", { name: "Grown-ups settings, press and hold for one and a half seconds", exact: true }).waitFor();
+    await page.getByRole("button", { name: "Parents, press and hold", exact: true }).waitFor();
     assert(await page.evaluate(() => window.__speech.cancellations) > beforeBack);
     const afterBack = await page.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")));
     assert.equal(afterBack.profiles[0].xp, after.profiles[0].xp);

@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const playwrightModule = process.env.SKETCH_PLAYWRIGHT_MODULE;
 const { chromium } = await import(playwrightModule ? pathToFileURL(playwrightModule).href : "playwright");
 const base = process.env.SKETCH_PREVIEW_URL ?? "http://127.0.0.1:5174/dev/sketch-preview.html";
-const output = fileURLToPath(new URL("./screens/", import.meta.url));
+const output = process.env.FLOW_SCREEN_DIR ? resolve(process.env.FLOW_SCREEN_DIR) : fileURLToPath(new URL("./screens/", import.meta.url));
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.SKETCH_CHROME ? { executablePath: process.env.SKETCH_CHROME } : {}) });
 const report = [];
