@@ -123,14 +123,10 @@ try {
     pass(`${width}px: one shared header through all Sketch/Space stages, loading exit, Back/Home, XP and keyboard access`);
 
     const preschool = await open(width, "3-5");
-    await tile(preschool.page, "Space Scale").click();
-    await preschool.page.getByRole("button", { name: "Start exploring" }).click();
-    await header(preschool.page, "Space Scale"); await finishJourney(preschool.page, true);
-    await preschool.page.getByRole("heading", { name: "What a journey!", exact: true }).waitFor();
-    assert.equal(await preschool.page.getByRole("heading", { name: "Which is bigger?", exact: true }).count(), 0);
-    await header(preschool.page, "Space Scale"); await back(preschool.page);
+    await tile(preschool.page, "Memory").waitFor();
+    assert.equal(await tile(preschool.page, "Space Scale").count(), 0);
     await preschool.context.close();
-    pass(`${width}px: preschool SpaceViewer keeps the shared header and skips the quiz`);
+    pass(`${width}px: Space Scale is only offered to ages 6–8`);
 
     for (const mode of ["Scavenger Hunt", "Floor is Lava"]) {
       const mission = await open(width);

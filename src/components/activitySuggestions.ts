@@ -17,9 +17,10 @@ const balloons: ActivitySuggestion = { activity: "balloons", title: "Balloon Cou
 export function availableActivities(profile: ChildProfile, preferences: Preferences): ActivitySuggestion[] {
   if (profile.ageBand === "1-2") return [video];
   const moves = activeModes(preferences.location).map((mode) => ({ activity: mode, title: MODES[mode].name, description: MODES[mode].description, icon: MODES[mode].icon }));
+  // Space Scale's distances and big numbers suit 6–8, not 3–5.
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
-    { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }] : [];
-  return [quiz, memory, ...older, spaceGameMeta, balloons, ...moves, video];
+    { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }, spaceGameMeta] : [];
+  return [quiz, memory, ...older, balloons, ...moves, video];
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {

@@ -3,6 +3,6 @@ export const spaceGameMeta = {
   title: "Space Scale",
   description: "How big is space? Scroll and see!",
   icon: "🪐",
-  ageBands: ["3-5", "6-8"],
+  ageBands: ["6-8"],
   activity: "space",
 } as const;

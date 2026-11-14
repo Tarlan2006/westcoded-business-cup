@@ -97,7 +97,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
           <aside className="memory-guide" aria-label={`${APP_NAME}`}>
             <div className="memory-guide-mascot"><Mascot pose={won ? "jump" : "point"} /></div>
             <SpeechBubble className="memory-speech" live>
-              {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching space friends!"}
+              {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching dino friends!"}
             </SpeechBubble>
           </aside>
         </div>

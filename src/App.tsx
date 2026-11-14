@@ -354,8 +354,8 @@ export default function App() {
       return <Sketch key={screen.id} onBack={goBack}
         onComplete={(points) => earn(screen.id, "sketch", points)} />;
     }
-    if (screen.name === "space" && profile.ageBand !== "1-2") {
-      return <Space key={screen.id} exploreOnly={profile.ageBand === "3-5"} onBack={goBack}
+    if (screen.name === "space" && profile.ageBand === "6-8") {
+      return <Space key={screen.id} exploreOnly={false} onBack={goBack}
         onComplete={(points) => earn(screen.id, "space", points)} />;
     }
     if (screen.name === "balloons" && profile.ageBand !== "1-2") {
