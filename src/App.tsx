@@ -1,11 +1,11 @@
 import { useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { unlock } from "./audio/engine";
-import { tasksFor } from "./game/content";
+import { codenames, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { videosFor } from "./game/videos";
 import { Ask } from "./screens/Ask";
-import { Home, LearnPage } from "./screens/Home";
+import { Home, LearnPage, Welcome } from "./screens/Home";
 import { Memory } from "./screens/Memory";
 import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
@@ -44,9 +44,12 @@ export default function App() {
     goHome();
   }
 
-  if (!profile?.preferences || screen.name === "parent") {
-    return <ProfileSetup key={profile?.id ?? "new"} profile={profile} profiles={progress.profiles}
-      onBack={profile?.preferences ? goHome : undefined} onSave={chooseProfile} />;
+  if (!profile) return <Welcome onChoose={(ageBand) => chooseProfile(codenames[0], ageBand,
+    ageBand === "1-2" ? { ...defaultPreferences, first: "watch" } : defaultPreferences)} />;
+
+  if (screen.name === "parent") {
+    return <ProfileSetup key={profile.id} profile={profile} profiles={progress.profiles}
+      onBack={goHome} onSave={chooseProfile} />;
   }
 
   function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe") {

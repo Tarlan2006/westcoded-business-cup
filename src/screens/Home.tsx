@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { Mode } from "../../shared/types";
+import type { AgeBand } from "../../shared/types";
+import { Mascot } from "../components/Mascot";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
 import { activeModes, type ActivityGroup, type Preferences } from "../state/preferences";
@@ -18,6 +20,46 @@ export function LearnPage({ title, onBack, children, wide = false }: {
         <h1>{title}</h1>
         {children}
       </section>
+    </main>
+  );
+}
+
+const welcomeAges = [
+  { age: "1-2", years: "1–2 years", title: "Watch & wonder", text: "Songs and videos", icon: "▶", tone: "watch" },
+  { age: "3-5", years: "3–5 years", title: "Play & learn", text: "Quizzes, memory, missions", icon: "✦", tone: "active" },
+  { age: "6-8", years: "6–8 years", title: "Explore & ask", text: "Ask questions, quizzes, missions", icon: "?", tone: "learn" },
+] as const;
+
+export function Welcome({ onChoose }: { onChoose: (age: AgeBand) => void }) {
+  return (
+    <main className="shell welcome">
+      <header className="welcome-hero">
+        <div>
+          <h1>Mission Control</h1>
+          <p>Voice-guided missions that get kids moving, learning, and laughing.</p>
+        </div>
+        <Mascot />
+      </header>
+      <section aria-labelledby="choose-age" className="welcome-choice">
+        <h2 id="choose-age">Grown-ups: pick your child's age to start.</h2>
+        <div className="welcome-ages">
+          {welcomeAges.map(({ age, years, title, text, icon, tone }) => (
+            <button key={age} type="button" className="activity-tile welcome-age" data-tone={tone} onClick={() => onChoose(age)}>
+              <span aria-hidden="true" className="activity-icon">{icon}</span>
+              <span className="welcome-age-label">{years}</span>
+              <strong>{title}</strong>
+              <span className="tile-description">{text}</span>
+              <span className="tile-arrow" aria-hidden="true">→</span>
+            </button>
+          ))}
+        </div>
+      </section>
+      <ul className="welcome-promises">
+        <li><span aria-hidden="true">✓</span>No sign-up</li>
+        <li><span aria-hidden="true">♡</span>Kid-safe</li>
+        <li><span aria-hidden="true">⌂</span>Stays on this device</li>
+      </ul>
+      <footer className="welcome-footer"><a href="/privacy">Privacy</a></footer>
     </main>
   );
 }
