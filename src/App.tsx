@@ -110,12 +110,13 @@ export default function App() {
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   }, [current.key]);
 
-  function setScreen(next: Screen) {
+  function setScreen(next: Screen, replaceCurrent = false) {
     stopSpeech();
     if (next.name !== "mission") launchPending.current = false;
     const previousScroll = window.scrollY;
     setHistory((previous) => {
       if (next.name === "home") return [entry(next)];
+      if (replaceCurrent) return [...previous.slice(0, -1), entry(next)];
       // A finished activity is never a resumable game in the Back stack.
       if (next.name === "reward" || next.name === "results" ||
         previous.at(-1)?.screen.name === "reward" || previous.at(-1)?.screen.name === "results") {
@@ -261,7 +262,10 @@ export default function App() {
     }
     if (screen.name === "memory" && profile.ageBand !== "1-2") {
       return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
-        onBack={goBack} onComplete={() => earn(screen.id, "memory", 20)} />;
+        onBack={goBack} onComplete={() => earn(screen.id, "memory", 20)} onReplay={() => {
+          setProgress(rewardActivity(screen.id, profile.id, "memory", 20));
+          setScreen({ name: "memory", id: crypto.randomUUID() }, true);
+        }} />;
     }
     if (screen.name === "tic-tac-toe" && profile.ageBand === "6-8") {
       return <TicTacToe key={screen.id} onBack={goBack} onComplete={(won) => {

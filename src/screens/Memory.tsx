@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
-import { LearnPage } from "./Home";
-import { GameButton } from "../components/GameUI";
+import { useEffect, useId, useRef, useState } from "react";
+import { ActivityHeader } from "../components/ActivityHeader";
+import { GameButton, SpeechBubble } from "../components/GameUI";
+import { Mascot } from "../components/Mascot";
+import { MemoryCardBack, MemoryIcon, memoryIcons, type MemoryIconName } from "../games/memory/icons";
+import "./Memory.css";
 
-const symbols = ["🐱", "🦉", "🐸", "🦋", "🐝", "🐙", "🐢", "🦊"];
+const symbols = Object.keys(memoryIcons) as MemoryIconName[];
 
 function shuffledDeck(pairs: number) {
   const deck = [...symbols.slice(0, pairs), ...symbols.slice(0, pairs)];
@@ -13,14 +16,20 @@ function shuffledDeck(pairs: number) {
   return deck;
 }
 
-export function Memory({ pairs, onBack, onComplete }: {
-  pairs: 4 | 8; onBack: () => void; onComplete: () => void;
+export function Memory({ pairs, onBack, onComplete, onReplay }: {
+  pairs: 4 | 8; onBack: () => void; onComplete: () => void; onReplay: () => void;
 }) {
   const [deck] = useState(() => shuffledDeck(pairs));
   const [shown, setShown] = useState<number[]>([]);
   const [matched, setMatched] = useState<number[]>([]);
   const isPair = shown.length === 2 && deck[shown[0]] === deck[shown[1]];
+  const missed = shown.length === 2 && !isPair;
   const won = matched.length === deck.length;
+  const foundPairs = matched.length / 2;
+  const victory = useRef<HTMLDialogElement>(null);
+  const submitted = useRef(false);
+  const victoryTitle = useId();
+  const victoryReward = useId();
 
   useEffect(() => {
     if (shown.length !== 2) return;
@@ -31,23 +40,80 @@ export function Memory({ pairs, onBack, onComplete }: {
     return () => window.clearTimeout(timer);
   }, [shown, isPair]);
 
+  useEffect(() => {
+    if (!won) return;
+    const dialog = victory.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, [won]);
+
+  function finish(action: () => void) {
+    if (submitted.current) return;
+    submitted.current = true;
+    action();
+  }
+
   return (
-    <LearnPage title="Memory" onBack={onBack}>
-      <p className="learn-description">Flip two cards to find a matching pair.</p>
-      <p role="status">{won ? "All pairs found!" : `${matched.length / 2} of ${pairs} pairs`}</p>
-      <div className="memory-grid">
-        {deck.map((emoji, index) => {
-          const found = matched.includes(index);
-          const visible = found || shown.includes(index);
-          return <button key={index} type="button" aria-label={visible ? `Card ${index + 1}: ${emoji}` : `Flip card ${index + 1}`}
-            className={visible ? "memory-card face-up" : "memory-card"}
-            disabled={visible || shown.length >= 2}
-            onClick={() => setShown((previous) => previous.length < 2 && !previous.includes(index) ? [...previous, index] : previous)}>
-            {visible ? emoji : "?"}
-          </button>;
-        })}
-      </div>
-      {won && <GameButton onClick={onComplete}>Collect XP</GameButton>}
-    </LearnPage>
+    <div className="memory-view" data-pairs={pairs}>
+      <main className="shell memory-shell">
+        <ActivityHeader title="Memory" onBack={onBack} />
+        <div className="memory-intro">
+          <div>
+            <h1>Memory</h1>
+            <p>Flip two cards to find a matching pair.</p>
+          </div>
+          <div className="memory-progress">
+            <span className="memory-stars" aria-hidden="true">{Array.from({ length: pairs }, (_, index) =>
+              <span key={index} data-earned={index < foundPairs}>★</span>)}</span>
+            <span role="status">{foundPairs} of {pairs} pairs</span>
+          </div>
+        </div>
+        <div className="memory-layout">
+          <div className="memory-grid" role="group" aria-label="Memory cards">
+            {deck.map((icon, index) => {
+              const found = matched.includes(index);
+              const visible = found || shown.includes(index);
+              const label = visible ? `${memoryIcons[icon]}, card ${index + 1}${found ? ", matched" : ""}` : `Hidden card ${index + 1}`;
+              return <button key={index} type="button" aria-label={label} className="memory-card"
+                data-face-up={visible} data-matched={found || undefined} data-miss={visible && !found && missed || undefined}
+                aria-disabled={visible || shown.length >= 2}
+                onClick={() => {
+                  if (found) return;
+                  setShown((previous) => previous.length < 2 && !previous.includes(index) ? [...previous, index] : previous);
+                }}>
+                <span className="memory-flip" aria-hidden="true">
+                  <span className="memory-face memory-back"><MemoryCardBack /></span>
+                  <span className="memory-face memory-front">
+                    <MemoryIcon name={icon} />
+                    {found && <span className="memory-check"><svg viewBox="0 0 20 20" focusable="false">
+                      <path d="m4 10 4 4 8-8" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg></span>}
+                  </span>
+                </span>
+              </button>;
+            })}
+          </div>
+          <aside className="memory-guide" aria-label="Bleep">
+            <div className="memory-guide-bleep"><Mascot mood={won ? "excited" : missed ? "surprised" : "happy"} /></div>
+            <SpeechBubble className="memory-speech" live>
+              {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching space friends!"}
+            </SpeechBubble>
+          </aside>
+        </div>
+        {won && <>
+          <GameButton className="memory-show-result" onClick={() => victory.current?.showModal()}>Show results</GameButton>
+          <dialog className="memory-victory" ref={victory} aria-labelledby={victoryTitle} aria-describedby={victoryReward}>
+            <p className="memory-win-label"><span aria-hidden="true">🎉</span> All pairs found!</p>
+            <div className="memory-winner-bleep"><Mascot mood="excited" action="clap" /></div>
+            <h2 id={victoryTitle}>Great memory!</h2>
+            <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true">★</span></p>
+            <div className="memory-victory-actions">
+              <GameButton className="memory-play-again" onClick={() => finish(onReplay)}>Play again</GameButton>
+              <GameButton tone="purple" onClick={() => finish(onComplete)}>Try something else</GameButton>
+            </div>
+          </dialog>
+        </>}
+      </main>
+    </div>
   );
 }
