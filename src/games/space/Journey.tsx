@@ -7,6 +7,13 @@ function lerp(from: number, to: number, mix: number) {
   return from + (to - from) * mix;
 }
 
+function Chevron({ back = false }: { back?: boolean }) {
+  return <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor"
+    strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d={back ? "m12 5-5 5 5 5" : "m8 5 5 5-5 5"} />
+  </svg>;
+}
+
 const types: Record<string, string> = {
   child: "Person", whale: "Animal", mountain: "Mountain", moon: "Natural satellite",
   earth: "Planet", jupiter: "Gas giant", sun: "Star", star: "Red supergiant",
@@ -212,23 +219,30 @@ export function Journey({ onFinish, speak, exploreOnly }: {
             </button>}
             <p className="sp-sr-only" role="status">{speechStatus}</p>
           </div>
-          <nav className="sp-stops" aria-label="Journey stops">
-            {objects.map((stop, index) => (
-              <button type="button" key={stop.id} className="sp-stop"
-                aria-label={stop.name} aria-current={index === active ? "step" : undefined}
-                onClick={() => goTo(index)}>
-                <span className="sp-stop-icon"><ObjectArt art={stop.art} /></span>
-                <span>{stop.name}</span>
-              </button>
-            ))}
-          </nav>
-          <div className="sp-journey-actions">
-            <button className="sp-button sp-button-soft" type="button" aria-disabled={active === 0}
-              onClick={() => step(-1)}><span aria-hidden="true">←</span> Previous stop</button>
-            <p className="sp-scroll-hint">Scroll or use ↑ ↓</p>
-            <button className="sp-button sp-button-primary" type="button" onClick={active === stopCount ? onFinish : () => step(1)}>
-              {active === stopCount ? (exploreOnly ? "Finish journey" : "Start quiz") : "Next"} <span aria-hidden="true">→</span>
-            </button>
+          <div className="sp-journey-actions" data-final={active === stopCount || undefined}>
+            <button className="sp-button sp-button-soft sp-chevron" type="button" aria-label="Previous stop"
+              aria-disabled={active === 0} onClick={() => step(-1)}><Chevron back /></button>
+            <nav className="sp-stops" aria-label="Journey stops">
+              <div className="sp-stop-buttons">
+                {objects.map((stop, index) => (
+                  <button type="button" key={stop.id} className="sp-stop"
+                    aria-label={stop.name} aria-current={index === active ? "step" : undefined}
+                    onClick={() => goTo(index)}><span className="sp-dot" /></button>
+                ))}
+              </div>
+              <div className="sp-stop-picker">
+                <div className="sp-stop-dots" aria-hidden="true">
+                  {objects.map(({ id }, index) => <span key={id} className="sp-dot" data-active={index === active || undefined} />)}
+                </div>
+                <select aria-label="Jump to a stop" value={active} onChange={(event) => goTo(Number(event.target.value))}>
+                  {objects.map(({ id, name }, index) => <option key={id} value={index}>{index + 1}. {name}</option>)}
+                </select>
+              </div>
+            </nav>
+            {active === stopCount ? <button className="sp-button sp-button-primary sp-stage-next" type="button" onClick={onFinish}>
+              {exploreOnly ? "Finish journey" : "Start quiz"}
+            </button> : <button className="sp-button sp-button-soft sp-chevron sp-stage-next" type="button"
+              aria-label="Next" onClick={() => step(1)}><Chevron /></button>}
           </div>
         </section>
       </div>
