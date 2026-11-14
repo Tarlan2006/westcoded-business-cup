@@ -26,6 +26,8 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
   onSave: (codename: string, ageBand: AgeBand, preferences: Preferences) => void;
 }) {
   const [ageBand, setAgeBand] = useState(profile?.ageBand);
+  const [step, setStep] = useState(1);
+  const editing = Boolean(onBack);
   const [codename, setCodename] = useState(profile?.codenameId ?? codenames[0]);
   const [preferences, setPreferences] = useState(() => {
     const saved = profile?.preferences ?? defaultPreferences;
@@ -38,8 +40,14 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
   const form = (
     <form className="panel setup-form centered-card" onSubmit={(event) => {
       event.preventDefault();
+      if (!editing && !onlyVideos && step === 1 && ageBand) { setStep(2); return; }
       if (ageBand) onSave(codename, ageBand, onlyVideos ? { ...preferences, first: "watch" } : preferences);
     }}>
+      {!editing && <div className="flow-form-progress" role="status">
+        <span className="field-label">{onlyVideos ? "One quick step: age and time" : `Step ${step} of 2: ${step === 1 ? "age and time" : "where and what first"}`}</span>
+        <div aria-hidden="true"><span data-current={step >= 1} />{!onlyVideos && <span data-current={step >= 2} />}</div>
+      </div>}
+      {(editing || step === 1) && <>
       <fieldset>
         <legend className="field-label">How old is your child?</legend>
         <div className="age-choices">
@@ -60,7 +68,8 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
             onClick={() => setPreferences({ ...preferences, minutes })}>{minutes} min</button>)}
         </div>
       </fieldset>
-      {!onlyVideos && <>
+      </>}
+      {!onlyVideos && (editing || step === 2) && <>
         <fieldset>
           <legend className="field-label">Where are you playing?</legend>
           <div className="segmented">
@@ -79,13 +88,16 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
           </div>
         </fieldset>
       </>}
-      <label>
+      {(editing || step === 2 || onlyVideos) && <label>
         <span className="field-label">Agent codename</span>
         <select value={codename} onChange={(event) => setCodename(event.target.value)}>
           {names.map((id) => <option key={id} value={id}>{codenameFor(id)}</option>)}
         </select>
-      </label>
-      <button className="primary-button" type="submit">{onBack ? "Save and show activities" : "Show activities"}</button>
+      </label>}
+      <div className="flow-form-actions">
+        {!editing && step === 2 && <button className="secondary-button" type="button" onClick={() => setStep(1)}>← Back</button>}
+        <button className="primary-button" type="submit" disabled={!ageBand}>{editing ? "Save changes" : step === 1 && !onlyVideos ? "Next" : "See activities"}</button>
+      </div>
       <a className="privacy-link" href="/privacy">Privacy</a>
     </form>
   );
@@ -99,10 +111,12 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
       <header className="welcome-hero">
         <div>
           <h1>Mission Control</h1>
-          <p>Grown-ups, choose a few options to find games and videos for your child.</p>
+          <p>Games, quizzes and videos that get kids moving and learning, so you get a few calm minutes</p>
         </div>
         <Mascot />
       </header>
+      <ul className="flow-promises" aria-label="Good to know"><li>No account</li><li>No camera</li><li>Progress stays on this device</li></ul>
+      <p className="flow-intro-note">A few quick choices help us find the right activities for your child.</p>
       {form}
     </main>
   );

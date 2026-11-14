@@ -6,6 +6,14 @@
 .flow-hold-button > span { display: flex; align-items: center; min-height: 48px; border-radius: 15px; padding: .55rem .9rem; background: var(--surface); color: var(--primary); font-weight: 800; }
 .flow-hold-hint { color: var(--muted); font-size: .75rem; }
 .flow-saved { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 30; padding: .75rem 1.25rem; border-radius: 999px; background: var(--mint); color: var(--success-text); box-shadow: var(--shadow); font-weight: 800; }
+.flow-promises { display: flex; flex-wrap: wrap; justify-content: center; gap: .5rem; list-style: none; margin: 0; padding: 0; }
+.flow-promises li { padding: .45rem .75rem; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: .78rem; background: var(--surface); }
+.flow-intro-note { text-align: center; color: var(--muted); font-size: .9rem; }
+.flow-form-progress > div { display: flex; gap: .5rem; margin-top: .6rem; }
+.flow-form-progress > div > span { height: 5px; flex: 1; border-radius: 5px; background: var(--border); }
+.flow-form-progress > div > [data-current="true"] { background: var(--primary); }
+.flow-form-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+.flow-form-actions > button { flex: 1; }
 
 :root {
   color-scheme: light;
