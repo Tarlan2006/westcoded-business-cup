@@ -5,11 +5,18 @@ import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
 import { videosFor } from "../game/videos";
+import { ToddlerCinema } from "./ToddlerCinema";
 
-export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay }: {
+type VideoCatalogProps = {
   ageBand: AgeBand; name: string; onParents: () => void; onHome: () => void;
   onOpen: (id: string) => void; onPlay: () => void;
-}) {
+};
+
+export function VideoCatalog(props: VideoCatalogProps) {
+  return props.ageBand === "1-2" ? <ToddlerCinema {...props} /> : <StandardVideoCatalog {...props} />;
+}
+
+function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay }: VideoCatalogProps) {
   const videos = videosFor(ageBand);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);

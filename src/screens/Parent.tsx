@@ -12,7 +12,7 @@ export function Privacy({ onBack }: { onBack?: () => void }) {
         <h2>Questions in Learn</h2>
         <p>Ask {APP_NAME} sends the question text to our server. If Groq is enabled, it receives the question to answer it. {APP_NAME} does not save questions to the profile or record them in its logs. Please leave out names, addresses, schools, and phone numbers.</p>
         <h2>Video library</h2>
-        <p>When you open a video, its player loads from YouTube and may show ads or related videos. You choose when to start playback.</p>
+        <p>When you open a video, its player loads from YouTube and may show ads or related videos. For ages 1-2, the cinema starts automatically without sound; tap to enable it. The next video starts after a 10-second break, unless you turn autoplay off. Other age groups start videos on request.</p>
       </article>
     </LearnPage>
   );

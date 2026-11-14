@@ -118,6 +118,9 @@ export default function App() {
 
   function continueWelcome() {
     if (!repeatVisit && profile?.preferences) setHistory([entry({ name: "parent" })]);
+    else if (profile?.ageBand === "1-2" && profile.preferences) {
+      setScreen({ name: "video", id: crypto.randomUUID() }, "from-home");
+    }
     setWelcoming(false);
     const url = new URL(window.location.href);
     if (url.searchParams.has("welcome")) {
@@ -204,7 +207,7 @@ export default function App() {
       if (!selected) return;
       if (screen.name === "parent") {
         setSaved(true);
-        setScreen({ name: "home" });
+        setScreen(ageBand === "1-2" ? { name: "video", id: crypto.randomUUID() } : { name: "home" }, "from-home");
       } else if (ageBand !== "1-2" && choices.first === "active") {
         launch(choices.location === "car" ? "roadtrip" : "hunt", selected, choices.minutes, 3);
       } else {
