@@ -82,7 +82,7 @@ function verify() {
     const label = `quiz.json / ${item.id}`;
     uniqueId(item.id, label, ids);
     safeText(item.question, label, 140);
-    assert(ageBands.has(item.ageBand) && typeof item.topic === "string" && item.topic.trim(), `${label}: invalid ageBand or topic`);
+    assert((ageBands.has(item.ageBand) || item.ageBand === "1-2") && typeof item.topic === "string" && item.topic.trim(), `${label}: invalid ageBand or topic`);
     assert(Array.isArray(item.choices) && item.choices.length >= 2 && item.choices.length <= 3 &&
       new Set(item.choices).size === item.choices.length && item.choices.includes(item.answer), `${label}: invalid choices or answer`);
     for (const choice of item.choices) safeText(choice, label, 140);

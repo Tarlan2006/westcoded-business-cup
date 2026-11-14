@@ -8,7 +8,7 @@ import { videosFor } from "../game/videos";
 
 export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay }: {
   ageBand: AgeBand; name: string; onParents: () => void; onHome: () => void;
-  onOpen: (id: string) => void; onPlay: () => void;
+  onOpen: (id: string) => void; onPlay: (videoId?: string) => void;
 }) {
   const videos = videosFor(ageBand);
   const [index, setIndex] = useState(0);
@@ -23,11 +23,11 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
   }
 
   const actions = <div className={playing ? "flex flex-wrap items-center justify-between gap-2" : "video-frame-controls absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2"}>
-    <button type="button" disabled={!selected} onClick={() => index + 1 >= videos.length ? onPlay() : choose(index + 1)}
+    <button type="button" disabled={!selected} onClick={() => index + 1 >= videos.length ? onPlay(selected?.id) : choose(index + 1)}
       className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
       <span aria-hidden="true">⏭️</span> Next Video in Catalog
     </button>
-    <button type="button" onClick={onPlay}
+    <button type="button" onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
       <span aria-hidden="true">🤖</span> Play with {APP_NAME} Now!
     </button>

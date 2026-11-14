@@ -1,3 +1,4 @@
+import { videosFor } from "./game/videos";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { speakFallback, stopSpeech, unlock } from "./audio/engine";
@@ -288,10 +289,10 @@ export default function App() {
       return <Ask topics={topics} onBack={goBack} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
         onQuiz={(topic) => setScreen({ name: "quiz", id: crypto.randomUUID(), topic })} />;
     }
-    if (screen.name === "quiz" && profile.ageBand !== "1-2") {
+    if (screen.name === "quiz" && (profile.ageBand !== "1-2" || screen.afterVideo && screen.topic)) {
       return <Quiz key={screen.id} ageBand={profile.ageBand} topic={screen.topic}
         onBack={goBack} missionMinutes={screen.afterVideo ? preferences.minutes : undefined}
-        cycle={profile.activities?.quiz ?? 0}
+        cycle={profile.ageBand === "1-2" ? 0 : profile.activities?.quiz ?? 0}
         onExit={() => setScreen({ name: "parent" }, "from-home")} onComplete={(points) => earn(screen.id, "quiz", points)} />;
     }
     if (screen.name === "memory" && profile.ageBand !== "1-2") {
@@ -339,10 +340,11 @@ export default function App() {
     if (screen.name === "video") {
       return <VideoCatalog ageBand={profile.ageBand} name={preferences.nickname ?? codenameFor(profile.codenameId)} onHome={goHome}
         onParents={() => setScreen({ name: "parent" })} onOpen={(video) => setProgress(rewardActivity(`${screen.id}:${video}`, profile.id, "video", 5))}
-        onPlay={() => {
+        onPlay={(videoId) => {
           if (sound) void unlock().catch(() => {});
           const id = crypto.randomUUID();
-          setScreen(profile.ageBand === "1-2" ? { name: "toddler", id } : { name: "quiz", id, afterVideo: true, topic: missionQuizTopic(profile, preferences) });
+          const videoTopic = videosFor(profile.ageBand).find((video) => video.id === videoId)?.quizTopic;
+          setScreen(videoTopic ? { name: "quiz", id, afterVideo: true, topic: videoTopic } : profile.ageBand === "1-2" ? { name: "toddler", id } : { name: "quiz", id, afterVideo: true, topic: missionQuizTopic(profile, preferences) });
         }} />;
     }
     return <Hub profile={profile} preferences={preferences} onActivity={openActivity} onToggleSound={toggleSound}

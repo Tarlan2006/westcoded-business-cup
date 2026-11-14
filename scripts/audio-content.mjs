@@ -28,7 +28,7 @@ export function readClips() {
   const quiz = readRows("quiz");
   const clips = [...banks.values()].flat().map((row) => ({ id: row.id, file: row.file, text: row.text }));
   for (const row of quiz) {
-    if (row.ageBand === "3-5") clips.push({
+    if (row.ageBand === "1-2" || row.ageBand === "3-5") clips.push({
       id: `quiz_${row.id}`, file: `/audio/quiz/quiz_${row.id}.mp3`, text: row.question,
     });
   }
