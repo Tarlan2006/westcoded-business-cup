@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
 import { ActivityHeader } from "../components/ActivityHeader";
 import type { SpaceGameProps } from "../games/space";
+import "./Space.css";
 
 const SpaceGame = lazy(() => import("../games/space").then(({ SpaceGame }) => ({ default: SpaceGame })));
 const SpaceViewer = lazy(() => import("../games/space").then(({ SpaceViewer }) => ({ default: SpaceViewer })));
@@ -15,7 +16,7 @@ export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, 
   useEffect(() => () => stopSpeech(), []);
 
   return (
-    <main>
+    <main className="sp-host">
       <div className="shell flow-module-header">
         <ActivityHeader title="Space Scale" onBack={onBack}>
           <button type="button" className="quiet-button" aria-pressed={sound} onClick={() => {

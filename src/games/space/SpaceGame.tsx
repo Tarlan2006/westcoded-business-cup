@@ -41,7 +41,6 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
           <span aria-hidden="true">←</span> Back
         </button>
         <div className="sp-title">Space Scale</div>
-        <span className="sp-tag">{stage === "journey" ? "Journey" : stage === "quiz" ? "Quiz" : stage === "result" ? "Results" : "Explore"}</span>
       </header> : header}
       {stage === "intro" && <div className="sp-intro">
         <div className="sp-intro-copy">
