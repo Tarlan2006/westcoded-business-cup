@@ -52,7 +52,7 @@ function breadcrumb(screen: Screen): string {
     case "setup": return `Move › ${MODES[screen.mode].name} › Setup`;
     case "mission": return `Move › ${MODES[screen.session.mode].name}`;
     case "results": return `Move › ${MODES[screen.session.mode].name} › Results`;
-    case "toddler": return "Watch › Play with Bleep";
+    case "toddler": return `Watch › Play with ${APP_NAME}`;
     case "quiz": return screen.topic ? `Learn › Ask ${APP_NAME} › Quick quiz` : "Learn › Quiz";
     case "memory": return "Learn › Memory";
     case "ask": return `Learn › Ask ${APP_NAME}`;
@@ -117,6 +117,7 @@ export default function App() {
   }
 
   function continueWelcome() {
+    if (!repeatVisit && profile?.preferences) setHistory([entry({ name: "parent" })]);
     setWelcoming(false);
     const url = new URL(window.location.href);
     if (url.searchParams.has("welcome")) {

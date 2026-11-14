@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useEffect, useId, useRef, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { GameButton, SpeechBubble } from "../components/GameUI";
@@ -93,7 +94,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
               </button>;
             })}
           </div>
-          <aside className="memory-guide" aria-label="Bleep">
+          <aside className="memory-guide" aria-label={`${APP_NAME}`}>
             <div className="memory-guide-bleep"><Mascot mood={won ? "excited" : missed ? "surprised" : "happy"} /></div>
             <SpeechBubble className="memory-speech" live>
               {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching space friends!"}

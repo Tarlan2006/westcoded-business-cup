@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
@@ -12,7 +13,7 @@ const needs = [
   ["science", "🚀 Science & logic curiosity"],
 ] as const;
 const sessionFlows = [
-  { value: "learn", icon: "🧠", title: "Educational Video + Quiz", detail: "Curated science video → Bleep asks fun interactive questions." },
+  { value: "learn", icon: "🧠", title: "Educational Video + Quiz", detail: `Curated science video → ${APP_NAME} asks fun interactive questions.` },
   { value: "active", icon: "⚡", title: "Active Physical Missions", detail: "Zero passive watching — scavenger hunts, movement, and voice challenges." },
 ] as const;
 const selectedAge = "border-[#FFD13B] bg-[#6C47FF] text-white shadow-md";
@@ -47,7 +48,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
           <div aria-hidden="true" className="w-12 h-12 shrink-0 rounded-2xl bg-[#6C47FF] border-2 border-white/40 flex items-center justify-center text-2xl shadow-md">👨‍👩‍👧</div>
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">Parent Setup • 1-Time Profile</span>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell Bleep About Your Child</h1>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell {APP_NAME} About Your Child</h1>
           </div>
         </div>
         <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
@@ -90,7 +91,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
         <div>
           <div className="font-extrabold text-sm text-white" id="quietTimeLabel">Default Parent Quiet-Time Goal</div>
-          <div className="text-xs font-bold text-indigo-300">Bleep paces missions to match your break</div>
+          <div className="text-xs font-bold text-indigo-300">{APP_NAME} paces missions to match your break</div>
         </div>
         <div className="flex items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
           {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={minutes === value}
@@ -100,7 +101,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </div>
 
       {age === "1-2" ? <div id="toddlerAutoNotice" className="p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
-        🧸 Toddler Mode (1–2 yrs): Gentle movement videos → Bleep appears for Clap & Peek-a-Boo!
+        🧸 Toddler Mode (1–2 yrs): Gentle movement videos → {APP_NAME} appears for Clap & Peek-a-Boo!
       </div> : <fieldset id="parentModeSelectorWrapper" className="space-y-2">
         <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">Choose Session Flow for Your Child</legend>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

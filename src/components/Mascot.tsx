@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useEffect, useRef, useState } from "react";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { ParticlePop } from "./GameUI";
@@ -122,7 +123,7 @@ export function Mascot({ mood = "idle", action = "none", speaking = false, playf
     </svg>
   );
   if (!playful) return art;
-  return <button className="bleep-touch" type="button" aria-label="Tickle Bleep" onClick={() => {
+  return <button className="bleep-touch" type="button" aria-label={`Tickle ${APP_NAME}`} onClick={() => {
     window.clearTimeout(timer.current);
     setTickled(true);
     uiSound("giggle", sound);

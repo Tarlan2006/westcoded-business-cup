@@ -1,3 +1,4 @@
+import { APP_NAME } from "../../brand";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type JSX } from "react";
 import { GameButton } from "../../components/GameUI";
 import { BalloonArt } from "./BalloonArt";
@@ -159,7 +160,7 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
           <div className="bl-primary-slot">{looking ? <GameButton className="bl-primary" disabled={stage === "fading" || exited} onClick={counted}>I COUNTED!</GameButton>
             : stage === "result" ? <GameButton className="bl-primary" onClick={advance}>NEXT ROUND</GameButton> : null}</div>
         </div>
-        <aside className="bl-companion" aria-label="Bleep's counting tip"><Bleep mood={mood} /><p className="bl-bubble" aria-live="polite"><span className="bl-mobile-tip">{message}</span><span className="bl-desktop-tip">{looking ? <>Count them all<br />before time runs out!</> : message}</span></p></aside>
+        <aside className="bl-companion" aria-label={`${APP_NAME}'s counting tip`}><Bleep mood={mood} /><p className="bl-bubble" aria-live="polite"><span className="bl-mobile-tip">{message}</span><span className="bl-desktop-tip">{looking ? <>Count them all<br />before time runs out!</> : message}</span></p></aside>
       </div>
       {stage === "final" && <div className="bl-final-shade"><section className="bl-final" aria-label="Counting results">
         <Bleep mood="excited" />

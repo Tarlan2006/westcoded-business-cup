@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
@@ -189,7 +190,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
     action={isFeedback ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={isFeedback && state.feedback !== timeUp}
     onExit={onExit} exitDisabled={state.phase === "resolving"}
     toolbar={<button type="button" className="prototype-parent-button" disabled={state.phase === "resolving"} onClick={togglePause}>{paused ? "Resume" : "Pause"}</button>}
-    prompt={paused ? "Ready when you are." : state.phase === "resolving" ? "Bleep is checking in…" : running ? assignment : caption || assignment}
+    prompt={paused ? "Ready when you are." : state.phase === "resolving" ? `${APP_NAME} is checking in…` : running ? assignment : caption || assignment}
     replies={!paused && state.phase === "round" ? quickReplies : undefined}
     status={isHunt && !paused ? voice.message : isRoadtrip ? `Player 1: ${state.players[0]} · Player 2: ${state.players[1]}` : undefined}
     controls={paused ? <>

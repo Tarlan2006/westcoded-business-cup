@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 export const shipParts = [
   { id: "thruster", name: "Moon Thruster", icon: "🚀" },
   { id: "dish", name: "Star Signal Dish", icon: "📡" },
@@ -7,9 +8,9 @@ export const shipParts = [
 ] as const;
 
 const teasers = [
-  "Bleep found a mystery signal. What could be sending it?",
+  `${APP_NAME} found a mystery signal. What could be sending it?`,
   "A tiny clue might lead to a giant discovery.",
-  "Bleep is plotting a new route through the stars.",
+  `${APP_NAME} is plotting a new route through the stars.`,
 ];
 
 export const partForSession = (sessions: number) => sessions > 0 ? shipParts[(sessions - 1) % shipParts.length] : undefined;

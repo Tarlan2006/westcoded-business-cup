@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useContext, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
@@ -28,7 +29,7 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
     </button>
     <button type="button" onClick={onPlay}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
-      <span aria-hidden="true">🤖</span> Play with Bleep Now!
+      <span aria-hidden="true">🤖</span> Play with {APP_NAME} Now!
     </button>
   </div>;
 
@@ -61,7 +62,7 @@ export function VideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay 
             </button> : <>
               <p aria-hidden="true" className="text-6xl sm:text-7xl animate-bounce">{ageBand === "1-2" ? "👏" : "🚀"}</p>
               <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">More videos coming soon</h1>
-              <p className="text-xs sm:text-sm font-bold text-indigo-200">Play with Bleep while we get the next episode ready.</p>
+              <p className="text-xs sm:text-sm font-bold text-indigo-200">Play with {APP_NAME} while we get the next episode ready.</p>
             </>}
           </div>
           {actions}

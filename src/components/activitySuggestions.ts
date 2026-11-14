@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import type { Activity } from "../../shared/types";
 import quizBank from "../../content/quiz.json";
 import { MODES } from "../game/content";
@@ -9,7 +10,7 @@ import type { ChildProfile } from "../state/progress";
 export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string; topic?: string }
 const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "A little question, a big discovery. Let's think together.", icon: "🧠" };
 const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "🃏" };
-const ask: ActivitySuggestion = { activity: "ask", title: "Ask Bleep", description: "Ask about space, animals, or your favorite hero.", icon: "🤖" };
+const ask: ActivitySuggestion = { activity: "ask", title: `Ask ${APP_NAME}`, description: "Ask about space, animals, or your favorite hero.", icon: "🤖" };
 const video: ActivitySuggestion = { activity: "video", title: "Video library", description: "Pick a short video to watch together.", icon: "▶️" };
 const balloons: ActivitySuggestion = { activity: "balloons", title: "Balloon Count", description: "Count the balloons before time runs out!", icon: "🎈" };
 

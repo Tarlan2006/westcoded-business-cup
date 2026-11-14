@@ -1,9 +1,10 @@
+import { playQueue, unlock } from "../audio/engine";
 import { useEffect, useRef, useState } from "react";
-import { useSoundEnabled, uiSound } from "../audio/sfx";
+import { useSoundEnabled } from "../audio/sfx";
 import { APP_NAME } from "../brand";
 import { PrototypeBleep } from "../components/Mascot";
 
-const status = ["Waking up Bleep...", "Charging space antennas...", "Ready!"];
+const status = [`Waking up ${APP_NAME}...`, "Charging space antennas...", "Ready!"];
 const progress = [15, 60, 100];
 
 export function Welcome({ repeat, onContinue, onToggleSound }: {
@@ -40,12 +41,12 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
     </div>
     <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto text-center">
       <div className="speech-bubble-duo px-6 py-4 mb-6 animate-bounce">
-        <h1 ref={greeting} tabIndex={-1} className="focus:outline-none font-display text-xl sm:text-2xl font-bold text-slate-800">Hi! I'm Bleep! Ready for a screen-free adventure?</h1>
+        <h1 ref={greeting} tabIndex={-1} className="focus:outline-none font-display text-xl sm:text-2xl font-bold text-slate-800">Hey pal! Ready for a screen-free adventure?</h1>
       </div>
       <div className="w-48 h-48 sm:w-56 sm:h-56"><PrototypeBleep variant="greeting" action="wave" /></div>
     </div>
     <div className="w-full border-t-2 border-slate-200 pt-4 pb-2 flex justify-center sm:justify-end max-w-4xl mx-auto">
-      <button type="button" onClick={() => { uiSound("chirp", sound); onContinue(); }}
+      <button type="button" onClick={() => { if (sound) { void unlock().then(() => playQueue(["common_setup_greeting"])).catch(() => {}); } onContinue(); }}
         className="w-full sm:w-auto px-12 py-4 rounded-2xl btn-game btn-lime text-white font-display font-bold text-lg tracking-wider uppercase cursor-pointer">CONTINUE</button>
     </div>
   </main>;

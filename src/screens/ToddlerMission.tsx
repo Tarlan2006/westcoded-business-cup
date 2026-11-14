@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useEffect, useRef, useState } from "react";
 import { useClipSpeech } from "../audio/useClipSpeech";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
@@ -6,10 +7,10 @@ import { MissionStage, missionButtonStyle, missionReplyStyle } from "../componen
 
 const rounds = [
   { seconds: 25, demoEmoji: "👏", demoWord: "CLAP!", prop: "👏", action: "clap", mood: "happy",
-    shortPrompt: "Clap hands with Bleep! 👏👏", speech: "Let us clap our hands together! Clap, clap, clap!",
+    shortPrompt: `Clap hands with ${APP_NAME}! 👏👏`, speech: "Let us clap our hands together! Clap, clap, clap!",
     replies: ["👏👏 Clap!", "😂 Tee-hee!"], praise: "Super clapping! 🌟" },
   { seconds: 25, demoEmoji: "🙈", demoWord: "PEEK-A-BOO", prop: "🙈", action: "wave", mood: "giggle",
-    shortPrompt: "Peek-a-boo! Wave to Bleep! 👋", speech: "Peek-a-boo! I see you! Wave your hand!",
+    shortPrompt: `Peek-a-boo! Wave to ${APP_NAME}! 👋`, speech: "Peek-a-boo! I see you! Wave your hand!",
     replies: ["👋 Bye-bye!", "🙈 Peek-a-boo!"], praise: "Peek-a-boo! You are so fast! 🎉" },
   { seconds: 25, demoEmoji: "🐮", demoWord: "MOOO!", prop: "🐮", action: "jump", mood: "excited",
     shortPrompt: "What does the cow say? 🐮", speech: "Look, a friendly cow! What does the cow say? Moooo!",
@@ -77,7 +78,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
     }, 1700);
   }
 
-  return <MissionStage {...round} heading="Play with Bleep" round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
+  return <MissionStage {...round} heading={`Play with ${APP_NAME}`} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
     ratio={seconds / round.seconds} onExit={onExit} mood={feedback ? "excited" : round.mood} feedback={feedback}
     prompt={feedback ? round.praise : round.shortPrompt}
     replies={round.replies.map((label) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={advance}>{label}</button>)}

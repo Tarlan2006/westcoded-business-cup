@@ -1,3 +1,4 @@
+import { APP_NAME } from "../brand";
 import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
@@ -60,7 +61,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
           <span aria-hidden="true" className="text-4xl leading-none">{demoEmoji}</span>
           <span className="px-1 text-center leading-none text-[10px] font-black uppercase text-[#1E1B4B] mt-0.5">{demoWord}</span>
         </div>
-        <button type="button" className="absolute inset-0 flex items-center justify-center cursor-pointer rounded-full" aria-label="Tickle Bleep"
+        <button type="button" className="absolute inset-0 flex items-center justify-center cursor-pointer rounded-full" aria-label={`Tickle ${APP_NAME}`}
           disabled={paused} onClick={(event) => {
             window.clearTimeout(tickleTimer.current);
             const { clientX, clientY, detail } = event;
