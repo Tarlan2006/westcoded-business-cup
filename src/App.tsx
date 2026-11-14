@@ -287,8 +287,8 @@ export default function App() {
     if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
       return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goBack} onOpen={openVideo} />;
     }
-    return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
-      onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={() => startLearn("quiz")}
+    return <Hub profile={profile} preferences={preferences} onToggleSound={toggleSound} onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
+      onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={(topic) => openActivity("quiz", topic)}
       onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
       onSketch={() => startLearn("sketch")} onSpace={() => startLearn("space")}
       onWatch={() => setScreen({ name: "video" })} />;

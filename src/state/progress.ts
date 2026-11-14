@@ -7,6 +7,8 @@ const ranks = ["Recruit", "Scout", "Field Agent", "Special Agent", "Commander"];
 
 export interface ChildProfile extends Profile {
   preferences?: Preferences;
+  garageSessions?: number;
+  recentSessions?: string[];
 }
 
 interface Progress {
@@ -44,6 +46,8 @@ export function readProgress(): Progress {
           lastMode: lastMode === "hunt" || lastMode === "roadtrip" || lastMode === "lava" ? lastMode : undefined,
           activities: profile.activities && typeof profile.activities === "object" ? profile.activities : {},
           preferences: readPreferences(profile.preferences),
+          garageSessions: Number.isSafeInteger(profile.garageSessions) ? Math.max(0, profile.garageSessions!) : 0,
+          recentSessions: Array.isArray(profile.recentSessions) ? profile.recentSessions.filter((id) => typeof id === "string").slice(-100) : [],
         }];
       });
       cached = { profiles: migrated, selectedId, lastFinished };
@@ -95,7 +99,8 @@ export function rewardActivity(
   mission?: { mode: Mode; memory: string }, date = new Date(),
 ) {
   const progress = readProgress();
-  if (progress.lastFinished === sessionId) return progress;
+  const target = progress.profiles.find((profile) => profile.id === profileId);
+  if (!target || progress.lastFinished === sessionId || target.recentSessions?.includes(sessionId)) return progress;
   const yesterday = new Date(date);
   yesterday.setDate(yesterday.getDate() - 1);
   const profiles = progress.profiles.map((profile) => {
@@ -106,6 +111,8 @@ export function rewardActivity(
       : lastDay === localDay(yesterday) ? profile.streak + 1 : 1;
     return {
       ...profile, xp, rank: rankFor(xp), streak, lastPlayedISO: date.toISOString(),
+      garageSessions: (profile.garageSessions ?? 0) + 1,
+      recentSessions: [...(profile.recentSessions ?? []).slice(-99), sessionId],
       activities: { ...profile.activities, [activity]: (profile.activities?.[activity] ?? 0) + 1 },
       ...(mission ? { lastMode: mission.mode, loreNote: mission.memory.slice(0, 120) } : {}),
     };

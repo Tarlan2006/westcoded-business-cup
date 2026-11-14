@@ -1,11 +1,12 @@
 import type { Activity } from "../../shared/types";
+import quizBank from "../../content/quiz.json";
 import { MODES } from "../game/content";
 import { sketchGameMeta } from "../games/sketch/meta";
 import { spaceGameMeta } from "../games/space/meta";
-import { activeModes, type Preferences } from "../state/preferences";
+import { activeModes, type ActivityGroup, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
 
-export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string }
+export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string; topic?: string }
 const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "A little question, a big discovery. Let's think together.", icon: "?" };
 const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "▦" };
 const ask: ActivitySuggestion = { activity: "ask", title: "Ask Mission Control", description: "Start with a question about science or nature.", icon: "✦" };
@@ -22,14 +23,42 @@ export function availableActivities(profile: ChildProfile, preferences: Preferen
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {
   if (profile.ageBand === "1-2") return video;
-  if (preferences.first === "watch") {
+  const first = orderedGroups(profile, preferences)[0];
+  const priorities = preferences.needs ?? [];
+  const interests = preferences.interests ?? [];
+  const options = availableActivities(profile, preferences);
+  if (first === "watch") {
     return profile.ageBand === "3-5" && !(profile.activities?.quiz ?? 0)
       ? { ...quiz, description: "Finish a quiz to unlock a video to watch together." } : video;
   }
-  if (preferences.first === "learn") return profile.ageBand === "6-8" ? ask : quiz;
-  if (preferences.first === "any" && profile.ageBand === "3-5") return quiz;
+  if (first === "learn") {
+    if (priorities.includes("habits")) {
+      const habits = quizBank.find((item) => item.ageBand === profile.ageBand &&
+        /\b(water to drink|drinking water|brush|teeth|healthy habits)\b/i.test(`${item.topic} ${item.question}`));
+      if (habits) return { ...quiz, topic: habits.topic };
+    }
+    if (priorities.includes("listening")) return profile.ageBand === "6-8" ? ask : quiz;
+    if (interests.includes("Animals") || interests.includes("Dinosaurs")) {
+      if (quizBank.some((item) => item.ageBand === profile.ageBand && item.topic === "animals")) return { ...quiz, topic: "animals" };
+    }
+    if (interests.includes("Art") && profile.ageBand === "6-8") return sketchGameMeta;
+    if (interests.includes("Space") || priorities.includes("science")) return spaceGameMeta;
+    return profile.ageBand === "6-8" ? ask : quiz;
+  }
   const mode = preferences.location === "car" ? "roadtrip" : "hunt";
-  return { activity: mode, title: MODES[mode].name, description: MODES[mode].description, icon: MODES[mode].icon };
+  return options.find((item) => item.activity === mode) ?? quiz;
+}
+
+export function orderedGroups(profile: ChildProfile, { first, needs = [], interests = [] }: Preferences): ActivityGroup[] {
+  if (profile.ageBand === "1-2") return ["watch"];
+  const groups: ActivityGroup[] = ["active", "learn", "watch"];
+  if (needs.includes("screen")) return groups;
+  const hasHabitsQuiz = needs.includes("habits") && quizBank.some((item) => item.ageBand === profile.ageBand &&
+    /\b(water to drink|drinking water|brush|teeth|healthy habits)\b/i.test(`${item.topic} ${item.question}`));
+  const lead = first !== "any" ? first : needs.includes("energy") ? "active" :
+    needs.includes("listening") || needs.includes("science") || hasHabitsQuiz || interests.some((item) => item !== "Music" && item !== "Vehicles") ? "learn" :
+    interests.includes("Music") ? "watch" : interests.includes("Vehicles") ? "active" : profile.ageBand === "3-5" ? "learn" : "active";
+  return [lead, ...groups.filter((item) => item !== lead)];
 }
 
 export function nextActivities(profile: ChildProfile, preferences: Preferences, previous: Activity): ActivitySuggestion[] {
@@ -37,5 +66,6 @@ export function nextActivities(profile: ChildProfile, preferences: Preferences, 
   if (profile.ageBand === "3-5" && previous === "quiz" && (profile.activities?.quiz ?? 0) > 0) {
     return [{ ...video, title: "Watch your video reward", description: "You unlocked it! Choose a video to watch together." }, memory];
   }
-  return options.slice(0, 2);
+  const recommended = startingActivity(profile, preferences).activity;
+  return [...options.filter((item) => item.activity === recommended), ...options.filter((item) => item.activity !== recommended)].slice(0, 2);
 }
