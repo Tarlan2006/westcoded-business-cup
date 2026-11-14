@@ -29,6 +29,9 @@
 .ttt-mascot { flex: 0 0 66px; }
 .ttt-bubble {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -70,7 +73,6 @@
 
 .ttt-cell {
   position: relative;
-  z-index: 1;
   display: grid;
   min-height: 88px;
   aspect-ratio: 1;
@@ -83,13 +85,12 @@
 }
 
 .ttt-cell[aria-disabled="true"] { cursor: default; }
-.ttt-cell:focus-visible { z-index: 2; }
+.ttt-cell:focus-visible { outline-offset: 1px; }
 @media (hover: hover) {
   .ttt-cell[aria-disabled="false"]:hover { transform: translateY(-3px); background: var(--bg-soft); }
 }
 .ttt-cell[aria-disabled="false"]:active { transform: translateY(1px) scale(.96); }
-.ttt-piece { display: block; width: 74%; max-width: 88px; overflow: visible; }
-.ttt-cell .ttt-piece { animation: ttt-pop 250ms ease-out both; }
+.ttt-piece { position: relative; z-index: 2; display: block; width: 74%; max-width: 88px; overflow: visible; }
 .ttt-star, .ttt-cloud { stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .ttt-star { fill: var(--accent); stroke: var(--coral-text); }
 .ttt-cloud { fill: var(--sky); stroke: var(--sky-text); }
@@ -99,12 +100,39 @@
 .ttt-star-face { color: var(--accent-text); }
 .ttt-cloud-face { color: var(--sky-text); }
 .ttt-star-face path, .ttt-cloud-face path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
-.ttt-cloud-eyes { fill: currentColor; transform-box: fill-box; transform-origin: center; animation: ttt-blink 5.7s 900ms infinite; }
-.ttt-cell:nth-child(even) .ttt-cloud-eyes { animation-delay: 2100ms; }
+.ttt-cloud-eyes { fill: currentColor; transform-box: fill-box; transform-origin: center; }
 .ttt-cheek { fill: var(--coral); }
+
+.ttt-cell[data-winning="true"] { border: 2px solid var(--success-text); background: var(--mint); }
+.ttt-room[data-result="O"] .ttt-cell[data-winning="true"] { border-color: var(--sky-text); background: var(--sky); }
+.ttt-win-line { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.ttt-win-line line { stroke: var(--success-text); stroke-width: 1.25; stroke-linecap: round; }
+.ttt-room[data-result="O"] .ttt-win-line line { stroke: var(--sky-text); }
+.ttt-hearts { flex: 0 0 35px; width: 35px; fill: var(--coral); stroke: var(--coral-text); stroke-width: 2; stroke-linejoin: round; }
+.ttt-hearts path:last-child { fill: var(--primary-soft); stroke: var(--primary); }
+.ttt-room[data-result="tie"] .ttt-bubble { background: var(--coral-soft); }
+
+.ttt-confetti { position: absolute; z-index: 3; inset: 0; overflow: hidden; border-radius: inherit; pointer-events: none; }
+.ttt-confetti i {
+  position: absolute;
+  top: 0;
+  left: var(--ttt-left);
+  width: 7px;
+  height: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--ttt-color);
+  animation: ttt-fall var(--ttt-fall) var(--ttt-delay) ease-in both;
+}
+.ttt-confetti i:nth-child(3n) { width: 8px; height: 8px; border-radius: 50%; }
 
 @keyframes ttt-pop { 0% { transform: scale(0); } 66% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes ttt-blink { 0%, 92%, 100% { transform: scaleY(1); } 95%, 97% { transform: scaleY(.15); } }
+@keyframes ttt-hop { 0%, 100% { transform: translateY(0); } 42% { transform: translateY(-10px) scale(1.08); } 75% { transform: translateY(1px) scale(.96); } }
+@keyframes ttt-fall {
+  0% { opacity: 0; transform: translateY(-12px) rotate(0deg); }
+  10%, 75% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--ttt-drift), 355px) rotate(320deg); }
+}
 
 @media (min-width: 740px) {
   .ttt-room {
@@ -124,4 +152,19 @@
   .ttt-title, .ttt-controls, .ttt-host, .ttt-actions { text-align: left; justify-content: flex-start; }
   .ttt-mascot { flex-basis: 88px; }
   .ttt-bubble { background: var(--surface); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ttt-cell .ttt-piece, .ttt-hearts { animation: ttt-pop 250ms ease-out both; }
+  .ttt-cloud-eyes { animation: ttt-blink 5.7s 900ms infinite; }
+  .ttt-cell:nth-child(even) .ttt-cloud-eyes { animation-delay: 2100ms; }
+  .ttt-room[data-result="X"] .ttt-cell[data-winning="true"] .ttt-piece { animation: ttt-hop 560ms 80ms ease both; }
+  .ttt-room[data-result="X"] .ttt-cell[data-winning="true"]:nth-child(3n+2) .ttt-piece { animation-delay: 135ms; }
+  .ttt-room[data-result="X"] .ttt-cell[data-winning="true"]:nth-child(3n) .ttt-piece { animation-delay: 190ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ttt-confetti { display: none; }
+  .ttt-cell[aria-disabled="false"]:hover, .ttt-cell[aria-disabled="false"]:active { transform: none; }
+  .ttt-cell { transition: none; }
 }

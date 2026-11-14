@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
+import { Confetti, TieHearts } from "./ttt/Celebration";
 import { Piece } from "./ttt/Piece";
 import "./tictactoe.css";
 
@@ -109,7 +110,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
   return (
     <main className="shell ttt-shell">
       <ActivityHeader title="Tic-tac-toe" onBack={scores.X === 0 && scores.O + scores.tie > 0 ? () => onComplete(false) : onBack} />
-      <section className="ttt-room" aria-labelledby="ttt-title">
+      <section className="ttt-room" aria-labelledby="ttt-title" data-result={result ?? undefined}>
         <header className="ttt-title">
           <h1 id="ttt-title">Stars vs. Clouds</h1>
           <p>You're the star. Make a row of three!</p>
@@ -125,7 +126,9 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
         </div>
         <div className="ttt-host">
           <div className="ttt-mascot"><Mascot mood={thinking ? "thinking" : result ? "happy" : "idle"} /></div>
-          <p className="ttt-bubble" aria-live="polite" aria-atomic="true">{message}</p>
+          <p className="ttt-bubble" aria-live="polite" aria-atomic="true">
+            {message}{result === "tie" && <TieHearts />}
+          </p>
         </div>
         <div className="ttt-board" role="group" aria-label="Tic-tac-toe board">
           {board.map((cell, index) => (
@@ -134,6 +137,11 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
               data-winning={winningLine?.includes(index) || undefined}
               onClick={() => dispatch({ mark: "X", index, board })}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
           ))}
+          {winningLine && <svg className="ttt-win-line" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <line x1={18 + (winningLine[0] % 3) * 32} y1={18 + Math.floor(winningLine[0] / 3) * 32}
+              x2={18 + (winningLine[2] % 3) * 32} y2={18 + Math.floor(winningLine[2] / 3) * 32} />
+          </svg>}
+          {result === "X" && <Confetti />}
         </div>
         <div className="ttt-actions">
           <button type="button" className="primary-button" disabled={!result} onClick={() => dispatch("rematch")}>
