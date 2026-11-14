@@ -21,7 +21,7 @@ export function availableActivities(profile: ChildProfile, preferences: Preferen
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
     { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }, spaceGameMeta] : [];
   return [quiz, memory, ...older, balloons, ...moves, video].filter(item =>
-    profile.ageBand !== "6-8" || (item.activity !== "memory" && item.activity !== "balloons"));
+    profile.ageBand !== "6-8" || item.activity !== "balloons");
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {

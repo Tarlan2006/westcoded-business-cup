@@ -14,9 +14,9 @@ try {
     await page.getByRole('button', { name: 'Home, back to activities', exact: true }).click();
     const older = age === '6–8 yrs';
     for (const title of ['Memory', 'Balloon Count']) {
-      assert.equal(await page.locator('.activity-grid').getByRole('button', { name: new RegExp(title) }).count(), older ? 0 : 1);
+      assert.equal(await page.locator('.activity-grid').getByRole('button', { name: new RegExp(title) }).count(), older && title === 'Balloon Count' ? 0 : 1);
     }
-    if (older) assert.doesNotMatch(await page.getByRole('main').innerText(), /Memory|Balloon Count/);
+    if (older) assert.doesNotMatch(await page.getByRole('main').innerText(), /Balloon Count/);
     // Open the existing video -> three-question quiz -> Complete path.
     await page.locator('.activity-grid').getByRole('button', { name: /Video library/ }).click();
     await page.getByRole('button', { name: /Play with MyPal Now/ }).click();
@@ -25,7 +25,7 @@ try {
       await page.getByRole('button', { name: index === 2 ? 'Finish quiz' : 'Next question', exact: true }).click();
     }
     await page.locator('#screen-complete').waitFor();
-    if (older) assert.doesNotMatch(await page.getByRole('main').innerText(), /Memory|Balloon Count/);
+    if (older) assert.doesNotMatch(await page.getByRole('main').innerText(), /Balloon Count/);
     else assert.equal(await page.getByRole('button', { name: /Memory/ }).count(), 1);
     console.log(`PASS ${age}: Parent Setup, Hub/Start here and Complete recommendations`);
     await page.close();
