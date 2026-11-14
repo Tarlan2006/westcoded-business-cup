@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
-const { chromium } = await import(process.env.VIDEO_PLAYWRIGHT ? pathToFileURL(process.env.VIDEO_PLAYWRIGHT).href : 'playwright');
+const { chromium } = process.env.VIDEO_PLAYWRIGHT
+  ? await import(pathToFileURL(process.env.VIDEO_PLAYWRIGHT).href)
+  : await import('playwright');
 const base = process.env.SMOKE_URL ?? 'https://mypal.tarlan-b06.workers.dev';
 const output = process.env.SMOKE_OUTPUT ?? 'docs/screens';
 const mock = process.env.SMOKE_MOCK_API === '1';

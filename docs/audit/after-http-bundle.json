@@ -1,0 +1,422 @@
+{
+  "base": "http://127.0.0.1:5191",
+  "http": [
+    {
+      "path": "/",
+      "status": 200,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/privacy",
+      "status": 200,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/missing-audit-page",
+      "status": 404,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/.env",
+      "status": 404,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/.git/config",
+      "status": 404,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/assets/index.js.map",
+      "status": 404,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/api/missing",
+      "status": 404,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "headers": {
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "permissions-policy": "microphone=(self), camera=(), geolocation=()"
+      }
+    },
+    {
+      "origin": "https://mypal.tarlan-b06.workers.dev",
+      "status": 200
+    },
+    {
+      "origin": "https://mission-control.tarlan-b06.workers.dev",
+      "status": 200
+    },
+    {
+      "origin": "http://localhost:5173",
+      "status": 200
+    },
+    {
+      "origin": "https://foreign.example",
+      "status": 403
+    }
+  ],
+  "bundle": [
+    {
+      "name": "Ask-Qj7GAZGw.js",
+      "bytes": 12910,
+      "gzipBytes": 5263,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "balloons-DDTcy_sC.js",
+      "bytes": 11343,
+      "gzipBytes": 4484,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "brand-U9D8-oD6.js",
+      "bytes": 29,
+      "gzipBytes": 49,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Garage-Do53Tr_x.js",
+      "bytes": 1402,
+      "gzipBytes": 793,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "index-CD9HqTLK.js",
+      "bytes": 307412,
+      "gzipBytes": 92238,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "jsx-runtime-Am8b9ysO.js",
+      "bytes": 8276,
+      "gzipBytes": 3116,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Memory-DTyB0HXC.js",
+      "bytes": 11895,
+      "gzipBytes": 3572,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Mission-mhx7inah.js",
+      "bytes": 9104,
+      "gzipBytes": 3739,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "MissionStage-81jB4Fnk.js",
+      "bytes": 5349,
+      "gzipBytes": 2333,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "MissionSummary-DUUr_dUo.js",
+      "bytes": 3575,
+      "gzipBytes": 1560,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Parent-RdIL4yaN.js",
+      "bytes": 1663,
+      "gzipBytes": 861,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Plans-D1ypX9k-.js",
+      "bytes": 1939,
+      "gzipBytes": 838,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "preferences-9w6TDbnG.js",
+      "bytes": 1048,
+      "gzipBytes": 579,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "ProfileSetup-CV1I_L9N.js",
+      "bytes": 9550,
+      "gzipBytes": 3412,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Quiz-CvmLBLmC.js",
+      "bytes": 3401,
+      "gzipBytes": 1544,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Setup-DI86njbZ.js",
+      "bytes": 1816,
+      "gzipBytes": 762,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Sketch-apLt3NZC.js",
+      "bytes": 1267,
+      "gzipBytes": 694,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "sketch-COZUfxvE.js",
+      "bytes": 25226,
+      "gzipBytes": 8540,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "space-CQUYuVZD.js",
+      "bytes": 19177,
+      "gzipBytes": 6715,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "Space-j4d60gSs.js",
+      "bytes": 1510,
+      "gzipBytes": 747,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "src-DE4KrqH6.js",
+      "bytes": 3371,
+      "gzipBytes": 1442,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "TicTacToe-DNAGMVvl.js",
+      "bytes": 6345,
+      "gzipBytes": 2585,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "ToddlerMission-BiEqHKdG.js",
+      "bytes": 2616,
+      "gzipBytes": 1333,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "useClipSpeech-DcF8SJzo.js",
+      "bytes": 386,
+      "gzipBytes": 277,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "usePushToTalk-vbmUEhvz.js",
+      "bytes": 5277,
+      "gzipBytes": 2321,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "VideoCatalog-B29uYnwb.js",
+      "bytes": 18012,
+      "gzipBytes": 6001,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    },
+    {
+      "name": "worker-DVqd32_V.js",
+      "bytes": 13844,
+      "gzipBytes": 5527,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0,
+      "legacyHost": 0,
+      "secretPatterns": false
+    }
+  ],
+  "audio": {
+    "manifest": true,
+    "manifestEntries": 143
+  },
+  "rateLimit": {
+    "requests": 40,
+    "statuses": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429,
+      429
+    ]
+  }
+}

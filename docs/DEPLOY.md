@@ -53,3 +53,31 @@ Prepared only; do not deploy until the user explicitly says “деплой”. 
 Source: b1e0868. Version: 50fbd38f-a3f4-4f5f-8a91-84112576fe2c. Published after explicit user approval, using --keep-vars; secrets unchanged. Frontend host strings and accessibility labels use APP_NAME; internal component/CSS names are retained. CONTINUE starts common_setup_greeting when sound is enabled and opens Parent Setup without waiting for audio. Forced welcome with a saved profile also opens Parent Setup.
 
 Local and production Chrome tests passed at 390px and 1280px: exact greeting, Parent Setup, MP3 request and AudioBufferSourceNode start. Muted and missing-clip scenarios preserve navigation. Typecheck, build, content (140/140 clips), Worker/FAQ tests passed. Preview greeting: https://mypal.tarlan-b06.workers.dev/?welcome=1. This supersedes the pending frontend handoff above.
+
+## Pending audit release — 2026-11-15
+
+**Not deployed.** The audit branch is based on `main` (`85db5da` before audit commits). Historical version records above are not proof of the currently active deployment. The audit adds asset routing/security headers, private-path 404s, question-only Ask payloads, a seven-second cloud-answer budget, SEO metadata, smaller lazy-loaded bundles and interaction/accessibility fixes. The visual design and normal product copy are retained. See `AUDIT.md` for exact checks and limits.
+
+### Release checklist (only after approval)
+
+1. `git pull --rebase origin main`; stop on conflicts rather than overwriting another agent's work. Record `git rev-parse HEAD`.
+2. `npm ci`, then `npm run typecheck`, `npm run lint`, `npm run build`, `npm run check-content`, `npm run check-sketch`, `npm run check-space` and `npx tsx scripts/worker-tests.ts`.
+3. Start `npm run preview`. Set `SMOKE_URL` to the printed local URL and `SMOKE_MOCK_API=1`; run `npm run smoke`. The built Worker preview must be restarted after every build, because its asset index is fixed at startup.
+4. Record the currently active version with `npx wrangler deployments list` and available rollback versions with `npx wrangler versions list`. Do not assume a historical UUID below is still the correct rollback target.
+5. Verify `ALLOWED_ORIGINS` includes `https://mypal.tarlan-b06.workers.dev`, the legacy `https://mission-control.tarlan-b06.workers.dev`, and `http://localhost:5173`. Local preview on another port needs that exact Origin if using real APIs. Never use a wildcard.
+6. Deploy the built frontend and Worker together: `npx wrangler deploy --keep-vars`. The owner manages `GROQ_API_KEY` and `LLM_MODEL`; do not read, print or replace them. The existing AI binding remains unchanged. If the dashboard allowlist differs, update only `ALLOWED_ORIGINS` explicitly while preserving other variables.
+7. Record the new Worker version ID and source hash here. Verify HTML, `/privacy`, `/api/health`, private-path 404s, HTTP→HTTPS and headers. Rerun Lighthouse and `npm run smoke` against production. Run rate-limit/failure injection tests locally, not against children using the live demo.
+8. Check one real microphone interaction, audio playback, YouTube playback and link previews on actual phones/Telegram/WhatsApp. Those external interactions cannot be certified by mocked Chromium tests. Review provider retention/consent before a public child-facing launch.
+
+### Roll back this future release
+
+Use `npx wrangler rollback <PREVIOUS_VERSION_ID>` with the version recorded immediately before deployment, then confirm the active version with `npx wrangler deployments list`. Repeat health, asset, CORS and playback checks. Rollback restores that version's Worker/assets/configuration; it may also restore the old missing security headers or broader Ask payload. Confirm the allowlist again, preserve secrets and do not reset Git main.
+
+### Operational caveats
+
+- `run_worker_first: true` and the `ASSETS` binding are needed for consistent headers and private-path routing. `not_found_handling: "404-page"` serves the checked-in friendly 404; `/privacy` is explicitly routed by the Worker.
+- CSP intentionally only blocks embedding this app (`frame-ancestors 'none'`). It does not block YouTube, voice models or scripts. `/assets/worker-*.js` retains the voice-model `no-referrer` exception.
+- Hash-named assets receive immutable cache headers. Compression is handled by Cloudflare; verify live response headers after release.
+- Keep Worker source maps outside the `dist/client` asset directory. `.assetsignore` prevents private files/maps being uploaded as public assets.
+- The built-in local Explorer and remote-AI warning are development tooling, not production features. Browser audit API calls are mocked to avoid provider usage.
+- No external uptime monitor is configured. `/api/health` is available for a future UptimeRobot/other monitor; do not advertise an unconfigured status page.

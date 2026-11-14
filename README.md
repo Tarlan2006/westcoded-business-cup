@@ -1,46 +1,99 @@
 # MyPal
 
-MyPal is a voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**. [Open the live demo](https://mypal.tarlan-b06.workers.dev).
+**A voice-led play companion for little explorers.** Built by **westcoded** for **Business Cup 2.0**.
 
-## Flow and activities
+[Try MyPal — no login](https://mypal.tarlan-b06.workers.dev) · [Audit and evidence](AUDIT.md) · [Screenshots](docs/screens) · [Privacy](docs/PRIVACY.md)
 
-In Parent Setup, choose an age and 10, 20, 30, or 60 minutes, or enter a custom duration. The session clock starts with **Start session** and keeps running across activities and page reloads. Press and hold **Parents** or **Hold: Exit** to add five minutes or end the session. At the deadline, the current activity has up to 30 seconds to finish. **Back to start** opens Parent Setup with the same profile and a fresh duration choice.
+## Who it helps
 
-The hub offers age-appropriate videos, quiz, Memory, Space Scale, and Balloon Count. The 6–8 band also sees Ask MyPal, Tic-tac-toe, and Sketch Artist. Move supports Scavenger Hunt and Floor is Lava at home and Roadtrip Spy for passengers. Supervise play and choose a clear space. YouTube videos load on request and may display ads or related videos.
+Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. MyPal offers voice-led movement missions for a screen-free break, plus optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. MyPal is not childcare or a safety monitor.
 
-## Stack
+## How it works
 
-Vite, React, TypeScript, and Tailwind build the UI. Hono on Cloudflare Workers serves APIs and assets. Earlier progress, XP, and unlocked Ship Parts persist locally. Parent notes and nicknames stay on the device. Groq selects among safe mission candidates. Workers AI transcribes optional voice input, and Ask MyPal uses Groq or Workers AI with a built-in FAQ fallback. [Architecture](docs/ARCHITECTURE.md) · [Privacy](docs/PRIVACY.md) · [Original design](docs/design/mission_control_prototype.html)
+1. Meet MyPal, then enter a nickname and age. Notes are optional and stay on the device.
+2. Choose a session length: 10, 20, 30, 60 minutes or a custom limit.
+3. Watch and learn, or move and play. Spoken prompts also have text/button alternatives.
+4. Earn XP and spaceship parts, then pick another age-appropriate activity.
+5. The timer survives reloads. At expiry, an activity gets up to 30 seconds to finish. Hold **Parents** to add five minutes or end early.
 
-## Run
+| Age | Activities |
+| --- | --- |
+| 1–2 | Toddler video library, animal sounds and the Animal Sounds quiz |
+| 3–5 | Video + quiz, Memory, Balloon Count, movement missions |
+| 6–8 | Video + quiz, Memory, Space Scale, Sketch Artist, Tic-tac-toe, Ask MyPal, movement missions |
 
-Use Node.js 24.
+Movement modes include Scavenger Hunt, Floor is Lava and Roadtrip Spy for passengers. YouTube loads on request and can display ads or related videos. The toddler library can autoplay muted videos. Sketch drawings stay on the device; the PNG export is optional.
+
+## What makes it different
+
+A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. The live mascot voice runs locally when the device supports it.
+
+## Business model and current limits
+
+The prototype shows **MyPal Plus: $18/month or $144/year**. These are proposed prices, not an active subscription service. The locked Dino Dig, Music Band and Story Quest cards open the plans screen; checkout, these premium games, weekly content and progress emails are not implemented. Monetisation, parental consent and provider retention need validation before launch.
+
+There are no accounts, cross-device sync or payment processing. Reload recovery uses this browser's localStorage. Network-free recovery works while the page is loaded; there is no offline service worker guaranteeing a fresh launch. An external uptime monitor is **not configured**; `/api/health` provides a health endpoint.
+
+## Stack and architecture
+
+Vite + React + TypeScript + Tailwind; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses pre-rendered Piper clips, optional browser-local Pocket TTS and installed browser voices.
+
+```mermaid
+flowchart LR
+  UI[React: local profile, timer and progress] --> API[Cloudflare Worker: limits and safety]
+  API --> Groq[Groq]
+  API --> Whisper[Workers AI / Whisper]
+  API --> FAQ[Prepared fallback]
+  UI --> Clips[Piper clips / local voice]
+```
+
+[Detailed architecture](docs/ARCHITECTURE.md). Parent notes and nicknames stay local. Ask sends only the question. Optional STT sends audio; missions send structured game words/IDs. No camera or geolocation. This is a data-minimisation/COPPA-oriented approach, not compliance certification.
+
+## Run locally
+
+Use Node.js 24:
 
 ```sh
-npm ci
+npm i
 npm run dev
 ```
 
-Open the URL printed by Vite. For local Worker secrets, copy `.dev.vars.example` to an untracked `.dev.vars` and fill in the values you need. Cloudflare AI may require Wrangler login. See [deployment and secrets](docs/DEPLOY.md).
+For a reproducible install use `npm ci`. Open Vite's printed URL. `.env.example` lists binding names without secrets. Copy `.dev.vars.example` to untracked `.dev.vars` only when local cloud features are needed; Cloudflare AI bindings can contact paid remote services even during development. Never put secrets in `VITE_*` variables. [Deployment instructions](docs/DEPLOY.md).
 
-## Check and deploy
+## Checks
 
 ```sh
 npm run typecheck
+npm run lint
 npm run build
 npm run check-content
 npm run check-sketch
 npm run check-space
 npx tsx scripts/worker-tests.ts
-npx wrangler login
-npx wrangler deploy --keep-vars
+npx playwright install chromium
+npm run smoke
 ```
 
-The Worker tests use mocked providers. Use `/api/health` to check a deployment and the age and navigation checks under `src/screens` to exercise a built app with Playwright.
+`lint` runs TypeScript's unused-code checks for both client and Worker; it is not an ESLint style pass. `smoke` defaults to the live site. For safe local runs, start `npm run preview`, set `SMOKE_URL` to its URL and `SMOKE_MOCK_API=1`, then run `npm run smoke`. Set `CHROME_PATH` to an existing Chrome executable if Chromium is not installed. Screenshots/report go to `docs/screens`; use `SMOKE_OUTPUT` to change that. `SMOKE_SIZES` accepts comma-separated width×height values using `x`. `SMOKE_FONT_SCALE=2` checks enlarged root text. Provider failures are mocked; the test does not certify real microphone audio or YouTube playback.
+
+## Repository map
+
+- `src/screens`, `src/components`: screens and shared interactions.
+- `src/games`: isolated learning games; `src/game`: mission/content logic.
+- `src/audio`, `src/voice`: audio playback and optional recording.
+- `src/state`: device-local profile, rewards and session clock.
+- `worker`, `shared`: API safety, contracts and FAQ.
+- `content`, `public/audio`: prompt text and recorded clips.
+- `scripts`: generation, validation and audit tools.
+- `docs`: deployment, privacy, architecture and test evidence.
+
+## Deploy
+
+After reviewing the audit, run the checks above, then `npx wrangler login` and `npx wrangler deploy --keep-vars`. Preserve the MyPal production origin in `ALLOWED_ORIGINS`. Do not overwrite dashboard model secrets. Record the source commit and Cloudflare version; [DEPLOY.md](docs/DEPLOY.md) covers rollback. The current audit changes have **not been deployed**.
 
 ## Voice clips
 
-MyPal speaks with a live mascot voice: Kyutai Pocket TTS runs in the browser and clones the approved reference in `content/voice` (see `host-voice.json`), so scripted lines and Ask answers share one voice. The model downloads once (about 146 MB) and is skipped on Data Saver or low-memory devices. Until it loads, MyPal plays pre-rendered Piper MP3s from `public/audio/manifest.json` and uses a local browser voice for other lines; timed mission cues always use the recordings. `patches/pocket-tts-js+0.1.0.patch` adds a temperature option; 0.3 here (library default 0.7) halves squeaky pitch jumps without changing the voice. To regenerate clips, install Python and FFmpeg with `libmp3lame`, then run the following commands.
+Pocket TTS clones the approved `content/voice/host-voice.json` reference locally. Its model download is about 146 MB and is skipped on Data Saver or low-memory devices. Piper MP3s remain available while it loads; timed cues use recordings. The checked-in patch adjusts the voice temperature without replacing its identity.
 
 ```sh
 python -m pip install piper-tts==1.8.0
@@ -50,4 +103,4 @@ npm run gen-audio
 npm run check-content -- --require-audio
 ```
 
-On Windows, use a Python environment in a path with Latin characters if Piper cannot open the workspace path. `PYTHON` and `FFMPEG` can point to the executables. `--only` selects clip IDs by prefix. Use `--voice` to specify a different Piper model with its `.onnx.json` file. Keep model weights and keys outside Git. [Voice credits](content/AUDIO_CREDITS.md)
+Python and FFmpeg with `libmp3lame` are required for generation. `PYTHON` and `FFMPEG` can select executables; `--only` filters clip IDs. On Windows use a Latin-character tool path if Piper cannot open the workspace path. Keep weights outside Git. [Voice credits](content/AUDIO_CREDITS.md).

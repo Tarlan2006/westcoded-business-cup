@@ -1,0 +1,19 @@
+{
+  "decoded": [
+    {
+      "id": "common_setup_greeting",
+      "duration": 2.2790833333333333,
+      "channels": 1
+    },
+    {
+      "id": "hunt_task_ball_12",
+      "duration": 3.0504583333333333,
+      "channels": 1
+    }
+  ],
+  "ogImage": {
+    "width": 1200,
+    "height": 630
+  },
+  "fonts": true
+}

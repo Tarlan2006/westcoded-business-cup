@@ -6,7 +6,7 @@ There are no app accounts. Profile/preferences and progress are held in browser 
 
 ## What leaves the device
 - Optional microphone recordings are sent to the Worker for Whisper transcription through Cloudflare Workers AI. Accepted audio is mono 16 kHz, 16-bit PCM WAV, up to 15 seconds (about 481 KB including headers, below 1.5 MB). The Worker does not persist audio or transcripts.
-- Ask questions and up to two validated earlier exchanges can reach Groq or Workers AI. Topic IDs based on the selected needs may accompany them. Personal or unsafe text is refused before the Ask model call. Automated filters are imperfect.
+- The current Ask client sends only the question to the Worker. It does not send profile age, selected interests, parent notes, nickname or conversation history. The Worker keeps validated history/topic fields for compatibility with older clients; those older requests can reach Groq or Workers AI. Personal or unsafe text is refused before the Ask model call. Automated filters are imperfect.
 - Hunt sends task IDs and an allowlisted set of game words for selection. Responses must select supplied candidates; arbitrary model prose is not shown.
 - The parent setup form keeps nicknames and optional notes in localStorage. The compatibility route `/api/setup` ignores the body and returns a fixed suggestion for older clients.
 - The Worker uses CF-Connecting-IP for bounded, per-isolate rate-limit buckets in memory. It does not intentionally log text/audio. Infrastructure providers can process network metadata under their own terms; provider retention and deployment logging must be reviewed before launch.

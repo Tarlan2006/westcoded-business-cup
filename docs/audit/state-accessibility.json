@@ -1,0 +1,47 @@
+[
+  {
+    "screen": "setup",
+    "scores": {
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failures": []
+  },
+  {
+    "screen": "video",
+    "scores": {
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failures": []
+  },
+  {
+    "screen": "hub",
+    "scores": {
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failures": []
+  },
+  {
+    "screen": "ask",
+    "scores": {
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failures": []
+  },
+  {
+    "screen": "sketch-reveal",
+    "scores": {
+      "accessibility": 100,
+      "best-practices": 100,
+      "seo": 100
+    },
+    "failures": []
+  }
+]

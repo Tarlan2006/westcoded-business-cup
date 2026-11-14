@@ -1,0 +1,9 @@
+{
+  "scannedTextFiles": 129,
+  "suspiciousCredentialFiles": [],
+  "trackedPrivateFiles": [],
+  "legacyTextFiles": [
+    "content/voice/host-voice.json"
+  ],
+  "limitation": "Pattern scan only; authoring reference transcript is retained unchanged, not displayed by the UI."
+}
