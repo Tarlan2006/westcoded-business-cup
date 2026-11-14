@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
+import { ActivityNavigation } from "./ActivityHeader";
 import { PrototypeBleep, type BleepAction, type BleepMood } from "./Mascot";
 
 export const missionReplyStyle = "px-4 py-2 rounded-2xl bg-[#EDE9FE] hover:bg-[#DDD6FE] border-2 border-[#8B5CF6] text-[#1E1B4B] font-extrabold text-sm sm:text-base transition cursor-pointer";
@@ -22,23 +23,27 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
 }) {
   const [tickled, setTickled] = useState(false);
   const [tap, setTap] = useState({ x: 50, y: 55 });
+  const ticklingRound = useRef(round);
   const tickleTimer = useRef<number>(0);
   const sound = useSoundEnabled();
+  const navigation = useContext(ActivityNavigation);
   useEffect(() => () => window.clearTimeout(tickleTimer.current), []);
   const circumference = 716.28;
   const visibleRound = (round - 1) % total;
+  const giggling = tickled && ticklingRound.current === round && !paused && !feedback;
   const clock = `${Math.floor(clockSeconds / 60)}:${String(clockSeconds % 60).padStart(2, "0")}`;
 
   return <main id="screen-mission" aria-label="Mission" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
-    {heading && <h1 className="sr-only">{heading}</h1>}
+    <h1 className="sr-only">{heading ?? "Mission"}</h1>
     <header className="mission-stats w-full flex items-center justify-between gap-1 bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
       <div className="flex items-center gap-2" id="starProgressContainer" aria-label={`Round ${round}`}>
         {Array.from({ length: total }, (_, index) => <span key={index} aria-hidden="true"
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
-      <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider" id="sessionClockDisplay" aria-label="Session time">{clock}</div>
+      <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Session time">{clock}</div>
       <div className="flex items-center gap-2">{toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled} onOpen={onExit} /></div>
     </header>
+    {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
 
     <div className="relative flex flex-col items-center justify-center my-1">
       <div className="prototype-countdown relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
@@ -58,14 +63,15 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
             const { clientX, clientY, detail } = event;
             if (detail) setTap({ x: 100 * clientX / innerWidth, y: 100 * clientY / innerHeight });
             else setTap({ x: 50, y: 55 });
+            ticklingRound.current = round;
             setTickled(true);
             uiSound("giggle", sound);
             tickleTimer.current = window.setTimeout(() => setTickled(false), 900);
           }}>
-          <span className="block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl"><PrototypeBleep variant="mission" mood={tickled ? "giggle" : mood}
-            action={paused ? "none" : action} prop={prop} speaking={speaking} tickled={tickled} /></span>
+          <span className="block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl"><PrototypeBleep variant="mission" mood={giggling ? "giggle" : mood}
+            action={paused ? "none" : action} prop={prop} speaking={speaking} tickled={giggling} /></span>
         </button>
-        {tickled && <PrototypeParticles icon="💖" count={8} {...tap} />}
+        {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}
         <div id="roundSecondsBadge" className="absolute -bottom-2 pointer-events-none bg-[#FFD13B] px-5 py-1 rounded-full border-3 border-white font-black text-lg text-[#1E1B4B] shadow-md">
           {paused ? "Ⅱ" : feedback ? "✦" : `${seconds}s`}
@@ -74,7 +80,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
     </div>
 
     <div className="w-full bg-white rounded-3xl p-4 sm:p-5 border-4 border-[#8B5CF6] shadow-[0_10px_28px_rgba(0,0,0,0.35)] text-center space-y-3">
-      <p className="caption font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug" aria-live="polite">{tickled && !paused ? "Hee-hee-hee! That tickles! 😂" : prompt}</p>
+      <p className="caption font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug" aria-live="polite">{giggling ? "Hee-hee-hee! That tickles! 😂" : prompt}</p>
       {replies && <div className="flex flex-wrap items-center justify-center gap-2.5" aria-label="Quick replies">{replies}</div>}
     </div>
     <div className="w-full grid grid-cols-2 gap-3 sm:gap-4 pt-1">{controls}</div>

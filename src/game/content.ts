@@ -2,9 +2,9 @@ import type { AgeBand, Line, Mode } from "../../shared/types";
 import localLines from "../../content/local-lines.json";
 
 export const MODES: Record<Mode, { name: string; icon: string; description: string }> = {
-  hunt: { name: "Scavenger Hunt", icon: "⌕", description: "Find everyday objects before time runs out." },
-  roadtrip: { name: "Roadtrip Spy", icon: "◉", description: "Spot things through the window. Two players." },
-  lava: { name: "Floor is Lava", icon: "▲", description: "Find a safe spot, freeze, and solve riddles." },
+  hunt: { name: "Scavenger Hunt", icon: "🔍", description: "Find everyday objects before time runs out." },
+  roadtrip: { name: "Roadtrip Spy", icon: "🚗", description: "Spot things through the window. Two players." },
+  lava: { name: "Floor is Lava", icon: "🌋", description: "Find a safe spot, freeze, and solve riddles." },
 };
 
 export interface Task {

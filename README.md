@@ -1,27 +1,27 @@
 # Mission Control — Bleep
 
-A voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**.
-[Try the live demo](https://mission-control.tarlan-b06.workers.dev).
-
-For working parents seeking a 15–30 minute break from passive screen time. Active missions encourage listening and movement; setup and some controls still need a screen. This is not childcare: a grown-up should choose a safe space and supervise age-appropriate play.
+Mission Control is a voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**. [Open the live demo](https://mission-control.tarlan-b06.workers.dev).
 
 ## Flow and activities
-A parent selects an age, location, interests and session length. The activity hub offers Active, Learn and Watch. Hunt, Road Trip and Floor Is Lava use spoken tasks; the child can confirm with a button or optional microphone. Learn includes quizzes, Memory, Sketch Artist and Space Scale. Ask Bleep answers questions with cloud models or a prepared FAQ. The youngest band uses a parent-selected video catalogue. Balloon Count is an isolated preview module, not a published hub activity.
 
-Watch embeds YouTube: third-party requests and ads may occur. It is not an ad-free promise.
+On the first visit, a parent chooses an age and a 20-, 30-, or 60-minute quiet-time goal. Ages 1–2 start with the video catalogue and three short rounds with Bleep. Ages 3–8 can start with video and three quiz questions or go straight to an active mission. On later visits, the activity hub opens after the splash. Press and hold **Parents** to edit the profile or **Hold: Exit** from a mission.
+
+The hub offers age-appropriate videos, quiz, Memory, Space Scale, and Balloon Count. The 6–8 band also sees Ask Bleep, Tic-tac-toe, and Sketch Artist. Move supports Scavenger Hunt and Floor is Lava at home and Roadtrip Spy for passengers. Supervise play and choose a clear space. YouTube videos load on request and may display ads or related videos.
 
 ## Stack
-Vite, React, TypeScript and Tailwind; Hono on Cloudflare Workers serves APIs and assets. Groq selects validated mission IDs and answers questions. Workers AI provides Whisper transcription and optional language-model fallback. Pre-rendered Piper clips support scripted speech; current dynamic speech also has browser/local-model fallback paths. See [architecture](docs/ARCHITECTURE.md) and [privacy](docs/PRIVACY.md).
+
+Vite, React, TypeScript, and Tailwind build the UI. Hono on Cloudflare Workers serves APIs and assets. Earlier progress, XP, and unlocked Ship Parts persist locally. Parent notes and nicknames stay on the device. Groq selects among safe mission candidates. Workers AI transcribes optional voice input, and Ask Bleep uses Groq or Workers AI with a built-in FAQ fallback. [Architecture](docs/ARCHITECTURE.md) · [Privacy](docs/PRIVACY.md) · [Original design](docs/design/mission_control_prototype.html)
 
 ## Run
-Use Node 24:
+
+Use Node.js 24.
 
 ```sh
-npm i
+npm ci
 npm run dev
 ```
 
-Open the localhost address printed by Vite. Cloudflare AI bindings may require Wrangler login. Use the variable names in [.env.example](.env.example), but put local Worker values in an untracked `.dev.vars` file; a Vite `.env` file does not automatically configure Worker bindings. Never expose keys through VITE-prefixed variables.
+Open the URL printed by Vite. For local Worker secrets, copy `.dev.vars.example` to an untracked `.dev.vars` and fill in the values you need. Cloudflare AI may require Wrangler login. See [deployment and secrets](docs/DEPLOY.md).
 
 ## Check and deploy
 
@@ -29,9 +29,25 @@ Open the localhost address printed by Vite. Cloudflare AI bindings may require W
 npm run typecheck
 npm run build
 npm run check-content
+npm run check-sketch
+npm run check-space
 npx tsx scripts/worker-tests.ts
 npx wrangler login
 npm run deploy
 ```
 
-See [deployment and secrets](docs/DEPLOY.md). No new test dependencies or package scripts are required. Worker tests mock upstreams and do not send children's data. Safety controls reduce risk; they are not a guarantee that every model output is appropriate.
+The Worker tests use mocked providers. Use `/api/health` to check a deployment and the age and navigation checks under `src/screens` to exercise a built app with Playwright.
+
+## Voice clips
+
+Bleep plays pre-rendered Piper MP3s from `public/audio/manifest.json`. Unrecorded lines and live Ask answers use a local browser voice when available. To regenerate clips, install Python and FFmpeg with `libmp3lame`, then run the following commands.
+
+```sh
+python -m pip install piper-tts==1.8.0
+python -m piper.download_voices --data-dir scripts/.cache/models en_US-hifi_tts_92-medium
+npm run gen-audio -- --dry-run
+npm run gen-audio
+npm run check-content -- --require-audio
+```
+
+On Windows, use a Python environment in a path with Latin characters if Piper cannot open the workspace path. `PYTHON` and `FFMPEG` can point to the executables. `--only` selects clip IDs by prefix. Use `--voice` to specify a different Piper model with its `.onnx.json` file. Keep model weights and keys outside Git. [Voice credits](content/AUDIO_CREDITS.md)

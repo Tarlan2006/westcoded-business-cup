@@ -77,7 +77,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
     }, 1700);
   }
 
-  return <MissionStage {...round} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
+  return <MissionStage {...round} heading="Play with Bleep" round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
     ratio={seconds / round.seconds} onExit={onExit} mood={feedback ? "excited" : round.mood} feedback={feedback}
     prompt={feedback ? round.praise : round.shortPrompt}
     replies={round.replies.map((label) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={advance}>{label}</button>)}

@@ -7,13 +7,15 @@ import { GameButton } from "../components/GameUI";
 import { LearnPage } from "./Home";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 
-export function Quiz({ ageBand, topic, missionMinutes, onBack, onComplete, onExit = onBack }: {
-  ageBand: AgeBand; topic?: string; missionMinutes?: number; onBack: () => void; onComplete: (points: number) => void; onExit?: () => void;
+export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComplete, onExit = onBack }: {
+  ageBand: AgeBand; topic?: string; missionMinutes?: number; cycle?: number;
+  onBack: () => void; onComplete: (points: number) => void; onExit?: () => void;
 }) {
   const bank = questions.filter((question) => question.ageBand === ageBand);
   const matching = bank.filter((question) => question.topic === topic);
   const ordered = topic ? [...matching, ...bank.filter((question) => question.topic !== topic)] : bank;
-  const quiz = topic || missionMinutes ? ordered.slice(0, 3) : ordered;
+  const offset = missionMinutes && ordered.length ? cycle * 3 % ordered.length : 0;
+  const quiz = topic || missionMinutes ? [...ordered.slice(offset), ...ordered.slice(0, offset)].slice(0, 3) : ordered;
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState<string>();
   const [points, setPoints] = useState(0);

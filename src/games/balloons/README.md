@@ -1,6 +1,6 @@
 # Balloon Count
 
-An isolated five-round counting game for ages 3–5 and 6–8. Nothing is registered in App, Home, Activity, the production Vite configuration, or package.json.
+A five-round counting game for ages 3–5 and 6–8. Mission Control loads it from the Learn section. The standalone preview uses the same game.
 
 ## Preview
 
@@ -31,7 +31,7 @@ The browser harness uses an existing external Playwright installation. Set `BALL
 
 `check.ts` covers 2000 seeds for each age, all supported counts, mobile/desktop bounds and spacing, color-neighbour diversity, all four quadrants, deterministic rerenders, different seeds, round progression, unique answer options and rewards. It checks both balloon heads and strings with envelopes that include tilt, full bob amplitude and marked rings. The minimum hit target stays 44px even if the illustrated balloon shrinks to fit a crowded stage. The sampler never drops a balloon; after unsuccessful placement it reduces size by 5% and tries another deterministic set of random candidates. Geometry is regenerated only for a new round or actual stage resize.
 
-`build.check.mjs` writes an ignored `.build/` under this folder and asserts the lazy game JS is below 40 KB gzip. The React runtime and local font assets are separate. Nothing is added to the site's production entry.
+`build.check.mjs` writes an ignored `.build/` under this folder and checks that the isolated preview's game chunk is below 40 KB gzip. The React runtime and local font assets are separate.
 
 The browser checks cover 390×844 and 1280×720, both ages, all five rounds, touch marking/renumbering, keyboard focus, timer and early submission, 400ms fade, correct/incorrect answers, all three final scores (8/20/28 XP), single delivery per run, replay, Back/Home, optional speech, reduced motion, no horizontal overflow and no storage/API/upload activity. Screenshots and a JSON report are in `screens/`. Physical iPhone/Safari testing remains manual.
 
@@ -45,4 +45,4 @@ There are no fetch calls, trackers, user fields, camera/microphone access, or st
 
 The local `.gitignore` keeps Tailwind's scanner from interpreting game/test text as site utilities. Track intended new source, fonts, documents and screenshots with `git add -f`, excluding `.build/` and `.cache/`.
 
-See [INTEGRATION.md](./INTEGRATION.md) for the seven host integration steps, deferred to a separate task.
+See [INTEGRATION.md](./INTEGRATION.md) for the host contract.

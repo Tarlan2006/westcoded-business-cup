@@ -2,7 +2,7 @@ import { createContext, useContext, type ReactNode } from "react";
 
 export const ActivityXp = createContext<number | undefined>(undefined);
 export const ActivityNavigation = createContext<{
-  onBack: () => void; onHome: () => void; breadcrumb: string;
+  onBack: () => void; onHome: () => void; breadcrumb: string; name?: string;
 } | undefined>(undefined);
 
 export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, children, exitControl }: {
@@ -12,7 +12,7 @@ export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, chil
   const navigation = useContext(ActivityNavigation);
   const total = xp ?? profileXp;
   return (
-    <header className="topbar activity-header">
+    <header className="topbar activity-header prototype-activity-header">
       <div className="flow-header-navigation">
         {exitControl ?? (!backHref && (navigation || onBack) && <button type="button" className="quiet-button" disabled={backDisabled} onClick={navigation?.onBack ?? onBack}>
           <span aria-hidden="true">←</span> Back
@@ -24,6 +24,7 @@ export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, chil
         {navigation && <nav className="flow-breadcrumb" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
       </div>
       <div className="activity-header-actions">
+        {navigation?.name && <span className="prototype-agent-name">{navigation.name}</span>}
         {total !== undefined && <span className="xp-chip">{total} XP</span>}
         {children}
       </div>

@@ -208,10 +208,13 @@
 /* The prototype uses utility sizes for headings and the existing app keeps its
    component styles. Motion is optional for both. */
 .prototype :is(input, textarea) { user-select: text; }
+.prototype .profile-location { width: auto; min-height: 2rem; }
 .prototype .btn-game:disabled { background: var(--bg-card-dark); filter: saturate(.45); opacity: .7; }
 .prototype-bleep { display: block; width: 100%; height: 100%; }
 .prototype-bleep > span { height: 100%; }
 .prototype-bleep svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.greeting-wave { transform-origin: 37px 108px; animation: greetingWave .7s ease-in-out infinite; }
+@keyframes greetingWave { 50% { transform: rotate(-18deg); } }
 .prototype-screen { min-height: 100svh; }
 .prototype-screen[hidden] { display: none; }
 
@@ -233,22 +236,42 @@
 .prototype-parent-button:hover { background: #3729ad; }
 .prototype-parent-button:disabled { opacity: .55; }
 
-.prototype-frame-video { min-height: 200px; }
+.prototype-frame-video { min-height: 208px; }
+.prototype-frame-video .video-player { border: 0; border-radius: 0; }
 .prototype-video-placeholder { min-height: 224px; }
 .prototype-countdown { width: min(18rem, calc(100vw - 2rem)); aspect-ratio: 1; height: auto; }
-.prototype .mission-stats { flex-wrap: nowrap; }
 .prototype-countdown .countdown-fill { stroke-width: 16; stroke: var(--countdown-stroke); }
+.prototype-countdown > button:disabled { background: transparent; }
+.prototype [data-result="correct"] { background: #a7f3d0; border-color: #15b875; color: #062c1e; }
 .prototype-parent-button:is([aria-label="Hold: Exit"], [aria-label^="Parents"]) { min-height: 32px; }
 .prototype-garage { margin: auto; max-height: calc(100dvh - 32px); overflow-y: auto; color: white; }
 .prototype-garage::backdrop { background: rgb(0 0 0 / .7); backdrop-filter: blur(4px); }
+.prototype .prototype-activity-header {
+  min-height: 58px;
+  margin-top: 12px;
+  padding: .5rem .75rem;
+  border: 2px solid #4c35de;
+  border-radius: 1rem;
+  background: rgb(28 20 92 / .9);
+}
+.prototype .prototype-activity-header .quiet-button { border-radius: .75rem; background: #2a1f8a; border-color: #5946e3; }
+.prototype-agent-name { font: 600 .875rem/1.2 Fredoka, Nunito, sans-serif; overflow-wrap: anywhere; }
+.prototype .prototype-activity-header .activity-header-actions { min-width: 0; }
+.prototype .hub-tile { box-shadow: 0 10px 0 rgba(8, 5, 36, .55), 0 16px 32px rgba(0, 0, 0, .35); }
+.prototype .hub-tile .activity-icon { font-size: 1.8rem; }
+.prototype .hub-tile:hover { transform: translateY(-4px) scale(1.01); }
+.prototype .hub-tile:active { transform: translateY(3px) scale(.99); }
+.prototype-balloons :is(.bl-back, .bl-home, .bl-xp) { display: none; }
 @media (width >= 40rem) { .prototype-countdown { width: 20rem; } }
 @media (width < 40rem) {
-  .prototype-video-placeholder { min-height: 300px; }
+  .prototype-video-placeholder { aspect-ratio: auto; max-height: none; min-height: 308px; justify-content: space-between; gap: 1rem; }
+  .video-frame-content { margin-top: 2rem; }
+  .video-frame-controls { position: static; justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .prototype :is(.animate-bounce, .prototype-particle),
-  .prototype-bleep :is(.bleep-float, .bleep-antenna, .arm-left, .arm-right, [class*="action-"], .bleep-tickle),
+  .prototype-bleep :is(.bleep-float, .bleep-antenna, .arm-left, .arm-right, .greeting-wave, [class*="action-"], .bleep-tickle),
   .prototype .voice-pulse::before { animation: none !important; }
   .prototype .prototype-particle { display: none; }
   .prototype :is(.countdown-circle, .btn-game, .hub-tile) { transition: none; }

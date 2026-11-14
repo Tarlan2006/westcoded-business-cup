@@ -11,7 +11,8 @@ export function PrototypeBleep({ variant, mood = "happy", action = "none", prop,
 }) {
   const mission = variant === "mission";
   const greeting = variant === "greeting";
-  const motion = tickled ? "bleep-tickle" : `bleep-float action-${action}`;
+  const motion = tickled ? "bleep-tickle" : greeting || action === "none" ? "bleep-float"
+    : action === "clap" || action === "wave" ? `bleep-float action-${action}` : `action-${action}`;
   return <span className={`prototype-bleep${speaking ? " bleep-speaking" : ""}`} data-mood={mood}>
     <span className={`block ${motion}`}>
       <svg viewBox={mission ? "0 0 200 215" : "0 0 200 210"} aria-hidden="true">
@@ -23,8 +24,10 @@ export function PrototypeBleep({ variant, mood = "happy", action = "none", prop,
           <ellipse cx="78" cy="174" rx="13" ry="7" fill="#6C47FF" />
           <ellipse cx="122" cy="174" rx="13" ry="7" fill="#6C47FF" />
         </> : <>
-          <ellipse className={greeting ? "arm-left" : undefined} cx={greeting ? 28 : 30} cy={greeting ? 105 : 128} rx="12" ry="22"
-            transform={greeting ? "rotate(-48 28 105)" : "rotate(-18 30 128)"} fill={greeting ? "#FF7849" : "#6C47FF"} />
+          <g className={greeting && action === "wave" ? "greeting-wave" : undefined}>
+            <ellipse cx={greeting ? 28 : 30} cy={greeting ? 105 : 128} rx="12" ry="22"
+              transform={greeting ? "rotate(-48 28 105)" : "rotate(-18 30 128)"} fill={greeting ? "#FF7849" : "#6C47FF"} />
+          </g>
           <ellipse cx="170" cy="128" rx="12" ry="22" transform="rotate(18 170 128)" fill="#6C47FF" />
         </>}
         <rect x="40" y="42" width="120" height="126" rx="58" fill={mission ? "#FFFFFF" : "#F8FAFC"}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { APP_NAME } from "../brand";
 import { PrototypeBleep } from "../components/Mascot";
@@ -11,6 +11,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
 }) {
   const [stage, setStage] = useState(0);
   const sound = useSoundEnabled();
+  const greeting = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     const times = repeat ? [100, 190, 320] : [300, 650, 950];
@@ -20,6 +21,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
 
   useEffect(() => {
     if (stage === 3 && repeat) onContinue();
+    else if (stage === 3) greeting.current?.focus({ preventScroll: true });
   }, [stage, repeat, onContinue]);
 
   if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label="Loading Mission Control">
@@ -38,7 +40,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
     </div>
     <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto text-center">
       <div className="speech-bubble-duo px-6 py-4 mb-6 animate-bounce">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-800">Hi! I'm Bleep! Ready for a screen-free adventure?</h1>
+        <h1 ref={greeting} tabIndex={-1} className="focus:outline-none font-display text-xl sm:text-2xl font-bold text-slate-800">Hi! I'm Bleep! Ready for a screen-free adventure?</h1>
       </div>
       <div className="w-48 h-48 sm:w-56 sm:h-56"><PrototypeBleep variant="greeting" action="wave" /></div>
     </div>

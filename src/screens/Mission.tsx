@@ -5,7 +5,7 @@ import { useSoundEnabled } from "../audio/sfx";
 import { playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
-  countdownLine, lineFor, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
+  countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
 } from "../game/content";
 import { advanceMission, createMission, selectTurn, timeUp } from "../game/mission";
 import type { Mission as MissionState, Player, Session } from "../game/mission";
@@ -42,7 +42,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
   const remainingSeconds = Math.ceil(remainingMs / 1000);
   const missionSeconds = Math.max(0, Math.ceil((state.missionEndsAt - (state.pausedAt ?? now)) / 1000));
   const running = state.phase === "round" && !paused;
-  const freezeHold = task.id === "local_lava_freeze" && state.phaseEndsAt - now > state.phaseDuration - 5000;
+  const freezeHold = session.mode === "lava" && !task.riddle && state.phaseEndsAt - now > state.phaseDuration - 5000;
   const choices = task.riddle;
 
   useLayoutEffect(() => {
@@ -148,6 +148,12 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";
+  const tickedAt = useRef<number>(0);
+  useEffect(() => {
+    if (!sound || !running || voice.status !== "idle" || remainingSeconds < 1 || remainingSeconds > 5) return;
+    const mark = state.round * 10 + remainingSeconds;
+    if (tickedAt.current !== mark) { tickedAt.current = mark; playSfx("tick"); }
+  }, [sound, running, voice.status, remainingSeconds, state.round]);
 
   useEffect(() => {
     setMusic(sound && !paused && !finished && voice.status === "idle", { duck: true });
@@ -178,7 +184,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
     disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>) : isHunt
     ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>🔎 Found it!</button> : undefined;
 
-  return <MissionStage round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}
+  return <MissionStage heading={MODES[session.mode].name} round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}
     {...demo} mood={recording ? "listening" : isFeedback ? state.feedback === timeUp ? "surprised" : "excited" : demo.mood}
     action={isFeedback ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={isFeedback && state.feedback !== timeUp}
     onExit={onExit} exitDisabled={state.phase === "resolving"}
@@ -209,8 +215,8 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
         }} onKeyUp={(event) => {
           if (event.key === " " || event.key === "Enter") voice.release();
         }} onBlur={voice.cancelHold}>
-        <span aria-hidden="true">🎙️</span>{recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
-          : voice.status === "decoding" ? "Listening…" : "TALK"}
+        <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
+          : voice.status === "decoding" ? "Listening…" : "TALK"}</span>
       </button>}
     </>} />;
 }

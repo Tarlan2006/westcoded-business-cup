@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/prototype.css";
+@source not "../docs/design";
 
 @font-face {
   font-family: Fredoka;
@@ -143,9 +144,6 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 
 .mission-shell { width: min(100% - 2rem, 830px); }
 .mission-console { display: grid; justify-items: center; margin: 1rem auto 0; gap: clamp(.65rem, 2vh, 1.15rem); text-align: center; }
-.mission-stats { display: flex; justify-content: center; flex-wrap: wrap; gap: .5rem; width: 100%; color: var(--muted); }
-.mission-stats span { background: var(--bg-soft); border-radius: var(--radius-pill); padding: .4rem .75rem; font-size: .86rem; }
-.mission-stats strong { color: var(--text); margin-left: .25rem; }
 .timer { --timer-color: var(--primary); display: grid; width: clamp(176px, 32dvh, 280px); max-width: 78vw; aspect-ratio: 1; border-radius: 50%; padding: 9px; background: conic-gradient(var(--timer-color) var(--remaining), var(--primary-soft) 0); box-shadow: var(--shadow); }
 .timer[data-warm="true"] { --timer-color: var(--accent); }
 .timer-center { display: grid; align-content: center; justify-items: center; border-radius: 50%; background: var(--surface); }
@@ -157,7 +155,6 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .avatar i:nth-child(3) { height: 94%; }
 .avatar.speaking i { transform: scaleY(calc(.5 + var(--voice-level, 0) * 1.1)); }
 .avatar.speaking i:nth-child(2n) { transform: scaleY(calc(.55 + var(--voice-level, 0) * 1.5)); }
-.caption { max-width: 36ch; min-height: 2.4em; display: grid; place-items: center; font: 500 clamp(1.3rem, 4vw, 1.85rem)/1.2 var(--font-heading); }
 .assignment { max-width: 47ch; color: var(--muted); line-height: 1.35; }
 .mission-actions { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
 .mission-actions > :only-child { grid-column: 1 / -1; }

@@ -7,17 +7,18 @@ import { activeModes, type ActivityGroup, type Preferences } from "../state/pref
 import type { ChildProfile } from "../state/progress";
 
 export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string; topic?: string }
-const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "A little question, a big discovery. Let's think together.", icon: "?" };
-const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "▦" };
-const ask: ActivitySuggestion = { activity: "ask", title: "Ask Mission Control", description: "Ask about space, animals, or your favorite hero.", icon: "✦" };
-const video: ActivitySuggestion = { activity: "video", title: "Video library", description: "Pick a short video to watch together.", icon: "▶" };
+const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "A little question, a big discovery. Let's think together.", icon: "🧠" };
+const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "🃏" };
+const ask: ActivitySuggestion = { activity: "ask", title: "Ask Bleep", description: "Ask about space, animals, or your favorite hero.", icon: "🤖" };
+const video: ActivitySuggestion = { activity: "video", title: "Video library", description: "Pick a short video to watch together.", icon: "▶️" };
+const balloons: ActivitySuggestion = { activity: "balloons", title: "Balloon Count", description: "Count the balloons before time runs out!", icon: "🎈" };
 
 export function availableActivities(profile: ChildProfile, preferences: Preferences): ActivitySuggestion[] {
   if (profile.ageBand === "1-2") return [video];
   const moves = activeModes(preferences.location).map((mode) => ({ activity: mode, title: MODES[mode].name, description: MODES[mode].description, icon: MODES[mode].icon }));
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
-    { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "×" }] : [];
-  return [quiz, memory, ...older, spaceGameMeta, ...moves, video];
+    { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }] : [];
+  return [quiz, memory, ...older, spaceGameMeta, balloons, ...moves, video];
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {

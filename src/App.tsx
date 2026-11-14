@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
-import { stopSpeech, unlock } from "./audio/engine";
+import { speakFallback, stopSpeech, unlock } from "./audio/engine";
 import { APP_NAME } from "./brand";
 import { SoundEnabled } from "./audio/sfx";
-import { ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
+import { ActivityHeader, ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
 import { LeaveGameDialog } from "./components/LeaveGameDialog";
 import { PrototypeFrame } from "./components/PrototypeFrame";
 import { NextUp } from "./components/NextUp";
@@ -11,35 +11,37 @@ import { RewardCard } from "./components/RewardCard";
 import { nextActivities } from "./components/activitySuggestions";
 import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
-import { Ask } from "./screens/Ask";
 import { Hub, LearnPage } from "./screens/Home";
-import { Memory } from "./screens/Memory";
-import { Mission } from "./screens/Mission";
-import { MissionSummary } from "./screens/MissionSummary";
 import { Privacy } from "./screens/Parent";
 import { ProfileSetup } from "./screens/ProfileSetup";
-import { Quiz } from "./screens/Quiz";
 import { Setup } from "./screens/Setup";
 import { Sketch } from "./screens/Sketch";
 import { Space } from "./screens/Space";
-import { TicTacToe } from "./screens/TicTacToe";
-import { ToddlerMission } from "./screens/ToddlerMission";
-import { VideoCatalog } from "./screens/VideoCatalog";
 import { Welcome } from "./screens/Welcome";
 import type { TopicId } from "../shared/topics";
 import { defaultPreferences, type Preferences } from "./state/preferences";
 import { readProgress, rewardActivity, saveProfile, updateProfile, type ChildProfile } from "./state/progress";
 
+const Ask = lazy(() => import("./screens/Ask").then(({ Ask }) => ({ default: Ask })));
+const Memory = lazy(() => import("./screens/Memory").then(({ Memory }) => ({ default: Memory })));
+const Mission = lazy(() => import("./screens/Mission").then(({ Mission }) => ({ default: Mission })));
+const MissionSummary = lazy(() => import("./screens/MissionSummary").then(({ MissionSummary }) => ({ default: MissionSummary })));
+const Quiz = lazy(() => import("./screens/Quiz").then(({ Quiz }) => ({ default: Quiz })));
+const TicTacToe = lazy(() => import("./screens/TicTacToe").then(({ TicTacToe }) => ({ default: TicTacToe })));
+const ToddlerMission = lazy(() => import("./screens/ToddlerMission").then(({ ToddlerMission }) => ({ default: ToddlerMission })));
+const VideoCatalog = lazy(() => import("./screens/VideoCatalog").then(({ VideoCatalog }) => ({ default: VideoCatalog })));
+const Balloons = lazy(() => import("./games/balloons"));
+
 type Screen =
   | { name: "home" | "parent" | "ask" | "privacy" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string; afterVideo?: boolean }
-  | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
+  | { name: "memory" | "tic-tac-toe" | "sketch" | "space" | "balloons"; id: string }
   | { name: "reward"; points: number; activity: Activity; topic?: string; afterVideo?: boolean }
   | { name: "video"; id: string }
   | { name: "toddler"; id: string }
   | { name: "mission"; session: Session; profile: Profile }
-  | { name: "results"; session: Session; profile: Profile; result: MissionState };
+  | { name: "results"; session: Session; result: MissionState };
 
 interface HistoryEntry { screen: Screen; key: string; enteredAt: number; scrollY?: number }
 function entry(screen: Screen): HistoryEntry { return { screen, key: crypto.randomUUID(), enteredAt: Date.now() }; }
@@ -57,6 +59,7 @@ function breadcrumb(screen: Screen): string {
     case "tic-tac-toe": return "Learn › Tic-tac-toe";
     case "sketch": return "Learn › Sketch Artist";
     case "space": return "Learn › Space Scale";
+    case "balloons": return "Learn › Balloon Count";
     case "reward": return "Learn › Results";
     case "video": return "Watch › Video library";
     default: return "Activities";
@@ -80,7 +83,7 @@ export default function App() {
   });
   const [welcoming, setWelcoming] = useState(true);
   const [repeatVisit] = useState(() => new URLSearchParams(window.location.search).get("welcome") !== "1" &&
-    progress.profiles.some((item) => item.preferences));
+    !!(progress.profiles.find((item) => item.id === progress.selectedId) ?? progress.profiles[0])?.preferences);
   const [saved, setSaved] = useState(false);
   useEffect(() => {
     if (!saved) return;
@@ -117,14 +120,14 @@ export default function App() {
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   }, [current.key, welcoming]);
 
-  function setScreen(next: Screen, replaceCurrent = false, resetHome = false) {
+  function setScreen(next: Screen, navigation: "push" | "replace" | "from-home" = "push") {
     stopSpeech();
     if (next.name !== "mission") launchPending.current = false;
     const previousScroll = window.scrollY;
     setHistory((previous) => {
       if (next.name === "home") return [entry(next)];
-      if (resetHome) return [entry({ name: "home" }), entry(next)];
-      if (replaceCurrent) return [...previous.slice(0, -1), entry(next)];
+      if (navigation === "from-home") return [entry({ name: "home" }), entry(next)];
+      if (navigation === "replace") return [...previous.slice(0, -1), entry(next)];
       // A finished activity is never a resumable game in the Back stack.
       if (next.name === "reward" || next.name === "results" ||
         previous.at(-1)?.screen.name === "reward" || previous.at(-1)?.screen.name === "results") {
@@ -134,7 +137,7 @@ export default function App() {
     });
   }
   function requestNavigation(action: () => void) {
-    if (["mission", "quiz", "memory", "tic-tac-toe", "sketch", "space"].includes(current.screen.name) && Date.now() - current.enteredAt >= 5000) {
+    if (["mission", "quiz", "memory", "tic-tac-toe", "sketch", "space", "toddler"].includes(current.screen.name) && Date.now() - current.enteredAt >= 5000) {
       setPendingNavigation(() => action);
     } else action();
   }
@@ -153,7 +156,6 @@ export default function App() {
   // Games with timers are never retained behind another screen.
   const visibleEntries = history.filter((item, index) => index === history.length - 1 ||
     item.screen.name === "ask" && history.slice(index + 1).every((next) => next.screen.name === "quiz") ||
-    item.screen.name === "video" && history.slice(index + 1).every((next) => next.screen.name === "parent" || next.screen.name === "privacy") ||
     (item.screen.name === "parent" || item.screen.name === "home" && !profile?.preferences) && history.slice(index + 1).every((next) => next.screen.name === "privacy"));
 
   if (welcoming && !privacy) return <SoundEnabled value={sound}><PrototypeFrame>
@@ -161,10 +163,15 @@ export default function App() {
   </PrototypeFrame></SoundEnabled>;
 
   return <SoundEnabled value={sound}><PrototypeFrame><ActivityXp value={profile?.xp}>
-    <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen) }}>
+    <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen),
+      name: profile ? profile.preferences?.nickname ?? codenameFor(profile.codenameId) : undefined }}>
       {saved && <div className="flow-saved" role="status">Saved ✓</div>}
       {visibleEntries.map((item) => <div key={item.key} data-flow-active={item.key === current.key}
-        hidden={item.key !== current.key} inert={item.key !== current.key}>{renderScreen(item.screen)}</div>)}
+        hidden={item.key !== current.key} inert={item.key !== current.key}>
+        <Suspense fallback={<LearnPage title="Loading activity…" onBack={goBack}><p role="status">Getting things ready.</p></LearnPage>}>
+          {renderScreen(item.screen)}
+        </Suspense>
+      </div>)}
       {pendingNavigation && <LeaveGameDialog onStay={() => setPendingNavigation(null)} onLeave={() => {
         const leave = pendingNavigation; setPendingNavigation(null); leave();
       }} />}
@@ -187,9 +194,9 @@ export default function App() {
         setSaved(true);
         setScreen({ name: "home" });
       } else if (ageBand !== "1-2" && choices.first === "active") {
-        launch(choices.location === "car" ? "roadtrip" : "hunt", selected, choices.minutes, true);
+        launch(choices.location === "car" ? "roadtrip" : "hunt", selected, choices.minutes, 3);
       } else {
-        setScreen({ name: "video", id: crypto.randomUUID() }, false, true);
+        setScreen({ name: "video", id: crypto.randomUUID() }, "from-home");
       }
     }
 
@@ -198,7 +205,7 @@ export default function App() {
         onBack={profile?.preferences ? goBack : undefined} onSave={chooseProfile} onPrivacy={() => setScreen({ name: "privacy" })} />;
     }
 
-    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch" | "space") {
+    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch" | "space" | "balloons") {
       if (name === "sketch" && profile.ageBand !== "6-8") return;
       if (sound && name !== "space") void unlock().catch(() => {});
       if (name === "ask") {
@@ -216,13 +223,13 @@ export default function App() {
         afterVideo: screen.name === "quiz" && screen.afterVideo });
     }
 
-    function launch(mode: Mode, selected: Profile, minutes: number, resetHome = false) {
+    function launch(mode: Mode, selected: Profile, minutes: number, roundLimit?: number) {
       if (launchPending.current || selected.ageBand === "1-2") return;
       launchPending.current = true;
       const tasks = tasksFor(mode, selected.ageBand);
-      const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: minutes };
+      const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: minutes, roundLimit };
       if (sound) void unlock().catch(() => {});
-      setScreen({ name: "mission", profile: selected, session }, false, resetHome);
+      setScreen({ name: "mission", profile: selected, session }, roundLimit ? "from-home" : "push");
     }
 
     function openActivity(activity: Activity, topic?: string) {
@@ -242,28 +249,26 @@ export default function App() {
     if (screen.name === "mission") {
       const { session, profile } = screen;
       return <Mission key={session.id} session={session} profile={profile} navigationPaused={pendingNavigation !== null}
-        onExit={() => setScreen({ name: "parent" }, true)} onFinish={(result) => {
+        onExit={() => setScreen({ name: "parent" }, "from-home")} onFinish={(result) => {
         const memory = result.done ? `Completed ${result.done} rounds in ${session.mode}.` : `Played ${session.mode}.`;
         const updated = rewardActivity(session.id, profile.id, session.mode, result.points, {
           mode: session.mode, memory: result.loreNote || memory,
         });
         setProgress(updated);
         launchPending.current = false;
-        setScreen({
-          name: "results", session, result,
-          profile: updated.profiles.find((entry) => entry.id === profile.id) ?? profile,
-        });
+        setScreen({ name: "results", session, result });
       }} />;
     }
     if (screen.name === "results") {
-      return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome}
-        onReplay={() => launch(screen.session.mode, profile, screen.session.durationMinutes)}>
+      const { mode, durationMinutes, roundLimit } = screen.session;
+      const replay = () => launch(mode, profile, durationMinutes, roundLimit);
+      return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome} onReplay={replay}>
         {screen.session.mode === "roadtrip" && <p className="text-center text-sm text-indigo-200">Player 1: {screen.result.players[0]} · Player 2: {screen.result.players[1]}</p>}
-        {nextUp(screen.session.mode, () => launch(screen.session.mode, profile, screen.session.durationMinutes))}
+        {nextUp(mode, replay)}
       </MissionSummary>;
     }
     if (screen.name === "toddler" && profile.ageBand === "1-2") {
-      return <ToddlerMission key={screen.id} minutes={preferences.minutes} onExit={() => setScreen({ name: "parent" }, true)}
+      return <ToddlerMission key={screen.id} minutes={preferences.minutes} onExit={() => setScreen({ name: "parent" }, "from-home")}
         onComplete={(points) => earn(screen.id, "toddler", points)} />;
     }
     if (screen.name === "ask" && profile.ageBand === "6-8") {
@@ -274,13 +279,14 @@ export default function App() {
     if (screen.name === "quiz" && profile.ageBand !== "1-2") {
       return <Quiz key={screen.id} ageBand={profile.ageBand} topic={screen.topic}
         onBack={goBack} missionMinutes={screen.afterVideo ? preferences.minutes : undefined}
-        onExit={() => setScreen({ name: "parent" }, true)} onComplete={(points) => earn(screen.id, "quiz", points)} />;
+        cycle={profile.activities?.quiz ?? 0}
+        onExit={() => setScreen({ name: "parent" }, "from-home")} onComplete={(points) => earn(screen.id, "quiz", points)} />;
     }
     if (screen.name === "memory" && profile.ageBand !== "1-2") {
       return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
         onBack={goBack} onComplete={() => earn(screen.id, "memory", 20)} onReplay={() => {
           setProgress(rewardActivity(screen.id, profile.id, "memory", 20));
-          setScreen({ name: "memory", id: crypto.randomUUID() }, true);
+          setScreen({ name: "memory", id: crypto.randomUUID() }, "replace");
         }} />;
     }
     if (screen.name === "tic-tac-toe" && profile.ageBand === "6-8") {
@@ -298,6 +304,15 @@ export default function App() {
     if (screen.name === "space" && profile.ageBand !== "1-2") {
       return <Space key={screen.id} exploreOnly={profile.ageBand === "3-5"} onBack={goBack}
         onComplete={(points) => earn(screen.id, "space", points)} />;
+    }
+    if (screen.name === "balloons" && profile.ageBand !== "1-2") {
+      return <main>
+        <div className="shell flow-module-header"><ActivityHeader title="Balloon Count" onBack={goBack} /></div>
+        <Suspense fallback={<p className="shell learn-page" role="status">Opening Balloon Count…</p>}>
+          <div className="prototype-balloons"><Balloons key={screen.id} ageGroup={profile.ageBand} onBack={goBack}
+            speak={sound ? speakFallback : undefined} onComplete={(points) => earn(screen.id, "balloons", points)} /></div>
+        </Suspense>
+      </main>;
     }
     if (screen.name === "reward") {
       if (screen.afterVideo || screen.activity === "toddler") return <MissionSummary profile={profile} points={screen.points} onHome={goHome}
@@ -318,10 +333,7 @@ export default function App() {
           setScreen(profile.ageBand === "1-2" ? { name: "toddler", id } : { name: "quiz", id, afterVideo: true, topic: missionQuizTopic(profile, preferences) });
         }} />;
     }
-    return <Hub profile={profile} preferences={preferences} onToggleSound={toggleSound} onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
-      onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={(topic) => openActivity("quiz", topic)}
-      onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
-      onSketch={() => startLearn("sketch")} onSpace={() => startLearn("space")}
-      onWatch={() => openActivity("video")} />;
+    return <Hub profile={profile} preferences={preferences} onActivity={openActivity} onToggleSound={toggleSound}
+      onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })} />;
   }
 }

@@ -29,6 +29,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs ?? ["energy", "screen"]);
   const [minutes, setMinutes] = useState(saved?.minutes ?? defaultPreferences.minutes);
   const [flow, setFlow] = useState<(typeof sessionFlows)[number]["value"]>(saved?.first === "active" ? "active" : "learn");
+  const [location, setLocation] = useState(saved?.location ?? defaultPreferences.location);
   const sound = useSoundEnabled();
   const code = profile?.codenameId ?? codenames.find((id) => !profiles.some((item) => item.codenameId === id)) ?? codenames[0];
   const display = name.trim() || codenameFor(code);
@@ -38,7 +39,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       onSubmit={(event) => {
         event.preventDefault();
         uiSound("chirp", sound);
-        onSave(code, age, { ...defaultPreferences, ...saved, minutes, first: age === "1-2" ? "watch" : flow,
+        onSave(code, age, { ...defaultPreferences, ...saved, location, minutes, first: age === "1-2" ? "watch" : flow,
           nickname: name.trim() || undefined, notes: notes.trim() || undefined, needs: selected });
       }}>
       <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
@@ -112,13 +113,20 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
             <span className={`block text-xs font-bold ${flow === option.value ? "text-indigo-100" : "text-indigo-300"}`}>{option.detail}</span>
           </button>)}
         </div>
+        {flow === "active" && <label className="flex flex-wrap gap-2 items-center text-xs font-bold text-indigo-200">
+          Where are you playing?
+          <select value={location} onChange={(event) => setLocation(event.target.value === "car" ? "car" : "home")}
+            className="profile-location px-3 py-2 rounded-xl border-2 border-[#4C35DE] bg-[#100B3B] text-sm text-white">
+            <option value="home">At home</option><option value="car">In the car</option>
+          </select>
+        </label>}
       </fieldset>}
 
       <button type="submit" className="w-full py-4 px-2 rounded-2xl btn-game btn-mint text-[#082F22] font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 cursor-pointer">
-        <span className="min-w-0 wrap-anywhere">START SESSION FOR <span id="startBtnKidName">{display.toUpperCase()}</span></span><span aria-hidden="true">🚀</span>
+        <span className="min-w-0 wrap-anywhere">{onBack ? "SAVE SETTINGS" : <>START SESSION FOR <span id="startBtnKidName">{display.toUpperCase()}</span></>}</span><span aria-hidden="true">🚀</span>
       </button>
-      <div className="flex items-center justify-between gap-3 text-xs text-indigo-300">
-        {onBack && <button type="button" className="hover:text-white" onClick={onBack}>← Back</button>}
+      <div className={`flex items-center justify-between gap-3 text-xs text-indigo-300 ${onBack ? "" : "sm:hidden"}`}>
+        {onBack && <button type="button" className="hover:text-white" onClick={onBack}><span aria-hidden="true">← </span>Back</button>}
         <a href="/privacy" className="sm:hidden ml-auto underline" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
       </div>
     </form>

@@ -10,6 +10,7 @@ export interface Session {
   mode: Mode;
   tasks: Task[];
   durationMinutes: number;
+  roundLimit?: number;
 }
 
 export interface Mission {
@@ -77,6 +78,7 @@ export function advanceMission(state: Mission, action: Action, session: Session)
     if (action.now < state.phaseEndsAt) return state;
     if (state.phase === "countdown") return nextRound(state, 0, session, action.now);
     if (state.phase === "feedback") {
+      if (session.roundLimit && state.round >= session.roundLimit) return finish(state);
       return nextRound({ ...state, round: state.round + 1 }, state.nextTaskIndex, session, action.now);
     }
     if (state.phase === "round") {

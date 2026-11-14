@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const { chromium } = await import(process.env.FLOW_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.FLOW_PLAYWRIGHT_MODULE).href : "playwright");
 const browser = await chromium.launch({ headless: true, ...(process.env.FLOW_CHROME ? { executablePath: process.env.FLOW_CHROME } : {}) });
 const base = process.env.FLOW_SITE_URL ?? "http://127.0.0.1:5175";
-const output = resolve("design/screens");
+const output = resolve(process.env.FLOW_SCREEN_DIR ?? ".wrangler/design-qa/prototype");
 await mkdir(output, { recursive: true });
 const errors = [], results = [];
 function pass(message) { results.push(message); console.log(`PASS ${message}`); }
@@ -75,9 +75,7 @@ async function holdExit(page) {
   await page.clock.runFor(1450);
   await page.keyboard.up("Enter");
 }
-async function timerState(page) {
-  return { stats: await page.locator(".mission-stats").innerText(), progress: await page.locator(".countdown-fill").getAttribute("stroke-dasharray") };
-}
+const timerState = (page) => page.locator("#sessionClockDisplay").innerText();
 
 try {
   for (const width of [390, 1280]) {
@@ -135,40 +133,28 @@ try {
       const p = mission.page;
       await p.clock.install();
       await tile(p, mode).click(); await p.getByRole("button", { name: "Start mission", exact: true }).click();
+      await p.locator("#screen-mission").waitFor();
       await p.clock.fastForward(5100);
-      await holdExit(p);
-      await p.getByRole("dialog", { name: "Leave this game?" }).waitFor();
-      assert.equal(await p.locator(".timer-label").innerText(), "Paused");
+      await p.getByRole("button", { name: "Pause", exact: true }).click();
+      await p.getByRole("button", { name: "Resume mission", exact: true }).waitFor();
       const frozen = await timerState(p);
       await p.clock.fastForward(30_000);
-      assert.deepEqual(await timerState(p), frozen, "mission and phase clocks freeze while confirming");
-      if (mode === "Scavenger Hunt") await snapshot(p, "mission-autopause", width);
-      await p.getByRole("button", { name: "Keep playing", exact: true }).click();
-      assert.notEqual(await p.locator(".timer-label").innerText(), "Paused");
-      const remaining = seconds(await p.locator(".mission-stats strong").nth(1).innerText());
-      await p.clock.fastForward(1100);
-      const resumed = seconds(await p.locator(".mission-stats strong").nth(1).innerText());
-      assert(remaining - resumed >= 1 && remaining - resumed <= 2, "resume excludes time spent in the dialog");
-      await holdExit(p); await p.keyboard.press("Escape");
-      assert.notEqual(await p.locator(".timer-label").innerText(), "Paused", "Escape resumes an active game");
-      await p.getByRole("button", { name: "Pause", exact: true }).click();
-      const manual = await timerState(p);
-      await holdExit(p); await p.clock.fastForward(30_000); await p.keyboard.press("Escape");
-      assert.equal(await p.locator(".timer-label").innerText(), "Paused", "Escape preserves a manual pause");
-      assert.deepEqual(await timerState(p), manual);
-      await holdExit(p); await p.getByRole("button", { name: "Keep playing", exact: true }).click();
-      assert.equal(await p.locator(".timer-label").innerText(), "Paused", "Keep playing also preserves manual pause");
+      assert.equal(await timerState(p), frozen, "session clock stops during a pause");
+      if (mode === "Scavenger Hunt") await snapshot(p, "mission-paused", width);
       await p.getByRole("button", { name: "Resume mission", exact: true }).click();
-      await holdExit(p); await p.getByRole("button", { name: "Leave game", exact: true }).click();
-      await p.getByRole("heading", { name: "Mission setup", exact: true }).waitFor();
+      const remaining = seconds(await timerState(p));
+      await p.clock.fastForward(1100);
+      const resumed = seconds(await timerState(p));
+      assert(remaining - resumed >= 1 && remaining - resumed <= 2, "resume excludes time spent paused");
+      await p.getByRole("button", { name: "Hold: Exit", exact: true }).click();
+      assert.equal(await p.locator("#screen-profile-setup").count(), 0, "a tap cannot exit a mission");
+      await holdExit(p);
+      await p.locator("#screen-profile-setup").waitFor();
       assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")).profiles[0].xp), 12);
-      await p.getByRole("button", { name: "Start mission", exact: true }).click();
-      assert.notEqual(await p.locator(".timer-label").innerText(), "Paused", "new mission doesn't inherit navigation pause");
-      await p.clock.fastForward(5100); await holdExit(p);
-      await p.getByRole("button", { name: "Leave game", exact: true }).click();
-      await p.getByRole("heading", { name: "Mission setup", exact: true }).waitFor();
+      await p.getByRole("button", { name: "Back", exact: true }).click();
+      await p.getByRole("region", { name: "Start here", exact: true }).waitFor();
       await mission.context.close();
-      pass(`${width}px ${mode}: clocks freeze; Keep playing/Escape resume only automatic pauses; Back/Home leave without reward; replay is unpaused`);
+      pass(`${width}px ${mode}: pause/resume, hold exits to Parents without double-awarding XP`);
     }
   }
   assert.deepEqual(errors, []);
