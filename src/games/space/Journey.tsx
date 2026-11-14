@@ -25,6 +25,7 @@ function useCamera() {
   const layers = useRef<(HTMLDivElement | null)[]>([]);
   const captions = useRef<(HTMLSpanElement | null)[]>([]);
   const target = useRef(0);
+  const jumpTo = useRef<(index: number) => void>(() => {});
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -40,14 +41,23 @@ function useCamera() {
     let height = 0;
     let distance = 0;
     let visibleLayers: number[] = [];
+    let jump: { from: number; start?: number } | undefined;
 
     function draw(time: number) {
       pending = 0;
       const delta = lastTime === undefined ? 16.7 : time - lastTime;
       const destination = preference.matches ? Math.round(target.current) : target.current;
-      current = Math.abs(destination - current) < .002 || preference.matches
-        ? destination
-        : lerp(current, destination, 1 - Math.exp(-delta / 90));
+      if (jump && !preference.matches) {
+        jump.start ??= time;
+        const elapsed = clamp((time - jump.start) / 520, 0, 1);
+        current = lerp(jump.from, destination, elapsed * elapsed * (3 - 2 * elapsed));
+        if (elapsed === 1) jump = undefined;
+      } else {
+        current = Math.abs(destination - current) < .002 || preference.matches
+          ? destination
+          : lerp(current, destination, 1 - Math.exp(-delta / 90));
+        jump = undefined;
+      }
       const active = Math.round(current);
       if (active !== shown) {
         shown = active;
@@ -59,7 +69,7 @@ function useCamera() {
       const smooth = into * into * (3 - 2 * into);
       const mobile = width < 580;
       const baseline = height * .855;
-      const focus = Math.min(height * .8, width * (mobile ? .72 : .62));
+      const focus = Math.min(height * (mobile ? .82 : .8), width * (mobile ? .76 : .62));
       const kmPerPixel = cameraScale(current / stopCount, focus);
       const placements = [
         { index: from - 1, x: lerp(.145, .02, smooth), opacity: 1 - smooth, incoming: false },
@@ -87,7 +97,7 @@ function useCamera() {
         }
         if (caption) {
           const callout = mobile && size < 45;
-          const labelX = clamp(horizontal, 66, width - 66);
+          const labelX = clamp(horizontal, tinySun ? 60 : 52, width - 52);
           caption.style.setProperty("--sp-callout-offset", `${horizontal - labelX}px`);
           caption.style.transform = `translate3d(${labelX}px, ${baseline - (callout ? size + 16 : -7)}px, 0) translate(-50%, ${callout ? "-100%" : "0"})`;
           caption.style.opacity = opacity >= .76 ? String((opacity - .76) / .24) : "0";
@@ -97,7 +107,7 @@ function useCamera() {
         return index;
       });
 
-      if (current !== destination) {
+      if (jump || current !== destination) {
         lastTime = time;
         pending = requestAnimationFrame(draw);
       } else {
@@ -105,10 +115,25 @@ function useCamera() {
       }
     }
 
-    function update() {
-      target.current = distance ? clamp(viewport.scrollTop / distance, 0, 1) * stopCount : 0;
+    function enqueue() {
       if (!pending) pending = requestAnimationFrame(draw);
     }
+
+    function update() {
+      const next = distance ? clamp(viewport.scrollTop / distance, 0, 1) * stopCount : 0;
+      if (!jump || Math.abs(target.current - next) > .01) {
+        jump = undefined;
+        target.current = next;
+      }
+      enqueue();
+    }
+
+    jumpTo.current = (index) => {
+      target.current = clamp(index, 0, stopCount);
+      jump = { from: current };
+      viewport.scrollTop = target.current / stopCount * distance;
+      enqueue();
+    };
 
     function resize() {
       const position = target.current;
@@ -130,18 +155,11 @@ function useCamera() {
       observer.disconnect();
       viewport.removeEventListener("scroll", update);
       preference.removeEventListener("change", update);
+      jumpTo.current = () => {};
     };
   }, []);
 
-  function goTo(index: number) {
-    const viewport = scroller.current;
-    if (!viewport) return;
-    const distance = viewport.scrollHeight - viewport.clientHeight;
-    const next = clamp(index, 0, stopCount);
-    target.current = next;
-    viewport.scrollTop = next / stopCount * distance;
-  }
-
+  const goTo = (index: number) => jumpTo.current(index);
   const step = (direction: number) => goTo(Math.round(target.current) + direction);
   return { scroller, scene, layers, captions, active, goTo, step };
 }
@@ -180,7 +198,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
 
   return (
     <div className="sp-scroll" ref={scroller} role="region" tabIndex={0} aria-label="Space journey" onKeyDown={(event) => {
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (event.target instanceof HTMLSelectElement || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
         event.preventDefault();
         step(event.key === "ArrowDown" ? 1 : -1);
@@ -206,9 +224,13 @@ export function Journey({ onFinish, speak, exploreOnly }: {
               </div>
             ))}
           </div>
-          <p className="sp-comparison">{comparisonText}</p>
+          <p className="sp-comparison">{comparisonText}
+            {object.rangeKm && <span className="sp-range">
+              Estimated range: {formatSize(object.rangeKm[0])} to {formatSize(object.rangeKm[1])}.
+            </span>}
+          </p>
           <div className="sp-discovery">
-            <p>{object.fact}{object.rangeKm && <> Estimated range: {formatSize(object.rangeKm[0])} to {formatSize(object.rangeKm[1])}.</>}</p>
+            <p>{object.fact}</p>
             {speak && <button className="sp-button sp-button-soft sp-hear" type="button" aria-disabled={speaking}
               onClick={() => void hearFact()}>
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"

@@ -50,7 +50,7 @@
 .sp-game {
   width: 100%;
   min-height: 100svh;
-  padding: 0 max(16px, calc((100% - 1152px) / 2)) 12px;
+  padding: 0 max(16px, calc((100% - 1152px) / 2));
   background-image: var(--sp-stars);
   color: var(--sp-ink);
   color-scheme: dark;
@@ -155,7 +155,7 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior-y: contain;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 
 .sp-track { height: calc(100% + var(--sp-track-distance, 3000px)); }
@@ -257,6 +257,7 @@
   font-size: 20px;
   text-align: center;
 }
+.sp-range { display: block; color: var(--sp-muted); font-size: .75em; }
 .sp-hear { flex: none; }
 
 .sp-stops { justify-self: center; }
@@ -356,18 +357,26 @@
 .sp-preview-message button { margin-left: 8px; }
 
 @media (max-width: 580px) {
-  .sp-topbar { min-height: 60px; }
+  .sp-game { padding-inline: 12px; }
+  .sp-topbar { min-height: 60px; gap: 9px; padding-right: 126px; }
+  .sp-title { white-space: nowrap; }
+  .sp-host-controls { top: 6px; right: 12px; }
   .sp-intro { grid-template-columns: 1fr; min-height: 0; padding: 24px; }
   .sp-hero { width: min(86%, 300px); }
   .sp-journey { height: max(575px, calc(100svh - 60px)); }
   .sp-stop-buttons { display: none; }
   .sp-stop-picker { display: block; }
   .sp-chevron { width: 48px; height: 48px; }
-  .sp-stage-next { min-height: 48px; }
-  .sp-sticky { padding-inline: 5px; }
+  .sp-stage-next.sp-chevron { min-height: 48px; }
+  .sp-journey-actions[data-final] { grid-template-columns: minmax(48px, 1fr) auto minmax(max-content, 1fr); }
+  .sp-sticky { padding-inline: 0; }
   .sp-journey-title h2 { font-size: 36px; }
   .sp-measure { font-size: 15px; }
   .sp-object-caption { font-size: 13px; }
   .sp-discovery { font-size: 13px; }
   .sp-game .sp-comparison { padding: 8px 12px; font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-layer, .sp-object-caption { will-change: auto; }
 }
