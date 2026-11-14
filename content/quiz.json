@@ -1,0 +1,18 @@
+[
+  { "id": "color-apple", "ageBand": "3-5", "topic": "colors", "question": "Which color matches this apple?", "emoji": "🍎", "choices": ["🔴 Red", "🔵 Blue", "🟡 Yellow"], "answer": "🔴 Red" },
+  { "id": "color-banana", "ageBand": "3-5", "topic": "colors", "question": "Which color matches this banana?", "emoji": "🍌", "choices": ["🟢 Green", "🟡 Yellow", "🟣 Purple"], "answer": "🟡 Yellow" },
+  { "id": "shape-round", "ageBand": "3-5", "topic": "shapes", "question": "Which shape is round?", "choices": ["🔺 Triangle", "🟦 Square", "🟠 Circle"], "answer": "🟠 Circle" },
+  { "id": "shape-three", "ageBand": "3-5", "topic": "shapes", "question": "Which shape has three sides?", "choices": ["🔺 Triangle", "🟦 Square"], "answer": "🔺 Triangle" },
+  { "id": "animal-meow", "ageBand": "3-5", "topic": "animals", "question": "Which animal says meow?", "choices": ["🐶 Dog", "🐱 Cat", "🐮 Cow"], "answer": "🐱 Cat" },
+  { "id": "animal-quack", "ageBand": "3-5", "topic": "animals", "question": "Which animal says quack?", "choices": ["🐷 Pig", "🐸 Frog", "🦆 Duck"], "answer": "🦆 Duck" },
+  { "id": "count-stars", "ageBand": "3-5", "topic": "counting", "question": "Count the stars. How many do you see?", "emoji": "⭐ ⭐ ⭐ ⭐", "choices": ["3️⃣ Three", "4️⃣ Four", "5️⃣ Five"], "answer": "4️⃣ Four" },
+  { "id": "count-fingers", "ageBand": "3-5", "topic": "counting", "question": "How many fingers on one hand, including your thumb?", "emoji": "✋", "choices": ["5️⃣ Five", "2️⃣ Two", "4️⃣ Four"], "answer": "5️⃣ Five" },
+  { "id": "sky-color", "ageBand": "6-8", "topic": "sky and space", "question": "Which color of sunlight scatters more and makes the daytime sky look blue?", "emoji": "☀️", "choices": ["Red", "Blue", "Yellow"], "answer": "Blue" },
+  { "id": "star-sun", "ageBand": "6-8", "topic": "sky and space", "question": "Which star is closest to Earth?", "choices": ["The Sun", "The Moon", "Mars"], "answer": "The Sun" },
+  { "id": "moon-light", "ageBand": "6-8", "topic": "sky and space", "question": "What lights up the Moon?", "emoji": "🌕", "choices": ["Lightning", "City lights", "Sunlight"], "answer": "Sunlight" },
+  { "id": "earth-spin", "ageBand": "6-8", "topic": "sky and space", "question": "What makes day turn into night?", "choices": ["Earth spins", "The Sun switches off", "Clouds turn black"], "answer": "Earth spins" },
+  { "id": "plant-roots", "ageBand": "6-8", "topic": "nature and water", "question": "Which part of a plant takes in water from the soil?", "emoji": "🌱", "choices": ["Flowers", "Roots", "Fruit"], "answer": "Roots" },
+  { "id": "water-clouds", "ageBand": "6-8", "topic": "nature and water", "question": "What are most clouds made of?", "choices": ["Cotton", "Sand", "Tiny water drops or ice crystals"], "answer": "Tiny water drops or ice crystals" },
+  { "id": "water-freeze", "ageBand": "6-8", "topic": "nature and water", "question": "What does water become when it freezes?", "emoji": "💧", "choices": ["Ice", "Steam", "Salt"], "answer": "Ice" },
+  { "id": "plant-sun", "ageBand": "6-8", "topic": "nature and water", "question": "What helps a green plant make its food?", "choices": ["Moonlight", "Sunlight", "Sand"], "answer": "Sunlight" }
+]

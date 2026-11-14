@@ -76,6 +76,25 @@ export function Home({ profile, onParent, onActive, onLearn }: {
   );
 }
 
+export function LearnHome({ profile, onBack, onQuiz, onMemory, onAsk, onGrid }: {
+  profile: Profile; onBack: () => void; onQuiz: () => void; onMemory: () => void;
+  onAsk?: () => void; onGrid?: () => void;
+}) {
+  return (
+    <LearnPage title="Learn" onBack={onBack}>
+      <span className="field-label">{profile.xp} XP · {rankName(profile.rank)} · {profile.streak} day streak</span>
+      <div className="activity-grid">
+        {onAsk && <ActivityTile icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask a question about science or nature.</ActivityTile>}
+        <ActivityTile icon="?" title="Quiz" onClick={onQuiz}>
+          {profile.ageBand === "3-5" ? "Practice colors, shapes, animals, and counting." : "Explore space, plants, and water."}
+        </ActivityTile>
+        <ActivityTile icon="▦" title="Memory" onClick={onMemory}>Flip cards to find matching pairs.</ActivityTile>
+        {onGrid && <ActivityTile icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>}
+      </div>
+    </LearnPage>
+  );
+}
+
 export function ParentSettings({ profile, onSave, onBack }: {
   profile: Profile; onSave: (codenameId: string, ageBand: AgeBand) => void; onBack: () => void;
 }) {

@@ -275,6 +275,15 @@ select, .gate-answer input {
 .home-profile > button { justify-self: start; }
 .video-panel { display: grid; gap: .8rem; }
 .video-player { display: block; width: 100%; min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #0a1114; }
+.learn-card { display: grid; gap: 1rem; }
+.learn-card > .quiet-button { justify-self: start; }
+.answer-list { display: grid; gap: .55rem; }
+.answer-list button { min-height: 58px; font-size: 1.1rem; }
+.answer-list [data-result="correct"] { opacity: 1; color: var(--accent); border-color: var(--accent); }
+.quiz-emoji { font-size: clamp(1.8rem, 7vw, 3.2rem); }
+.memory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
+.memory-card { min-height: 52px; aspect-ratio: 1; border: 1px solid var(--edge); border-radius: 10px; background: #162a2b; color: var(--accent); font-size: clamp(1.5rem, 7vw, 3rem); }
+.memory-card.face-up { opacity: 1; background: #26382d; }
 .narrow-shell .panel { margin-top: clamp(1.3rem, 5vw, 4rem); }
 .narrow-shell h1 { font-size: clamp(2.2rem, 7vw, 3.7rem); }
 .gate-answer { max-width: 15rem; }
