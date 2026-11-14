@@ -20,7 +20,8 @@ export function availableActivities(profile: ChildProfile, preferences: Preferen
   // Space Scale's distances and big numbers suit 6–8, not 3–5.
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
     { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }, spaceGameMeta] : [];
-  return [quiz, memory, ...older, balloons, ...moves, video];
+  return [quiz, memory, ...older, balloons, ...moves, video].filter(item =>
+    profile.ageBand !== "6-8" || (item.activity !== "memory" && item.activity !== "balloons"));
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {
