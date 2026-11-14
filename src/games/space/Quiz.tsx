@@ -1,5 +1,6 @@
+import { Mascot } from "../../components/Mascot";
 import { useEffect, useId, useRef, useState } from "react";
-import { ObjectArt, RocketArt } from "./art/ObjectArt";
+import { ObjectArt } from "./art/ObjectArt";
 import { compareSizes, objects, type SpaceObject } from "./scale";
 
 type Pair = [SpaceObject, SpaceObject];
@@ -46,7 +47,7 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
           <p className="sp-kicker">Question {index + 1} of {questions.length}</p>
           <h2 id={headingId} ref={heading} tabIndex={-1}>Which is bigger?</h2>
         </div>
-        <div className="sp-quiz-rocket"><RocketArt /></div>
+        <div className="sp-quiz-rocket"><Mascot pose="point" size={64} /></div>
       </div>
       <div className="sp-choices">
         {pair.map((object) => (

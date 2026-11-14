@@ -75,7 +75,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
             tickleTimer.current = window.setTimeout(() => setTickled(false), 900);
           }}>
           <span className={`block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl${giggling ? " mypal-giggle" : ""}`}>
-            <Mascot pose={poseFor(mood, paused ? "none" : action)} speaking={speaking} eager /></span>
+            <Mascot pose={poseFor(mood, paused ? "none" : action)} speaking={speaking} /></span>
         </button>
         {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}

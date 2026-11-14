@@ -190,9 +190,8 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .welcome-hero p { max-width: 29ch; margin-top: .6rem; color: var(--ink-soft); font-size: clamp(1rem, 2.3vw, 1.45rem); line-height: 1.28; }
 /* MyPal (src/components/Mascot.tsx). Without a size the picture keeps the square
    footprint every mascot box was designed for, centred and never cropped. */
-.mypal-mascot { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; object-position: center bottom; transform-origin: 50% 100%; user-select: none; pointer-events: none; }
+.mypal-mascot { display: block; width: 100%; height: auto; max-height: 280px; aspect-ratio: 1; object-fit: contain; object-position: center bottom; transform-origin: 50% 100%; user-select: none; pointer-events: none; }
 .mypal-mascot[data-sized] { aspect-ratio: auto; max-width: 100%; object-fit: contain; }
-.mypal-head { display: block; border-radius: 50%; object-fit: cover; }
 @media (prefers-reduced-motion: no-preference) {
   .mypal-mascot { animation: mypal-sway 3s ease-in-out infinite; }
 }

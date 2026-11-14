@@ -6,7 +6,7 @@ import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
 import { SessionActivity } from "../components/SessionControls";
 import { videosFor } from "../game/videos";
-import { Mascot, MascotHead } from "../components/Mascot";
+import { Mascot } from "../components/Mascot";
 import { ToddlerCinema } from "./ToddlerCinema";
 import { YouTubeVideo } from "../components/YouTubeVideo";
 
@@ -71,7 +71,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
     </button>
     <button type="button" disabled={finishing} onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
-      <MascotHead size={26} className="bg-[#FFD13B]" /> Play with {APP_NAME} Now!
+      <Mascot pose="point" size={48} /> Play with {APP_NAME} Now!
     </button>
   </div>;
 
@@ -109,11 +109,11 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
                 setWatching(true);
                 onOpen(selected.id);
               }}>
-              <Mascot pose="tablet" className="video-mascot" eager />
+              <Mascot pose="tablet" className="video-mascot" />
               <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
               <span className="block text-xs sm:text-sm font-bold text-indigo-200">▶ Watch video · Plays on YouTube</span>
             </button> : <>
-              <Mascot pose="tablet" className="video-mascot" eager />
+              <Mascot pose="tablet" className="video-mascot" />
               <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">More videos coming soon</h1>
               <p className="text-xs sm:text-sm font-bold text-indigo-200">Play with {APP_NAME} while we get the next episode ready.</p>
             </>}

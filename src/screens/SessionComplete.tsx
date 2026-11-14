@@ -12,7 +12,7 @@ export function SessionComplete({ name, xp, streak, onBack }: {
 
   return <main className="prototype-screen session-complete" aria-labelledby="session-complete-title">
     <div className="session-card space-y-4">
-      <Mascot pose="jump" size={120} eager className="mx-auto" />
+      <Mascot pose="jump" size={120} className="mx-auto" />
       <h1 className="text-3xl font-bold" id="session-complete-title" tabIndex={-1} ref={heading}>Session complete</h1>
       <p className="wrap-anywhere">Great job, {name}! See you next time!</p>
       <div className="flex flex-wrap justify-center gap-2">

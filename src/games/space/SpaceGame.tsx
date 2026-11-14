@@ -1,5 +1,6 @@
+import { Mascot } from "../../components/Mascot";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ObjectArt, RocketArt } from "./art/ObjectArt";
+import { ObjectArt } from "./art/ObjectArt";
 import { Journey } from "./Journey";
 import { Quiz } from "./Quiz";
 import { objects } from "./scale";
@@ -52,7 +53,7 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
         </div>
         <div className="sp-hero" aria-hidden="true">
           <div className="sp-hero-earth"><ObjectArt art="earth" /></div>
-          <div className="sp-hero-rocket"><RocketArt /></div>
+          <div className="sp-hero-rocket"><Mascot pose="point" /></div>
           <div className="sp-hero-moon"><ObjectArt art="moon" /></div>
         </div>
       </div>}
@@ -65,6 +66,7 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
       }} />}
       {stage === "result" && <div className="sp-result">
         <div className="sp-result-art" aria-hidden="true">
+          <Mascot pose="jump" size={120} />
           {["earth", "jupiter", "star"].map((art) => <div key={art}><ObjectArt art={art} /></div>)}
         </div>
         <h2 tabIndex={-1} ref={resultTitle}>What a journey!</h2>

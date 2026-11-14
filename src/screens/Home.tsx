@@ -56,11 +56,11 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
     </PrototypeHeader>
     <div className="learn-page">
       <section className="hub-greeting" aria-label={`${APP_NAME} says hello`}>
-        <Mascot pose="wave" size={96} eager />
+        <Mascot pose="wave" size={72} />
         <p className="hub-greeting-bubble">Hi, {name}! What shall we do today?</p>
       </section>
       <section className="flow-start panel" aria-labelledby="flow-start-title">
-        <div className="flow-start-icon flow-start-mascot" aria-hidden="true"><Mascot pose="tablet" size={92} eager /></div>
+        <div className="flow-start-icon flow-start-mascot" aria-hidden="true"><Mascot pose="tablet" size={72} /></div>
         <div><p className="field-label" id="flow-start-title">Start here</p><h1 className="font-display text-2xl sm:text-3xl font-bold">{first.title}</h1><p>{first.description}</p></div>
         <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>
           Start <span aria-hidden="true">→</span><span className="sr-only"> {first.title}</span>

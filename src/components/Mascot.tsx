@@ -12,7 +12,7 @@ export type MascotAction = "clap" | "jump" | "wave" | "sneak" | "drink" | "none"
 
 // Intrinsic sizes of public/mascot/mypal-*.webp, so the layout never jumps while loading.
 const art: Record<MascotPose, [number, number]> = {
-  wave: [502, 840], jump: [594, 840], tablet: [401, 840], point: [473, 840],
+  wave: [408, 700], jump: [469, 700], tablet: [323, 700], point: [390, 700],
 };
 
 export function poseFor(mood: MascotMood, action: MascotAction = "none"): MascotPose {
@@ -27,14 +27,9 @@ export function Mascot({ pose, size, eager = false, speaking = false, className 
   pose: MascotPose; size?: number; eager?: boolean; speaking?: boolean; className?: string;
 }) {
   const [width, height] = art[pose];
-  return <img className={`mypal-mascot ${className}`.trim()} src={`/mascot/mypal-${pose}.webp`} alt=""
+  return <img className={`mypal-mascot ${className}`.trim()} src={`/mascot/mypal-${pose}.webp`} alt="MyPal"
+    srcSet={`/mascot/mypal-${pose}.webp 1x, /mascot/mypal-${pose}@2x.webp 2x`}
     width={width} height={height} loading={eager ? "eager" : "lazy"} decoding="async" draggable={false}
     data-pose={pose} data-speaking={speaking || undefined} data-sized={size ? true : undefined}
-    style={size ? { height: size, width: Math.round(size * width / height) } : undefined} />;
-}
-
-/** The head from the wave pose: header logo and small icons. */
-export function MascotHead({ size = 36, className = "" }: { size?: number; className?: string }) {
-  return <img className={`mypal-head ${className}`.trim()} src="/mascot/mypal-head.webp" alt=""
-    width={size} height={size} decoding="async" draggable={false} />;
+    style={size ? { height: Math.min(size, 280), width: Math.round(Math.min(size, 280) * width / height) } : undefined} />;
 }

@@ -1,3 +1,4 @@
+import { Mascot } from "../../components/Mascot";
 import { useEffect, useRef, useState } from "react";
 import type { SketchGameProps } from "./index";
 import { SketchCanvas } from "./SketchCanvas";
@@ -170,6 +171,7 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
       </header> : header}
       {stage === "intro" && <div className="sk-intro">
         <div className="sk-intro-copy">
+          <Mascot pose="point" size={64} />
           <p className="sk-eyebrow">LITTLE ARTISTS · BIG MYSTERIES</p>
           <span className="sk-case-tag">CASE {String(cases.findIndex((entry) => entry.id === caseFile.id) + 1).padStart(2, "0")} <span aria-hidden="true">/</span> ART DIVISION</span>
           <h1 className="sk-title" ref={headingRef} tabIndex={-1}><span className="sk-title-prefix">Case file:</span> {caseFile.title}</h1>
@@ -204,6 +206,7 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
         <div className="sk-workspace">
           <aside className="sk-clue-panel" aria-label="Witness clues">
             <div className="sk-clue-card">
+              <Mascot pose="point" size={64} />
               <div className="sk-clue-heading"><span className="sk-eyebrow">WITNESS SAYS…</span><span className="sk-clue-count">{clueIndex + 1} / {caseFile.clues.length}</span></div>
               <div className="sk-progress" aria-label={`Clue ${clueIndex + 1} of ${caseFile.clues.length}`}>{caseFile.clues.map((entry, i) => <span key={entry.id} className={`sk-progress-dot${i <= clueIndex ? " sk-progress-read" : ""}`} />)}</div>
               <p className="sk-clue-text" aria-live="polite" aria-atomic="true">“{clue.text}”</p>
@@ -231,6 +234,7 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
         <div className="sk-compare-track"><span /></div>
       </div>}
       {stage === "reveal" && snapshot && <div className="sk-reveal">
+        <Mascot pose="jump" size={72} />
         <div className="sk-result-heading"><p className="sk-eyebrow">MYSTERY REVEALED</p><h1 className="sk-title sk-result-title" ref={headingRef} tabIndex={-1}>Meet {caseFile.id === "gecko_hero" ? "Gecko Hero" : caseFile.title}!</h1><p className="sk-lead">Two pictures. One brilliant imagination.</p></div>
         <div className="sk-pictures">
           <figure className="sk-picture"><figcaption><span>Your masterpiece</span><span className="sk-picture-tag">THE ARTIST: YOU</span></figcaption><img className="sk-result-image" src={snapshot.previewUrl} alt="Your drawing of the mystery hero" /></figure>

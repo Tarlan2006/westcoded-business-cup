@@ -117,7 +117,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
         <section className="panel learn-card">
           {asked && <p className="field-label ask-question">You asked: “{asked}”</p>}
           <div className="ask-host">
-            <Mascot pose="tablet" className="ask-mascot" eager />
+            <Mascot pose="point" size={72} className="ask-mascot" />
             <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
           </div>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
@@ -138,7 +138,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           event.preventDefault();
           void submit(question);
         }}>
-          <Mascot pose={busy || voice.status === "decoding" ? "tablet" : "point"} className="ask-mascot-large" eager />
+          <Mascot pose={busy || voice.status === "decoding" ? "tablet" : "point"} className="ask-mascot-large" />
           <HoldButton talk hintKey="ask-talk" className="game-button talk-button" data-button-tone="sky"
             data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding" || (finishing && !recording)}
             onBegin={beginVoice} onRelease={() => voice.release()} onCancel={voice.cancelHold}>

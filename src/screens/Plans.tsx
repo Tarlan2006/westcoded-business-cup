@@ -11,7 +11,7 @@ export function Plans({ onBack }: { onBack: () => void }) {
 
   return <LearnPage title={`${APP_NAME} Plus`} onBack={onBack}>
     <section className="plans-hero panel">
-      <Mascot pose="jump" size={130} eager />
+      <Mascot pose="jump" size={130} />
       <div>
         <p className="field-label">For grown-ups</p>
         <h2>Unlock more games and adventures</h2>

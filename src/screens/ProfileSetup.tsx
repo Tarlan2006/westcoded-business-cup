@@ -65,7 +65,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       }}>
       <div className="profile-setup-heading flex flex-wrap items-center justify-between gap-2 pb-4">
         <div className="flex min-w-0 items-center gap-3">
-          <Mascot pose="wave" size={72} eager className="shrink-0" />
+          <Mascot pose="wave" size={72} className="shrink-0" />
           <div>
             <span className="profile-setup-kicker text-xs font-extrabold uppercase tracking-wider">SET UP IN 1 MINUTE</span>
             <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight">Tell {APP_NAME} about your child</h1>

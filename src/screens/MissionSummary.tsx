@@ -28,7 +28,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
     {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
     <section id="screen-complete" className="prototype-screen py-4 flex flex-col items-center justify-center text-center" aria-label="Mission complete">
       <div className="bg-[#1C145C] rounded-3xl p-6 sm:p-8 border-4 border-[#FFD13B] shadow-[0_16px_48px_rgba(0,0,0,0.5)] w-full space-y-5">
-        <Mascot pose="jump" size={150} eager className="mx-auto -mb-2" />
+        <Mascot pose="jump" size={150} className="mx-auto -mb-2" />
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2CE69B] text-[#062C1E] font-black text-sm">🎉 YOU DID IT!</div>
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-white wrap-anywhere">Way to go, Agent {name}!</h1>
 
