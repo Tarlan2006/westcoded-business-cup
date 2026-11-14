@@ -1,4 +1,19 @@
 @import "tailwindcss";
+@import "./styles/prototype.css";
+
+@font-face {
+  font-family: Fredoka;
+  src: url("/fonts/fredoka-latin.woff2") format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Nunito;
+  src: url("/fonts/nunito-latin.woff2") format("woff2");
+  font-weight: 700 900;
+  font-display: swap;
+}
 
 /* Flow: deliberate access to grown-up settings. */
 .flow-grownups { display: grid; justify-items: center; justify-self: start; min-width: 148px; gap: .35rem; }

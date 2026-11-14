@@ -1,0 +1,230 @@
+:root {
+  --bg-cosmic: #0F0A3C;
+  --bg-card-dark: #1E1666;
+  --purple-vibrant: #6C47FF;
+  --purple-light: #9D7BFF;
+  --mint-action: #2CE69B;
+  --mint-dark: #15B875;
+  --coral-accent: #FF7849;
+  --coral-dark: #D95326;
+  --sky-voice: #38BDF8;
+  --sky-dark: #0284C7;
+  --gold-star: #FFD13B;
+}
+
+.prototype {
+  font-family: 'Nunito', sans-serif;
+  background: radial-gradient(circle at 20% 10%, #24187A 0%, #0F0A3C 65%, #090626 100%);
+  color: #FFFFFF;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prototype :is(h1, h2, h3) {
+  font-size: revert-layer;
+  font-weight: revert-layer;
+  line-height: revert-layer;
+}
+
+.prototype :is(h1, h2, h3), .font-display {
+  font-family: 'Fredoka', 'Nunito', sans-serif;
+}
+
+/* Tactile 3D Game Buttons (Duolingo / Kids App Style) */
+.btn-game {
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+}
+.btn-game:active {
+  transform: translateY(5px);
+}
+
+.btn-lime {
+  background: linear-gradient(180deg, #58CC02 0%, #46A302 100%);
+  box-shadow: 0 6px 0 #2F7500;
+}
+.btn-lime:active {
+  box-shadow: 0 1px 0 #2F7500;
+}
+
+.btn-mint {
+  background: linear-gradient(180deg, #34E89E 0%, #1CC88A 100%);
+  box-shadow: 0 7px 0 #0F8F60;
+}
+.btn-mint:active {
+  box-shadow: 0 2px 0 #0F8F60;
+}
+
+.btn-purple {
+  background: linear-gradient(180deg, #8B5CF6 0%, #6D28D9 100%);
+  box-shadow: 0 6px 0 #4C1D95;
+}
+.btn-purple:active {
+  box-shadow: 0 1px 0 #4C1D95;
+}
+
+.btn-coral {
+  background: linear-gradient(180deg, #FF8E53 0%, #FF6B35 100%);
+  box-shadow: 0 6px 0 #C44112;
+}
+.btn-coral:active {
+  box-shadow: 0 1px 0 #C44112;
+}
+
+.btn-sky {
+  background: linear-gradient(180deg, #38BDF8 0%, #0EA5E9 100%);
+  box-shadow: 0 7px 0 #0369A1;
+}
+.btn-sky:active {
+  box-shadow: 0 2px 0 #0369A1;
+}
+
+/* Illustrated Hub Cards with Thick White/Glossy Borders */
+.hub-tile {
+  border: 4px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 10px 0 rgba(8, 5, 36, 0.55), 0 16px 32px rgba(0, 0, 0, 0.35);
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hub-tile:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+.hub-tile:active {
+  transform: translateY(3px) scale(0.99);
+}
+
+/* Bleep Floating & Antenna Animations */
+@keyframes floatMascot {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+.prototype-bleep .bleep-float {
+  animation: floatMascot 3s ease-in-out infinite;
+}
+
+@keyframes antennaBob {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(9deg); }
+}
+.prototype-bleep .bleep-antenna {
+  transform-origin: 100px 44px;
+  animation: antennaBob 1.7s ease-in-out infinite;
+}
+.prototype-bleep .bleep-speaking .bleep-antenna {
+  animation: antennaBob 0.3s ease-in-out infinite;
+}
+
+/* Duolingo-style Speech Bubble Tail */
+.speech-bubble-duo {
+  position: relative;
+  background: #FFFFFF;
+  color: #1E293B;
+  border-radius: 24px;
+  border: 3px solid #E2E8F0;
+  box-shadow: 0 6px 0 #CBD5E1;
+}
+.speech-bubble-duo::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 14px 14px 0;
+  border-style: solid;
+  border-color: #FFFFFF transparent transparent transparent;
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.voice-pulse::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 4px solid #7DD3FC;
+  animation: pulseRing 1.3s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes riseFade {
+  0% { transform: translateY(0) scale(0.6); opacity: 1; }
+  100% { transform: translateY(-160px) scale(1.3); opacity: 0; }
+}
+.prototype .prototype-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 60;
+  animation: riseFade 1.1s ease-out forwards;
+}
+
+/* Mascot Physical Body Actions & Talking Tom Style Giggle/Tickle */
+@keyframes clapLeft {
+  0%, 100% { transform: translate(0, 0) rotate(-18deg); }
+  50% { transform: translate(42px, -16px) rotate(28deg); }
+}
+@keyframes clapRight {
+  0%, 100% { transform: translate(0, 0) rotate(18deg); }
+  50% { transform: translate(-42px, -16px) rotate(-28deg); }
+}
+.action-clap .arm-left { animation: clapLeft 0.42s ease-in-out infinite; transform-origin: 30px 128px; }
+.action-clap .arm-right { animation: clapRight 0.42s ease-in-out infinite; transform-origin: 170px 128px; }
+
+@keyframes jumpAction {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  25% { transform: translateY(6px) scaleY(0.92) scaleX(1.06); }
+  55% { transform: translateY(-24px) scaleY(1.06) scaleX(0.95); }
+}
+.action-jump { animation: jumpAction 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+
+@keyframes waveArms {
+  0%, 100% { transform: rotate(-45deg); }
+  50% { transform: rotate(-85deg); }
+}
+.action-wave .arm-left { animation: waveArms 0.45s ease-in-out infinite; transform-origin: 36px 115px; }
+
+@keyframes stealthSneak {
+  0%, 100% { transform: translateX(-10px) rotate(-5deg); }
+  50% { transform: translateX(10px) rotate(5deg); }
+}
+.action-sneak { animation: stealthSneak 1.1s ease-in-out infinite; }
+
+@keyframes drinkTilt {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-16deg) translateY(-6px); }
+}
+.action-drink { animation: drinkTilt 1.2s ease-in-out infinite; }
+
+@keyframes tickleGiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-11deg) scale(1.08, 0.94); }
+  40% { transform: rotate(11deg) scale(0.94, 1.08); }
+  60% { transform: rotate(-9deg) scale(1.06, 0.96); }
+  80% { transform: rotate(9deg) scale(0.96, 1.06); }
+}
+.bleep-tickle {
+  animation: tickleGiggle 0.45s ease-in-out 2 !important;
+}
+
+.countdown-circle {
+  transition: stroke-dashoffset 0.35s linear, stroke 0.5s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* The prototype uses utility sizes for headings and the existing app keeps its
+   component styles. Motion is optional for both. */
+.prototype :is(input, textarea) { user-select: text; }
+.prototype .btn-game:disabled { background: var(--bg-card-dark); filter: saturate(.45); opacity: .7; }
+.prototype-bleep { display: block; width: 100%; }
+.prototype-bleep svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.prototype-screen { position: relative; min-height: 100svh; }
+.prototype-screen[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .prototype :is(.animate-bounce, .prototype-particle),
+  .prototype-bleep :is(.bleep-float, .bleep-antenna, .arm-left, .arm-right, [class*="action-"], .bleep-tickle),
+  .prototype .voice-pulse::before { animation: none !important; }
+  .prototype .prototype-particle { display: none; }
+  .prototype :is(.countdown-circle, .btn-game, .hub-tile) { transition: none; }
+  .prototype :is(.btn-game:active, .hub-tile:active, .hub-tile:hover) { transform: none; }
+}

@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission Control — Screen-Free AI Voice Game Master</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-cosmic: #0F0A3C;
+      --bg-card-dark: #1E1666;
+      --purple-vibrant: #6C47FF;
+      --purple-light: #9D7BFF;
+      --mint-action: #2CE69B;
+      --mint-dark: #15B875;
+      --coral-accent: #FF7849;
+      --coral-dark: #D95326;
+      --sky-voice: #38BDF8;
+      --sky-dark: #0284C7;
+      --gold-star: #FFD13B;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: radial-gradient(circle at 20% 10%, #24187A 0%, #0F0A3C 65%, #090626 100%);
+      color: #FFFFFF;
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    h1, h2, h3, .font-display {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+    }
+
+    /* Tactile 3D Game Buttons (Duolingo / Kids App Style) */
+    .btn-game {
+      transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+    }
+    .btn-game:active {
+      transform: translateY(5px);
+    }
+
+    .btn-lime {
+      background: linear-gradient(180deg, #58CC02 0%, #46A302 100%);
+      box-shadow: 0 6px 0 #2F7500;
+    }
+    .btn-lime:active {
+      box-shadow: 0 1px 0 #2F7500;
+    }
+
+    .btn-mint {
+      background: linear-gradient(180deg, #34E89E 0%, #1CC88A 100%);
+      box-shadow: 0 7px 0 #0F8F60;
+    }
+    .btn-mint:active {
+      box-shadow: 0 2px 0 #0F8F60;
+    }
+
+    .btn-purple {
+      background: linear-gradient(180deg, #8B5CF6 0%, #6D28D9 100%);
+      box-shadow: 0 6px 0 #4C1D95;
+    }
+    .btn-purple:active {
+      box-shadow: 0 1px 0 #4C1D95;
+    }
+
+    .btn-coral {
+      background: linear-gradient(180deg, #FF8E53 0%, #FF6B35 100%);
+      box-shadow: 0 6px 0 #C44112;
+    }
+    .btn-coral:active {
+      box-shadow: 0 1px 0 #C44112;
+    }
+
+    .btn-sky {
+      background: linear-gradient(180deg, #38BDF8 0%, #0EA5E9 100%);
+      box-shadow: 0 7px 0 #0369A1;
+    }
+    .btn-sky:active {
+      box-shadow: 0 2px 0 #0369A1;
+    }
+
+    /* Illustrated Hub Cards with Thick White/Glossy Borders */
+    .hub-tile {
+      border: 4px solid rgba(255, 255, 255, 0.92);
+      box-shadow: 0 10px 0 rgba(8, 5, 36, 0.55), 0 16px 32px rgba(0, 0, 0, 0.35);
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .hub-tile:hover {
+      transform: translateY(-4px) scale(1.01);
+    }
+    .hub-tile:active {
+      transform: translateY(3px) scale(0.99);
+    }
+
+    /* Bleep Floating & Antenna Animations */
+    @keyframes floatMascot {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+    .bleep-float {
+      animation: floatMascot 3s ease-in-out infinite;
+    }
+
+    @keyframes antennaBob {
+      0%, 100% { transform: rotate(-8deg); }
+      50% { transform: rotate(9deg); }
+    }
+    .bleep-antenna {
+      transform-origin: 100px 44px;
+      animation: antennaBob 1.7s ease-in-out infinite;
+    }
+    .bleep-speaking .bleep-antenna {
+      animation: antennaBob 0.3s ease-in-out infinite;
+    }
+
+    /* Duolingo-style Speech Bubble Tail */
+    .speech-bubble-duo {
+      position: relative;
+      background: #FFFFFF;
+      color: #1E293B;
+      border-radius: 24px;
+      border: 3px solid #E2E8F0;
+      box-shadow: 0 6px 0 #CBD5E1;
+    }
+    .speech-bubble-duo::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 14px 14px 0;
+      border-style: solid;
+      border-color: #FFFFFF transparent transparent transparent;
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+    .voice-pulse::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 9999px;
+      border: 4px solid #7DD3FC;
+      animation: pulseRing 1.3s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+      pointer-events: none;
+    }
+
+    @keyframes riseFade {
+      0% { transform: translateY(0) scale(0.6); opacity: 1; }
+      100% { transform: translateY(-160px) scale(1.3); opacity: 0; }
+    }
+    .particle-pop {
+      position: fixed;
+      pointer-events: none;
+      z-index: 60;
+      animation: riseFade 1.1s ease-out forwards;
+    }
+
+    /* Mascot Physical Body Actions & Talking Tom Style Giggle/Tickle */
+    @keyframes clapLeft {
+      0%, 100% { transform: translate(0, 0) rotate(-18deg); }
+      50% { transform: translate(42px, -16px) rotate(28deg); }
+    }
+    @keyframes clapRight {
+      0%, 100% { transform: translate(0, 0) rotate(18deg); }
+      50% { transform: translate(-42px, -16px) rotate(-28deg); }
+    }
+    .action-clap .arm-left { animation: clapLeft 0.42s ease-in-out infinite; transform-origin: 30px 128px; }
+    .action-clap .arm-right { animation: clapRight 0.42s ease-in-out infinite; transform-origin: 170px 128px; }
+
+    @keyframes jumpAction {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      25% { transform: translateY(6px) scaleY(0.92) scaleX(1.06); }
+      55% { transform: translateY(-24px) scaleY(1.06) scaleX(0.95); }
+    }
+    .action-jump { animation: jumpAction 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) infinite; }
+
+    @keyframes waveArms {
+      0%, 100% { transform: rotate(-45deg); }
+      50% { transform: rotate(-85deg); }
+    }
+    .action-wave .arm-left { animation: waveArms 0.45s ease-in-out infinite; transform-origin: 36px 115px; }
+
+    @keyframes stealthSneak {
+      0%, 100% { transform: translateX(-10px) rotate(-5deg); }
+      50% { transform: translateX(10px) rotate(5deg); }
+    }
+    .action-sneak { animation: stealthSneak 1.1s ease-in-out infinite; }
+
+    @keyframes drinkTilt {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-16deg) translateY(-6px); }
+    }
+    .action-drink { animation: drinkTilt 1.2s ease-in-out infinite; }
+
+    @keyframes tickleGiggle {
+      0%, 100% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(-11deg) scale(1.08, 0.94); }
+      40% { transform: rotate(11deg) scale(0.94, 1.08); }
+      60% { transform: rotate(-9deg) scale(1.06, 0.96); }
+      80% { transform: rotate(9deg) scale(0.96, 1.06); }
+    }
+    .bleep-tickle {
+      animation: tickleGiggle 0.45s ease-in-out 2 !important;
+    }
+
+    .countdown-circle {
+      transition: stroke-dashoffset 0.35s linear, stroke 0.5s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative">
+
+  <!-- Decorative Cosmic Twinkles Background -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden opacity-35 z-0">
+    <div class="absolute top-12 left-10 w-3 h-3 bg-white rotate-45 rounded-xs"></div>
+    <div class="absolute top-28 right-16 w-4 h-4 bg-[#FFD13B] rotate-45 rounded-xs"></div>
+    <div class="absolute bottom-24 left-1/4 w-3 h-3 bg-[#38BDF8] rotate-45 rounded-xs"></div>
+    <div class="absolute top-1/2 right-10 w-2.5 h-2.5 bg-[#FF7849] rotate-45 rounded-xs"></div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 0A: DUOLINGO-STYLE SPLASH LOADING SCREEN                       -->
+  <!-- ===================================================================== -->
+  <section id="screen-splash" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500">
+    <div class="bleep-float mb-6">
+      <!-- Bleep Mascot (Clean White/Coral/Purple Scout) -->
+      <svg viewBox="0 0 200 210" class="w-40 h-40 drop-shadow-lg">
+        <g class="bleep-antenna">
+          <line x1="100" y1="45" x2="100" y2="18" stroke="#6C47FF" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="100" cy="14" r="10" fill="#58CC02"/>
+        </g>
+        <ellipse cx="30" cy="128" rx="12" ry="22" transform="rotate(-18 30 128)" fill="#6C47FF"/>
+        <ellipse cx="170" cy="128" rx="12" ry="22" transform="rotate(18 170 128)" fill="#6C47FF"/>
+        <rect x="40" y="42" width="120" height="126" rx="58" fill="#F8FAFC" stroke="#6C47FF" stroke-width="8"/>
+        <path d="M 62 146 Q 100 162 138 146" fill="none" stroke="#DDD6FE" stroke-width="8" stroke-linecap="round"/>
+        <rect x="54" y="66" width="92" height="58" rx="28" fill="#1E1B4B"/>
+        <ellipse cx="64" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+        <ellipse cx="136" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+        <path d="M 72 95 Q 81 80 90 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+        <path d="M 110 95 Q 119 80 128 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+        <path d="M 90 107 Q 100 118 110 107 Z" fill="#38BDF8"/>
+      </svg>
+    </div>
+
+    <h1 class="font-display text-3xl sm:text-4xl font-bold text-[#6C47FF] tracking-tight mb-2">
+      Mission Control
+    </h1>
+    <p class="text-slate-400 font-extrabold text-sm tracking-widest uppercase mb-6" id="loadingStatusText">
+      Waking up Bleep...
+    </p>
+
+    <!-- Chunky Loading Progress Bar -->
+    <div class="w-64 h-4 bg-slate-200 rounded-full overflow-hidden p-0.5">
+      <div id="splashProgressBar" class="h-full bg-[#58CC02] rounded-full transition-all duration-300" style="width: 15%"></div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 0B: DUOLINGO-STYLE MASCOT GREETING ("HI! I'M BLEEP!")          -->
+  <!-- ===================================================================== -->
+  <section id="screen-greeting" class="hidden fixed inset-0 z-40 bg-white flex flex-col justify-between p-6">
+    <div class="flex justify-end">
+      <button onclick="toggleSound()" class="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-extrabold">
+        <span id="greetSoundIcon">🔊</span> Sound
+      </button>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center max-w-md mx-auto text-center">
+      <!-- Speech Bubble -->
+      <div class="speech-bubble-duo px-6 py-4 mb-6 animate-bounce">
+        <p id="greetingSpeechText" class="font-display text-xl sm:text-2xl font-bold text-slate-800">
+          Hi! I'm Bleep! Ready for a screen-free adventure?
+        </p>
+      </div>
+
+      <!-- Large Bleep SVG -->
+      <div class="bleep-float">
+        <svg viewBox="0 0 200 210" class="w-48 h-48 sm:w-56 sm:h-56">
+          <g class="bleep-antenna">
+            <line x1="100" y1="45" x2="100" y2="18" stroke="#6C47FF" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="100" cy="14" r="10" fill="#58CC02"/>
+          </g>
+          <!-- Waving Arm -->
+          <ellipse cx="28" cy="105" rx="12" ry="22" transform="rotate(-48 28 105)" fill="#FF7849"/>
+          <ellipse cx="170" cy="128" rx="12" ry="22" transform="rotate(18 170 128)" fill="#6C47FF"/>
+          <rect x="40" y="42" width="120" height="126" rx="58" fill="#F8FAFC" stroke="#6C47FF" stroke-width="8"/>
+          <path d="M 62 146 Q 100 162 138 146" fill="none" stroke="#DDD6FE" stroke-width="8" stroke-linecap="round"/>
+          <rect x="54" y="66" width="92" height="58" rx="28" fill="#1E1B4B"/>
+          <ellipse cx="64" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+          <ellipse cx="136" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+          <path d="M 72 95 Q 81 80 90 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 110 95 Q 119 80 128 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 89 106 Q 100 120 111 106 Z" fill="#38BDF8"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Bottom Duolingo-style Divider & CONTINUE Button -->
+    <div class="w-full border-t-2 border-slate-200 pt-4 pb-2 flex justify-center sm:justify-end max-w-4xl mx-auto">
+      <button onclick="proceedFromGreeting()"
+        class="w-full sm:w-auto px-12 py-4 rounded-2xl btn-game btn-lime text-white font-display font-bold text-lg tracking-wider uppercase cursor-pointer">
+        CONTINUE
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 1: PARENT PROFILE & CHILD NEEDS ONBOARDING (FIRST-TIME SETUP)  -->
+  <!-- ===================================================================== -->
+  <section id="screen-profile-setup" class="hidden flex-1 w-full max-w-3xl mx-auto px-4 py-6 flex flex-col justify-center z-10">
+    <div class="bg-[#1C145C]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border-4 border-[#4C35DE] shadow-[0_14px_40px_rgba(0,0,0,0.45)] space-y-6">
+      <div class="flex items-center justify-between border-b border-indigo-800/80 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-[#6C47FF] border-2 border-white/40 flex items-center justify-center text-2xl shadow-md">
+            👨‍👩‍👧
+          </div>
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">Parent Setup • 1-Time Profile</span>
+            <h1 class="font-display text-2xl sm:text-3xl font-bold text-white">Tell Bleep About Your Child</h1>
+          </div>
+        </div>
+        <span class="hidden sm:inline-block px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700 text-xs font-extrabold text-indigo-300">
+          🛡️ COPPA Safe
+        </span>
+      </div>
+
+      <!-- Child Name & Age Bracket -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's Name</label>
+          <input id="profileNameInput" type="text" value="Zimran" placeholder="e.g., Zimran, Leo, Maya"
+            class="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Age Group</label>
+          <div class="grid grid-cols-3 gap-2" id="profileAgeGroup">
+            <button type="button" onclick="setProfileAge('1-2')" data-age="1-2"
+              class="prof-age-btn py-3 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] font-extrabold text-sm text-indigo-200 hover:border-white transition">
+              1–2 yrs
+            </button>
+            <button type="button" onclick="setProfileAge('3-5')" data-age="3-5"
+              class="prof-age-btn py-3 rounded-2xl border-2 border-[#FFD13B] bg-[#6C47FF] font-extrabold text-sm text-white shadow-md">
+              3–5 yrs
+            </button>
+            <button type="button" onclick="setProfileAge('6-8')" data-age="6-8"
+              class="prof-age-btn py-3 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] font-extrabold text-sm text-indigo-200 hover:border-white transition">
+              6–8 yrs
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Child's Needs & Parent Goals (Multi-select chips) -->
+      <div>
+        <label class="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-2">
+          What does your child need most right now? (Select all that apply)
+        </label>
+        <div class="flex flex-wrap gap-2" id="needsChips">
+          <button type="button" onclick="toggleNeedChip(this)" data-need="Burn physical energy indoors"
+            class="need-chip active px-3.5 py-2 rounded-2xl border-2 border-[#2CE69B] bg-[#2CE69B]/20 text-white text-xs sm:text-sm font-extrabold transition">
+            ⚡ Burn physical energy indoors
+          </button>
+          <button type="button" onclick="toggleNeedChip(this)" data-need="Reduce YouTube / iPad screen time"
+            class="need-chip active px-3.5 py-2 rounded-2xl border-2 border-[#2CE69B] bg-[#2CE69B]/20 text-white text-xs sm:text-sm font-extrabold transition">
+            📵 Replace passive iPad / YouTube
+          </button>
+          <button type="button" onclick="toggleNeedChip(this)" data-need="Speech & active listening practice"
+            class="need-chip px-3.5 py-2 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-indigo-200 text-xs sm:text-sm font-extrabold hover:border-indigo-400 transition">
+            🗣️ Speech & active listening
+          </button>
+          <button type="button" onclick="toggleNeedChip(this)" data-need="Healthy habits (water, veggies, teeth)"
+            class="need-chip px-3.5 py-2 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-indigo-200 text-xs sm:text-sm font-extrabold hover:border-indigo-400 transition">
+            🥦 Healthy habits (water & teeth)
+          </button>
+          <button type="button" onclick="toggleNeedChip(this)" data-need="Curiosity & science facts"
+            class="need-chip px-3.5 py-2 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-indigo-200 text-xs sm:text-sm font-extrabold hover:border-indigo-400 transition">
+            🚀 Science & logic curiosity
+          </button>
+        </div>
+      </div>
+
+      <!-- Parent Notes / Favorite Themes -->
+      <div>
+        <label class="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">
+          Child's Interests, Sensitivities, or Parent Context (Optional)
+        </label>
+        <textarea id="profileNotesInput" rows="2" placeholder="e.g., Loves dinosaurs & space rockets; needs 25 mins of quiet play while I'm on a work call; avoid loud sirens."
+          class="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm focus:outline-none">Loves space rockets and dinosaurs! Needs active indoor missions while parent works from home.</textarea>
+      </div>
+
+      <!-- Quiet Time Default Duration -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
+        <div>
+          <div class="font-extrabold text-sm text-white">Default Parent Quiet-Time Goal</div>
+          <div class="text-xs font-bold text-indigo-300">Bleep paces missions to match your break</div>
+        </div>
+        <div class="flex items-center gap-2" id="profileDurationPills">
+          <button type="button" onclick="setProfileDuration(20)" data-min="20" class="prof-dur-btn px-3.5 py-2 rounded-xl bg-[#6C47FF] border-2 border-[#FFD13B] text-white font-black text-xs">20m</button>
+          <button type="button" onclick="setProfileDuration(30)" data-min="30" class="prof-dur-btn px-3.5 py-2 rounded-xl bg-[#1C145C] border-2 border-[#4C35DE] text-indigo-200 font-black text-xs">30m</button>
+          <button type="button" onclick="setProfileDuration(60)" data-min="60" class="prof-dur-btn px-3.5 py-2 rounded-xl bg-[#1C145C] border-2 border-[#4C35DE] text-indigo-200 font-black text-xs">60m</button>
+        </div>
+      </div>
+
+      <!-- Session Mode Selector (Shown for 3-5 & 6-8 yrs; 1-2 yrs auto-sets Toddler Video + Clap Play) -->
+      <div id="parentModeSelectorWrapper" class="space-y-2">
+        <label class="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">
+          Choose Session Flow for Your Child
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="button" onclick="setParentMode('brain')" id="modeCardBrain"
+            class="p-4 rounded-2xl border-2 border-[#FFD13B] bg-[#6C47FF] text-left transition cursor-pointer shadow-md">
+            <div class="flex items-center gap-2.5 mb-1">
+              <span class="text-2xl">🧠</span>
+              <span class="font-display font-bold text-base text-white">Educational Video + Quiz</span>
+            </div>
+            <p class="text-xs font-bold text-indigo-100">Curated space/tummy video (ad-free) → Bleep asks fun interactive questions.</p>
+          </button>
+
+          <button type="button" onclick="setParentMode('turbo')" id="modeCardTurbo"
+            class="p-4 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-left hover:border-indigo-400 transition cursor-pointer">
+            <div class="flex items-center gap-2.5 mb-1">
+              <span class="text-2xl">⚡</span>
+              <span class="font-display font-bold text-base text-white">Active Physical Missions</span>
+            </div>
+            <p class="text-xs font-bold text-indigo-300">Zero passive watching — jump, run, scavenger hunts & voice challenges.</p>
+          </button>
+        </div>
+      </div>
+
+      <div id="toddlerAutoNotice" class="hidden p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
+        🧸 Toddler Mode (1–2 yrs): Ad-free gentle movement videos auto-play in sequence → Bleep appears for Clap & Peek-a-Boo!
+      </div>
+
+      <button type="button" onclick="saveProfileAndStartFlow()"
+        class="w-full py-4 rounded-2xl btn-game btn-mint text-[#082F22] font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+        <span>START SESSION FOR <span id="startBtnKidName">ZIMRAN</span></span>
+        <span>🚀</span>
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 2: AD-FREE SEQUENTIAL VIDEO STAGE (PLACEHOLDER CATALOG SLOT)   -->
+  <!-- ===================================================================== -->
+  <section id="screen-video" class="hidden flex-1 w-full max-w-4xl mx-auto px-4 py-4 flex flex-col justify-between z-10 space-y-4">
+    <!-- Top Bar: Kid Status + Ad-Free Badge + Parent Exit -->
+    <header class="flex items-center justify-between bg-[#1C145C]/90 px-4 py-2.5 rounded-2xl border-2 border-[#4C35DE]">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full bg-[#FFD13B] flex items-center justify-center text-lg font-black text-[#1E1B4B] border-2 border-white">
+          🧑‍🚀
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="videoKidName" class="font-display font-bold text-base text-white">Zimran</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#2CE69B]/20 text-[#2CE69B] text-[10px] font-black uppercase">🚫 Zero Ads • Auto-Next</span>
+          </div>
+          <span id="videoPlaylistBadge" class="text-xs font-bold text-indigo-300">Episode 1 of 3 • Space & Tummy Science</span>
+        </div>
+      </div>
+
+      <button type="button" onclick="openParentProfile()"
+        class="px-3.5 py-2 rounded-xl bg-[#2A1F8A] hover:bg-[#3729AD] border border-[#5946E3] text-xs font-extrabold text-indigo-100 cursor-pointer">
+        👨‍👩‍👧 Parents
+      </button>
+    </header>
+
+    <!-- Sequential Video Catalog Frame (Ready for Custom Video Embeds / MP4s) -->
+    <div class="flex-1 flex flex-col justify-center">
+      <div class="relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col items-center justify-center p-6 text-center">
+        <!-- Decorative Top Episode Dots (Shows Auto-Sequence without YouTube clutter) -->
+        <div class="absolute top-4 left-4 right-4 flex items-center justify-between">
+          <div class="flex items-center gap-2" id="videoSequenceDots">
+            <span class="w-8 h-2.5 rounded-full bg-[#FFD13B]"></span>
+            <span class="w-8 h-2.5 rounded-full bg-white/25"></span>
+            <span class="w-8 h-2.5 rounded-full bg-white/25"></span>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-black/40 text-xs font-black text-indigo-200" id="videoTimerTag">
+            Auto-switches to Bleep after video ✨
+          </span>
+        </div>
+
+        <!-- Clean Video Placeholder Canvas (Team can drop <video> or catalog stream here) -->
+        <div id="videoPlaceholderStage" class="space-y-3 max-w-md">
+          <div id="videoTopicEmoji" class="text-6xl sm:text-7xl animate-bounce">🚀</div>
+          <h2 id="videoTopicTitle" class="font-display text-2xl sm:text-3xl font-bold text-white">
+            Episode 1: How Does Our Tummy Make Energy?
+          </h2>
+          <p id="videoTopicSubtitle" class="text-xs sm:text-sm font-bold text-indigo-200">
+            [Curated Ad-Free Video Slot — Auto-advances seamlessly without YouTube ads or sidebars]
+          </p>
+        </div>
+
+        <!-- Bottom Seamless Switcher Bar (No external links, just Next Episode or Jump to Bleep) -->
+        <div class="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2">
+          <button type="button" onclick="nextCatalogVideo()"
+            class="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
+            <span>⏭️ Next Video in Catalog</span>
+          </button>
+
+          <button type="button" onclick="finishVideoAndLaunchBleep()"
+            class="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
+            <span>🤖 Play with Bleep Now!</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 3: KID'S ACTIVE MISSION SCREEN (MAX ANIMATION, MINIMAL TEXT)   -->
+  <!-- ===================================================================== -->
+  <section id="screen-mission" class="hidden flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
+    <!-- Top Minimalist Star Progress & Hidden Parent Exit -->
+    <div class="w-full flex items-center justify-between bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
+      <div class="flex items-center gap-2" id="starProgressContainer">
+        <!-- Stars rendered via JS -->
+      </div>
+
+      <div class="text-xs font-black text-[#FFD13B] uppercase tracking-wider" id="sessionClockDisplay">
+        20:00
+      </div>
+
+      <!-- Parent Hold-to-Exit Button -->
+      <button id="parentExitBtn"
+        onmousedown="startParentHold()" onmouseup="cancelParentHold()" onmouseleave="cancelParentHold()"
+        ontouchstart="startParentHold()" ontouchend="cancelParentHold()"
+        class="relative overflow-hidden px-3 py-1.5 rounded-xl bg-[#2A1F8A] text-indigo-200 text-xs font-extrabold select-none border border-[#5946E3]">
+        <span>Hold: Exit</span>
+        <div id="parentExitProgress" class="absolute bottom-0 left-0 h-1 bg-[#FF7849] w-0"></div>
+      </button>
+    </div>
+
+    <!-- CENTER STAGE: ANIMATED BLEEP DEMONSTRATING ACTIONS + VISUAL PROP BADGE -->
+    <div class="relative flex flex-col items-center justify-center my-1">
+      <div class="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
+        <svg class="w-full h-full" viewBox="0 0 260 260">
+          <circle cx="130" cy="130" r="114" fill="rgba(28, 20, 92, 0.78)" stroke="#3B28B0" stroke-width="16" />
+          <circle id="countdownRing" class="countdown-circle" cx="130" cy="130" r="114"
+            fill="none" stroke="#2CE69B" stroke-width="16" stroke-linecap="round"
+            stroke-dasharray="716.28" stroke-dashoffset="0" />
+        </svg>
+
+        <!-- Visual Action Demo Badge (Shows kids what Bleep is doing/asking without reading!) -->
+        <div id="actionDemoBadge" class="absolute -top-2 -right-2 z-20 w-20 h-20 rounded-3xl bg-[#FFD13B] border-4 border-white shadow-xl flex flex-col items-center justify-center animate-bounce">
+          <span id="actionDemoEmoji" class="text-4xl leading-none">🧸</span>
+          <span id="actionDemoWord" class="text-[10px] font-black uppercase text-[#1E1B4B] mt-0.5">FIND!</span>
+        </div>
+
+        <!-- BLEEP MASCOT SVG WITH ARTICULATED ARMS & HANDS -->
+        <div id="bleepAvatarWrapper" class="absolute inset-0 flex items-center justify-center bleep-float cursor-pointer" onclick="tickleBleep(event)">
+          <svg id="bleepSvg" viewBox="0 0 200 215" class="w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl overflow-visible">
+            <!-- Antenna -->
+            <g class="bleep-antenna">
+              <line x1="100" y1="45" x2="100" y2="16" stroke="#A78BFA" stroke-width="7" stroke-linecap="round"/>
+              <circle id="bleepAntennaTip" cx="100" cy="12" r="10" fill="#2CE69B"/>
+            </g>
+
+            <!-- Cute Little Hover Boots / Feet -->
+            <ellipse cx="78" cy="174" rx="13" ry="7" fill="#6C47FF"/>
+            <ellipse cx="122" cy="174" rx="13" ry="7" fill="#6C47FF"/>
+
+            <!-- Main Round Body -->
+            <rect x="40" y="42" width="120" height="126" rx="58" fill="#FFFFFF" stroke="#8B5CF6" stroke-width="7"/>
+            <path d="M 62 146 Q 100 162 138 146" fill="none" stroke="#EDE9FE" stroke-width="8" stroke-linecap="round"/>
+
+            <!-- Screen Visor -->
+            <rect x="54" y="66" width="92" height="58" rx="28" fill="#1E1B4B"/>
+            <ellipse cx="64" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+            <ellipse cx="136" cy="112" rx="7" ry="4" fill="#FF7849" opacity="0.65"/>
+
+            <!-- Dynamic Eyes -->
+            <g id="bleepEyesGroup">
+              <path d="M 72 95 Q 81 82 90 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+              <path d="M 110 95 Q 119 82 128 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+            </g>
+
+            <!-- Dynamic Mouth -->
+            <path id="bleepMouth" d="M 92 108 Q 100 115 108 108" fill="none" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+
+            <!-- Left Arm + Mitten Hand (Articulated for Clapping / Waving / Holding Props) -->
+            <g class="arm-left">
+              <rect x="16" y="106" width="22" height="40" rx="11" transform="rotate(-18 27 126)" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="3"/>
+              <circle cx="22" cy="105" r="9" fill="#FF7849" stroke="#FFFFFF" stroke-width="2.5"/>
+            </g>
+
+            <!-- Right Arm + Mitten Hand -->
+            <g class="arm-right">
+              <rect x="162" y="106" width="22" height="40" rx="11" transform="rotate(18 173 126)" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="3"/>
+              <circle cx="178" cy="105" r="9" fill="#FF7849" stroke="#FFFFFF" stroke-width="2.5"/>
+            </g>
+
+            <!-- Held Prop Overlay (Appears when Bleep demonstrates drinking water, magnifying glass, etc.) -->
+            <text id="bleepHeldProp" x="158" y="102" font-size="34" class="pointer-events-none"></text>
+          </svg>
+        </div>
+
+        <div id="roundSecondsBadge" class="absolute -bottom-2 bg-[#FFD13B] px-5 py-1 rounded-full border-3 border-white font-black text-lg text-[#1E1B4B] shadow-md">
+          45s
+        </div>
+      </div>
+    </div>
+
+    <!-- ULTRA-SHORT KID-FRIENDLY VISUAL PROMPT CARD (1 SHORT SENTENCE + BIG ICON CHIPS) -->
+    <div class="w-full bg-white rounded-3xl p-4 sm:p-5 border-4 border-[#8B5CF6] shadow-[0_10px_28px_rgba(0,0,0,0.35)] text-center space-y-3">
+      <p id="bleepSpeechText" class="font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug">
+        Bring something SOFT 🧸 & RED ❤️!
+      </p>
+
+      <!-- Big Visual Quick-Reply Action Chips -->
+      <div id="quickReplyContainer" class="flex flex-wrap items-center justify-center gap-2.5"></div>
+    </div>
+
+    <!-- BOTTOM CONTROLS: ONLY 2 GIANT TACTILE BUTTONS (NO "FAIL" BUTTON EVER) -->
+    <div class="w-full grid grid-cols-2 gap-3 sm:gap-4 pt-1">
+      <button type="button" onclick="handleDoneClick()"
+        class="py-5 px-4 rounded-3xl btn-game btn-mint text-[#062C1E] font-display font-bold text-xl sm:text-2xl flex items-center justify-center gap-2.5 cursor-pointer">
+        <span class="text-2xl sm:text-3xl">✅</span>
+        <span>I DID IT!</span>
+      </button>
+
+      <button id="talkBtn" type="button" onclick="handleTalkClick()"
+        class="relative py-5 px-4 rounded-3xl btn-game btn-sky text-white font-display font-bold text-xl sm:text-2xl flex items-center justify-center gap-2.5 cursor-pointer">
+        <span class="text-2xl sm:text-3xl">🎙️</span>
+        <span id="talkBtnLabel">TALK</span>
+      </button>
+    </div>
+  </section>
+
+
+  <!-- ===================================================================== -->
+  <!-- SCREEN 4: MISSION COMPLETE & RETENTION REWARD                         -->
+  <!-- ===================================================================== -->
+  <section id="screen-complete" class="hidden flex-1 w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center justify-center text-center z-10">
+    <div class="bg-[#1C145C] rounded-3xl p-6 sm:p-8 border-4 border-[#FFD13B] shadow-[0_16px_48px_rgba(0,0,0,0.5)] w-full space-y-5">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2CE69B] text-[#062C1E] font-black text-sm">
+        🎉 MISSION ACCOMPLISHED!
+      </div>
+
+      <h1 id="completeHeadline" class="font-display text-3xl sm:text-4xl font-bold text-white">
+        Way to go, Agent Zimran!
+      </h1>
+
+      <!-- Glowing Space Loot Box Reward -->
+      <div class="relative mx-auto w-44 h-44 rounded-3xl bg-gradient-to-b from-[#6C47FF] to-[#2A1F8A] border-4 border-[#FFD13B] flex flex-col items-center justify-center p-4 shadow-lg">
+        <div class="text-6xl mb-1 animate-bounce" id="rewardEmoji">🚀</div>
+        <div class="text-xs font-black uppercase tracking-wider text-[#FFD13B]">New Ship Part</div>
+        <div class="font-display font-bold text-base text-white" id="rewardTitle">Turbo Rocket Booster</div>
+      </div>
+
+      <!-- Cliffhanger Teaser for Tomorrow -->
+      <div class="bg-[#2A1F8A] rounded-2xl p-4 border-2 border-[#5946E3]">
+        <p class="text-xs font-extrabold uppercase text-[#38BDF8] mb-1">🔮 Tomorrow's Episode</p>
+        <p id="cliffhangerText" class="font-bold text-white text-base sm:text-lg">
+          "Mount Volcano is rumbling! Wake Bleep tomorrow to solve the mystery!"
+        </p>
+      </div>
+
+      <div class="flex items-center justify-center gap-3 text-sm font-black">
+        <span class="px-4 py-2 rounded-xl bg-[#2A1F8A] border border-[#5946E3] text-[#FFD13B]" id="newLevelStat">⭐ Agent Level 4</span>
+        <span class="px-4 py-2 rounded-xl bg-[#2A1F8A] border border-[#5946E3] text-[#FF7849]" id="newStreakStat">🔥 5-Day Streak</span>
+      </div>
+
+      <button type="button" onclick="playAgainFromComplete()"
+        class="w-full py-4 rounded-2xl btn-game btn-lime text-white font-display font-bold text-xl cursor-pointer">
+        PLAY NEXT ADVENTURE 🚀
+      </button>
+    </div>
+  </section>
+
+  <!-- Spaceship Garage Modal -->
+  <div id="garageModal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[#1C145C] border-4 border-[#FFD13B] rounded-3xl p-6 max-w-md w-full text-center space-y-4 shadow-2xl">
+      <div class="text-5xl">🛸</div>
+      <h2 id="garageTitle" class="font-display text-2xl font-bold text-white">Zimran's Spaceship Garage</h2>
+      <div id="garagePartsList" class="flex flex-wrap justify-center gap-2"></div>
+      <button type="button" onclick="closeGarageModal()" class="w-full py-3 rounded-2xl btn-game btn-purple text-white font-display font-bold text-base cursor-pointer">
+        AWESOME!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // --- APPLICATION STATE ---
+    const state = {
+      kidName: 'Zimran',
+      ageGroup: '3-5',
+      durationMin: 20,
+      parentMode: 'brain', // 'brain' (Video + Interactive Quiz) or 'turbo' (Active Physical Missions)
+      needs: ['Burn physical energy indoors', 'Replace passive iPad / YouTube'],
+      notes: 'Loves space rockets and dinosaurs! Needs active indoor missions while parent works from home.',
+      activeTrack: 'brain',
+      videoIndex: 0,
+      level: 3,
+      streak: 4,
+      stars: 420,
+      goalPercent: 35,
+      soundEnabled: true,
+      currentRoundIndex: 0,
+      roundSecondsLeft: 45,
+      roundSecondsTotal: 45,
+      sessionSecondsLeft: 1200,
+      timerInterval: null,
+      parentHoldTimer: null,
+      isListening: false,
+      unlockedParts: ['Astro Radar', 'Starlight Wings']
+    };
+
+    // --- CURATED AD-FREE VIDEO CATALOG SLOTS (READY FOR CUSTOM VIDEO EMBEDS) ---
+    const VIDEO_CATALOG = {
+      '1-2': [
+        { emoji: '👏', title: 'Clap & Dance with Bleep', subtitle: 'Gentle rhythm & first-words movement video (No Ads)' },
+        { emoji: '🐮', title: 'Farm Animal Sounds', subtitle: 'Slow-paced sensory animal sounds for toddlers' },
+        { emoji: '🫧', title: 'Pop the Magic Bubbles', subtitle: 'Calm visual tracking & waving hands song' }
+      ],
+      '3-5': [
+        { emoji: '🍎', title: 'Episode 1: Tummy Energy Factory', subtitle: 'How water & healthy food power our body' },
+        { emoji: '🚀', title: 'Episode 2: Blast Off to the Moon!', subtitle: 'Why rockets have fire & how astronauts float' },
+        { emoji: '🦷', title: 'Episode 3: Sugar Monsters vs. Toothbrush', subtitle: 'Fun story about brushing teeth' }
+      ],
+      '6-8': [
+        { emoji: '🪐', title: 'Episode 1: Zero Gravity & Black Holes', subtitle: 'Space station science & cosmic mysteries' },
+        { emoji: '⚡', title: 'Episode 2: Lightning, Volcanoes & Storms', subtitle: 'How Earth makes giant natural energy' },
+        { emoji: '🧠', title: 'Episode 3: Superpowers of the Human Brain', subtitle: 'Muscle memory & how sleep builds knowledge' }
+      ]
+    };
+
+    const MISSIONS_DB = {
+      '1-2': [
+        {
+          seconds: 25,
+          demoEmoji: '👏',
+          demoWord: 'CLAP!',
+          heldProp: '👏',
+          actionClass: 'action-clap',
+          emotion: 'happy',
+          shortPrompt: 'Clap hands with Bleep! 👏👏',
+          voicePrompt: 'Yay {name}! Let us clap our hands together! Clap, clap, clap!',
+          replies: ['👏👏 Clap!', '😂 Tee-hee!'],
+          praise: 'Super clapping, {name}! 🌟'
+        },
+        {
+          seconds: 25,
+          demoEmoji: '🙈',
+          demoWord: 'PEEK-A-BOO',
+          heldProp: '🙈',
+          actionClass: 'action-wave',
+          emotion: 'giggle',
+          shortPrompt: 'Peek-a-boo! Wave to Bleep! 👋',
+          voicePrompt: 'Where is {name}? Peek-a-boo! I see you! Wave your hand!',
+          replies: ['👋 Bye-bye!', '🙈 Peek-a-boo!'],
+          praise: 'Peek-a-boo! You are so fast! 🎉'
+        },
+        {
+          seconds: 25,
+          demoEmoji: '🐮',
+          demoWord: 'MOOO!',
+          heldProp: '🐮',
+          actionClass: 'action-jump',
+          emotion: 'excited',
+          shortPrompt: 'What does the cow say? 🐮',
+          voicePrompt: 'Look, a friendly cow! What does the cow say, {name}? Moooo!',
+          replies: ['🐮 Moooo!', '🐶 Woof!'],
+          praise: 'Moooo! Amazing job, {name}! ⭐'
+        }
+      ],
+      '3-5-brain': [
+        {
+          seconds: 35,
+          demoEmoji: '🍬',
+          demoWord: 'NO CANDY!',
+          heldProp: '🥦',
+          actionClass: 'action-wave',
+          emotion: 'surprised',
+          shortPrompt: 'Should we eat 100 candies & ZERO water?! 🍬❌',
+          voicePrompt: 'Wait a minute {name}! To make our tummy strong, should we eat 100 candies and drink zero water?',
+          replies: ['🙅‍♂️ NOOO! Water!', '🥦 Healthy food!'],
+          praise: 'Phew! You saved Bleep’s tummy! 💧'
+        },
+        {
+          seconds: 35,
+          demoEmoji: '💧',
+          demoWord: 'DRINK!',
+          heldProp: '🥤',
+          actionClass: 'action-drink',
+          emotion: 'happy',
+          shortPrompt: 'Take 3 sips of water to charge shields! 💧🛡️',
+          voicePrompt: 'Quick {name}! Take 3 sips of water or bring a cup to charge our space shields!',
+          replies: ['💧 Glug glug!', '🛡️ Shield Full!'],
+          praise: 'Shields at 100%, Agent {name}! 🚀'
+        },
+        {
+          seconds: 35,
+          demoEmoji: '🚀',
+          demoWord: 'BLAST OFF!',
+          heldProp: '🔥',
+          actionClass: 'action-jump',
+          emotion: 'excited',
+          shortPrompt: 'Count down 3-2-1 and JUMP like a rocket! 🚀',
+          voicePrompt: 'Why do rockets have fire at the bottom? Because it pushes them up! Jump like a rocket in 3, 2, 1, blast off!',
+          replies: ['🚀 Blast off!', '🔥 Whoosh!'],
+          praise: 'To the Moon, {name}! 🌟'
+        }
+      ],
+      '3-5-turbo': [
+        {
+          seconds: 45,
+          demoEmoji: '🧸',
+          demoWord: 'FIND!',
+          heldProp: '🧸',
+          actionClass: 'action-jump',
+          emotion: 'detective',
+          shortPrompt: 'Bring something SOFT 🧸 & RED ❤️!',
+          voicePrompt: 'Secret Agent {name}! You have 45 seconds! Bring something soft and something red to base!',
+          replies: ['🧸 Got it!', '❤️ Found red!'],
+          praise: 'Lightning fast, Agent {name}! ⚡'
+        },
+        {
+          seconds: 30,
+          demoEmoji: '🌋',
+          demoWord: 'LAVA!',
+          heldProp: '🛋️',
+          actionClass: 'action-jump',
+          emotion: 'surprised',
+          shortPrompt: 'FLOOR IS LAVA! Jump on the couch! 🌋🛋️',
+          voicePrompt: 'Alert! The floor is turning into hot lava! Jump onto the couch or a pillow right now!',
+          replies: ['🛋️ On the couch!', '🔥 Safe!'],
+          praise: 'You survived the lava, {name}! 🎉'
+        },
+        {
+          seconds: 25,
+          demoEmoji: '🦖',
+          demoWord: 'FREEZE!',
+          heldProp: '🦖',
+          actionClass: 'action-sneak',
+          emotion: 'giggle',
+          shortPrompt: 'FREEZE like a giant T-Rex! 🦖❄️',
+          voicePrompt: 'Freeze! Turn into a giant T-Rex statue and do not move a muscle!',
+          replies: ['🦖 Roar!', '❄️ Frozen!'],
+          praise: 'Best T-Rex statue ever! ⭐'
+        }
+      ],
+      '6-8-brain': [
+        {
+          seconds: 40,
+          demoEmoji: '🧑‍🚀',
+          demoWord: 'GRAVITY',
+          heldProp: '🪐',
+          actionClass: 'action-jump',
+          emotion: 'detective',
+          shortPrompt: 'Why do astronauts float in space? 🧑‍🚀🪐',
+          voicePrompt: 'Space Mystery for Agent {name}! Why do astronauts float on the space station instead of walking?',
+          replies: ['🪐 Zero gravity!', '🚀 Floating in orbit!'],
+          praise: 'Genius answer, Scientist {name}! 🧠'
+        },
+        {
+          seconds: 35,
+          demoEmoji: '💪',
+          demoWord: 'EXPERIMENT',
+          heldProp: '🚪',
+          actionClass: 'action-clap',
+          emotion: 'excited',
+          shortPrompt: 'Press arms in a doorway for 15s, then step out! 💪',
+          voicePrompt: 'Home science lab! Stand in a doorway, press the backs of your hands against the frame for 15 seconds, then step out and relax!',
+          replies: ['😮 My arms floated!', '🧬 Muscle memory!'],
+          praise: 'That is muscle memory magic! ✨'
+        },
+        {
+          seconds: 35,
+          demoEmoji: '⚡',
+          demoWord: 'LIGHTNING',
+          heldProp: '⚡',
+          actionClass: 'action-wave',
+          emotion: 'surprised',
+          shortPrompt: 'Which comes first: lightning flash or thunder? ⚡🌩️',
+          voicePrompt: 'Quick quiz {name}! Light is super fast! Do we see the lightning flash first or hear the thunder boom first?',
+          replies: ['⚡ Lightning flash!', '🌩️ Light is faster!'],
+          praise: 'Correct! Light beats sound every time! 🏆'
+        }
+      ],
+      '6-8-turbo': [
+        {
+          seconds: 45,
+          demoEmoji: '🪮',
+          demoWord: 'RIDDLE',
+          heldProp: '🔍',
+          actionClass: 'action-detective',
+          emotion: 'detective',
+          shortPrompt: 'Find something with TEETH that never eats! 🪮🔍',
+          voicePrompt: 'Spy Riddle Hunt, Agent {name}! Find an object in the house that has teeth, never eats, and lives in the bathroom! Go!',
+          replies: ['🪮 A comb!', '🪥 Toothbrush!'],
+          praise: 'Case solved in record time! 🕵️'
+        },
+        {
+          seconds: 30,
+          demoEmoji: '🥷',
+          demoWord: 'STEALTH',
+          heldProp: '🤫',
+          actionClass: 'action-sneak',
+          emotion: 'detective',
+          shortPrompt: 'Ninja walk across the room WITHOUT a sound! 🥷🤫',
+          voicePrompt: 'Laser Maze active! Sneak from the door to the couch like a silent ninja without making a single sound!',
+          replies: ['🥷 Silent ninja!', '✅ Passed lasers!'],
+          praise: 'Stealth level 100, Agent {name}! 🌟'
+        },
+        {
+          seconds: 35,
+          demoEmoji: '🌋',
+          demoWord: 'LAVA!',
+          heldProp: '🛋️',
+          actionClass: 'action-jump',
+          emotion: 'surprised',
+          shortPrompt: 'TACTICAL LAVA! Balance on 1 foot on a pillow! 🌋🦩',
+          voicePrompt: 'Tactical Lava Alert! Jump onto a cushion and balance on one foot like a flamingo!',
+          replies: ['🦩 Balancing!', '🔥 Safe!'],
+          praise: 'Unstoppable balance, {name}! 🚀'
+        }
+      ]
+    };
+
+    const REWARDS_POOL = [
+      { emoji: '🚀', title: 'Turbo Rocket Booster', cliffhanger: 'Mount Volcano is rumbling! Wake Bleep tomorrow to solve the mystery!' },
+      { emoji: '🛡️', title: 'Plasma Lava Shield', cliffhanger: 'Deep-sea alien signals detected! Tomorrow we dive into Ocean Sector 7!' },
+      { emoji: '🔭', title: 'Hyper-Star Telescope', cliffhanger: 'A comet is passing Earth tomorrow night — Bleep needs your spotter skills!' }
+    ];
+
+    // --- INITIALIZATION & SPLASH FLOW ---
+    window.addEventListener('DOMContentLoaded', () => {
+      const bar = document.getElementById('splashProgressBar');
+      const status = document.getElementById('loadingStatusText');
+
+      setTimeout(() => {
+        if (bar) bar.style.width = '60%';
+        if (status) status.textContent = 'Charging space antennas...';
+      }, 300);
+
+      setTimeout(() => {
+        if (bar) bar.style.width = '100%';
+        if (status) status.textContent = 'Ready!';
+      }, 650);
+
+      setTimeout(() => {
+        const splash = document.getElementById('screen-splash');
+        const greeting = document.getElementById('screen-greeting');
+        if (splash) splash.classList.add('hidden');
+        if (greeting) greeting.classList.remove('hidden');
+      }, 950);
+
+      const nameInput = document.getElementById('profileNameInput');
+      if (nameInput) {
+        nameInput.addEventListener('input', (e) => {
+          const val = e.target.value.trim() || 'Zimran';
+          document.getElementById('startBtnKidName').textContent = val.toUpperCase();
+        });
+      }
+    });
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      const icon = document.getElementById('greetSoundIcon');
+      if (icon) icon.textContent = state.soundEnabled ? '🔊' : '🔇';
+      if (state.soundEnabled) playSfx('chirp');
+    }
+
+    function proceedFromGreeting() {
+      playSfx('chirp');
+      speakText("Hi! I'm Bleep! Let's set up your adventure!");
+      document.getElementById('screen-greeting').classList.add('hidden');
+      document.getElementById('screen-profile-setup').classList.remove('hidden');
+    }
+
+    function setProfileDuration(mins) {
+      state.durationMin = mins;
+      document.querySelectorAll('.prof-dur-btn').forEach(btn => {
+        const active = Number(btn.dataset.min) === mins;
+        btn.className = active
+          ? 'prof-dur-btn px-3.5 py-2 rounded-xl bg-[#6C47FF] border-2 border-[#FFD13B] text-white font-black text-xs'
+          : 'prof-dur-btn px-3.5 py-2 rounded-xl bg-[#1C145C] border-2 border-[#4C35DE] text-indigo-200 font-black text-xs';
+      });
+      playSfx('chirp');
+    }
+
+    // --- PARENT PROFILE SETUP HANDLERS ---
+    function setProfileAge(age) {
+      state.ageGroup = age;
+      document.querySelectorAll('.prof-age-btn').forEach(btn => {
+        const active = btn.dataset.age === age;
+        btn.className = active
+          ? 'prof-age-btn py-3 rounded-2xl border-2 border-[#FFD13B] bg-[#6C47FF] font-extrabold text-sm text-white shadow-md'
+          : 'prof-age-btn py-3 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] font-extrabold text-sm text-indigo-200 hover:border-white transition';
+      });
+
+      const modeWrapper = document.getElementById('parentModeSelectorWrapper');
+      const toddlerNotice = document.getElementById('toddlerAutoNotice');
+      if (age === '1-2') {
+        modeWrapper.classList.add('hidden');
+        toddlerNotice.classList.remove('hidden');
+      } else {
+        modeWrapper.classList.remove('hidden');
+        toddlerNotice.classList.add('hidden');
+      }
+      playSfx('chirp');
+    }
+
+    function setParentMode(mode) {
+      state.parentMode = mode;
+      const brainBtn = document.getElementById('modeCardBrain');
+      const turboBtn = document.getElementById('modeCardTurbo');
+      if (mode === 'brain') {
+        brainBtn.className = 'p-4 rounded-2xl border-2 border-[#FFD13B] bg-[#6C47FF] text-left transition cursor-pointer shadow-md';
+        turboBtn.className = 'p-4 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-left hover:border-indigo-400 transition cursor-pointer';
+      } else {
+        turboBtn.className = 'p-4 rounded-2xl border-2 border-[#FFD13B] bg-[#6C47FF] text-left transition cursor-pointer shadow-md';
+        brainBtn.className = 'p-4 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-left hover:border-indigo-400 transition cursor-pointer';
+      }
+      playSfx('chirp');
+    }
+
+    function toggleNeedChip(btn) {
+      btn.classList.toggle('active');
+      const isActive = btn.classList.contains('active');
+      btn.className = isActive
+        ? 'need-chip active px-3.5 py-2 rounded-2xl border-2 border-[#2CE69B] bg-[#2CE69B]/20 text-white text-xs sm:text-sm font-extrabold transition'
+        : 'need-chip px-3.5 py-2 rounded-2xl border-2 border-[#4C35DE] bg-[#100B3B] text-indigo-200 text-xs sm:text-sm font-extrabold hover:border-indigo-400 transition';
+      state.needs = Array.from(document.querySelectorAll('.need-chip.active')).map(el => el.dataset.need);
+      playSfx('chirp');
+    }
+
+    function saveProfileAndStartFlow() {
+      const nameVal = document.getElementById('profileNameInput').value.trim();
+      state.kidName = nameVal || 'Zimran';
+      state.notes = document.getElementById('profileNotesInput').value.trim();
+      state.videoIndex = 0;
+      playSfx('chirp');
+
+      document.getElementById('screen-profile-setup').classList.add('hidden');
+
+      // 1-2 yrs OR 3-8 yrs "Educational Video + Interactive Quiz" -> Video Catalog first, then Bleep!
+      // 3-8 yrs "Active Physical Missions" -> Straight to active movement missions with Bleep!
+      if (state.ageGroup === '1-2' || state.parentMode === 'brain') {
+        openVideoCatalogStage();
+      } else {
+        launchMission('turbo');
+      }
+    }
+
+    function openParentProfile() {
+      clearInterval(state.timerInterval);
+      document.getElementById('screen-video').classList.add('hidden');
+      document.getElementById('screen-mission').classList.add('hidden');
+      document.getElementById('screen-complete').classList.add('hidden');
+      document.getElementById('screen-profile-setup').classList.remove('hidden');
+      playSfx('chirp');
+    }
+
+    // --- SEQUENTIAL AD-FREE VIDEO CATALOG STAGE ---
+    function openVideoCatalogStage() {
+      document.getElementById('screen-video').classList.remove('hidden');
+      document.getElementById('videoKidName').textContent = state.kidName;
+      renderCurrentCatalogVideo();
+    }
+
+    function renderCurrentCatalogVideo() {
+      const list = VIDEO_CATALOG[state.ageGroup] || VIDEO_CATALOG['3-5'];
+      const item = list[state.videoIndex % list.length];
+      document.getElementById('videoTopicEmoji').textContent = item.emoji;
+      document.getElementById('videoTopicTitle').textContent = item.title;
+      document.getElementById('videoTopicSubtitle').textContent = `${item.subtitle} • [Custom Catalog Slot — Ad-Free]`;
+      document.getElementById('videoPlaylistBadge').textContent = `Episode ${(state.videoIndex % list.length) + 1} of ${list.length} • Ad-Free Auto-Play`;
+
+      const dotsContainer = document.getElementById('videoSequenceDots');
+      dotsContainer.innerHTML = list.map((_, idx) => `
+        <span class="w-8 h-2.5 rounded-full transition-all ${idx === (state.videoIndex % list.length) ? 'bg-[#FFD13B]' : 'bg-white/25'}"></span>
+      `).join('');
+    }
+
+    function nextCatalogVideo() {
+      const list = VIDEO_CATALOG[state.ageGroup] || VIDEO_CATALOG['3-5'];
+      state.videoIndex++;
+      playSfx('chirp');
+      if (state.videoIndex >= list.length) {
+        finishVideoAndLaunchBleep();
+      } else {
+        renderCurrentCatalogVideo();
+      }
+    }
+
+    function finishVideoAndLaunchBleep() {
+      document.getElementById('screen-video').classList.add('hidden');
+      const track = state.ageGroup === '1-2' ? '1-2' : 'brain';
+      launchMission(track);
+    }
+
+    // --- ACTIVE MISSION & BLEEP INTERACTION ENGINE ---
+    function getActiveRounds() {
+      if (state.ageGroup === '1-2') return MISSIONS_DB['1-2'];
+      return MISSIONS_DB[`${state.ageGroup}-${state.activeTrack}`] || MISSIONS_DB['3-5-brain'];
+    }
+
+    function launchMission(track) {
+      state.activeTrack = track;
+      state.currentRoundIndex = 0;
+      state.sessionSecondsLeft = state.durationMin * 60;
+
+      document.getElementById('screen-mission').classList.remove('hidden');
+      playSfx('chirp');
+      loadMissionRound();
+      startMasterTimer();
+    }
+
+    function loadMissionRound() {
+      const rounds = getActiveRounds();
+      const round = rounds[state.currentRoundIndex % rounds.length];
+      state.roundSecondsTotal = round.seconds;
+      state.roundSecondsLeft = round.seconds;
+
+      // Update Star Progress
+      const starsEl = document.getElementById('starProgressContainer');
+      starsEl.innerHTML = rounds.map((_, idx) => `
+        <span class="text-xl transition-transform ${idx <= state.currentRoundIndex ? 'scale-110' : 'opacity-35'}">⭐</span>
+      `).join('');
+
+      // Update Visual Demo Badge & Bleep Body Action
+      document.getElementById('actionDemoEmoji').textContent = round.demoEmoji;
+      document.getElementById('actionDemoWord').textContent = round.demoWord;
+      document.getElementById('bleepHeldProp').textContent = round.heldProp || '';
+
+      const wrapper = document.getElementById('bleepAvatarWrapper');
+      wrapper.className = `absolute inset-0 flex items-center justify-center bleep-float cursor-pointer ${round.actionClass || ''}`;
+      setBleepEmotion(round.emotion || 'happy');
+
+      // Short kid-friendly prompt & Quick Reply Chips
+      const shortText = round.shortPrompt.replace(/\{name\}/g, state.kidName);
+      const voiceText = round.voicePrompt.replace(/\{name\}/g, state.kidName);
+      document.getElementById('bleepSpeechText').textContent = shortText;
+
+      const replyBox = document.getElementById('quickReplyContainer');
+      replyBox.innerHTML = (round.replies || []).map(rep => `
+        <button type="button" onclick="handleQuickReply('${rep.replace(/'/g, "\\'")}')"
+          class="px-4 py-2 rounded-2xl bg-[#EDE9FE] hover:bg-[#DDD6FE] border-2 border-[#8B5CF6] text-[#1E1B4B] font-extrabold text-sm sm:text-base transition cursor-pointer">
+          ${rep}
+        </button>
+      `).join('');
+
+      updateCountdownRing();
+      speakText(voiceText);
+    }
+
+    function startMasterTimer() {
+      clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(() => {
+        if (state.roundSecondsLeft > 0) {
+          state.roundSecondsLeft--;
+          if (state.roundSecondsLeft <= 5 && state.roundSecondsLeft > 0) playSfx('tick');
+        } else {
+          // Gentle auto-advance without any "fail" state
+          advanceToNextRound();
+        }
+
+        if (state.sessionSecondsLeft > 0) {
+          state.sessionSecondsLeft--;
+          const m = Math.floor(state.sessionSecondsLeft / 60);
+          const s = String(state.sessionSecondsLeft % 60).padStart(2, '0');
+          document.getElementById('sessionClockDisplay').textContent = `${m}:${s}`;
+        }
+        updateCountdownRing();
+      }, 1000);
+    }
+
+    function updateCountdownRing() {
+      const ring = document.getElementById('countdownRing');
+      const badge = document.getElementById('roundSecondsBadge');
+      const circumference = 716.28;
+      const ratio = Math.max(0, state.roundSecondsLeft / state.roundSecondsTotal);
+      ring.style.strokeDashoffset = circumference * (1 - ratio);
+      badge.textContent = `${state.roundSecondsLeft}s`;
+
+      if (ratio > 0.5) ring.style.stroke = '#2CE69B';
+      else if (ratio > 0.25) ring.style.stroke = '#FFD13B';
+      else ring.style.stroke = '#FF7849';
+    }
+
+    function handleDoneClick() {
+      playSfx('win');
+      spawnParticles('🎉', 10);
+      const rounds = getActiveRounds();
+      const round = rounds[state.currentRoundIndex % rounds.length];
+      const praiseText = (round.praise || 'Awesome job, {name}!').replace(/\{name\}/g, state.kidName);
+      document.getElementById('bleepSpeechText').textContent = praiseText;
+      setBleepEmotion('excited');
+      speakText(praiseText);
+
+      setTimeout(() => advanceToNextRound(), 1100);
+    }
+
+    function handleQuickReply(replyText) {
+      playSfx('chirp');
+      spawnParticles('💬', 6);
+      const reactions = [
+        `Bleep heard "${replyText}"! You are super smart, ${state.kidName}!`,
+        `Woohoo! "${replyText}" — Bleep loves that answer!`,
+        `Beep-boop! Great job telling Bleep, ${state.kidName}!`
+      ];
+      const msg = reactions[Math.floor(Math.random() * reactions.length)];
+      document.getElementById('bleepSpeechText').textContent = msg;
+      setBleepEmotion('excited');
+      speakText(msg);
+      setTimeout(() => advanceToNextRound(), 1300);
+    }
+
+    function handleTalkClick() {
+      const btn = document.getElementById('talkBtn');
+      const label = document.getElementById('talkBtnLabel');
+      btn.classList.add('voice-pulse');
+      label.textContent = 'LISTENING...';
+      setBleepEmotion('listening');
+      playSfx('chirp');
+
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRec) {
+        const rec = new SpeechRec();
+        rec.lang = 'en-US';
+        rec.onresult = (e) => {
+          const transcript = e.results[0][0].transcript;
+          btn.classList.remove('voice-pulse');
+          label.textContent = 'TALK';
+          handleQuickReply(transcript);
+        };
+        rec.onerror = () => {
+          btn.classList.remove('voice-pulse');
+          label.textContent = 'TALK';
+          handleQuickReply('I did it, Bleep!');
+        };
+        rec.start();
+      } else {
+        setTimeout(() => {
+          btn.classList.remove('voice-pulse');
+          label.textContent = 'TALK';
+          handleQuickReply('Yay Bleep!');
+        }, 1100);
+      }
+    }
+
+    function advanceToNextRound() {
+      const rounds = getActiveRounds();
+      state.currentRoundIndex++;
+      if (state.currentRoundIndex >= rounds.length) {
+        completeMissionSession();
+      } else {
+        loadMissionRound();
+      }
+    }
+
+    function completeMissionSession() {
+      clearInterval(state.timerInterval);
+      state.level++;
+      state.streak++;
+      state.stars += 120;
+
+      const reward = REWARDS_POOL[(state.level - 1) % REWARDS_POOL.length];
+      if (!state.unlockedParts.includes(reward.title)) {
+        state.unlockedParts.push(reward.title);
+      }
+
+      document.getElementById('screen-mission').classList.add('hidden');
+      document.getElementById('screen-complete').classList.remove('hidden');
+
+      document.getElementById('completeHeadline').textContent = `Way to go, Agent ${state.kidName}!`;
+      document.getElementById('rewardEmoji').textContent = reward.emoji;
+      document.getElementById('rewardTitle').textContent = reward.title;
+      document.getElementById('cliffhangerText').textContent = `"${reward.cliffhanger}"`;
+      document.getElementById('newLevelStat').textContent = `⭐ Agent Level ${state.level}`;
+      document.getElementById('newStreakStat').textContent = `🔥 ${state.streak}-Day Streak`;
+
+      playSfx('win');
+      spawnParticles('🌟', 16);
+      speakText(`Mission accomplished, Agent ${state.kidName}! You unlocked the ${reward.title}!`);
+    }
+
+    function playAgainFromComplete() {
+      document.getElementById('screen-complete').classList.add('hidden');
+      if (state.ageGroup === '1-2' || state.parentMode === 'brain') {
+        openVideoCatalogStage();
+      } else {
+        launchMission('turbo');
+      }
+    }
+
+    // --- TALKING TOM / ANGELA STYLE TICKLE & GIGGLE ---
+    function tickleBleep(e) {
+      const wrapper = document.getElementById('bleepAvatarWrapper');
+      wrapper.classList.remove('bleep-tickle');
+      void wrapper.offsetWidth;
+      wrapper.classList.add('bleep-tickle');
+
+      setBleepEmotion('giggle');
+      playSfx('giggle');
+      spawnParticles('💖', 8, e?.clientX, e?.clientY);
+
+      const giggles = [
+        `Hee-hee-hee! That tickles, ${state.kidName}! 😂`,
+        `Bleep-giggle! Stop it, you're funny! 💖`,
+        `Tee-hee! Bleep loves tickles! ✨`
+      ];
+      const line = giggles[Math.floor(Math.random() * giggles.length)];
+      document.getElementById('bleepSpeechText').textContent = line;
+      speakText(line);
+    }
+
+    function setBleepEmotion(emotion) {
+      const eyes = document.getElementById('bleepEyesGroup');
+      const mouth = document.getElementById('bleepMouth');
+      if (!eyes || !mouth) return;
+
+      if (emotion === 'giggle') {
+        eyes.innerHTML = `
+          <path d="M 70 86 L 86 95 L 70 104" fill="none" stroke="#FFD13B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 130 86 L 114 95 L 130 104" fill="none" stroke="#FFD13B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        `;
+        mouth.setAttribute('d', 'M 86 106 Q 100 124 114 106 Z');
+        mouth.setAttribute('fill', '#FF7849');
+      } else if (emotion === 'excited') {
+        eyes.innerHTML = `
+          <circle cx="81" cy="94" r="10" fill="#FFD13B"/>
+          <circle cx="119" cy="94" r="10" fill="#FFD13B"/>
+        `;
+        mouth.setAttribute('d', 'M 88 106 Q 100 122 112 106 Z');
+        mouth.setAttribute('fill', '#38BDF8');
+      } else if (emotion === 'surprised') {
+        eyes.innerHTML = `
+          <circle cx="81" cy="94" r="11" fill="none" stroke="#FF7849" stroke-width="5"/>
+          <circle cx="119" cy="94" r="11" fill="none" stroke="#FF7849" stroke-width="5"/>
+        `;
+        mouth.setAttribute('d', 'M 94 111 A 6 6 0 1 0 106 111 A 6 6 0 1 0 94 111');
+        mouth.setAttribute('fill', '#FF7849');
+      } else if (emotion === 'detective') {
+        eyes.innerHTML = `
+          <rect x="68" y="88" width="24" height="10" rx="5" fill="#2CE69B"/>
+          <rect x="108" y="88" width="24" height="10" rx="5" fill="#2CE69B"/>
+        `;
+        mouth.setAttribute('d', 'M 90 110 Q 100 116 110 110');
+        mouth.setAttribute('fill', 'none');
+      } else if (emotion === 'listening') {
+        eyes.innerHTML = `
+          <circle cx="81" cy="94" r="9" fill="#2CE69B"/>
+          <circle cx="119" cy="94" r="9" fill="#2CE69B"/>
+        `;
+        mouth.setAttribute('d', 'M 93 110 Q 100 114 107 110');
+        mouth.setAttribute('fill', 'none');
+      } else {
+        eyes.innerHTML = `
+          <path d="M 72 95 Q 81 82 90 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+          <path d="M 110 95 Q 119 82 128 95" fill="none" stroke="#38BDF8" stroke-width="6" stroke-linecap="round"/>
+        `;
+        mouth.setAttribute('d', 'M 92 108 Q 100 115 108 108');
+        mouth.setAttribute('fill', 'none');
+      }
+    }
+
+    // --- PARENT HOLD-TO-EXIT ---
+    function startParentHold() {
+      const bar = document.getElementById('parentExitProgress');
+      bar.style.transition = 'width 1.4s linear';
+      bar.style.width = '100%';
+      state.parentHoldTimer = setTimeout(() => {
+        cancelParentHold();
+        openParentProfile();
+      }, 1400);
+    }
+
+    function cancelParentHold() {
+      clearTimeout(state.parentHoldTimer);
+      const bar = document.getElementById('parentExitProgress');
+      if (bar) {
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+      }
+    }
+
+    function closeGarageModal() {
+      document.getElementById('garageModal').classList.add('hidden');
+    }
+
+    // --- PARTICLE EFFECTS & WEB AUDIO / SPEECH SYNTHESIS ---
+    function spawnParticles(emoji, count = 8, originX, originY) {
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'particle-pop text-2xl sm:text-3xl';
+        el.textContent = emoji;
+        const x = (originX || window.innerWidth / 2) + (Math.random() - 0.5) * 180;
+        const y = (originY || window.innerHeight / 2) + (Math.random() - 0.5) * 100;
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1100);
+      }
+    }
+
+    function speakText(text) {
+      if (!state.soundEnabled || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.pitch = 1.25;
+        utter.rate = 1.02;
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(v => /Samantha|Victoria|Karen|Zira|Female|Google US English/i.test(v.name));
+        if (femaleVoice) utter.voice = femaleVoice;
+        window.speechSynthesis.speak(utter);
+      } catch (err) {}
+    }
+
+    function playSfx(type) {
+      if (!state.soundEnabled) return;
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        const now = ctx.currentTime;
+        if (type === 'win') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.setValueAtTime(659.25, now + 0.1);
+          osc.frequency.setValueAtTime(783.99, now + 0.2);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+          osc.start(now);
+          osc.stop(now + 0.45);
+        } else if (type === 'giggle') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(680, now);
+          osc.frequency.setValueAtTime(920, now + 0.08);
+          osc.frequency.setValueAtTime(740, now + 0.16);
+          osc.frequency.setValueAtTime(980, now + 0.24);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+          osc.start(now);
+          osc.stop(now + 0.35);
+        } else if (type === 'tick') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(580, now);
+          osc.frequency.exponentialRampToValueAtTime(860, now + 0.14);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+          osc.start(now);
+          osc.stop(now + 0.16);
+        }
+      } catch (err) {}
+    }
+  </script>
+</body>
+</html>
