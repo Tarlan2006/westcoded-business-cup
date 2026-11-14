@@ -3,6 +3,7 @@ import type { Mode } from "../../shared/types";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
 import { GrownUpsButton } from "../components/GrownUpsButton";
+import { startingActivity } from "../components/activitySuggestions";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
 import { sketchGameMeta } from "../games/sketch/meta";
@@ -87,12 +88,29 @@ export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemor
   const ordered = groups.includes(first) ? [first, ...groups.filter((group) => group !== first)] : groups;
   const titles = { active: "Move", learn: "Learn", watch: "Watch" };
   const rewardReady = (profile.activities?.quiz ?? 0) > 0;
+  const suggestion = startingActivity(profile, preferences);
+  const startSuggested = () => {
+    switch (suggestion.activity) {
+      case "quiz": return onQuiz();
+      case "memory": return onMemory();
+      case "ask": return onAsk();
+      case "tic-tac-toe": return onGrid();
+      case "sketch": return onSketch();
+      case "video": return onWatch();
+      default: return onMission(suggestion.activity);
+    }
+  };
 
   return (
     <main className="shell">
       <header className="topbar"><span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span></header>
       <div className="learn-page hub">
         <RankCard profile={profile} preferences={preferences} onParent={onParent} />
+        <section className="flow-start panel" aria-labelledby="flow-start-title">
+          <div className="flow-start-icon" aria-hidden="true">{suggestion.icon}</div>
+          <div><h2 id="flow-start-title" className="field-label">Start here</h2><h3>{suggestion.title}</h3><p>{suggestion.description}</p></div>
+          <button className="primary-button" type="button" onClick={startSuggested}>Start <span aria-hidden="true">→</span><span className="flow-sr-only"> {suggestion.title}</span></button>
+        </section>
         {ordered.map((group) => (
           <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
             <h2 id={`group-${group}`}>{titles[group]}</h2>
