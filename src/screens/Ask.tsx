@@ -88,10 +88,6 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     voice.start();
   }
 
-  function cancelVoice() {
-    voice.release(true);
-  }
-
   const voiceLabel = voice.status === "opening" ? "Opening mic…" : voice.status === "recording"
     ? "Release to ask" : voice.status === "decoding" ? "Transcribing…" : "Hold to talk";
 
@@ -122,12 +118,15 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
           <GameButton tone="sky" className="talk-button" data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding"}
             onPointerDown={(event) => {
               if (!event.isPrimary || event.button !== 0) return;
+              // Keep a denied microphone tap from moving focus back from the question field.
+              event.preventDefault();
+              event.currentTarget.focus({ preventScroll: true });
               event.currentTarget.setPointerCapture(event.pointerId);
               beginVoice();
             }}
             onPointerUp={() => voice.release()}
-            onPointerCancel={cancelVoice}
-            onLostPointerCapture={() => voice.release()}
+            onPointerCancel={voice.cancelHold}
+            onLostPointerCapture={voice.cancelHold}
             onContextMenu={(event) => event.preventDefault()}
             onKeyDown={(event) => {
               if (event.key !== " " && event.key !== "Enter") return;
@@ -137,7 +136,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
             onKeyUp={(event) => {
               if (event.key === " " || event.key === "Enter") voice.release();
             }}
-            onBlur={cancelVoice}>{voiceLabel}</GameButton>
+            onBlur={voice.cancelHold}>{voiceLabel}</GameButton>
           <label>
             <span className="field-label">Your question</span>
             <textarea ref={input} rows={2} required maxLength={200} autoComplete="off"

@@ -237,8 +237,8 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
                   startVoice();
                 }}
                 onPointerUp={() => voice.release()}
-                onPointerCancel={() => voice.release(true)}
-                onLostPointerCapture={() => voice.release()}
+                onPointerCancel={voice.cancelHold}
+                onLostPointerCapture={voice.cancelHold}
                 onContextMenu={(event) => event.preventDefault()}
                 onKeyDown={(event) => {
                   if (event.key !== " " && event.key !== "Enter") return;
@@ -248,7 +248,7 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
                 onKeyUp={(event) => {
                   if (event.key === " " || event.key === "Enter") voice.release();
                 }}
-                onBlur={() => voice.release(true)}>
+                onBlur={voice.cancelHold}>
                 {recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
                   : voice.status === "decoding" ? "Listening…" : <><span aria-hidden="true">🎙</span> HOLD TO TALK</>}
               </GameButton>

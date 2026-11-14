@@ -39,6 +39,12 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void, 
     }
   }
 
+  function cancelHold() {
+    const recording = current.current;
+    // A disabled button can lose focus as soon as decoding starts.
+    if (recording && !recording.released) release(true);
+  }
+
   function start() {
     if (!enabled || current.current) return;
     setMessage("");
@@ -102,5 +108,5 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void, 
     };
   }, [enabled]);
 
-  return { status, message, start, release };
+  return { status, message, start, release, cancelHold };
 }
