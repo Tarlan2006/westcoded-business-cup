@@ -108,8 +108,14 @@ try {
       }
       await page.reload();
       await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
+      await tile(page, "Space Scale").click();
+      await page.getByRole("button", { name: "Start exploring" }).waitFor();
+      await layout(page, "space-preserved", width);
+      await page.getByRole("button", { name: "Start exploring" }).click();
+      await page.getByRole("button", { name: "Back to activities", exact: true }).click();
+      await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
       await context.close();
-      pass(`${width}px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub`);
+      pass(`${width}px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub; incoming Space Scale still opens and returns`);
     }
   } else for (const width of [390, 1280]) {
     const { page, context } = await open(width);

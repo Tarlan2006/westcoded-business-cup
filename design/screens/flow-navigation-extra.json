@@ -7,8 +7,8 @@
   "video": "embedded player fixture; navigation verified",
   "physicalPhoneTested": false,
   "results": [
-    "390px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub",
-    "1280px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub"
+    "390px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub; incoming Space Scale still opens and returns",
+    "1280px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub; incoming Space Scale still opens and returns"
   ],
   "browserErrors": []
 }
