@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { AgeBand } from "../../shared/types";
+import { Mascot } from "../components/Mascot";
 import { codenameFor, codenames } from "../game/content";
 import { defaultPreferences, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
@@ -26,70 +27,81 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
 }) {
   const [ageBand, setAgeBand] = useState(profile?.ageBand);
   const [codename, setCodename] = useState(profile?.codenameId ?? codenames[0]);
-  const [preferences, setPreferences] = useState(profile?.preferences ?? defaultPreferences);
+  const [preferences, setPreferences] = useState(() => {
+    const saved = profile?.preferences ?? defaultPreferences;
+    return profile?.ageBand === "1-2" ? { ...saved, first: "any" as const } : saved;
+  });
   const used = new Set(profiles.filter((entry) => entry.id !== profile?.id).map((entry) => entry.codenameId));
   const names = [...new Set([codename, ...codenames.filter((id) => !used.has(id))])];
   const onlyVideos = ageBand === "1-2";
 
+  const form = (
+    <form className="panel setup-form centered-card" onSubmit={(event) => {
+      event.preventDefault();
+      if (ageBand) onSave(codename, ageBand, onlyVideos ? { ...preferences, first: "watch" } : preferences);
+    }}>
+      <fieldset>
+        <legend className="field-label">How old is your child?</legend>
+        <div className="age-choices">
+          {ages.map(({ value, label, summary }) => (
+            <label key={value} className="age-choice">
+              <input type="radio" name="age" value={value} required checked={ageBand === value}
+                onChange={() => setAgeBand(value)} />
+              <span><strong>{label}</strong><span>{summary}</span></span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend className="field-label">How much play time do you have?</legend>
+        <div className="segmented">
+          {([10, 20, 30] as const).map((minutes) => <button key={minutes} type="button"
+            aria-pressed={preferences.minutes === minutes}
+            onClick={() => setPreferences({ ...preferences, minutes })}>{minutes} min</button>)}
+        </div>
+      </fieldset>
+      {!onlyVideos && <>
+        <fieldset>
+          <legend className="field-label">Where are you playing?</legend>
+          <div className="segmented">
+            <button type="button" aria-pressed={preferences.location === "home"}
+              onClick={() => setPreferences({ ...preferences, location: "home" })}>At home</button>
+            <button type="button" aria-pressed={preferences.location === "car"}
+              onClick={() => setPreferences({ ...preferences, location: "car" })}>In the car</button>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend className="field-label">What would you like to see first?</legend>
+          <div className="segmented interests">
+            {interests.map(({ value, label }) => <button key={value} type="button"
+              aria-pressed={preferences.first === value}
+              onClick={() => setPreferences({ ...preferences, first: value })}>{label}</button>)}
+          </div>
+        </fieldset>
+      </>}
+      <label>
+        <span className="field-label">Agent codename</span>
+        <select value={codename} onChange={(event) => setCodename(event.target.value)}>
+          {names.map((id) => <option key={id} value={id}>{codenameFor(id)}</option>)}
+        </select>
+      </label>
+      <button className="primary-button" type="submit">{onBack ? "Save and show activities" : "Show activities"}</button>
+      <a className="privacy-link" href="/privacy">Privacy</a>
+    </form>
+  );
+
+  if (onBack) return <LearnPage title="Parent settings" onBack={onBack}>{form}</LearnPage>;
+
   return (
-    <LearnPage title={onBack ? "Parent settings" : "Set up your day"} onBack={onBack}>
-        <form className="panel setup-form centered-card" onSubmit={(event) => {
-          event.preventDefault();
-          if (ageBand) onSave(codename, ageBand, onlyVideos ? { ...preferences, first: "watch" } : preferences);
-        }}>
-          <fieldset>
-            <legend className="field-label">How old is your child?</legend>
-            <div className="age-choices">
-              {ages.map(({ value, label, summary }) => (
-                <label key={value} className="age-choice">
-                  <input type="radio" name="age" value={value} required checked={ageBand === value}
-                    onChange={() => {
-                      if (ageBand === "1-2" && value !== "1-2" && preferences.first === "watch") {
-                        setPreferences({ ...preferences, first: "any" });
-                      }
-                      setAgeBand(value);
-                    }} />
-                  <span><strong>{label}</strong><span>{summary}</span></span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <label>
-            <span className="field-label">Agent codename</span>
-            <select value={codename} onChange={(event) => setCodename(event.target.value)}>
-              {names.map((id) => <option key={id} value={id}>{codenameFor(id)}</option>)}
-            </select>
-          </label>
-          {!onlyVideos && <>
-            <fieldset>
-              <legend className="field-label">Where are you playing?</legend>
-              <div className="segmented">
-                <button type="button" aria-pressed={preferences.location === "home"}
-                  onClick={() => setPreferences({ ...preferences, location: "home" })}>At home</button>
-                <button type="button" aria-pressed={preferences.location === "car"}
-                  onClick={() => setPreferences({ ...preferences, location: "car" })}>In the car</button>
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend className="field-label">Active mission length</legend>
-              <div className="segmented">
-                {([10, 20, 30] as const).map((minutes) => <button key={minutes} type="button"
-                  aria-pressed={preferences.minutes === minutes}
-                  onClick={() => setPreferences({ ...preferences, minutes })}>{minutes} min</button>)}
-              </div>
-            </fieldset>
-            <fieldset>
-              <legend className="field-label">What sounds fun today?</legend>
-              <div className="segmented interests">
-                {interests.map(({ value, label }) => <button key={value} type="button"
-                  aria-pressed={preferences.first === value}
-                  onClick={() => setPreferences({ ...preferences, first: value })}>{label}</button>)}
-              </div>
-            </fieldset>
-          </>}
-          <button className="primary-button" type="submit">Save and show activities</button>
-          <a className="privacy-link" href="/privacy">Privacy</a>
-        </form>
-    </LearnPage>
+    <main className="shell learn-shell learn-page">
+      <header className="welcome-hero">
+        <div>
+          <h1>Mission Control</h1>
+          <p>Grown-ups, choose a few options to find games and videos for your child.</p>
+        </div>
+        <Mascot />
+      </header>
+      {form}
+    </main>
   );
 }
