@@ -5,6 +5,7 @@ import { APP_NAME } from "./brand";
 import { SoundEnabled } from "./audio/sfx";
 import { ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
 import { LeaveGameDialog } from "./components/LeaveGameDialog";
+import { PrototypeFrame } from "./components/PrototypeFrame";
 import { NextUp } from "./components/NextUp";
 import { RewardCard } from "./components/RewardCard";
 import { nextActivities } from "./components/activitySuggestions";
@@ -68,11 +69,9 @@ export default function App() {
   const [sound, setSound] = useState(() => {
     try { return localStorage.getItem("mission-control.sound") !== "off"; } catch { return true; }
   });
-  const [welcoming, setWelcoming] = useState(() => {
-    if (new URLSearchParams(window.location.search).get("welcome") === "1") return true;
-    try { return !readProgress().profiles.length && localStorage.getItem("mission-control.welcomed") !== "yes"; }
-    catch { return !readProgress().profiles.length; }
-  });
+  const [welcoming, setWelcoming] = useState(true);
+  const [repeatVisit] = useState(() => new URLSearchParams(window.location.search).get("welcome") !== "1" &&
+    progress.profiles.some((item) => item.preferences));
   const [saved, setSaved] = useState(false);
   useEffect(() => {
     if (!saved) return;
@@ -95,8 +94,6 @@ export default function App() {
 
   function continueWelcome() {
     setWelcoming(false);
-    if (sound) void unlock().catch(() => {});
-    try { localStorage.setItem("mission-control.welcomed", "yes"); } catch { /* This tab still works. */ }
     const url = new URL(window.location.href);
     if (url.searchParams.has("welcome")) {
       url.searchParams.delete("welcome");
@@ -109,7 +106,7 @@ export default function App() {
     window.scrollTo(0, current.scrollY ?? 0);
     const heading = document.querySelector<HTMLElement>('[data-flow-active="true"] h1');
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
-  }, [current.key]);
+  }, [current.key, welcoming]);
 
   function setScreen(next: Screen, replaceCurrent = false) {
     stopSpeech();
@@ -148,11 +145,11 @@ export default function App() {
     item.screen.name === "ask" && history.slice(index + 1).every((next) => next.screen.name === "quiz") ||
     (item.screen.name === "parent" || item.screen.name === "home" && !profile?.preferences) && history.slice(index + 1).every((next) => next.screen.name === "privacy"));
 
-  if (welcoming && !privacy) return <SoundEnabled value={sound}>
-    <Welcome onContinue={continueWelcome} onToggleSound={toggleSound} />
-  </SoundEnabled>;
+  if (welcoming && !privacy) return <SoundEnabled value={sound}><PrototypeFrame>
+    <Welcome repeat={repeatVisit} onContinue={continueWelcome} onToggleSound={toggleSound} />
+  </PrototypeFrame></SoundEnabled>;
 
-  return <SoundEnabled value={sound}><ActivityXp value={profile?.xp}>
+  return <SoundEnabled value={sound}><PrototypeFrame><ActivityXp value={profile?.xp}>
     <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen) }}>
       {saved && <div className="flow-saved" role="status">Saved ✓</div>}
       {visibleEntries.map((item) => <div key={item.key} data-flow-active={item.key === current.key}
@@ -161,7 +158,7 @@ export default function App() {
         const leave = pendingNavigation; setPendingNavigation(null); leave();
       }} />}
     </ActivityNavigation>
-  </ActivityXp></SoundEnabled>;
+  </ActivityXp></PrototypeFrame></SoundEnabled>;
 
   function renderScreen(screen: Screen) {
     const preferences = profile?.preferences ?? defaultPreferences;

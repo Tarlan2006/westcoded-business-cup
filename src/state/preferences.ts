@@ -11,26 +11,29 @@ export const childNeeds = [
 export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
 export type ChildNeed = typeof childNeeds[number]["value"];
 export type ChildInterest = typeof childInterests[number];
+export const quietTimeGoals = [20, 30, 60] as const;
 
 export interface Preferences {
   location: "home" | "car";
-  minutes: 10 | 20 | 30;
+  minutes: 10 | typeof quietTimeGoals[number];
   first: ActivityGroup | "any";
   nickname?: string;
+  notes?: string;
   needs?: ChildNeed[];
   interests?: ChildInterest[];
 }
 
-export const defaultPreferences: Preferences = { location: "home", minutes: 10, first: "any" };
+export const defaultPreferences: Preferences = { location: "home", minutes: 20, first: "learn" };
 
 export function readPreferences(value: unknown): Preferences | undefined {
   if (!value || typeof value !== "object") return undefined;
-  const { location, minutes, first, nickname, needs, interests } = value as Partial<Preferences>;
+  const { location, minutes, first, nickname, notes, needs, interests } = value as Partial<Preferences>;
   if ((location !== "home" && location !== "car") ||
-    (minutes !== 10 && minutes !== 20 && minutes !== 30) ||
+    (minutes !== 10 && minutes !== 20 && minutes !== 30 && minutes !== 60) ||
     (first !== "any" && first !== "active" && first !== "learn" && first !== "watch")) return undefined;
   return { location, minutes, first,
-    nickname: typeof nickname === "string" && nickname.trim().length >= 2 && nickname.trim().length <= 12 ? nickname.trim() : undefined,
+    nickname: typeof nickname === "string" ? nickname.trim().slice(0, 24) || undefined : undefined,
+    notes: typeof notes === "string" ? notes.trim().slice(0, 600) || undefined : undefined,
     needs: Array.isArray(needs) ? [...new Set(needs)].filter((need) => childNeeds.some((item) => item.value === need)) : [],
     interests: Array.isArray(interests) ? [...new Set(interests)].filter((item) => childInterests.includes(item)).slice(0, 3) : [],
   };

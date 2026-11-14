@@ -128,9 +128,9 @@ button:disabled { cursor: default; color: var(--muted); background: var(--bg-sof
 .secondary-button { background: var(--primary-soft); border-color: var(--border); color: var(--primary); }
 .quiet-button:hover, .secondary-button:hover:not(:disabled) { border-color: var(--primary); background: var(--primary-soft); }
 
-h1, h2, h3 { font-family: var(--font-heading); font-weight: 600; line-height: 1.07; }
-h1 { font-size: clamp(2.25rem, 6vw, 4.2rem); }
-h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+:is(h1, h2, h3):not(.prototype-screen *) { font-family: var(--font-heading); font-weight: 600; line-height: 1.07; }
+h1:not(.prototype-screen *) { font-size: clamp(2.25rem, 6vw, 4.2rem); }
+h2:not(.prototype-screen *) { font-size: clamp(1.5rem, 3vw, 2rem); }
 h1 em { color: var(--primary); font-style: normal; }
 .panel { min-width: 0; padding: clamp(1rem, 4vw, 1.8rem); border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: var(--shadow); }
 .setup-form, .parent-panel { display: grid; gap: 1rem; align-content: start; }

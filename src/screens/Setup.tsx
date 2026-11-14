@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Mode } from "../../shared/types";
 import { MODES } from "../game/content";
-import { activeModes, type Preferences } from "../state/preferences";
+import { activeModes, quietTimeGoals, type Preferences } from "../state/preferences";
 import { LearnPage } from "./Home";
 
 export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
@@ -39,7 +39,7 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
         <fieldset>
           <legend className="field-label">Duration</legend>
           <div className="segmented">
-            {([10, 20, 30] as const).map((option) => (
+            {([10, ...quietTimeGoals] as const).map((option) => (
               <button key={option} type="button" aria-pressed={minutes === option}
                 onClick={() => setMinutes(option)}>{option} min</button>
             ))}

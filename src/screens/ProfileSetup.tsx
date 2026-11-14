@@ -1,184 +1,126 @@
 import { useState } from "react";
-import type { AgeBand, SetupSuggestion } from "../../shared/types";
-import { interestsFromTopics } from "../../shared/topics";
-import { usePushToTalk } from "../game/usePushToTalk";
-import { APP_NAME } from "../brand";
-import { Chip, GameButton, Segmented } from "../components/GameUI";
-import { Mascot } from "../components/Mascot";
+import type { AgeBand } from "../../shared/types";
+import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { codenameFor, codenames } from "../game/content";
-import { childInterests, childNeeds, defaultPreferences, type ChildInterest, type ChildNeed, type Preferences } from "../state/preferences";
+import { defaultPreferences, quietTimeGoals, type ChildNeed, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
-import { LearnPage } from "./Home";
 
-const ages = [
-  { value: "1-2", label: "1–2 years", detail: "Gentle videos" },
-  { value: "3-5", label: "3–5 years", detail: "Play & learn" },
-  { value: "6-8", label: "6–8 years", detail: "Explore & ask" },
+const ages = [["1-2", "1–2 yrs"], ["3-5", "3–5 yrs"], ["6-8", "6–8 yrs"]] as const;
+const needs = [
+  ["energy", "⚡ Burn physical energy indoors"], ["screen", "📵 Replace passive iPad / YouTube"],
+  ["listening", "🗣️ Speech & active listening"], ["habits", "🥦 Healthy habits (water & teeth)"],
+  ["science", "🚀 Science & logic curiosity"],
 ] as const;
-const location = [{ value: "home", label: "🏠 At home" }, { value: "car", label: "🚗 In the car" }] as const;
-const minutes = [{ value: 10, label: "10 min" }, { value: 20, label: "20 min" }, { value: 30, label: "30 min" }] as const;
-const first = [{ value: "active", label: "Move" }, { value: "learn", label: "Learn" }, { value: "watch", label: "Watch" },
-  { value: "any", label: "Surprise us" }] as const;
-
-// Parents can say or type one sentence ("She's 7, loves space and dinosaurs, we have
-// twenty minutes in the car") and the AI fills in the choices below for them to check.
-function QuickDescribe({ onFill }: { onFill: (suggestion: SetupSuggestion) => void }) {
-  const [text, setText] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState("");
-
-  async function fill(description: string) {
-    const value = description.trim();
-    if (!value || busy) return;
-    setBusy(true);
-    setNote("");
-    try {
-      const response = await fetch("/api/setup", {
-        method: "POST", cache: "no-store", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: value }), signal: AbortSignal.timeout(10_000),
-      });
-      const result = await response.json() as SetupSuggestion & { error?: string };
-      if (!response.ok || result.error) throw new Error(result.error);
-      onFill(result);
-      setNote(result.summary || "Done! Check the choices below.");
-    } catch {
-      setNote("We couldn't fill it in this time. Please pick the choices below.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const voice = usePushToTalk(!busy, (spoken) => {
-    setText(spoken);
-    void fill(spoken);
-  }, (problem) => setNote(problem === "no-speech"
-    ? "Sorry, Bleep didn't catch that. Hold the button, speak, then let go. Or type instead."
-    : "The microphone is blocked. Allow it in your browser (lock icon by the address), or type instead."),
-  { maxRecordMs: 15_000, transcribeTimeoutMs: 8000 });
-  const listening = voice.status === "opening" || voice.status === "recording";
-
-  return (
-    <section className="quick-describe" aria-labelledby="quick-describe-title">
-      <h2 id="quick-describe-title" className="field-label">In a hurry? Just tell Bleep</h2>
-      <p className="recon-field-hint">For example: “She’s 7, loves space and dinosaurs, needs to burn energy, we have 20 minutes at home.” No names needed.</p>
-      <textarea rows={2} maxLength={600} value={text} disabled={busy}
-        placeholder="Age, what they love, what they need, how much time, where you are"
-        onChange={(event) => setText(event.target.value)} />
-      <div className="quick-describe-actions">
-        <button type="button" className="secondary-button talk-button" disabled={busy || voice.status === "decoding"}
-          data-recording={listening || undefined}
-          onPointerDown={(event) => {
-            if (!event.isPrimary || event.button !== 0) return;
-            event.preventDefault();
-            event.currentTarget.focus({ preventScroll: true });
-            event.currentTarget.setPointerCapture(event.pointerId);
-            voice.start();
-          }}
-          onPointerUp={() => voice.release()}
-          onPointerCancel={voice.cancelHold}
-          onLostPointerCapture={voice.cancelHold}
-          onContextMenu={(event) => event.preventDefault()}>
-          {listening ? "Speak, then let go" : voice.status === "decoding" ? "Understanding…" : "🎤 Hold to talk"}
-        </button>
-        <button type="button" className="primary-button" disabled={busy || !text.trim()} onClick={() => { void fill(text); }}>
-          {busy ? "Filling in…" : "✨ Fill it in for me"}
-        </button>
-      </div>
-      {note && <p role="status" className="quick-describe-note">{note}</p>}
-    </section>
-  );
-}
+const sessionFlows = [
+  { value: "learn", icon: "🧠", title: "Educational Video + Quiz", detail: "Curated science video → Bleep asks fun interactive questions." },
+  { value: "active", icon: "⚡", title: "Active Physical Missions", detail: "Zero passive watching — scavenger hunts, movement, and voice challenges." },
+] as const;
+const selectedAge = "border-[#FFD13B] bg-[#6C47FF] text-white shadow-md";
+const unselectedAge = "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-white";
 
 export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
-  profile?: ChildProfile;
-  profiles: ChildProfile[];
-  onBack?: () => void;
-  onPrivacy?: () => void;
-  onSave: (codename: string, ageBand: AgeBand, preferences: Preferences) => void;
+  profile?: ChildProfile; profiles: ChildProfile[];
+  onBack?: () => void; onSave: (id: string, ageBand: AgeBand, preferences: Preferences) => void; onPrivacy: () => void;
 }) {
-  const [age, setAge] = useState(profile?.ageBand);
-  const [codename, setCodename] = useState(profile?.codenameId ?? codenames[0]);
-  const [settings, setSettings] = useState(() => {
-    const saved = profile?.preferences ?? defaultPreferences;
-    return profile?.ageBand === "1-2" ? { ...saved, first: "any" as const } : saved;
-  });
-  const [nickname, setNickname] = useState(profile?.preferences?.nickname ?? "");
-  const [nameError, setNameError] = useState(false);
-  const toddler = age === "1-2";
-  const needs = settings.needs ?? [];
-  const interests = settings.interests ?? [];
-  const used = new Set(profiles.filter((entry) => entry.id !== profile?.id).map((entry) => entry.codenameId));
-  const names = [...new Set([codename, ...codenames.filter((id) => !used.has(id))])].slice(0, 6);
-  const displayName = nickname.trim() || codenameFor(codename);
+  const saved = profile?.preferences;
+  const [age, setAge] = useState<AgeBand>(profile?.ageBand ?? "3-5");
+  const [name, setName] = useState(saved?.nickname ?? "");
+  const [notes, setNotes] = useState(saved?.notes ?? "");
+  const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs ?? ["energy", "screen"]);
+  const [minutes, setMinutes] = useState(saved?.minutes === 10 ? 20 : saved?.minutes ?? defaultPreferences.minutes);
+  const [flow, setFlow] = useState<(typeof sessionFlows)[number]["value"]>(saved?.first === "active" ? "active" : "learn");
+  const sound = useSoundEnabled();
+  const code = profile?.codenameId ?? codenames.find((id) => !profiles.some((item) => item.codenameId === id)) ?? codenames[0];
+  const display = name.trim() || codenameFor(code);
 
-  function applySuggestion(suggestion: SetupSuggestion) {
-    if (suggestion.ageBand) setAge(suggestion.ageBand);
-    const suggestedInterests = interestsFromTopics(suggestion.topics)
-      .filter((item): item is ChildInterest => (childInterests as readonly string[]).includes(item));
-    const suggestedNeeds = (suggestion.needs ?? [])
-      .filter((item): item is ChildNeed => childNeeds.some((need) => need.value === item));
-    setSettings((current) => ({
-      ...current,
-      minutes: suggestion.minutes ?? current.minutes,
-      location: suggestion.location ?? current.location,
-      first: suggestion.first ?? current.first,
-      interests: suggestedInterests.length ? suggestedInterests : current.interests,
-      needs: suggestedNeeds.length ? suggestedNeeds : current.needs,
-    }));
-  }
-
-  const form = <form className="recon-form" onSubmit={(event) => {
-    event.preventDefault();
-    const cleaned = nickname.trim();
-    if (cleaned && cleaned.length < 2) { setNameError(true); return; }
-    if (age) onSave(codename, age, { ...settings, first: toddler ? "watch" : settings.first,
-      nickname: cleaned || undefined });
-  }}>
-    <div className="recon-form-heading">
-      <div className="recon-form-bleep"><Mascot mood="happy" /></div>
-      <div>{onBack ? <h2>Tell Bleep About Your Child</h2> : <h1>Tell Bleep About Your Child</h1>}
-        <p><span aria-hidden="true">🛡️</span> Stays on this device</p></div>
-    </div>
-    <QuickDescribe onFill={applySuggestion} />
-    <div className="recon-form-grid">
-      <div className="recon-nickname">
-        <label htmlFor="recon-nickname" className="field-label">What should Bleep call your child?</label>
-        <input id="recon-nickname" type="text" value={nickname} maxLength={12} autoComplete="off"
-          aria-describedby="nickname-hint" aria-invalid={nameError || undefined} placeholder="Choose a nickname"
-          onChange={(event) => { setNickname(event.target.value); setNameError(false); }} />
-        <p id="nickname-hint" className="recon-field-hint">{nameError ? "Use at least 2 characters or choose a codename." : "Use a nickname, not a full name (2–12 characters)."}</p>
-        <div className="recon-chips">{names.map((id) => <Chip key={id} selected={!nickname.trim() && codename === id}
-          onClick={() => { setCodename(id); setNickname(""); setNameError(false); }}>{codenameFor(id)}</Chip>)}</div>
+  return <main id="screen-profile-setup" className="prototype-screen relative flex-1 w-full max-w-3xl mx-auto px-4 py-6 flex flex-col justify-center z-10">
+    <form className="bg-[#1C145C]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border-4 border-[#4C35DE] shadow-[0_14px_40px_rgba(0,0,0,0.45)] space-y-6"
+      onSubmit={(event) => {
+        event.preventDefault();
+        uiSound("chirp", sound);
+        onSave(code, age, { ...defaultPreferences, ...saved, minutes, first: age === "1-2" ? "watch" : flow,
+          nickname: name.trim() || undefined, notes: notes.trim() || undefined, needs: selected });
+      }}>
+      <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
+        <div className="flex items-center gap-3">
+          <div aria-hidden="true" className="w-12 h-12 shrink-0 rounded-2xl bg-[#6C47FF] border-2 border-white/40 flex items-center justify-center text-2xl shadow-md">👨‍👩‍👧</div>
+          <div>
+            <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">Parent Setup • 1-Time Profile</span>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell Bleep About Your Child</h1>
+          </div>
+        </div>
+        <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
+          className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700 text-xs font-extrabold text-indigo-300" aria-label="Privacy · saved on this device">🛡️ Local Profile</a>
       </div>
-      <fieldset><legend className="field-label">How old is your child?</legend>
-        <Segmented<AgeBand> required options={ages} value={age} onChange={setAge} />
-      </fieldset>
-      {!toddler && <fieldset><legend className="field-label">Where are you playing?</legend>
-        <Segmented options={location} value={settings.location} onChange={(value) => setSettings({ ...settings, location: value })} />
-      </fieldset>}
-      <fieldset><legend className="field-label">How much play time do you have?</legend>
-        <Segmented options={minutes} value={settings.minutes} onChange={(value) => setSettings({ ...settings, minutes: value })} />
-      </fieldset>
-      <fieldset><legend className="field-label">What does your child need most?</legend>
-        <div className="recon-chips">{childNeeds.map(({ value, label }) => <Chip key={value} selected={needs.includes(value)}
-          onClick={() => setSettings({ ...settings, needs: needs.includes(value) ? needs.filter((item) => item !== value) : [...needs, value] })}>{label}</Chip>)}</div>
-      </fieldset>
-      <fieldset><legend className="field-label">Interests <span>(up to 3)</span></legend>
-        <div className="recon-chips">{childInterests.map((item) => <Chip key={item} selected={interests.includes(item)}
-          disabled={interests.length >= 3 && !interests.includes(item)}
-          onClick={() => setSettings({ ...settings, interests: interests.includes(item) ? interests.filter((interest) => interest !== item) : [...interests, item] })}>{item}</Chip>)}</div>
-      </fieldset>
-      {toddler ? <p className="safety">Toddler mode: gentle videos</p> :
-        <fieldset className="recon-first"><legend className="field-label">What would you like to see first?</legend>
-          <Segmented options={first} value={settings.first} onChange={(value) => setSettings({ ...settings, first: value })} />
-        </fieldset>}
-    </div>
-    <div className="recon-form-footer">
-      <GameButton type="submit">{onBack ? "Save and show activities" : `Start for ${displayName}`} <span aria-hidden="true">🚀</span></GameButton>
-      <a className="privacy-link" href="/privacy" onClick={onPrivacy ? (event) => { event.preventDefault(); onPrivacy(); } : undefined}>Privacy</a>
-    </div>
-  </form>;
 
-  return onBack ? <LearnPage title="Parent settings" wide onBack={onBack}>{form}</LearnPage> :
-    <main className="shell recon-setup"><p className="wordmark"><span className="signal" aria-hidden="true" />{APP_NAME}</p>{form}</main>;
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's Nickname</label>
+          <input id="profileNameInput" type="text" autoComplete="off" value={name} maxLength={24} placeholder={codenameFor(code)} aria-describedby="profileNameHint"
+            onChange={(event) => setName(event.target.value)} className="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg" />
+          <p className="mt-1 text-xs text-indigo-300" id="profileNameHint">First name or fun nickname, saved only on this device.</p>
+        </div>
+        <fieldset className="min-w-0">
+          <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Age Group</legend>
+          <div className="grid grid-cols-3 gap-2" id="profileAgeGroup">
+            {ages.map(([value, label]) => <button key={value} type="button" data-age={value} aria-pressed={age === value}
+              className={`prof-age-btn py-3 rounded-2xl border-2 font-extrabold text-sm transition ${age === value ? selectedAge : unselectedAge}`}
+              onClick={() => { setAge(value); uiSound("chirp", sound); }}>{label}</button>)}
+          </div>
+        </fieldset>
+      </div>
+
+      <fieldset>
+        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-2">What does your child need most right now? (Select all that apply)</legend>
+        <div className="flex flex-wrap gap-2" id="needsChips">
+          {needs.map(([value, label]) => <button key={value} type="button" aria-pressed={selected.includes(value)}
+            onClick={() => { setNeeds((items) => items.includes(value) ? items.filter((item) => item !== value) : [...items, value]); uiSound("chirp", sound); }}
+            className={`need-chip px-3.5 py-2 rounded-2xl border-2 text-xs sm:text-sm font-extrabold transition ${selected.includes(value) ? "border-[#2CE69B] bg-[#2CE69B]/20 text-white" : "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-indigo-400"}`}>{label}</button>)}
+        </div>
+      </fieldset>
+
+      <div>
+        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's Interests, Sensitivities, or Parent Context (Optional)</label>
+        <textarea id="profileNotesInput" rows={2} maxLength={600} autoComplete="off" value={notes} onChange={(event) => setNotes(event.target.value)}
+          placeholder="e.g., Loves dinosaurs & space rockets; needs 25 mins of quiet play while I'm on a work call; avoid loud sirens."
+          className="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm" />
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
+        <div>
+          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">Default Parent Quiet-Time Goal</div>
+          <div className="text-xs font-bold text-indigo-300">Bleep paces missions to match your break</div>
+        </div>
+        <div className="flex items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
+          {quietTimeGoals.map((value) => <button key={value} type="button" data-min={value} aria-pressed={minutes === value}
+            onClick={() => { setMinutes(value); uiSound("chirp", sound); }}
+            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value}m</button>)}
+        </div>
+      </div>
+
+      {age === "1-2" ? <div id="toddlerAutoNotice" className="p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
+        🧸 Toddler Mode (1–2 yrs): Gentle movement videos → Bleep appears for Clap & Peek-a-Boo!
+      </div> : <fieldset id="parentModeSelectorWrapper" className="space-y-2">
+        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">Choose Session Flow for Your Child</legend>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {sessionFlows.map((option) => <button key={option.value} type="button" aria-pressed={flow === option.value}
+            id={option.value === "learn" ? "modeCardBrain" : "modeCardTurbo"}
+            onClick={() => { setFlow(option.value); uiSound("chirp", sound); }}
+            className={`p-4 rounded-2xl border-2 text-left transition cursor-pointer ${flow === option.value ? "border-[#FFD13B] bg-[#6C47FF] shadow-md" : "border-[#4C35DE] bg-[#100B3B] hover:border-indigo-400"}`}>
+            <span className="flex items-center gap-2.5 mb-1"><span className="text-2xl" aria-hidden="true">{option.icon}</span>
+              <span className="font-display font-bold text-base text-white">{option.title}</span></span>
+            <span className={`block text-xs font-bold ${flow === option.value ? "text-indigo-100" : "text-indigo-300"}`}>{option.detail}</span>
+          </button>)}
+        </div>
+      </fieldset>}
+
+      <button type="submit" className="w-full py-4 px-2 rounded-2xl btn-game btn-mint text-[#082F22] font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+        <span className="min-w-0 wrap-anywhere">START SESSION FOR <span id="startBtnKidName">{display.toUpperCase()}</span></span><span aria-hidden="true">🚀</span>
+      </button>
+      <div className="flex items-center justify-between gap-3 text-xs text-indigo-300">
+        {onBack && <button type="button" className="hover:text-white" onClick={onBack}>← Back</button>}
+        <a href="/privacy" className="sm:hidden ml-auto underline" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
+      </div>
+    </form>
+  </main>;
 }

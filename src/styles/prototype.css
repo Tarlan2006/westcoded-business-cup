@@ -20,13 +20,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.prototype :is(h1, h2, h3) {
-  font-size: revert-layer;
-  font-weight: revert-layer;
-  line-height: revert-layer;
-}
-
-.prototype :is(h1, h2, h3), .font-display {
+.prototype-screen :is(h1, h2, h3), .font-display {
   font-family: 'Fredoka', 'Nunito', sans-serif;
 }
 
@@ -108,7 +102,7 @@
   transform-origin: 100px 44px;
   animation: antennaBob 1.7s ease-in-out infinite;
 }
-.prototype-bleep .bleep-speaking .bleep-antenna {
+.prototype-bleep.bleep-speaking .bleep-antenna {
   animation: antennaBob 0.3s ease-in-out infinite;
 }
 
@@ -215,9 +209,10 @@
    component styles. Motion is optional for both. */
 .prototype :is(input, textarea) { user-select: text; }
 .prototype .btn-game:disabled { background: var(--bg-card-dark); filter: saturate(.45); opacity: .7; }
-.prototype-bleep { display: block; width: 100%; }
+.prototype-bleep { display: block; width: 100%; height: 100%; }
+.prototype-bleep > span { height: 100%; }
 .prototype-bleep svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.prototype-screen { position: relative; min-height: 100svh; }
+.prototype-screen { min-height: 100svh; }
 .prototype-screen[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) {

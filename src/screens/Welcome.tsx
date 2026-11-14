@@ -1,48 +1,50 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { APP_NAME } from "../brand";
-import { playQueue, speakFallback, stopSpeech, unlock } from "../audio/engine";
-import { useSoundEnabled } from "../audio/sfx";
-import { GameButton, SpeechBubble } from "../components/GameUI";
-import { Mascot } from "../components/Mascot";
+import { PrototypeBleep } from "../components/Mascot";
 
-const greeting = "Hi! I'm Bleep! Ready for a screen-free adventure?";
+const status = ["Waking up Bleep...", "Charging space antennas...", "Ready!"];
+const progress = [15, 60, 100];
 
-export function Welcome({ onContinue, onToggleSound }: { onContinue: () => void; onToggleSound: () => void }) {
+export function Welcome({ repeat, onContinue, onToggleSound }: {
+  repeat: boolean; onContinue: () => void; onToggleSound: () => void;
+}) {
   const [stage, setStage] = useState(0);
-  const heard = useRef(false);
   const sound = useSoundEnabled();
 
   useEffect(() => {
-    const timers = [window.setTimeout(() => setStage(1), 210), window.setTimeout(() => setStage(2), 480),
-      window.setTimeout(() => setStage(3), 680)];
+    const times = repeat ? [100, 190, 320] : [300, 650, 950];
+    const timers = times.map((time, index) => window.setTimeout(() => setStage(index + 1), time));
     return () => timers.forEach((timer) => window.clearTimeout(timer));
-  }, []);
+  }, [repeat]);
 
-  function speakGreeting() {
-    if (!sound || heard.current) return;
-    heard.current = true;
-    void unlock().then(() => heard.current ? playQueue(["common_intro_01"]) : undefined).catch(() => {
-      if (heard.current) void speakFallback(greeting);
-    });
-  }
+  useEffect(() => {
+    if (stage === 3 && repeat) onContinue();
+  }, [stage, repeat, onContinue]);
 
-  if (stage < 3) return <main className="recon-welcome recon-splash" aria-label="Loading Mission Control">
-    <div className="welcome-bleep"><Mascot mood="happy" /></div>
-    <h1>{APP_NAME}</h1>
-    <progress value={stage + 1} max={3} aria-label="Loading progress" />
-    <p role="status">{["Waking up Bleep…", "Charging space antennas…", "Ready!"][stage]}</p>
+  if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label="Loading Mission Control">
+    <div className="w-40 h-40 mb-6 drop-shadow-lg"><PrototypeBleep variant="splash" /></div>
+    <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#6C47FF] tracking-tight mb-2">{APP_NAME}</h1>
+    <p className="text-slate-400 font-extrabold text-sm tracking-widest uppercase mb-6" role="status">{status[Math.min(stage, 2)]}</p>
+    <div className="w-64 h-4 bg-slate-200 rounded-full overflow-hidden p-0.5" role="progressbar" aria-label="Loading progress" aria-valuenow={progress[Math.min(stage, 2)]}>
+      <div className="h-full bg-[#58CC02] rounded-full transition-all duration-300" style={{ width: `${progress[Math.min(stage, 2)]}%` }} />
+    </div>
   </main>;
 
-  return <main className="recon-welcome recon-greeting">
-    <header><strong>{APP_NAME}</strong><button className="quiet-button welcome-sound" type="button"
-      aria-pressed={sound} onClick={() => { heard.current = false; onToggleSound(); }}>Sound {sound ? "on" : "off"}</button></header>
-    <div className="recon-greeting-stage">
-      <SpeechBubble><h1>Hi! I'm Bleep!</h1><p>Ready for a screen-free adventure?</p></SpeechBubble>
-      <div className="welcome-bleep"><Mascot mood="happy" action="wave" playful /></div>
-      {sound && <button className="quiet-button welcome-sound" type="button" onClick={speakGreeting}>🔊 Hear Bleep</button>}
+  return <main id="screen-greeting" className="prototype-screen fixed inset-0 z-40 bg-white flex flex-col justify-between p-6">
+    <div className="flex justify-end">
+      <button type="button" className="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-extrabold"
+        aria-pressed={sound} onClick={onToggleSound}><span aria-hidden="true">{sound ? "🔊" : "🔇"}</span> Sound</button>
     </div>
-    <GameButton tone="lime" className="welcome-continue" onClick={() => { heard.current = false; stopSpeech(); onContinue(); }}>
-      Continue <span aria-hidden="true">↗</span>
-    </GameButton>
+    <div className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto text-center">
+      <div className="speech-bubble-duo px-6 py-4 mb-6 animate-bounce">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-slate-800">Hi! I'm Bleep! Ready for a screen-free adventure?</h1>
+      </div>
+      <div className="w-48 h-48 sm:w-56 sm:h-56"><PrototypeBleep variant="greeting" action="wave" /></div>
+    </div>
+    <div className="w-full border-t-2 border-slate-200 pt-4 pb-2 flex justify-center sm:justify-end max-w-4xl mx-auto">
+      <button type="button" onClick={() => { uiSound("chirp", sound); onContinue(); }}
+        className="w-full sm:w-auto px-12 py-4 rounded-2xl btn-game btn-lime text-white font-display font-bold text-lg tracking-wider uppercase cursor-pointer">CONTINUE</button>
+    </div>
   </main>;
 }
