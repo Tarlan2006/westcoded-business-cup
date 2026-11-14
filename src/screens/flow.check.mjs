@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 const { chromium } = await import(process.env.FLOW_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.FLOW_PLAYWRIGHT_MODULE).href : "playwright");
 const base = process.env.FLOW_SITE_URL ?? "http://127.0.0.1:5175";
 const output = resolve("design/screens");
-const questions = JSON.parse(await readFile("content/quiz.json", "utf8"));
+const questions = JSON.parse(await readFile(new URL("../../content/quiz.json", import.meta.url), "utf8"));
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({ headless: true, ...(process.env.FLOW_CHROME ? { executablePath: process.env.FLOW_CHROME } : {}) });
 const results = [], errors = [];
@@ -25,7 +25,9 @@ async function open(width) {
   await page.route("**/api/ask", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ answer: "Air scatters blue sunlight more than other colors, so the sky looks blue.", source: "faq" }) }));
   await page.route("https://www.youtube-nocookie.com/**", (route) => route.fulfill({ status: 200, contentType: "text/html", body: "<p>Video player test fixture</p>" }));
   await page.goto(base);
-  await page.getByRole("heading", { name: "Mission Control", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Hi! I'm Bleep!", exact: true }).waitFor();
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("heading", { name: "Tell Bleep About Your Child", exact: true }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   return { page, context };
 }
@@ -49,14 +51,13 @@ async function layout(page, label, width, screenshot = true) {
   await page.mouse.move(1, 1);
   if (screenshot) await page.screenshot({ path: resolve(output, `flow-${label}-${width}.png`), fullPage: true });
 }
-async function setup(page, age = "6–8", first = "Think & learn", location = "At home") {
+async function setup(page, age = "6–8", first = "Learn", location = "At home") {
   await page.getByRole("radio", { name: new RegExp(age) }).check();
   if (age !== "1–2") {
-    await page.getByRole("button", { name: "Next", exact: true }).click();
-    await page.getByRole("button", { name: location, exact: true }).click();
-    await page.getByRole("button", { name: first, exact: true }).click();
+    await page.getByRole("radio", { name: new RegExp(location) }).check();
+    await page.getByRole("radio", { name: first, exact: true }).check();
   }
-  await page.getByRole("button", { name: "See activities", exact: true }).click();
+  await page.getByRole("button", { name: /^Start for / }).click();
   await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
 }
 function tile(page, name) { return page.locator('.activity-grid').getByRole("button", { name: new RegExp(name) }); }
@@ -80,15 +81,14 @@ try {
     for (const width of [390, 1280]) {
       const { page, context } = await open(width);
       await page.getByRole("radio", { name: /6–8/ }).check();
-      await page.getByRole("button", { name: "Next", exact: true }).click();
-      await page.getByRole("button", { name: "Think & learn", exact: true }).click();
+      await page.getByRole("radio", { name: "Learn", exact: true }).check();
       await page.getByRole("link", { name: "Privacy", exact: true }).click();
       await page.getByRole("heading", { name: "Privacy", exact: true }).waitFor();
       await layout(page, "privacy", width);
       await page.getByRole("button", { name: "Back", exact: true }).click();
-      assert(await page.getByText("Step 2 of 2: where and what first", { exact: true }).isVisible());
-      assert.equal(await page.getByRole("button", { name: "Think & learn", exact: true }).getAttribute("aria-pressed"), "true");
-      await page.getByRole("button", { name: "See activities", exact: true }).click();
+      assert(await page.getByRole("heading", { name: "Tell Bleep About Your Child" }).isVisible());
+      assert(await page.getByRole("radio", { name: "Learn", exact: true }).isChecked());
+      await page.getByRole("button", { name: /^Start for / }).click();
       await page.getByRole("link", { name: "Privacy", exact: true }).scrollIntoViewIfNeeded();
       const y = await page.evaluate(() => scrollY);
       await page.getByRole("link", { name: "Privacy", exact: true }).click();
@@ -113,6 +113,8 @@ try {
       await layout(page, "space-preserved", width);
       await page.getByRole("button", { name: "Start exploring" }).click();
       await page.getByRole("button", { name: "Back", exact: true }).click();
+      const leaveSpace = page.getByRole("button", { name: "Leave game", exact: true });
+      if (await leaveSpace.isVisible()) await leaveSpace.click();
       await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
       await context.close();
       pass(`${width}px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub; incoming Space Scale still opens and returns`);
@@ -120,19 +122,16 @@ try {
   } else for (const width of [390, 1280]) {
     const { page, context } = await open(width);
     await layout(page, "welcome", width);
-    assert(await page.getByText("Progress stays on this device", { exact: true }).isVisible());
+    assert(await page.getByText(/Stays on this device/).isVisible());
     await page.getByRole("radio", { name: /6–8/ }).check();
-    await page.getByRole("button", { name: "Next", exact: true }).click();
-    assert(await page.getByText("Step 2 of 2: where and what first", { exact: true }).isVisible());
-    await page.getByRole("button", { name: "← Back", exact: true }).click();
+    assert(await page.getByRole("heading", { name: "Tell Bleep About Your Child" }).isVisible());
     assert(await page.getByRole("radio", { name: /6–8/ }).isChecked());
-    await page.getByRole("button", { name: "Next", exact: true }).click();
-    await page.getByRole("button", { name: "Think & learn", exact: true }).click();
-    await page.getByRole("button", { name: "See activities", exact: true }).click();
+    await page.getByRole("radio", { name: "Learn", exact: true }).check();
+    await page.getByRole("button", { name: /^Start for / }).click();
     await layout(page, "hub", width);
     const start = page.getByRole("region", { name: "Start here", exact: true });
     assert(await start.getByRole("heading", { name: "Ask Mission Control", exact: true }).isVisible());
-    pass(`${width}px: first visit explains the product; two-step setup preserves choices; Learn recommendation is Ask`);
+    pass(`${width}px: first visit explains the product; one-page setup preserves choices; Learn recommendation is Ask`);
 
     const grown = page.getByRole("button", { name: "Grown-ups settings, press and hold for one and a half seconds", exact: true });
     await grown.click();
@@ -146,15 +145,15 @@ try {
     await page.waitForTimeout(900); await page.mouse.up();
     await page.getByRole("heading", { name: "Parent settings", exact: true }).waitFor();
     await layout(page, "settings", width);
-    assert(await page.getByText("Changes apply right away", { exact: true }).isVisible());
-    await page.getByRole("button", { name: "20 min", exact: true }).click();
-    await page.getByRole("button", { name: "Save changes", exact: true }).click();
+    assert(await page.getByRole("heading", { name: "Tell Bleep About Your Child", exact: true }).isVisible());
+    await page.getByRole("radio", { name: "20 min", exact: true }).check();
+    await page.getByRole("button", { name: "Save and show activities", exact: true }).click();
     await page.getByRole("status").filter({ hasText: "Saved ✓" }).waitFor();
     await page.getByRole("status").filter({ hasText: "Saved ✓" }).waitFor({ state: "detached", timeout: 4000 });
     for (const key of ["Enter", "Space"]) {
       await grown.focus(); await page.keyboard.down(key); await page.waitForTimeout(1600); await page.keyboard.up(key);
       await page.getByRole("heading", { name: "Parent settings", exact: true }).waitFor();
-      assert(await page.getByRole("button", { name: "20 min", exact: true }).getAttribute("aria-pressed") === "true");
+      assert(await page.getByRole("radio", { name: "20 min", exact: true }).isChecked());
       await page.getByRole("button", { name: "Back", exact: true }).click();
     }
     pass(`${width}px: short tap/Space do nothing; pointer/Enter/Space hold opens settings; save returns home with a two-second status`);
@@ -198,18 +197,20 @@ try {
     await tile(page, "Scavenger Hunt").click();
     await page.getByRole("button", { name: "Start mission", exact: true }).click();
     await page.waitForTimeout(5100);
-    await page.getByRole("button", { name: "Back", exact: true }).click();
+    const exit = page.getByRole("button", { name: "Hold: Exit", exact: true });
+    await exit.focus(); await page.keyboard.down("Enter"); await page.waitForTimeout(1450); await page.keyboard.up("Enter");
     await page.getByRole("button", { name: "Leave game", exact: true }).click();
     await page.getByRole("heading", { name: "Mission setup", exact: true }).waitFor();
     await page.getByRole("button", { name: "Start mission", exact: true }).click();
     await page.getByRole("button", { name: "Pause", exact: true }).click();
     await page.getByRole("button", { name: "End mission", exact: true }).click();
-    await page.getByRole("heading", { name: "Mission complete.", exact: true }).waitFor();
+    await page.getByRole("heading", { name: /^Way to go, Agent / }).waitFor();
     await layout(page, "mission-results", width);
     await page.getByRole("button", { name: "↻ Play again", exact: true }).click();
     await page.getByRole("region", { name: "Mission", exact: true }).waitFor();
-    await home(page);
-    pass(`${width}px: Mission Back returns to setup after confirmation; mission results offer a fresh replay`);
+    const replayExit = page.getByRole("button", { name: "Hold: Exit", exact: true });
+    await replayExit.focus(); await page.keyboard.down("Enter"); await page.waitForTimeout(1450); await page.keyboard.up("Enter");
+    pass(`${width}px: Mission exit returns to setup after confirmation; mission results offer a fresh replay`);
     await context.close();
 
     const toddler = await open(width);
@@ -223,10 +224,10 @@ try {
     await toddler.page.getByRole("button", { name: "Back", exact: true }).click();
     assert(await toddler.page.locator(".activity-grid button").first().isVisible());
     await home(toddler.page); await toddler.context.close();
-    pass(`${width}px: ages 1–2 skip step two, only see videos, and can return from player to library to hub`);
+    pass(`${width}px: ages 1–2 only see videos, and can return from player to library to hub`);
 
     const preschool = await open(width);
-    await setup(preschool.page, "3–5", "Watch a video");
+    await setup(preschool.page, "3–5", "Watch");
     await layout(preschool.page, "preschool-locked", width);
     assert(await preschool.page.getByRole("region", { name: "Start here", exact: true }).getByRole("heading", { name: "Quiz", exact: true }).isVisible());
     assert.equal(await tile(preschool.page, "Ask Mission Control|Tic-tac-toe|Sketch Artist").count(), 0);
@@ -244,7 +245,7 @@ try {
     pass(`${width}px: preschool video lock routes to quiz, first reward is video, and video remains unlocked`);
 
     const car = await open(width);
-    await setup(car.page, "6–8", "Move & play", "In the car");
+    await setup(car.page, "6–8", "Move", "In the car");
     assert(await car.page.getByRole("region", { name: "Start here", exact: true }).getByRole("heading", { name: "Roadtrip Spy", exact: true }).isVisible());
     await car.context.close();
     pass(`${width}px: In the car + Move recommends Roadtrip Spy`);

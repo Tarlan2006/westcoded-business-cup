@@ -21,7 +21,7 @@ export function Welcome({ onContinue, onToggleSound }: { onContinue: () => void;
   function speakGreeting() {
     if (!sound || heard.current) return;
     heard.current = true;
-    void unlock().then(() => playQueue(["common_intro_01"])).catch(() => {
+    void unlock().then(() => heard.current ? playQueue(["common_intro_01"]) : undefined).catch(() => {
       if (heard.current) void speakFallback(greeting);
     });
   }

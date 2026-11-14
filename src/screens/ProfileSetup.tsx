@@ -27,7 +27,10 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
 }) {
   const [age, setAge] = useState(profile?.ageBand);
   const [codename, setCodename] = useState(profile?.codenameId ?? codenames[0]);
-  const [settings, setSettings] = useState(profile?.preferences ?? defaultPreferences);
+  const [settings, setSettings] = useState(() => {
+    const saved = profile?.preferences ?? defaultPreferences;
+    return profile?.ageBand === "1-2" ? { ...saved, first: "any" as const } : saved;
+  });
   const [nickname, setNickname] = useState(profile?.preferences?.nickname ?? "");
   const [nameError, setNameError] = useState(false);
   const toddler = age === "1-2";

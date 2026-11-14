@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { stopSpeech, unlock } from "./audio/engine";
+import { APP_NAME } from "./brand";
 import { SoundEnabled } from "./audio/sfx";
 import { ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
 import { LeaveGameDialog } from "./components/LeaveGameDialog";
@@ -80,6 +81,8 @@ export default function App() {
   const launchPending = useRef(false);
   const profile = progress.profiles.find((entry) => entry.id === progress.selectedId) ?? progress.profiles[0];
   const privacy = window.location.pathname.replace(/\/$/, "") === "/privacy";
+
+  useEffect(() => { document.title = APP_NAME; }, []);
 
   function toggleSound() {
     const enabled = !sound;

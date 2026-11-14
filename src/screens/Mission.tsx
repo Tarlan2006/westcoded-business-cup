@@ -94,8 +94,8 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
       ...praiseFor(session.mode, profile.ageBand),
       ...session.tasks.flatMap((task) => task.lineIds),
     ];
-    void preload(ids.filter((id) => lineFor(id).file));
-  }, [session, profile.ageBand, profile.lastMode]);
+    if (sound) void preload(ids.filter((id) => lineFor(id).file));
+  }, [sound, session, profile.ageBand, profile.lastMode]);
 
   useEffect(() => {
     if (finished && !delivered.current) {

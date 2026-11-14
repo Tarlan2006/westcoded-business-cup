@@ -12,7 +12,8 @@ export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, 
   exploreOnly: boolean;
 }) {
   const [localSound, setSound] = useState(true);
-  const sound = useSoundEnabled() && localSound;
+  const globalSound = useSoundEnabled();
+  const sound = globalSound && localSound;
   const Game = exploreOnly ? SpaceViewer : SpaceGame;
 
   useEffect(() => () => stopSpeech(), []);
@@ -21,7 +22,7 @@ export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, 
     <main className="sp-host">
       <div className="shell flow-module-header">
         <ActivityHeader title="Space Scale" onBack={onBack}>
-          <button type="button" className="quiet-button" aria-pressed={sound} onClick={() => {
+          <button type="button" className="quiet-button" disabled={!globalSound} aria-pressed={sound} onClick={() => {
             stopSpeech();
             setSound((enabled) => !enabled);
           }}>{sound ? "Fact audio on" : "Fact audio off"}</button>

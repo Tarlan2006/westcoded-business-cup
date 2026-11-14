@@ -14,13 +14,14 @@ function speakClue(text: string) {
 /** Host audio and rewards stay outside the independent game module. */
 export function Sketch({ onBack, onComplete }: Pick<SketchGameProps, "onBack" | "onComplete">) {
   const [localSound, setSound] = useState(true);
-  const sound = useSoundEnabled() && localSound;
+  const globalSound = useSoundEnabled();
+  const sound = globalSound && localSound;
   useEffect(() => () => stopSpeech(), []);
 
   return <main>
     <div className="shell flow-module-header">
       <ActivityHeader title="Sketch Artist" onBack={onBack}>
-        <button type="button" className="quiet-button" aria-pressed={sound} onClick={() => {
+        <button type="button" className="quiet-button" disabled={!globalSound} aria-pressed={sound} onClick={() => {
           stopSpeech();
           setSound((enabled) => !enabled);
         }}>{sound ? "Clue audio on" : "Clue audio off"}</button>
