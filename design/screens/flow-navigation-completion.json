@@ -1,0 +1,17 @@
+{
+  "viewports": [
+    390,
+    1280
+  ],
+  "results": [
+    "390px: one shared header through all Sketch/Space stages, loading exit, Back/Home, XP and keyboard access",
+    "390px: preschool SpaceViewer keeps the shared header and skips the quiz",
+    "390px Scavenger Hunt: clocks freeze; Keep playing/Escape resume only automatic pauses; Back/Home leave without reward; replay is unpaused",
+    "390px Floor is Lava: clocks freeze; Keep playing/Escape resume only automatic pauses; Back/Home leave without reward; replay is unpaused",
+    "1280px: one shared header through all Sketch/Space stages, loading exit, Back/Home, XP and keyboard access",
+    "1280px: preschool SpaceViewer keeps the shared header and skips the quiz",
+    "1280px Scavenger Hunt: clocks freeze; Keep playing/Escape resume only automatic pauses; Back/Home leave without reward; replay is unpaused",
+    "1280px Floor is Lava: clocks freeze; Keep playing/Escape resume only automatic pauses; Back/Home leave without reward; replay is unpaused"
+  ],
+  "browserErrors": []
+}

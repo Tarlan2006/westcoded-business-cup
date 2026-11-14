@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ObjectArt, RocketArt } from "./art/ObjectArt";
 import { Journey } from "./Journey";
 import { Quiz } from "./Quiz";
@@ -8,18 +8,19 @@ export interface SpaceGameProps {
   onComplete: (points: number) => void;
   onBack: () => void;
   speak?: (text: string) => Promise<void> | void;
+  /** Optional host header; null when the host renders its header outside the module. */
+  header?: ReactNode;
 }
 
 type Stage = "intro" | "journey" | "quiz" | "result";
 const journeyPoints = 8;
 
-function SpaceActivity({ onBack, onComplete, speak, exploreOnly }: SpaceGameProps & { exploreOnly: boolean }) {
+function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: SpaceGameProps & { exploreOnly: boolean }) {
   const [stage, setStage] = useState<Stage>("intro");
   const [correct, setCorrect] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const submittedRef = useRef(false);
   const resultTitle = useRef<HTMLHeadingElement>(null);
-  const titleId = useId();
   const points = journeyPoints + correct * 4;
 
   useEffect(() => {
@@ -34,14 +35,14 @@ function SpaceActivity({ onBack, onComplete, speak, exploreOnly }: SpaceGameProp
   }
 
   return (
-    <section className="sp-game" aria-labelledby={titleId}>
-      <header className="sp-topbar">
+    <section className="sp-game" aria-label="Space Scale">
+      {header === undefined ? <header className="sp-topbar">
         <button type="button" className="sp-button sp-button-soft" onClick={onBack} aria-label="Back to activities">
           <span aria-hidden="true">←</span> Back
         </button>
-        <div className="sp-title" id={titleId}>Space Scale</div>
+        <div className="sp-title">Space Scale</div>
         <span className="sp-tag">{stage === "journey" ? "Journey" : stage === "quiz" ? "Quiz" : stage === "result" ? "Results" : "Explore"}</span>
-      </header>
+      </header> : header}
       {stage === "intro" && <div className="sp-intro">
         <div className="sp-intro-copy">
           <h1>How big<br />is <em>space?</em></h1>

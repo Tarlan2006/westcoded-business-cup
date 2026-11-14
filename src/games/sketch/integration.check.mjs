@@ -33,7 +33,7 @@ async function open(ageBand, width = 1280) {
     if (request.url().includes("/api/") || request.method() === "POST") requests.push(request.url());
   });
   await page.goto(base);
-  await page.getByRole("button", { name: "Parent settings" }).waitFor();
+  await page.getByRole("button", { name: "Grown-ups settings, press and hold for one and a half seconds", exact: true }).waitFor();
   await page.evaluate(() => document.fonts.ready);
   return { page, context, chunks };
 }
@@ -56,7 +56,10 @@ try {
     await page.getByRole("button", { name: "Start the case" }).waitFor();
     assert.equal(chunks.filter((url) => url.endsWith(".js")).length, 1);
     assert.equal(chunks.filter((url) => url.endsWith(".css")).length, 1);
-    assert.equal(await page.locator(".sk-host-controls .xp-chip").innerText(), "12 XP");
+    assert.equal(await page.locator(".activity-header .xp-chip").innerText(), "12 XP");
+    assert.equal(await page.locator(".activity-header").count(), 1);
+    assert.equal(await page.locator(".sk-topbar").count(), 0);
+    assert.equal(await page.getByRole("navigation", { name: "Breadcrumb" }).innerText(), "Learn › Sketch Artist");
     await page.getByRole("button", { name: "Start the case" }).click();
     assert((await page.evaluate(() => window.__speech.texts)).some((text) => text.includes("round green mask")));
     const cancellations = await page.evaluate(() => window.__speech.cancellations);
@@ -88,13 +91,13 @@ try {
     assert.equal(after.profiles[0].activities.sketch, 1);
     assert(after.lastFinished);
     assert(!JSON.stringify(after).includes("data:image"));
-    await page.getByRole("button", { name: "Back to activities" }).click();
+    await page.getByRole("button", { name: "Back to activities", exact: true }).click();
     await page.reload();
     await page.getByRole("button", { name: /Sketch Artist/ }).click();
     await page.getByRole("button", { name: "Start the case" }).click();
     const beforeBack = await page.evaluate(() => window.__speech.cancellations);
     await page.getByRole("button", { name: "Back", exact: true }).click();
-    await page.getByRole("button", { name: "Parent settings" }).waitFor();
+    await page.getByRole("button", { name: "Grown-ups settings, press and hold for one and a half seconds", exact: true }).waitFor();
     assert(await page.evaluate(() => window.__speech.cancellations) > beforeBack);
     const afterBack = await page.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")));
     assert.equal(afterBack.profiles[0].xp, after.profiles[0].xp);

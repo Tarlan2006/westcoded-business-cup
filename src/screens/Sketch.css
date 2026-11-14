@@ -1,3 +1,0 @@
-.sk-host-controls { display: flex; justify-content: flex-end; align-items: center; gap: 12px; width: min(1120px, 100%); margin: 0 auto; padding: 12px 32px 0; box-sizing: border-box; }
-@media (max-width: 800px) { .sk-host-controls { padding-inline: 20px; } }
-@media (max-width: 560px) { .sk-host-controls { padding-inline: 12px; } }

@@ -195,7 +195,7 @@ export default function App() {
     }
     if (screen.name === "mission") {
       const { session, profile } = screen;
-      return <Mission key={session.id} session={session} profile={profile} onFinish={(result) => {
+      return <Mission key={session.id} session={session} profile={profile} navigationPaused={pendingNavigation !== null} onFinish={(result) => {
         const memory = result.done ? `Completed ${result.done} rounds in ${session.mode}.` : `Played ${session.mode}.`;
         const updated = rewardActivity(session.id, profile.id, session.mode, result.points, {
           mode: session.mode, memory: result.loreNote || memory,

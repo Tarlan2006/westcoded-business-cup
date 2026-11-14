@@ -29,6 +29,7 @@
 .flow-summary { display: grid; grid-template-columns: 130px minmax(0, 1fr); align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
 .flow-summary h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: .35rem 0 .75rem; }
 .flow-header-navigation { display: flex; align-items: center; gap: .4rem; }
+.shell.flow-module-header { padding-bottom: 0; }
 .flow-home-button { min-width: 48px; padding-inline: .6rem; }
 .flow-header-location { min-width: 0; display: grid; gap: .25rem; padding: .7rem 0; }
 .flow-breadcrumb { max-width: 100%; overflow-x: auto; white-space: nowrap; color: var(--muted); font-size: .7rem; line-height: 1.5; scrollbar-width: thin; }

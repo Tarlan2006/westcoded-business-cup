@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
@@ -22,9 +22,11 @@ interface Props {
   session: Session;
   profile: Profile;
   onFinish: (state: MissionState) => void;
+  /** Temporarily suspend play while the host confirms navigation. */
+  navigationPaused?: boolean;
 }
 
-export function Mission({ session, profile, onFinish }: Props) {
+export function Mission({ session, profile, onFinish, navigationPaused = false }: Props) {
   const [state, dispatch] = useReducer(
     (current: MissionState, action: Parameters<typeof advanceMission>[1]) => advanceMission(current, action, session),
     session, (session) => createMission(session, Date.now()),
@@ -33,7 +35,8 @@ export function Mission({ session, profile, onFinish }: Props) {
   const submittedRound = useRef(0);
   const delivered = useRef(false);
   const avatar = useRef<HTMLDivElement>(null);
-  const paused = state.pausedAt !== null;
+  const navigationOwnsPause = useRef(false);
+  const paused = navigationPaused || state.pausedAt !== null;
   const finished = state.phase === "finished";
   const task = session.tasks[state.taskIndex];
   const isHunt = session.mode === "hunt";
@@ -44,6 +47,21 @@ export function Mission({ session, profile, onFinish }: Props) {
   const running = state.phase === "round" && !paused;
   const freezeHold = task.id === "local_lava_freeze" && state.phaseEndsAt - now > state.phaseDuration - 5000;
   const choices = task.riddle;
+
+  useLayoutEffect(() => {
+    if (navigationPaused) {
+      if (state.pausedAt === null && state.phase !== "resolving" && !finished) {
+        navigationOwnsPause.current = true;
+        dispatch({ type: "pause", now: Date.now() });
+      }
+    } else if (navigationOwnsPause.current) {
+      // Only undo our own pause. A manually paused mission stays paused.
+      navigationOwnsPause.current = false;
+      const now = Date.now();
+      setNow(now);
+      dispatch({ type: "resume", now });
+    }
+  }, [navigationPaused, state.pausedAt, state.phase, finished]);
 
   useEffect(() => {
     if (paused || finished) return;

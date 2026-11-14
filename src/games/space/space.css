@@ -32,12 +32,6 @@
 }
 
 .sp-game *, .sp-game *::before, .sp-game *::after { box-sizing: border-box; }
-.sp-host-controls {
-  display: flex;
-  justify-content: flex-end;
-  width: min(calc(100% - 24px), 950px);
-  margin: 8px auto 0;
-}
 .sp-game h1, .sp-game h2, .sp-game p { margin: 0; }
 .sp-game h1, .sp-game h2, .sp-title {
   font-family: var(--font-heading, ui-rounded, "Trebuchet MS", system-ui, sans-serif);

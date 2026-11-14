@@ -200,7 +200,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
           </nav>
           <div className="sp-journey-actions">
             <button className="sp-button sp-button-soft" type="button" aria-disabled={active === 0}
-              onClick={() => step(-1)}><span aria-hidden="true">←</span> Back</button>
+              onClick={() => step(-1)}><span aria-hidden="true">←</span> Previous stop</button>
             <p className="sp-scroll-hint">Scroll or use ↑ ↓</p>
             <button className="sp-button sp-button-primary" type="button" onClick={active === stopCount ? onFinish : () => step(1)}>
               {active === stopCount ? (exploreOnly ? "Finish journey" : "Start quiz") : "Next"} <span aria-hidden="true">→</span>

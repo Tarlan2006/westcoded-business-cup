@@ -52,7 +52,7 @@ async function referencePixels(svg: SVGSVGElement | null, width: number, height:
   });
 }
 
-export function SketchGame({ onComplete, onBack, speak }: SketchGameProps) {
+export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProps) {
   const [caseFile, setCaseFile] = useState<CaseFile>(() => chooseCase());
   const [stage, setStage] = useState<Stage>("intro");
   const [clueIndex, setClueIndex] = useState(0);
@@ -163,11 +163,11 @@ export function SketchGame({ onComplete, onBack, speak }: SketchGameProps) {
 
   return (
     <section className="sk-game" aria-label="Sketch Artist">
-      <header className="sk-topbar">
+      {header === undefined ? <header className="sk-topbar">
         <button type="button" className="sk-back" onClick={back}><span aria-hidden="true">←</span> Back</button>
         <span className="sk-wordmark"><span className="sk-mark" aria-hidden="true">✎</span> Sketch Artist</span>
         <span className="sk-age">AGES 6–8</span>
-      </header>
+      </header> : header}
       {stage === "intro" && <div className="sk-intro">
         <div className="sk-intro-copy">
           <p className="sk-eyebrow">LITTLE ARTISTS · BIG MYSTERIES</p>

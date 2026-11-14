@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
+import { ActivityHeader } from "../components/ActivityHeader";
 import type { SpaceGameProps } from "../games/space";
 
 const SpaceGame = lazy(() => import("../games/space").then(({ SpaceGame }) => ({ default: SpaceGame })));
@@ -15,17 +16,18 @@ export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, 
 
   return (
     <main>
-      <Suspense fallback={<div className="shell learn-page">
-        <p role="status">Opening Space Scale…</p>
-        <button type="button" className="quiet-button" onClick={onBack}>Back</button>
-      </div>}>
-        <div className="sp-host-controls">
+      <div className="shell flow-module-header">
+        <ActivityHeader title="Space Scale" onBack={onBack}>
           <button type="button" className="quiet-button" aria-pressed={sound} onClick={() => {
             stopSpeech();
             setSound((enabled) => !enabled);
           }}>{sound ? "Fact audio on" : "Fact audio off"}</button>
-        </div>
-        <Game speak={sound ? speakFallback : undefined}
+        </ActivityHeader>
+      </div>
+      <Suspense fallback={<div className="shell learn-page">
+        <p role="status">Opening Space Scale…</p>
+      </div>}>
+        <Game header={null} speak={sound ? speakFallback : undefined}
           onBack={() => { stopSpeech(); onBack(); }}
           onComplete={(points) => { stopSpeech(); onComplete(points); }} />
       </Suspense>

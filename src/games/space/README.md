@@ -12,7 +12,7 @@ npm run dev
 
 Open [the local preview](http://localhost:5173/dev/space-preview.html). Add `?view=1` for the viewer or `?text=1` to hide the speech control. The preview only selects installed English voices marked as local. If no local voice is available, the fact remains on screen. Back and Done display their callback results in the preview.
 
-Use a wheel or swipe over the scene, press ↑ or ↓ while focused inside the journey, tap a stop, or use Back and Next. Select Done to report 8 XP for visiting the last stop, plus 4 XP for each correct answer. The preview can continue offline once it loads. The game does not use storage or external assets.
+Use a wheel or swipe over the scene, press ↑ or ↓ while focused inside the journey, tap a stop, or use Previous stop and Next. Select Done to report 8 XP for visiting the last stop, plus 4 XP for each correct answer. The preview can continue offline once it loads. The game does not use storage or external assets.
 
 ```sh
 node src/games/space/scale.check.ts
