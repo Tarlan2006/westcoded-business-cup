@@ -1,0 +1,28 @@
+{
+  "viewports": [
+    390,
+    1280
+  ],
+  "askApi": "deterministic FAQ fixture; worker unchanged",
+  "video": "embedded player fixture; navigation verified",
+  "physicalPhoneTested": false,
+  "results": [
+    "390px: first visit explains the product; two-step setup preserves choices; Learn recommendation is Ask",
+    "390px: short tap/Space do nothing; pointer/Enter/Space hold opens settings; save returns home with a two-second status",
+    "390px: Ask → topic quiz → confirmed Back restores the same answer; Keep playing leaves the quiz intact",
+    "390px: completed quiz offers Play again and two working Try next choices; replay doesn't duplicate XP",
+    "390px: Mission Back returns to setup after confirmation; mission results offer a fresh replay",
+    "390px: ages 1–2 skip step two, only see videos, and can return from player to library to hub",
+    "390px: preschool video lock routes to quiz, first reward is video, and video remains unlocked",
+    "390px: In the car + Move recommends Roadtrip Spy",
+    "1280px: first visit explains the product; two-step setup preserves choices; Learn recommendation is Ask",
+    "1280px: short tap/Space do nothing; pointer/Enter/Space hold opens settings; save returns home with a two-second status",
+    "1280px: Ask → topic quiz → confirmed Back restores the same answer; Keep playing leaves the quiz intact",
+    "1280px: completed quiz offers Play again and two working Try next choices; replay doesn't duplicate XP",
+    "1280px: Mission Back returns to setup after confirmation; mission results offer a fresh replay",
+    "1280px: ages 1–2 skip step two, only see videos, and can return from player to library to hub",
+    "1280px: preschool video lock routes to quiz, first reward is video, and video remains unlocked",
+    "1280px: In the car + Move recommends Roadtrip Spy"
+  ],
+  "browserErrors": []
+}

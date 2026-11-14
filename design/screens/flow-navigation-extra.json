@@ -1,0 +1,14 @@
+{
+  "viewports": [
+    390,
+    1280
+  ],
+  "askApi": "deterministic FAQ fixture; worker unchanged",
+  "video": "embedded player fixture; navigation verified",
+  "physicalPhoneTested": false,
+  "results": [
+    "390px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub",
+    "1280px: Privacy preserves unfinished form and prior scroll; Memory/Tic-tac-toe Home is guarded; Escape keeps playing; reload returns to saved hub"
+  ],
+  "browserErrors": []
+}
