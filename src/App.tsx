@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { stopSpeech, unlock } from "./audio/engine";
+import { SoundEnabled } from "./audio/sfx";
 import { ActivityNavigation, ActivityXp } from "./components/ActivityHeader";
 import { LeaveGameDialog } from "./components/LeaveGameDialog";
 import { NextUp } from "./components/NextUp";
@@ -21,6 +22,7 @@ import { Sketch } from "./screens/Sketch";
 import { Space } from "./screens/Space";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
+import { Welcome } from "./screens/Welcome";
 import { defaultPreferences, type Preferences } from "./state/preferences";
 import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
 
@@ -60,6 +62,14 @@ export default function App() {
   const current = history[history.length - 1];
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [progress, setProgress] = useState(readProgress);
+  const [sound, setSound] = useState(() => {
+    try { return localStorage.getItem("mission-control.sound") !== "off"; } catch { return true; }
+  });
+  const [welcoming, setWelcoming] = useState(() => {
+    if (new URLSearchParams(window.location.search).get("welcome") === "1") return true;
+    try { return !readProgress().profiles.length && localStorage.getItem("mission-control.welcomed") !== "yes"; }
+    catch { return !readProgress().profiles.length; }
+  });
   const [saved, setSaved] = useState(false);
   useEffect(() => {
     if (!saved) return;
@@ -69,6 +79,25 @@ export default function App() {
   const launchPending = useRef(false);
   const profile = progress.profiles.find((entry) => entry.id === progress.selectedId) ?? progress.profiles[0];
   const privacy = window.location.pathname.replace(/\/$/, "") === "/privacy";
+
+  function toggleSound() {
+    const enabled = !sound;
+    setSound(enabled);
+    if (!enabled) stopSpeech();
+    else void unlock().catch(() => {});
+    try { localStorage.setItem("mission-control.sound", enabled ? "on" : "off"); } catch { /* This tab still works. */ }
+  }
+
+  function continueWelcome() {
+    setWelcoming(false);
+    if (sound) void unlock().catch(() => {});
+    try { localStorage.setItem("mission-control.welcomed", "yes"); } catch { /* This tab still works. */ }
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("welcome")) {
+      url.searchParams.delete("welcome");
+      window.history.replaceState(null, "", url);
+    }
+  }
 
   useEffect(() => {
     setPendingNavigation(null);
@@ -113,7 +142,11 @@ export default function App() {
     item.screen.name === "ask" && history.slice(index + 1).every((next) => next.screen.name === "quiz") ||
     (item.screen.name === "parent" || item.screen.name === "home" && !profile?.preferences) && history.slice(index + 1).every((next) => next.screen.name === "privacy"));
 
-  return <ActivityXp value={profile?.xp}>
+  if (welcoming && !privacy) return <SoundEnabled value={sound}>
+    <Welcome onContinue={continueWelcome} onToggleSound={toggleSound} />
+  </SoundEnabled>;
+
+  return <SoundEnabled value={sound}><ActivityXp value={profile?.xp}>
     <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen) }}>
       {saved && <div className="flow-saved" role="status">Saved ✓</div>}
       {visibleEntries.map((item) => <div key={item.key} data-flow-active={item.key === current.key}
@@ -122,7 +155,7 @@ export default function App() {
         const leave = pendingNavigation; setPendingNavigation(null); leave();
       }} />}
     </ActivityNavigation>
-  </ActivityXp>;
+  </ActivityXp></SoundEnabled>;
 
   function renderScreen(screen: Screen) {
     const preferences = profile?.preferences ?? defaultPreferences;
@@ -144,7 +177,7 @@ export default function App() {
 
     function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch" | "space") {
       if (name === "sketch" && profile.ageBand !== "6-8") return;
-      if (name !== "space") void unlock().catch(() => {});
+      if (sound && name !== "space") void unlock().catch(() => {});
       if (name === "ask") {
         setScreen({ name });
         return;
@@ -164,7 +197,7 @@ export default function App() {
       launchPending.current = true;
       const tasks = tasksFor(mode, selected.ageBand);
       const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: minutes };
-      void unlock().catch(() => {});
+      if (sound) void unlock().catch(() => {});
       setScreen({ name: "mission", profile: selected, session });
     }
 

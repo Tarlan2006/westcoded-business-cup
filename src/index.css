@@ -355,3 +355,44 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @keyframes bleep-sneak { 50% { transform: translateX(5px) rotate(-4deg); } }
 @keyframes bleep-sip { to { transform: rotate(5deg); } }
 @keyframes bleep-giggle { to { transform: translateX(3px); } }
+
+.recon-welcome { min-height: 100svh; display: grid; gap: .85rem; justify-items: center; background: var(--paper); color: var(--bubble-ink); text-align: center; padding: clamp(1rem, 4vw, 2rem); }
+.recon-welcome header { width: min(100%, 740px); min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.recon-welcome header strong { font: 600 1.45rem/1.1 var(--font-heading); }
+.recon-splash { align-content: center; }
+.recon-splash h1 { font-size: clamp(2.6rem, 9vw, 4.75rem); }
+.recon-splash p { color: #50417c; }
+.recon-splash progress { accent-color: #3f9a00; width: min(80vw, 290px); height: 15px; color-scheme: light; }
+.recon-greeting { grid-template-rows: auto 1fr auto; }
+.recon-greeting-stage { display: grid; align-self: center; justify-items: center; gap: .6rem; }
+.recon-greeting .speech-bubble { border: 3px solid #e3d9ff; box-shadow: 0 5px 0 #e3d9ff; }
+.recon-greeting .speech-bubble h1 { font-size: clamp(2rem, 7vw, 3.6rem); }
+.recon-greeting .speech-bubble p { color: #50417c; }
+.welcome-bleep { width: clamp(155px, 35vmin, 285px); }
+.recon-welcome .welcome-sound { background: #f0eaff; color: #402290; border-color: #d5c2ff; }
+.welcome-continue { width: min(100%, 375px); margin-bottom: 9px; text-transform: uppercase; }
+.recon-setup { padding-top: clamp(.65rem, 2vh, 1.4rem); }
+.recon-setup > .wordmark { margin-bottom: .65rem; }
+.recon-form { max-width: 1000px; margin-inline: auto; border: 4px solid var(--border); border-radius: var(--radius-lg); background: var(--card); box-shadow: var(--shadow); padding: clamp(.85rem, 2vw, 1.45rem); }
+.recon-form-heading { display: flex; align-items: center; gap: .7rem; margin-bottom: .75rem; }
+.recon-form-heading h1, .recon-form-heading h2 { font-size: clamp(1.6rem, 4vw, 2.5rem); }
+.recon-form-heading p, .recon-field-hint { color: var(--ink-soft); font-size: .78rem; }
+.recon-form-bleep { flex: 0 0 clamp(42px, 6vw, 67px); }
+.recon-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1rem; align-items: start; }
+.recon-form-grid fieldset { min-width: 0; }
+.recon-nickname { grid-column: 1 / -1; display: grid; gap: .24rem; }
+.recon-nickname input { width: min(100%, 430px); min-height: 48px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg-soft); padding: .55rem .8rem; }
+.recon-nickname input::placeholder { color: var(--muted); }
+.recon-chips { display: flex; flex-wrap: wrap; gap: .33rem; }
+.recon-chips .game-chip, .recon-form .game-segment > span { font-size: .84rem; }
+.recon-form-footer { display: flex; align-items: center; gap: .75rem; margin-top: .85rem; }
+.recon-form-footer .game-button { flex: 1; }
+@media (min-width: 850px) {
+  .recon-nickname { grid-template-columns: minmax(210px, .8fr) minmax(0, 1.2fr); align-items: center; }
+  .recon-nickname .field-label { grid-column: 1 / -1; }
+  .recon-nickname .recon-chips { grid-column: 2; grid-row: 2 / span 2; }
+}
+@media (max-width: 630px) {
+  .recon-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .recon-form-footer { position: sticky; z-index: 1; bottom: 0; padding-bottom: max(.55rem, env(safe-area-inset-bottom)); background: var(--card); }
+}
