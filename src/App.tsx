@@ -1,45 +1,73 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import type { Profile } from "../shared/types";
+import { unlock } from "./audio/engine";
+import { tasksFor } from "./game/content";
+import type { Mission as MissionState, Session } from "./game/mission";
+import { Mission, Results } from "./screens/Mission";
+import { ParentGate, Privacy, Unlock } from "./screens/Parent";
+import { Setup, type SetupOptions } from "./screens/Setup";
+import { finishMission, readProgress, remainingMissions, saveProfile, startMission } from "./state/progress";
+
+type Screen =
+  | { name: "setup" | "unlock" }
+  | { name: "mission"; session: Session; profile: Profile }
+  | { name: "results"; session: Session; profile: Profile; result: MissionState }
+  | { name: "gate"; destination: "unlock" | "setup"; back: Screen };
 
 export default function App() {
-  const [result, setResult] = useState("");
-  const [pending, setPending] = useState(false);
+  const [screen, setScreen] = useState<Screen>({ name: "setup" });
+  const [progress, setProgress] = useState(readProgress);
+  const launchPending = useRef(false);
+  if (window.location.pathname.replace(/\/$/, "") === "/privacy") return <Privacy />;
 
-  async function checkHealth() {
-    setPending(true);
-    setResult("");
-
-    try {
-      const response = await fetch("/api/health", { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Request failed (HTTP ${response.status}).`);
-      }
-      setResult(JSON.stringify(await response.json(), null, 2));
-    } catch (error) {
-      setResult(error instanceof Error ? error.message : "Could not reach the Worker.");
-    } finally {
-      setPending(false);
-    }
+  function openGate(destination: "setup" | "unlock") {
+    setScreen({ name: "gate", destination, back: screen });
   }
 
-  return (
-    <main className="grid min-h-dvh place-items-center bg-slate-950 px-6 py-12 text-slate-100">
-      <section className="w-full max-w-lg rounded-xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Mission Control</h1>
-        <button
-          type="button"
-          className="mt-6 rounded-lg bg-sky-300 px-4 py-2.5 font-semibold text-slate-950 hover:bg-sky-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300 disabled:opacity-60"
-          disabled={pending}
-          onClick={checkHealth}
-        >
-          {pending ? "Checking…" : "Check API health"}
-        </button>
-        <pre
-          role="status"
-          className={result ? "mt-4 rounded-lg bg-slate-950 p-4 text-sm break-words whitespace-pre-wrap" : "sr-only"}
-        >
-          {result}
-        </pre>
-      </section>
-    </main>
-  );
+  function launch(options: SetupOptions) {
+    if (launchPending.current) return;
+    launchPending.current = true;
+    const id = crypto.randomUUID();
+    const usage = startMission(id);
+    if (!usage) {
+      setProgress(readProgress());
+      launchPending.current = false;
+      openGate("unlock");
+      return;
+    }
+    const profile = saveProfile(options.codenameId, options.ageBand);
+    setProgress(readProgress());
+    const tasks = tasksFor(options.mode, options.ageBand);
+    const session: Session = { id, mode: options.mode, tasks, durationMinutes: options.durationMinutes };
+    void unlock().catch(() => {});
+    setScreen({ name: "mission", profile, session });
+  }
+
+  if (screen.name === "mission") {
+    const { session, profile } = screen;
+    return <Mission key={session.id} session={session} profile={profile} onFinish={(result) => {
+      const memory = result.done ? `Completed ${result.done} rounds in ${session.mode}.` : `Played ${session.mode}.`;
+      const updated = finishMission(session.id, profile.id, session.mode, result.points, memory);
+      setProgress(updated);
+      launchPending.current = false;
+      setScreen({
+        name: "results", session, result,
+        profile: updated.profiles.find((entry) => entry.id === profile.id) ?? profile,
+      });
+    }} />;
+  }
+  if (screen.name === "results") {
+    return <Results session={screen.session} profile={screen.profile} state={screen.result} onBack={() => openGate("setup")} />;
+  }
+  if (screen.name === "gate") {
+    return <ParentGate onPass={() => setScreen({ name: screen.destination })} onBack={() => setScreen(screen.back)} />;
+  }
+  if (screen.name === "unlock") return <Unlock onBack={() => setScreen({ name: "setup" })} />;
+
+  return <Setup profiles={progress.profiles} selectedId={progress.selectedId} remaining={remainingMissions(progress)}
+    onStart={launch} onUnlock={() => {
+      const current = readProgress();
+      setProgress(current);
+      if (!remainingMissions(current)) openGate("unlock");
+    }} />;
 }
