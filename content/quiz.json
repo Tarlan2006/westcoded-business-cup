@@ -14,5 +14,13 @@
   { "id": "plant-roots", "ageBand": "6-8", "topic": "nature and water", "question": "Which part of a plant takes in water from the soil?", "emoji": "🌱", "choices": ["Flowers", "Roots", "Fruit"], "answer": "Roots" },
   { "id": "water-clouds", "ageBand": "6-8", "topic": "nature and water", "question": "What are most clouds made of?", "choices": ["Cotton", "Sand", "Tiny water drops or ice crystals"], "answer": "Tiny water drops or ice crystals" },
   { "id": "water-freeze", "ageBand": "6-8", "topic": "nature and water", "question": "What does water become when it freezes?", "emoji": "💧", "choices": ["Ice", "Steam", "Salt"], "answer": "Ice" },
-  { "id": "plant-sun", "ageBand": "6-8", "topic": "nature and water", "question": "What helps a green plant make its food?", "choices": ["Moonlight", "Sunlight", "Sand"], "answer": "Sunlight" }
+  { "id": "plant-sun", "ageBand": "6-8", "topic": "nature and water", "question": "What helps a green plant make its food?", "choices": ["Moonlight", "Sunlight", "Sand"], "answer": "Sunlight" },
+  {"id":"sound-travel","ageBand":"6-8","topic":"bodies and sounds","question":"What carries most sounds from across a room to your ears?","choices":["Air","Light","Shadows"],"answer":"Air"},
+  {"id":"sound-echo","ageBand":"6-8","topic":"bodies and sounds","question":"What do we call a sound that bounces back to us?","choices":["A shadow","An echo","A blink"],"answer":"An echo"},
+  {"id":"body-pump","ageBand":"6-8","topic":"bodies and sounds","question":"What pumps blood around your body?","choices":["Your lungs","Your bones","Your heart"],"answer":"Your heart"},
+  {"id":"animal-gills","ageBand":"6-8","topic":"animals and senses","question":"What helps a fish get oxygen from water?","choices":["Its tail","Its gills","Its eyes"],"answer":"Its gills"},
+  {"id":"animal-change","ageBand":"6-8","topic":"animals and senses","question":"What can a caterpillar grow into?","choices":["A bee","A bird","A butterfly"],"answer":"A butterfly"},
+  {"id":"animal-wing","ageBand":"6-8","topic":"animals and senses","question":"What does a bird move to push air down and fly?","choices":["Its wings","Its beak","Its feet"],"answer":"Its wings"},
+  {"id":"water-puddle","ageBand":"6-8","topic":"nature and water","question":"Where does water from a drying puddle go?","choices":["Into the air","Into sunlight","Into rocks"],"answer":"Into the air"},
+  {"id":"space-gravity","ageBand":"6-8","topic":"sky and space","question":"What pulls a dropped ball toward Earth?","choices":["Moonlight","Gravity","A shadow"],"answer":"Gravity"}
 ]
