@@ -80,6 +80,10 @@ const timerState = (page) => page.locator("#sessionClockDisplay").innerText();
 try {
   for (const width of [390, 1280]) {
     const { page, context } = await open(width);
+    await tile(page, "Memory").click();
+    await page.waitForFunction(() => document.activeElement?.matches(".memory-intro h1"));
+    await home(page);
+    await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
     // The common header must exist even before the lazy game chunk arrives.
     let releaseChunk;
     const chunkGate = new Promise((resolve) => { releaseChunk = resolve; });

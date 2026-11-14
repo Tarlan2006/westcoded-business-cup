@@ -73,6 +73,18 @@ function missionQuizTopic(profile: ChildProfile, preferences: Preferences) {
   return undefined;
 }
 
+function FocusScreenHeading({ active }: { active: boolean }) {
+  useEffect(() => {
+    if (!active) return;
+    const heading = document.querySelector<HTMLElement>('[data-flow-active="true"] h1');
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+    }
+  }, [active]);
+  return null;
+}
+
 export default function App() {
   const [history, setHistory] = useState<HistoryEntry[]>(() => [entry({ name: "home" })]);
   const current = history[history.length - 1];
@@ -116,8 +128,6 @@ export default function App() {
   useEffect(() => {
     setPendingNavigation(null);
     window.scrollTo(0, current.scrollY ?? 0);
-    const heading = document.querySelector<HTMLElement>('[data-flow-active="true"] h1');
-    if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   }, [current.key, welcoming]);
 
   function setScreen(next: Screen, navigation: "push" | "replace" | "from-home" = "push") {
@@ -170,6 +180,7 @@ export default function App() {
         hidden={item.key !== current.key} inert={item.key !== current.key}>
         <Suspense fallback={<LearnPage title="Loading activity…" onBack={goBack}><p role="status">Getting things ready.</p></LearnPage>}>
           {renderScreen(item.screen)}
+          <FocusScreenHeading active={item.key === current.key} />
         </Suspense>
       </div>)}
       {pendingNavigation && <LeaveGameDialog onStay={() => setPendingNavigation(null)} onLeave={() => {

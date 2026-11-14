@@ -1,6 +1,6 @@
-# Mission Control — Bleep
+# MyPal — Bleep
 
-Mission Control is a voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**. [Open the live demo](https://mypal.tarlan-b06.workers.dev).
+MyPal is a voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**. [Open the live demo](https://mypal.tarlan-b06.workers.dev).
 
 ## Flow and activities
 

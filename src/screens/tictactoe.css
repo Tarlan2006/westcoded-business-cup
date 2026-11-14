@@ -1,4 +1,5 @@
-.ttt-shell { max-width: 850px; }
+.ttt-shell { max-width: 850px; padding-top: 12px; }
+.ttt-shell > .topbar.prototype-activity-header { margin-top: 0; }
 .ttt-room {
   display: grid;
   grid-template-areas: "title" "controls" "host" "board" "actions";
@@ -156,10 +157,20 @@
   .ttt-bubble { background: var(--surface); }
 }
 
-@media (max-height: 680px) and (max-width: 739px) {
-  main.ttt-shell { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+@media (max-height: 800px) and (max-width: 739px) {
+  main.ttt-shell { padding-top: 6px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  .ttt-shell .flow-header-location {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   .ttt-room { margin-top: 6px; gap: 6px; }
-  .ttt-board { width: min(100%, 312px); }
+  .ttt-mascot { flex-basis: 54px; }
+  .ttt-board { width: min(100%, 288px); gap: 4px; padding: 6px; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
