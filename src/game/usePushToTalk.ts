@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { transcribe } from "../lib/api";
 import { startRecording, stopRecording } from "../voice/recorder";
-import { within } from "./useBriefing";
 
 type Status = "idle" | "opening" | "recording" | "decoding";
 
@@ -15,14 +14,11 @@ interface Recording {
 
 export type VoiceProblem = "microphone" | "no-speech";
 
-// Missions keep the short defaults; longer answers (a parent's description) can ask
-// for more recording time and a longer wait for the transcript.
 export interface PushToTalkOptions { maxRecordMs?: number; transcribeTimeoutMs?: number }
 
 export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
   onUnavailable?: (problem: VoiceProblem) => void, options: PushToTalkOptions = {}) {
-  const maxRecordMs = options.maxRecordMs ?? 8000;
-  const transcribeTimeoutMs = options.transcribeTimeoutMs ?? 3900;
+  const { maxRecordMs = 8000, transcribeTimeoutMs } = options;
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const current = useRef<Recording | null>(null);
@@ -69,7 +65,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
         try {
           const wav = await stopRecording();
           if (recording.cancel) return;
-          const text = await within(transcribe(wav, transcribeTimeoutMs), transcribeTimeoutMs + 100, "");
+          const text = await transcribe(wav, transcribeTimeoutMs);
           if (recording.cancel) return;
           if (text.trim()) onSubmit.current(text);
           else unavailable("Voice unavailable. Tap I DID IT! to keep playing.", "no-speech");
