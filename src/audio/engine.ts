@@ -115,6 +115,7 @@ export async function unlock(): Promise<void> {
   silent.onended = () => silent.disconnect();
   silent.start();
   void loadManifest();
+  window.setTimeout(() => void loadHostVoice(), 1500);
   await resume;
   updateMusic();
 }
@@ -321,7 +322,127 @@ function changeSpeech(delta: number) {
   updateMusic();
 }
 
+// Live host voice: Kyutai Pocket TTS (CC-BY-4.0) runs in the browser and clones the
+// approved mascot voice (content/voice/host-approved.mp3, "O3 +3") from a short
+// reference clip, so every line, scripted or AI-written, uses the same voice.
+// The reference already carries the +3 semitone pitch and the slower pace.
+// Temperature 0.3 (library default 0.7) keeps the same pitch and intonation but
+// halves the sudden jumps into a squeak (patches/pocket-tts-js+0.1.0.patch).
+export const hostVoice = { reference: "/voice/host-reference.mp3", language: "english_2026-04", temperature: 0.3 };
+
+type PocketModule = typeof import("pocket-tts-js");
+let hostTts: InstanceType<PocketModule["PocketTTS"]> | undefined;
+let hostVoiceId: string | undefined;
+let hostReady: Promise<boolean> | undefined;
+let hostLoaded = false;
+let hostChain: AudioNode | undefined;
+
+// The model is a one-time ~146 MB download; skip it where data or memory is tight.
+function canLoadHostVoice() {
+  if (typeof Worker === "undefined" || typeof WebAssembly === "undefined") return false;
+  const device = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
+  return !device.connection?.saveData && (device.deviceMemory ?? 4) >= 2;
+}
+
+export function loadHostVoice(): Promise<boolean> {
+  hostReady ??= (async () => {
+    if (!canLoadHostVoice()) return false;
+    try {
+      const { PocketTTS } = await import("pocket-tts-js");
+      const tts = new PocketTTS({ language: hostVoice.language, quantized: true, voiceCloning: true,
+        temperature: hostVoice.temperature });
+      await tts.load();
+      const response = await fetch(hostVoice.reference);
+      if (!response.ok) throw new Error("Host voice reference is missing");
+      const decoded = await audioGraph().context.decodeAudioData(await response.arrayBuffer());
+      hostVoiceId = await tts.cloneVoice(decoded.getChannelData(0), { inputSampleRate: decoded.sampleRate, name: "host" });
+      hostTts = tts;
+      return hostLoaded = true;
+    } catch {
+      return false;
+    }
+  })();
+  return hostReady;
+}
+
+function hostOutput(graph: AudioGraph): AudioNode {
+  if (hostChain) return hostChain;
+  const { context } = graph;
+  const highpass = new BiquadFilterNode(context, { type: "highpass", frequency: 120 });
+  const presence = new BiquadFilterNode(context, { type: "peaking", frequency: 3500, Q: 1, gain: 3 });
+  const compressor = new DynamicsCompressorNode(context, { threshold: -20, ratio: 3, attack: 0.005, release: 0.06 });
+  highpass.connect(presence).connect(compressor).connect(graph.speech);
+  return hostChain = highpass;
+}
+
+// The model can stop mid-wave (a rising "…blue?" often does), which clicks; fade the
+// edges of every line.
+function fadeEdges(samples: Float32Array, sampleRate: number) {
+  const fadeIn = Math.min(samples.length, Math.round(0.01 * sampleRate));
+  const fadeOut = Math.min(samples.length, Math.round(0.04 * sampleRate));
+  for (let index = 0; index < fadeIn; index++) samples[index] *= index / fadeIn;
+  for (let index = 0; index < fadeOut; index++) samples[samples.length - 1 - index] *= index / fadeOut;
+}
+
+// Pocket TTS keeps one generation at a time, so lines are synthesized in order.
+let hostQueue: Promise<unknown> = Promise.resolve();
+
+function synthesizeHost(text: string, context: AudioContext): Promise<AudioBuffer> {
+  const job = hostQueue.then(async () => {
+    const chunks: Float32Array[] = [];
+    await hostTts!.generate(text, { voice: hostVoiceId!, onChunk: (audio) => { chunks.push(audio.slice()); } });
+    const speech = new Float32Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
+    if (!speech.length) throw new Error("Host voice produced no audio");
+    let offset = 0;
+    for (const chunk of chunks) {
+      speech.set(chunk, offset);
+      offset += chunk.length;
+    }
+    fadeEdges(speech, hostTts!.sampleRate);
+    const buffer = context.createBuffer(1, speech.length, hostTts!.sampleRate);
+    buffer.copyToChannel(speech as Float32Array<ArrayBuffer>, 0);
+    return buffer;
+  });
+  hostQueue = job.catch(() => {});
+  return job;
+}
+
+async function speakHost(text: string): Promise<void> {
+  const generation = playbackGeneration;
+  const output = audioGraph();
+  await ready(output);
+  const parts = sentences(text);
+  changeSpeech(1);
+  try {
+    let next = synthesizeHost(parts[0], output.context);
+    for (let index = 0; index < parts.length; index++) {
+      const buffer = await next;
+      if (generation !== playbackGeneration) return;
+      if (parts[index + 1]) {
+        next = synthesizeHost(parts[index + 1], output.context);
+        void next.catch(() => {});
+      }
+      await playBuffer(output, buffer, 1, hostOutput(output));
+    }
+  } finally {
+    changeSpeech(-1);
+  }
+}
+
+// True once the mascot's live voice is loaded; recorded clips are then skipped so
+// every line, scripted or AI-written, comes out in the same voice.
+export function hostVoiceReady(): boolean {
+  return hostLoaded;
+}
+
 export function speakFallback(text: string): Promise<void> {
+  if (!text) return Promise.resolve();
+  if (hostLoaded) return speakHost(text).catch(() => speakBrowser(text));
+  void loadHostVoice();
+  return speakBrowser(text);
+}
+
+function speakBrowser(text: string): Promise<void> {
   if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return Promise.resolve();
   // Starting speech before the first await also preserves a user gesture on iOS.
   const voice = pickVoice();

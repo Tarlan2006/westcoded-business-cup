@@ -145,7 +145,9 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
         modeIntro[session.mode],
       ] : []), ...task.lineIds]
       : [];
-  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle");
+  // Timed cues play their recordings at once instead of waiting for the live voice.
+  const timedCue = state.phase === "countdown" || isFeedback;
+  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle", timedCue);
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";

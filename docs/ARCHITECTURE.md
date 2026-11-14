@@ -4,7 +4,8 @@
 flowchart TD
  Client[React client: local profile and progress] --> Worker[Hono / Cloudflare Worker]
  Client --> Clips[Pre-rendered Piper clips]
- Client --> Speech[Installed browser voice]
+ Client --> Host[Live mascot voice: Pocket TTS in the browser]
+ Host --> Speech[Installed browser voice while it loads]
  Worker --> Guard[Origin allowlist + IP buckets + body limits]
  Guard --> Ask[Ask: input checks + short MyPal prompt]
  Ask --> Groq[Groq chat completion]

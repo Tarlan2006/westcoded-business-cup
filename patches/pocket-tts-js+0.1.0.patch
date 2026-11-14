@@ -1,0 +1,38 @@
+diff --git a/node_modules/pocket-tts-js/src/index.d.ts b/node_modules/pocket-tts-js/src/index.d.ts
+index 269ea81..dc1aef0 100644
+--- a/node_modules/pocket-tts-js/src/index.d.ts
++++ b/node_modules/pocket-tts-js/src/index.d.ts
+@@ -19,6 +19,8 @@ export interface PocketTTSOptions {
+   cache?: boolean;
+   /** Override the Cache Storage bucket name. */
+   cacheName?: string;
++  /** Sampling temperature; lower is steadier (fewer pitch breaks). Default 0.7. */
++  temperature?: number;
+ }
+ 
+ export interface BundleInfo {
+diff --git a/node_modules/pocket-tts-js/src/index.js b/node_modules/pocket-tts-js/src/index.js
+index f2d4e06..eccaafc 100644
+--- a/node_modules/pocket-tts-js/src/index.js
++++ b/node_modules/pocket-tts-js/src/index.js
+@@ -47,6 +47,7 @@ export class PocketTTS {
+             maxThreads: options.maxThreads || 8,
+             cache: options.cache !== false,
+             cacheName: options.cacheName || CACHE_NAME,
++            temperature: options.temperature,
+         };
+ 
+         this.worker = null;
+diff --git a/node_modules/pocket-tts-js/src/worker.js b/node_modules/pocket-tts-js/src/worker.js
+index 77e82c0..176f70f 100644
+--- a/node_modules/pocket-tts-js/src/worker.js
++++ b/node_modules/pocket-tts-js/src/worker.js
+@@ -578,7 +578,7 @@ async function generate(text, voiceRef) {
+             if (eosLogit > EOS_THRESHOLD && eosStep == null) eosStep = step;
+             const shouldStop = eosStep != null && step >= eosStep + framesAfterEos;
+ 
+-            const std = Math.sqrt(TEMPERATURE);
++            const std = Math.sqrt(config.temperature ?? TEMPERATURE);
+             const latentData = new Float32Array(latentDim);
+             for (let i = 0; i < latentDim; i++) {
+                 let u = 0;

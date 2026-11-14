@@ -12,10 +12,12 @@
     "check-space": "node src/games/space/scale.check.ts",
     "gen-audio": "node scripts/gen-audio.mjs",
     "deploy": "vite build && wrangler deploy",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "hono": "^4.0.0",
+    "pocket-tts-js": "0.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -27,6 +29,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.3.0",
+    "patch-package": "^8.0.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^5.9.3",
     "vite": "^8.0.0",

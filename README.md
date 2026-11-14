@@ -40,7 +40,7 @@ The Worker tests use mocked providers. Use `/api/health` to check a deployment a
 
 ## Voice clips
 
-MyPal plays pre-rendered Piper MP3s from `public/audio/manifest.json`. Unrecorded lines and live Ask answers use a local browser voice when available. To regenerate clips, install Python and FFmpeg with `libmp3lame`, then run the following commands.
+MyPal speaks with a live mascot voice: Kyutai Pocket TTS runs in the browser and clones the approved reference in `content/voice` (see `host-voice.json`), so scripted lines and Ask answers share one voice. The model downloads once (about 146 MB) and is skipped on Data Saver or low-memory devices. Until it loads, MyPal plays pre-rendered Piper MP3s from `public/audio/manifest.json` and uses a local browser voice for other lines; timed mission cues always use the recordings. `patches/pocket-tts-js+0.1.0.patch` adds a temperature option; 0.3 here (library default 0.7) halves squeaky pitch jumps without changing the voice. To regenerate clips, install Python and FFmpeg with `libmp3lame`, then run the following commands.
 
 ```sh
 python -m pip install piper-tts==1.8.0

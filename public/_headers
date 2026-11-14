@@ -1,0 +1,3 @@
+# External voice model downloads reject the worker asset's Referer.
+/assets/worker-*.js
+  Referrer-Policy: no-referrer

@@ -17,6 +17,8 @@
   "runtime": {
     "engine": "Kyutai Pocket TTS in the browser (pocket-tts-js, INT8 ONNX, CC-BY-4.0)",
     "cloneReference": "public/voice/host-reference.mp3 (0.3–8.6 s of host-approved.mp3, already +3 semitones and x0.85)",
-    "code": "src/audio/engine.ts → hostVoice"
+    "code": "src/audio/engine.ts → hostVoice",
+    "temperature": 0.3,
+    "note": "Library default 0.7 gives squeaky pitch jumps (8% of voiced frames); 0.3 keeps the 304 Hz median and intonation and drops them to 3.5%. Each line gets 10 ms / 40 ms edge fades against clicks."
   }
 }
