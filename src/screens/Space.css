@@ -1,2 +1,48 @@
-.sp-host { position: relative; min-height: 100svh; background: #0b1020; }
-.sp-host-pending { color: #fff; padding: 24px; }
+.sp-host {
+  --sp-header-size: 68px;
+  min-height: 100svh;
+  color: var(--sp-ink, #fff);
+  background: var(--sp-page, #0b1020);
+}
+
+.sp-host-pending { padding: 24px; }
+
+.sp-host .flow-module-header {
+  width: min(calc(100% - 32px), 1152px);
+}
+
+.sp-host .activity-header {
+  min-height: var(--sp-header-size);
+  border-bottom: 0;
+}
+
+.sp-host .activity-header-title { font-size: 20px; }
+.sp-host .flow-header-location { text-align: left; }
+.sp-host .flow-breadcrumb { color: var(--sp-muted, #a9b8f0); }
+
+.sp-host .quiet-button {
+  min-width: 48px;
+  border-color: var(--sp-line-strong, #3a4577);
+  border-radius: 999px;
+  color: var(--sp-icon, #e8edff);
+  background: var(--sp-paper, #141a35);
+}
+
+.sp-host .quiet-button:hover {
+  border-color: var(--sp-accent, #ffd166);
+  background: var(--sp-lavender, #222b52);
+}
+
+.sp-host .xp-chip {
+  color: var(--sp-accent-ink, #1b1f3b);
+  background: var(--sp-accent, #ffd166);
+}
+
+.sp-host .quiet-button:focus-visible { outline-color: var(--sp-accent, #ffd166); }
+
+@media (max-width: 600px) {
+  .sp-host { --sp-header-size: 95px; }
+  .sp-host .flow-module-header { width: calc(100% - 24px); }
+  .sp-host .activity-header { gap: 5px; }
+  .sp-host .flow-header-location { padding: 0 0 5px; text-align: center; }
+}

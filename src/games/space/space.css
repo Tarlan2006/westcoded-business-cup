@@ -49,7 +49,7 @@
 
 .sp-game {
   width: 100%;
-  min-height: 100svh;
+  min-height: calc(100svh - var(--sp-header-size, 0px));
   padding: 0 max(16px, calc((100% - 1152px) / 2));
   background-image: var(--sp-stars);
   color: var(--sp-ink);
@@ -57,12 +57,6 @@
   font: 700 1rem/1.4 var(--font-body, Nunito, system-ui, sans-serif);
 }
 .sp-game *, .sp-game *::before, .sp-game *::after { box-sizing: border-box; }
-.sp-host-controls {
-  position: absolute;
-  top: 10px;
-  right: max(16px, calc((100% - 1152px) / 2));
-  z-index: 2;
-}
 .sp-game h1, .sp-game h2, .sp-game p { margin: 0; }
 .sp-game h1, .sp-game h2, .sp-title {
   font-family: var(--font-heading, ui-rounded, "Trebuchet MS", system-ui, sans-serif);
@@ -86,7 +80,6 @@
   align-items: center;
   gap: 12px;
   min-height: 68px;
-  padding-right: 145px;
 }
 .sp-topbar > button { justify-self: start; }
 .sp-title { font-size: 20px; }
@@ -144,7 +137,7 @@
 .sp-hero-rocket svg, .sp-quiz-rocket svg { display: block; width: 100%; }
 
 .sp-journey {
-  height: max(640px, calc(100svh - 68px));
+  height: max(560px, calc(100svh - var(--sp-header-size, 68px)));
   max-height: 940px;
 }
 
@@ -367,12 +360,11 @@
 
 @media (max-width: 580px) {
   .sp-game { padding-inline: 12px; }
-  .sp-topbar { min-height: 60px; gap: 9px; padding-right: 126px; }
+  .sp-topbar { min-height: 60px; gap: 9px; }
   .sp-title { white-space: nowrap; }
-  .sp-host-controls { top: 6px; right: 12px; }
   .sp-intro { grid-template-columns: 1fr; min-height: 0; padding: 24px; }
   .sp-hero { width: min(86%, 300px); }
-  .sp-journey { height: max(575px, calc(100svh - 60px)); }
+  .sp-journey { height: max(540px, calc(100svh - var(--sp-header-size, 60px))); }
   .sp-stop-buttons { display: none; }
   .sp-stop-picker { display: block; }
   .sp-chevron { width: 48px; height: 48px; }

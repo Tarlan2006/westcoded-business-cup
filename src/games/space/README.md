@@ -27,7 +27,7 @@ In desktop Chrome, a scripted fast scroll across all stops produced a 16.7 ms me
 
 ## Measurements and sources
 
-The `diameterKm` field is the length compared by the game. It means height for the child and mountain, body length for the whale, and diameter for the celestial objects. Labels round the measurements for reading. The camera interpolates the logarithm of length between stops. During a transition, the incoming object fades and grows into view. At rest, the prior object shares the camera scale and uses a 2 px minimum marker.
+The `diameterKm` field is the length compared by the game. It means height for the child and mountain, body length for the whale, and diameter for the celestial objects. Labels round the measurements for reading. The camera interpolates the logarithm of length between stops. Objects share a baseline and a scale, with an 11 px minimum for readability. The Sun beside Betelgeuse is depicted as a glowing 4 px marker.
 
 | Object | Stored size | Source |
 | --- | ---: | --- |
