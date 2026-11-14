@@ -64,9 +64,15 @@ export function Mission({ session, profile, onFinish }: Props) {
   }, [session.mode]);
 
   useEffect(() => {
-    const ids = [...session.tasks.flatMap((task) => task.lineIds), ...praiseFor(session.mode, profile.ageBand)];
-    void preload(ids.slice(0, 24).filter((id) => lineFor(id).file));
-  }, [session, profile.ageBand]);
+    const ids = [
+      modeIntro[session.mode], outroLine, timeUpLine, tryAgainLine,
+      ...(profile.lastMode ? [recallLine[profile.lastMode]] : []),
+      ...(session.mode === "lava" ? [countdownLine] : []),
+      ...praiseFor(session.mode, profile.ageBand),
+      ...session.tasks.flatMap((task) => task.lineIds),
+    ];
+    void preload(ids.filter((id) => lineFor(id).file));
+  }, [session, profile.ageBand, profile.lastMode]);
 
   useEffect(() => onVolumeChange((volume) => {
     avatar.current?.style.setProperty("--voice-level", String(volume));

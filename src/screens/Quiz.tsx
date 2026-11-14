@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
-import { speakFallback, stopSpeech } from "../audio/engine";
+import { useClipSpeech } from "../audio/useClipSpeech";
 import { LearnPage } from "./Home";
 
 export function Quiz({ ageBand, topic, onBack, onComplete }: {
@@ -14,17 +14,18 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
   const [answer, setAnswer] = useState<string>();
   const [points, setPoints] = useState(0);
   const current = quiz[index];
+  const { speak, stop } = useClipSpeech();
+  const clipId = current && ageBand === "3-5" ? `quiz_${current.id}` : undefined;
 
   useEffect(() => {
-    if (current) void speakFallback(current.question);
-    return stopSpeech;
-  }, [current]);
+    if (current) void speak(current.question, clipId);
+  }, [clipId, current, speak]);
 
   function choose(choice: string) {
     if (answer !== undefined) return;
     setAnswer(choice);
     setPoints(points + (choice === current.answer ? 10 : 2));
-    stopSpeech();
+    stop();
   }
 
   return (
@@ -34,8 +35,7 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{current.question}</h2>
         <button type="button" className="quiet-button" onClick={() => {
-          stopSpeech();
-          void speakFallback(current.question);
+          void speak(current.question, clipId);
         }}>Hear it</button>
         <div className="answer-list">
           {current.choices.map((choice) => (
