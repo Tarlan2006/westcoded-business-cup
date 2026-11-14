@@ -26,7 +26,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   const current = quiz[index];
   const { speak, stop } = useClipSpeech();
   const sound = useSoundEnabled();
-  const clipId = current && ageBand === "3-5" ? `quiz_${current.id}` : undefined;
+  const clipId = current && (ageBand === "1-2" || ageBand === "3-5") ? `quiz_${current.id}` : undefined;
   const roundDuration = ageBand === "6-8" && index === 0 ? 40 : 35;
   const roundSeconds = Math.max(0, roundDuration - Math.floor((now - roundStartedAt) / 1000));
   const advanceOnTimeout = useEffectEvent(() => next());

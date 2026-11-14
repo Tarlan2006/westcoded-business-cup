@@ -101,7 +101,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </div>
 
       {age === "1-2" ? <div id="toddlerAutoNotice" className="p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
-        🧸 Toddler Mode (1–2 yrs): Gentle movement videos → {APP_NAME} appears for Clap & Peek-a-Boo!
+        🧸 Toddler Mode (1-2 yrs): Your little cinema opens right away, with a 10-second breather between videos.
       </div> : <fieldset id="parentModeSelectorWrapper" className="space-y-2">
         <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">Choose Session Flow for Your Child</legend>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

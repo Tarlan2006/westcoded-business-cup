@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { APP_NAME } from "../brand";
 import { useSoundEnabled } from "../audio/sfx";
 import { AnimalSounds } from "../components/AnimalSounds";
 import { PrototypeBleep } from "../components/Mascot";
@@ -10,8 +11,9 @@ import "./ToddlerCinema.css";
 const videos = videosFor("1-2");
 const breakMs = 10_000;
 
-export function ToddlerCinema({ name, onParents, onHome, onOpen }: {
+export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
   name: string; onParents: () => void; onHome: () => void; onOpen: (id: string) => void;
+  onPlay: (videoId?: string) => void;
 }) {
   const sound = useSoundEnabled();
   const [index, setIndex] = useState(0);
@@ -128,6 +130,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen }: {
         <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? `Next in ${seconds}s` : "Next adventure →"}</button>
       </div>
     </section>
+    {selected.quizTopic && !waiting && <button type="button" className="toddler-text-button" onClick={() => onPlay(selected.id)}>Explore animal sounds with {APP_NAME} →</button>}
     <section className="toddler-queue" aria-labelledby="toddler-queue-heading">
       <div className="toddler-queue-heading"><h2 id="toddler-queue-heading">Little adventures, lined up</h2><button type="button" role="switch" aria-checked={autoplay} className="toddler-autoplay" onClick={() => {
         setAutoplay((value) => !value);

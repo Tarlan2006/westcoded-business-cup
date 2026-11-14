@@ -22,5 +22,8 @@
   {"id":"animal-change","ageBand":"6-8","topic":"animals and senses","question":"What can a caterpillar grow into?","choices":["A bee","A bird","A butterfly"],"answer":"A butterfly"},
   {"id":"animal-wing","ageBand":"6-8","topic":"animals and senses","question":"What does a bird move to push air down and fly?","choices":["Its wings","Its beak","Its feet"],"answer":"Its wings"},
   {"id":"water-puddle","ageBand":"6-8","topic":"nature and water","question":"Where does water from a drying puddle go?","choices":["Into the air","Into sunlight","Into rocks"],"answer":"Into the air"},
-  {"id":"space-gravity","ageBand":"6-8","topic":"sky and space","question":"What pulls a dropped ball toward Earth?","choices":["Moonlight","Gravity","A shadow"],"answer":"Gravity"}
+  {"id":"space-gravity","ageBand":"6-8","topic":"sky and space","question":"What pulls a dropped ball toward Earth?","choices":["Moonlight","Gravity","A shadow"],"answer":"Gravity"},
+  {"id":"animal-sounds-cow","ageBand":"1-2","topic":"animal sounds","question":"What does the cow say?","emoji":"🐮","choices":["moo","quack","meow"],"answer":"moo"},
+  {"id":"animal-sounds-duck","ageBand":"1-2","topic":"animal sounds","question":"What does the duck say?","emoji":"🦆","choices":["meow","quack","moo"],"answer":"quack"},
+  {"id":"animal-sounds-cat","ageBand":"1-2","topic":"animal sounds","question":"What does the cat say?","emoji":"🐱","choices":["quack","moo","meow"],"answer":"meow"}
 ]
