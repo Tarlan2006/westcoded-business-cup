@@ -114,21 +114,27 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
         <p className="profile-hint mt-1 text-xs">Stays on this device. Never sent to a server.</p>
       </div>
 
-      <div className="profile-goal flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl">
+      <div className="profile-goal p-4 rounded-2xl">
         <div>
           <div className="font-display font-bold text-base" id="quietTimeLabel">How much quiet time do you need?</div>
           <div className="profile-hint text-xs font-bold">{APP_NAME} plays for exactly this long, then stops.</div>
         </div>
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
+        <div className="profile-duration-options" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
           {quietTimeGoals.map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
             onClick={() => { setMinutes(value); setCustom(false); setCustomMinutes(String(value)); uiSound("chirp", sound); }}
-            className="prof-dur-btn profile-choice px-3.5 py-2 rounded-2xl font-display font-bold text-sm">{value}m</button>)}
-          <label className="profile-label flex items-center gap-2 text-xs font-bold">
-            Custom minutes
-            <input type="number" min={1} max={120} step={1} value={customMinutes} data-selected={custom}
-              onFocus={() => setCustom(true)} onChange={event => { setCustom(true); setCustomMinutes(event.target.value); }}
-              className="profile-field profile-custom-time w-20 min-h-12 px-2 rounded-2xl" />
+            className="prof-dur-btn profile-choice rounded-2xl font-display font-bold text-sm">{value} min</button>)}
+          <label className="profile-field profile-custom-time rounded-2xl text-xs font-bold" data-selected={custom}>
+            <input type="text" inputMode="numeric" pattern="(?:[5-9]|[1-8][0-9]|90)" required={custom}
+              aria-label="Custom minutes" aria-describedby="customTimeHint" placeholder="Custom" value={customMinutes}
+              onChange={event => {
+                const value = event.target.value;
+                if (!/^\d*$/.test(value)) return;
+                setCustom(true);
+                setCustomMinutes(value);
+              }} />
+            <span aria-hidden="true">min</span>
           </label>
+          <span id="customTimeHint" className="sr-only">Enter a whole number from 5 to 90 minutes.</span>
         </div>
       </div>
 

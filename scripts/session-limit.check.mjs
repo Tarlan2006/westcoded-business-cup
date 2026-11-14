@@ -110,17 +110,17 @@ async function backToStart(page) {
   assert.equal(await savedSession(page), null);
   assert.equal(await nickname(page).inputValue(), "Comet");
   assert.equal(await interests(page).inputValue(), "Space and animals");
-  assert.equal(await button(page, "20m").getAttribute("aria-pressed"), "true");
+  assert.equal(await button(page, "20 min").getAttribute("aria-pressed"), "true");
   assert.deepEqual(await savedProfile(page), before);
 }
 
 try {
   for (const [width, height] of [[390, 844], [1280, 800]]) {
     const { context, page, errors } = await fresh(width, height);
-    assert.deepEqual(await page.locator("[data-min]").allTextContents(), ["10m", "20m", "30m", "60m"]);
-    assert.equal(await button(page, "20m").getAttribute("aria-pressed"), "true");
+    assert.deepEqual(await page.locator("[data-min]").allTextContents(), ["10 min", "20 min", "30 min", "60 min"]);
+    assert.equal(await button(page, "20 min").getAttribute("aria-pressed"), "true");
     assert.equal(await savedSession(page), null);
-    await button(page, "10m").click();
+    await button(page, "10 min").click();
     await start(page);
     await expectClock(page, "10:00 left");
     const first = await savedSession(page);
@@ -160,12 +160,12 @@ try {
     await page.getByText("Great job, Comet! See you next time!", { exact: true }).waitFor();
     await backToStart(page);
 
-    // Keep the shipped presets and exercise a one-minute session in local QA.
-    await page.getByLabel("Custom minutes").fill("1");
+    // Keep the shipped presets and exercise a five-minute session in local QA.
+    await page.getByLabel("Custom minutes").fill("5");
     await start(page);
-    await expectClock(page, "1:00 left");
+    await expectClock(page, "5:00 left");
     await openVideo(page);
-    await advance(page, 13_000);
+    await advance(page, 253_000);
     await page.reload();
     await hub(page).waitFor();
     await expectClock(page, "0:47 left");
@@ -176,7 +176,7 @@ try {
     assert.equal(await page.locator("iframe.video-player").count(), 1);
     await button(page, "Next video").waitFor();
     assert(await button(page, "Next video").isDisabled());
-    assert(await button(page, /^Play with MyPal/).isDisabled());
+    assert(await button(page, /Play with MyPal/).isDisabled());
     assert.equal(await complete(page).count(), 0);
     if (width === 390) {
       await advance(page, 10_000);
@@ -197,25 +197,25 @@ try {
     await backToStart(page);
 
     // A reload after the deadline shows the result even if grace had not finished before reload.
-    await page.getByLabel("Custom minutes").fill("1");
+    await page.getByLabel("Custom minutes").fill("5");
     await start(page);
     await openVideo(page);
-    await advance(page, 60_001);
+    await advance(page, 300_001);
     await expectClock(page, "0:00 left");
     await page.reload();
     await complete(page).waitFor();
     await backToStart(page);
     assert.deepEqual(errors, []);
     await context.close();
-    console.log(`PASS ${width}×${height}: presets, shared and persisted timer, one spoken reminder, +5 min, early end, one-minute video, grace, expired reload and retained profile`);
+    console.log(`PASS ${width}×${height}: presets, shared and persisted timer, one spoken reminder, +5 min, early end, five-minute video, grace, expired reload and retained profile`);
   }
 
   const { context, page, errors } = await fresh(390, 844);
-  await page.getByLabel("Custom minutes").fill("1");
+  await page.getByLabel("Custom minutes").fill("5");
   await start(page);
   await home(page);
   await hub(page).waitFor();
-  await advance(page, 59_000);
+  await advance(page, 299_000);
   await page.locator(".activity-grid").getByRole("button", { name: /^Scavenger Hunt/ }).click();
   await button(page, "Start game").click();
   await expectClock(page, "0:01 left");
@@ -235,7 +235,7 @@ try {
   const ask = await fresh(390, 844);
   const answer = "The sky looks blue because of the air.";
   await button(ask.page, "6–8 yrs").click();
-  await ask.page.getByLabel("Custom minutes").fill("1");
+  await ask.page.getByLabel("Custom minutes").fill("5");
   await start(ask.page);
   await home(ask.page);
   await ask.page.locator(".activity-grid").getByRole("button", { name: /^Ask MyPal/ }).click();
@@ -246,7 +246,7 @@ try {
     await route.fulfill({ json: { answer, source: "faq" } });
   });
   await ask.page.evaluate((answer) => { window.holdTestSpeech = answer; }, answer);
-  await advance(ask.page, 59_000);
+  await advance(ask.page, 299_000);
   await ask.page.getByRole("textbox", { name: "Your question" }).fill("Why is the sky blue?");
   await button(ask.page, "Ask").click();
   await button(ask.page, "Thinking…").waitFor();

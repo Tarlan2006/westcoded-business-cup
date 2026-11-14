@@ -63,6 +63,42 @@
 .profile-setup .profile-choice:hover { border-color: var(--setup-sky-border); }
 .profile-setup .need-chip[aria-pressed="true"]:hover { border-color: var(--setup-green); }
 .profile-setup .profile-field:focus { border-color: var(--setup-sky-border); }
+.profile-setup .profile-goal {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+.profile-setup .profile-duration-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.profile-setup .profile-duration-options > :is(button, label) {
+  height: 48px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.profile-setup .profile-custom-time { gap: 4px; padding-inline: 6px; }
+.profile-setup .profile-custom-time input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  color: inherit;
+  text-align: center;
+  outline: none;
+}
+.profile-setup .profile-custom-time:focus-within { border-color: var(--setup-sky-border); }
+.profile-setup .profile-custom-time input::placeholder { color: var(--setup-muted); opacity: 1; }
+.profile-setup .profile-setup-form { container-type: inline-size; }
+@container (min-width: 620px) {
+  .profile-setup .profile-goal { grid-template-columns: minmax(0, 1fr) auto; }
+  .profile-setup .profile-duration-options { grid-template-columns: repeat(4, 56px) 96px; }
+}
 .profile-setup .profile-custom-time[data-selected="true"] {
   border-color: var(--setup-sky-border);
   background: var(--setup-sky);
