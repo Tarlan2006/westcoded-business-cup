@@ -117,7 +117,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
     <section className="toddler-now" aria-label="Playback controls">
       <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? "COMING UP NEXT" : "YOUR LITTLE ADVENTURE"}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? "A 10-second breather between every video" : selected.channel}</p></div></div>
       <div className="toddler-controls">
-        {!waiting && !stopped && status !== "error" && <>
+        {!animalTime && !waiting && !stopped && status !== "error" && <>
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
             if (status === "playing") player.current?.pauseVideo();
             else player.current?.playVideo();

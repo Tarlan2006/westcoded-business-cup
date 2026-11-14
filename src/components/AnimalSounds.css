@@ -1,0 +1,15 @@
+.animal-sounds { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; min-height:inherit; text-align:center; padding:16px; background:radial-gradient(ellipse at 50% 30%,#48317e,#171035 80%); color:#fff }
+.animal-sounds h2 { font-size:clamp(24px,4.4vw,40px); margin:0 0 6px; line-height:1.1 }
+.animal-sounds>p:not(.toddler-eyebrow) { font-size:13px; color:#d4c9ee; margin:0 0 12px }
+.animal-sounds-stage { display:flex; align-items:center; justify-content:center; gap:clamp(14px,4vw,40px); margin-bottom:6px }
+.animal-sounds-bleep { width:clamp(80px,12vw,140px) }
+.animal-sounds-animal { font-size:clamp(84px,14vw,150px); line-height:1; animation:animal-pop .5s cubic-bezier(.3,1.6,.5,1) both }
+.animal-sounds-real { animation:animal-pop .5s cubic-bezier(.3,1.6,.5,1) both, animal-wiggle .45s ease-in-out .5s 3 }
+.animal-sounds-dots { display:flex; gap:10px; list-style:none; margin:0; padding:0; font-size:22px }
+.animal-sounds-dots li { opacity:.35; transition:opacity .3s, transform .3s }
+.animal-sounds-dots li[data-state="done"] { opacity:.7 }
+.animal-sounds-dots li[data-state="now"] { opacity:1; transform:scale(1.25) }
+@keyframes animal-pop { from { transform:scale(.3); opacity:0 } to { transform:scale(1); opacity:1 } }
+@keyframes animal-wiggle { 0%,100% { transform:rotate(0) } 25% { transform:rotate(-8deg) scale(1.06) } 75% { transform:rotate(8deg) scale(1.06) } }
+@media(max-width:760px) { .animal-sounds { padding:10px } .animal-sounds>p:not(.toddler-eyebrow) { font-size:11px; margin-bottom:6px } .animal-sounds-dots { font-size:18px } }
+@media(prefers-reduced-motion:reduce) { .animal-sounds * { animation:none!important; transition:none!important } }

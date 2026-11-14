@@ -244,6 +244,34 @@ export function playQueue(ids: string[], opts?: { gapMs?: number }): Promise<voi
   });
 }
 
+// Plays a real recording (an animal sound, not speech) from /audio. It skips the
+// speech bus, so the mascot's mouth stays still, but ducks the music like speech.
+export function playSound(path: string): Promise<void> {
+  const generation = playbackGeneration;
+  return enqueue(async () => {
+    if (generation !== playbackGeneration || !/^\/audio\/[\w/-]+\.mp3$/.test(path)) return;
+    const output = audioGraph();
+    await ready(output);
+    const loading = clips.get(path) ?? (async () => {
+      const response = await fetch(path, { signal: AbortSignal.timeout(3000) });
+      if (!response.ok) throw new Error("Sound is unavailable.");
+      return output.context.decodeAudioData(await response.arrayBuffer());
+    })();
+    clips.set(path, loading);
+    const buffer = await loading.catch((error) => {
+      clips.delete(path);
+      throw error;
+    });
+    if (generation !== playbackGeneration) return;
+    changeSpeech(1);
+    try {
+      await playBuffer(output, buffer, 1, output.context.destination);
+    } finally {
+      changeSpeech(-1);
+    }
+  });
+}
+
 export function playSfx(id: SoundEffect): void {
   if (!graph) return;
   const output = graph;
