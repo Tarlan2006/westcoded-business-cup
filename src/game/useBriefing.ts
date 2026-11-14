@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { hostVoiceReady, playQueue, speakFallback, stopSpeech } from "../audio/engine";
+import { playQueue, speakFallback, stopSpeech } from "../audio/engine";
 import { lineFor } from "./content";
 
 let playback: Promise<void> = Promise.resolve();
@@ -16,7 +16,7 @@ export async function within<T>(promise: Promise<T>, milliseconds: number, fallb
   }
 }
 
-export function useBriefing(ids: string[], paused: boolean, preferClips = false) {
+export function useBriefing(ids: string[], paused: boolean) {
   const [spoken, setSpoken] = useState({ key: "", caption: "", speaking: false });
   const key = ids.join(" ");
 
@@ -29,7 +29,7 @@ export function useBriefing(ids: string[], paused: boolean, preferClips = false)
         const line = lineFor(id);
         setSpoken({ key, caption: line.text, speaking: true });
         try {
-          if (line.file && (preferClips || !hostVoiceReady())) {
+          if (line.file) {
             try {
               await playQueue([id]);
               continue;
@@ -48,7 +48,7 @@ export function useBriefing(ids: string[], paused: boolean, preferClips = false)
       active = false;
       stopSpeech();
     };
-  }, [key, paused, preferClips]);
+  }, [key, paused]);
 
   const fallback = ids.length ? lineFor(ids.at(-1)!).text : "";
   return {

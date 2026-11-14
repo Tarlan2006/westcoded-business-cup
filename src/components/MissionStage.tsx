@@ -13,9 +13,9 @@ export function PrototypeParticles({ icon, count, x = 50, y = 55 }: { icon: stri
     }}>{icon}</span>);
 }
 
-export function MissionStage({ round, total = 3, seconds, clockSeconds, ratio, demoEmoji, demoWord, prop, action, mood,
+export function MissionStage({ heading, round, total = 3, seconds, clockSeconds, ratio, demoEmoji, demoWord, prop, action, mood,
   speaking, prompt, replies, controls, status, onExit, exitDisabled, toolbar, feedback, paused }: {
-  round: number; total?: number; seconds: number; clockSeconds: number; ratio: number;
+  heading?: string; round: number; total?: number; seconds: number; clockSeconds: number; ratio: number;
   demoEmoji: string; demoWord: string; prop?: string; action?: BleepAction; mood: BleepMood; speaking?: boolean;
   prompt: string; replies?: ReactNode; controls: ReactNode; status?: string; onExit: () => void; exitDisabled?: boolean;
   toolbar?: ReactNode; feedback?: boolean; paused?: boolean;
@@ -30,6 +30,7 @@ export function MissionStage({ round, total = 3, seconds, clockSeconds, ratio, d
   const clock = `${Math.floor(clockSeconds / 60)}:${String(clockSeconds % 60).padStart(2, "0")}`;
 
   return <main id="screen-mission" aria-label="Mission" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
+    {heading && <h1 className="sr-only">{heading}</h1>}
     <header className="mission-stats w-full flex items-center justify-between gap-1 bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
       <div className="flex items-center gap-2" id="starProgressContainer" aria-label={`Round ${round}`}>
         {Array.from({ length: total }, (_, index) => <span key={index} aria-hidden="true"

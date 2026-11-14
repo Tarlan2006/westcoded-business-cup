@@ -29,7 +29,7 @@ export function isTurnRequest(value: unknown): value is TurnRequest {
   return !!request && (
     (request.mode === "hunt" || request.mode === "roadtrip" || request.mode === "lava") &&
     (request.ageBand === "3-5" || request.ageBand === "6-8") &&
-    boundedInteger(request.round, 1, 300) && boundedInteger(request.elapsedSec, 0, 1800) &&
+    boundedInteger(request.round, 1, 300) && boundedInteger(request.elapsedSec, 0, 3600) &&
     ids(request.taskLineIds) && ids(request.candidatePraiseIds) && ids(request.candidateNextTaskIds) &&
     typeof request.childSaid === "string" && request.childSaid.length <= maxTranscriptLength &&
     typeof request.loreNote === "string" && request.loreNote.length <= 120

@@ -89,6 +89,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
       case "tic-tac-toe": return onGrid();
       case "sketch": return onSketch();
       case "space": return onSpace();
+      case "toddler":
       case "video": return onWatch();
       default: return onMission(suggestion.activity);
     }

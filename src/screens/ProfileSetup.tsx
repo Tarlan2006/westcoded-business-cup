@@ -27,7 +27,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const [name, setName] = useState(saved?.nickname ?? "");
   const [notes, setNotes] = useState(saved?.notes ?? "");
   const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs ?? ["energy", "screen"]);
-  const [minutes, setMinutes] = useState(saved?.minutes === 10 ? 20 : saved?.minutes ?? defaultPreferences.minutes);
+  const [minutes, setMinutes] = useState(saved?.minutes ?? defaultPreferences.minutes);
   const [flow, setFlow] = useState<(typeof sessionFlows)[number]["value"]>(saved?.first === "active" ? "active" : "learn");
   const sound = useSoundEnabled();
   const code = profile?.codenameId ?? codenames.find((id) => !profiles.some((item) => item.codenameId === id)) ?? codenames[0];
@@ -92,7 +92,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
           <div className="text-xs font-bold text-indigo-300">Bleep paces missions to match your break</div>
         </div>
         <div className="flex items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
-          {quietTimeGoals.map((value) => <button key={value} type="button" data-min={value} aria-pressed={minutes === value}
+          {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={minutes === value}
             onClick={() => { setMinutes(value); uiSound("chirp", sound); }}
             className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value}m</button>)}
         </div>

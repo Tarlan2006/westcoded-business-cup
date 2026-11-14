@@ -5,16 +5,20 @@ import { useClipSpeech } from "../audio/useClipSpeech";
 import { useSoundEnabled } from "../audio/sfx";
 import { GameButton } from "../components/GameUI";
 import { LearnPage } from "./Home";
+import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 
-export function Quiz({ ageBand, topic, onBack, onComplete }: {
-  ageBand: AgeBand; topic?: string; onBack: () => void; onComplete: (points: number) => void;
+export function Quiz({ ageBand, topic, missionMinutes, onBack, onComplete, onExit = onBack }: {
+  ageBand: AgeBand; topic?: string; missionMinutes?: number; onBack: () => void; onComplete: (points: number) => void; onExit?: () => void;
 }) {
   const bank = questions.filter((question) => question.ageBand === ageBand);
   const matching = bank.filter((question) => question.topic === topic);
-  const quiz = topic ? [...matching, ...bank.filter((question) => question.topic !== topic)].slice(0, 3) : bank;
+  const ordered = topic ? [...matching, ...bank.filter((question) => question.topic !== topic)] : bank;
+  const quiz = topic || missionMinutes ? ordered.slice(0, 3) : ordered;
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState<string>();
   const [points, setPoints] = useState(0);
+  const [startedAt] = useState(Date.now);
+  const [now, setNow] = useState(startedAt);
   const current = quiz[index];
   const { speak, stop } = useClipSpeech();
   const sound = useSoundEnabled();
@@ -25,11 +29,43 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
     return stop;
   }, [clipId, current, sound, speak, stop]);
 
+  useEffect(() => {
+    if (!missionMinutes) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [missionMinutes]);
+
   function choose(choice: string) {
     if (answer !== undefined) return;
     setAnswer(choice);
     setPoints(points + (choice === current.answer ? 10 : 2));
     stop();
+  }
+
+  function next() {
+    if (index === quiz.length - 1) onComplete(points);
+    else {
+      setAnswer(undefined);
+      setIndex(index + 1);
+    }
+  }
+
+  if (current && missionMinutes) {
+    const seconds = Math.max(0, missionMinutes * 60 - Math.floor((now - startedAt) / 1000));
+    return <MissionStage heading="Quiz" round={index + 1} total={quiz.length} seconds={seconds} clockSeconds={seconds} ratio={seconds / (missionMinutes * 60)}
+      demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord="QUIZ!" prop="💭"
+      action={answer === undefined ? "wave" : "clap"} mood={answer === undefined ? "detective" : "excited"} onExit={onExit}
+      prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}
+      feedback={answer !== undefined}
+      replies={current.choices.map((choice) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
+        data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{choice}</button>)}
+      controls={<>
+        <button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E]`} disabled={answer === undefined} onClick={next}>
+          {index === quiz.length - 1 ? "Finish quiz" : "Next question"}
+        </button>
+        <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined}
+          onClick={() => { void speak(current.question, clipId); }}>🔊 Hear it</button>
+      </>} />;
   }
 
   return (
@@ -50,13 +86,7 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
         </div>
         {answer !== undefined && <>
           <p role="status">{answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}</p>
-          <GameButton onClick={() => {
-            if (index === quiz.length - 1) onComplete(points);
-            else {
-              setAnswer(undefined);
-              setIndex(index + 1);
-            }
-          }}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</GameButton>
+          <GameButton onClick={next}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</GameButton>
         </>}
       </section>}
     </LearnPage>

@@ -144,7 +144,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
         modeIntro[session.mode],
       ] : []), ...task.lineIds]
       : [];
-  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle", true);
+  const { caption, speaking } = useBriefing(briefing, !sound || paused || voice.status !== "idle");
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";

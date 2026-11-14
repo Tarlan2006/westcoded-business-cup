@@ -23,19 +23,21 @@ import { Setup } from "./screens/Setup";
 import { Sketch } from "./screens/Sketch";
 import { Space } from "./screens/Space";
 import { TicTacToe } from "./screens/TicTacToe";
+import { ToddlerMission } from "./screens/ToddlerMission";
 import { VideoCatalog } from "./screens/VideoCatalog";
 import { Welcome } from "./screens/Welcome";
-import { topicsFromInterests } from "../shared/topics";
+import type { TopicId } from "../shared/topics";
 import { defaultPreferences, type Preferences } from "./state/preferences";
-import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
+import { readProgress, rewardActivity, saveProfile, updateProfile, type ChildProfile } from "./state/progress";
 
 type Screen =
   | { name: "home" | "parent" | "ask" | "privacy" }
   | { name: "setup"; mode: Mode }
-  | { name: "quiz"; id: string; topic?: string }
+  | { name: "quiz"; id: string; topic?: string; afterVideo?: boolean }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
-  | { name: "reward"; points: number; video: boolean; activity: Activity; topic?: string }
+  | { name: "reward"; points: number; activity: Activity; topic?: string; afterVideo?: boolean }
   | { name: "video"; id: string }
+  | { name: "toddler"; id: string }
   | { name: "mission"; session: Session; profile: Profile }
   | { name: "results"; session: Session; profile: Profile; result: MissionState };
 
@@ -48,6 +50,7 @@ function breadcrumb(screen: Screen): string {
     case "setup": return `Move › ${MODES[screen.mode].name} › Setup`;
     case "mission": return `Move › ${MODES[screen.session.mode].name}`;
     case "results": return `Move › ${MODES[screen.session.mode].name} › Results`;
+    case "toddler": return "Watch › Play with Bleep";
     case "quiz": return screen.topic ? "Learn › Ask Mission Control › Quick quiz" : "Learn › Quiz";
     case "memory": return "Learn › Memory";
     case "ask": return "Learn › Ask Mission Control";
@@ -58,6 +61,13 @@ function breadcrumb(screen: Screen): string {
     case "video": return "Watch › Video library";
     default: return "Activities";
   }
+}
+
+function missionQuizTopic(profile: ChildProfile, preferences: Preferences) {
+  if (preferences.needs?.includes("habits") && profile.ageBand === "6-8") return "nature and water";
+  if (preferences.needs?.includes("science")) return profile.ageBand === "6-8" ? "sky and space" : "shapes";
+  if (preferences.needs?.includes("listening") && profile.ageBand === "3-5") return "animals";
+  return undefined;
 }
 
 export default function App() {
@@ -107,12 +117,13 @@ export default function App() {
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   }, [current.key, welcoming]);
 
-  function setScreen(next: Screen, replaceCurrent = false) {
+  function setScreen(next: Screen, replaceCurrent = false, resetHome = false) {
     stopSpeech();
     if (next.name !== "mission") launchPending.current = false;
     const previousScroll = window.scrollY;
     setHistory((previous) => {
       if (next.name === "home") return [entry(next)];
+      if (resetHome) return [entry({ name: "home" }), entry(next)];
       if (replaceCurrent) return [...previous.slice(0, -1), entry(next)];
       // A finished activity is never a resumable game in the Back stack.
       if (next.name === "reward" || next.name === "results" ||
@@ -142,6 +153,7 @@ export default function App() {
   // Games with timers are never retained behind another screen.
   const visibleEntries = history.filter((item, index) => index === history.length - 1 ||
     item.screen.name === "ask" && history.slice(index + 1).every((next) => next.screen.name === "quiz") ||
+    item.screen.name === "video" && history.slice(index + 1).every((next) => next.screen.name === "parent" || next.screen.name === "privacy") ||
     (item.screen.name === "parent" || item.screen.name === "home" && !profile?.preferences) && history.slice(index + 1).every((next) => next.screen.name === "privacy"));
 
   if (welcoming && !privacy) return <SoundEnabled value={sound}><PrototypeFrame>
@@ -165,11 +177,20 @@ export default function App() {
     if (privacy || screen.name === "privacy") return <Privacy onBack={privacy ? undefined : goBack} />;
 
     function chooseProfile(codenameId: string, ageBand: AgeBand, choices: Preferences) {
-      if (screen.name === "parent") setSaved(true);
-      setProgress(profile
+      const updated = profile
         ? updateProfile(profile.id, codenameId, ageBand, choices)
-        : saveProfile(codenameId, ageBand, choices));
-      goHome();
+        : saveProfile(codenameId, ageBand, choices);
+      const selected = updated.profiles.find((entry) => entry.id === updated.selectedId);
+      setProgress(updated);
+      if (!selected) return;
+      if (screen.name === "parent") {
+        setSaved(true);
+        setScreen({ name: "home" });
+      } else if (ageBand !== "1-2" && choices.first === "active") {
+        launch(choices.location === "car" ? "roadtrip" : "hunt", selected, choices.minutes, true);
+      } else {
+        setScreen({ name: "video", id: crypto.randomUUID() }, false, true);
+      }
     }
 
     if (!profile?.preferences || screen.name === "parent") {
@@ -188,24 +209,25 @@ export default function App() {
       setScreen(name === "quiz" ? { name: "quiz", id } : { name, id });
     }
 
-    function earn(id: string, activity: Activity, points: number, video = false) {
+    function earn(id: string, activity: Activity, points: number) {
       if (!profile) return;
       setProgress(rewardActivity(id, profile.id, activity, points));
-      setScreen({ name: "reward", points, video, activity, topic: screen.name === "quiz" ? screen.topic : undefined });
+      setScreen({ name: "reward", points, activity, topic: screen.name === "quiz" ? screen.topic : undefined,
+        afterVideo: screen.name === "quiz" && screen.afterVideo });
     }
 
-    function launch(mode: Mode, selected: Profile, minutes: number) {
+    function launch(mode: Mode, selected: Profile, minutes: number, resetHome = false) {
       if (launchPending.current || selected.ageBand === "1-2") return;
       launchPending.current = true;
       const tasks = tasksFor(mode, selected.ageBand);
       const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: minutes };
       if (sound) void unlock().catch(() => {});
-      setScreen({ name: "mission", profile: selected, session });
+      setScreen({ name: "mission", profile: selected, session }, false, resetHome);
     }
 
     function openActivity(activity: Activity, topic?: string) {
       if (activity === "hunt" || activity === "roadtrip" || activity === "lava") setScreen({ name: "setup", mode: activity });
-      else if (activity === "video") setScreen({ name: "video", id: crypto.randomUUID() });
+      else if (activity === "video" || activity === "toddler") setScreen({ name: "video", id: crypto.randomUUID() });
       else if (activity === "quiz" && topic) setScreen({ name: "quiz", id: crypto.randomUUID(), topic });
       else startLearn(activity);
     }
@@ -236,17 +258,23 @@ export default function App() {
     if (screen.name === "results") {
       return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome}
         onReplay={() => launch(screen.session.mode, profile, screen.session.durationMinutes)}>
+        {screen.session.mode === "roadtrip" && <p className="text-center text-sm text-indigo-200">Player 1: {screen.result.players[0]} · Player 2: {screen.result.players[1]}</p>}
         {nextUp(screen.session.mode, () => launch(screen.session.mode, profile, screen.session.durationMinutes))}
       </MissionSummary>;
     }
+    if (screen.name === "toddler" && profile.ageBand === "1-2") {
+      return <ToddlerMission key={screen.id} minutes={preferences.minutes} onExit={() => setScreen({ name: "parent" }, true)}
+        onComplete={(points) => earn(screen.id, "toddler", points)} />;
+    }
     if (screen.name === "ask" && profile.ageBand === "6-8") {
-      return <Ask topics={topicsFromInterests(preferences.interests)} onBack={goBack} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
+      const topics: TopicId[] = preferences.needs?.includes("science") ? ["space", "animals"] : preferences.needs?.includes("listening") ? ["music"] : [];
+      return <Ask topics={topics} onBack={goBack} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
         onQuiz={(topic) => setScreen({ name: "quiz", id: crypto.randomUUID(), topic })} />;
     }
     if (screen.name === "quiz" && profile.ageBand !== "1-2") {
       return <Quiz key={screen.id} ageBand={profile.ageBand} topic={screen.topic}
-        onBack={goBack}
-        onComplete={(points) => earn(screen.id, "quiz", points, profile.ageBand === "3-5")} />;
+        onBack={goBack} missionMinutes={screen.afterVideo ? preferences.minutes : undefined}
+        onExit={() => setScreen({ name: "parent" }, true)} onComplete={(points) => earn(screen.id, "quiz", points)} />;
     }
     if (screen.name === "memory" && profile.ageBand !== "1-2") {
       return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
@@ -272,15 +300,23 @@ export default function App() {
         onComplete={(points) => earn(screen.id, "space", points)} />;
     }
     if (screen.name === "reward") {
+      if (screen.afterVideo || screen.activity === "toddler") return <MissionSummary profile={profile} points={screen.points} onHome={goHome}
+        onReplay={() => openActivity("video")}>
+        {nextUp(screen.activity, () => openActivity("video"))}
+      </MissionSummary>;
       return <LearnPage title="Nice work, agent!" onBack={goHome}>
         <RewardCard profile={profile} points={screen.points} />
         {nextUp(screen.activity, () => openActivity(screen.activity, screen.topic))}
       </LearnPage>;
     }
-    if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
+    if (screen.name === "video") {
       return <VideoCatalog ageBand={profile.ageBand} name={preferences.nickname ?? codenameFor(profile.codenameId)} onHome={goHome}
         onParents={() => setScreen({ name: "parent" })} onOpen={(video) => setProgress(rewardActivity(`${screen.id}:${video}`, profile.id, "video", 5))}
-        onPlay={() => profile.ageBand === "1-2" ? goHome() : startLearn("quiz")} />;
+        onPlay={() => {
+          if (sound) void unlock().catch(() => {});
+          const id = crypto.randomUUID();
+          setScreen(profile.ageBand === "1-2" ? { name: "toddler", id } : { name: "quiz", id, afterVideo: true, topic: missionQuizTopic(profile, preferences) });
+        }} />;
     }
     return <Hub profile={profile} preferences={preferences} onToggleSound={toggleSound} onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
       onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={(topic) => openActivity("quiz", topic)}

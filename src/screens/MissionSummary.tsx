@@ -15,7 +15,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
   const name = profile.preferences?.nickname ?? codenameFor(profile.codenameId);
   const sessions = profile.garageSessions ?? 0;
   const part = partForSession(sessions);
-  useBriefing([outroLine], !sound, true);
+  useBriefing([outroLine], !sound);
   useEffect(() => uiSound("win", sound), [sound]);
 
   return <main id="screen-complete" className="prototype-screen relative flex-1 w-full max-w-3xl mx-auto px-4 py-4 flex flex-col items-center justify-center text-center z-10">

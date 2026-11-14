@@ -54,13 +54,9 @@ function audioGraph(): AudioGraph {
 // warm US female voices that sit close to the recorded Piper clips.
 export const browserVoice = {
   preferred: [
-    "Microsoft Ava Online (Natural)",
-    "Microsoft Aria Online (Natural)",
-    "Microsoft Jenny Online (Natural)",
     "Ava (Premium)",
     "Ava (Enhanced)",
     "Samantha (Enhanced)",
-    "Google US English",
     "Samantha",
     "Ava",
     "Microsoft Zira",
@@ -78,14 +74,15 @@ function pickVoice(): SpeechSynthesisVoice | null {
   const voices = window.speechSynthesis.getVoices();
   // Chrome fills the list asynchronously; try again on the next call.
   if (!voices.length) return null;
-  const english = voices.filter((voice) => voice.lang.replace("_", "-").toLowerCase() === "en-us");
+  const local = voices.filter((voice) => voice.localService);
+  const english = local.filter((voice) => voice.lang.replace("_", "-").toLowerCase() === "en-us");
   chosenVoice = null;
   for (const name of browserVoice.preferred) {
     const match = english.find((voice) => voice.name === name) ??
       english.find((voice) => voice.name.startsWith(name));
     if (match) return chosenVoice = match;
   }
-  return chosenVoice = english.find((voice) => voice.default) ?? english[0] ?? null;
+  return chosenVoice = english.find((voice) => voice.default) ?? english[0] ?? local[0] ?? null;
 }
 
 if (typeof window !== "undefined" && "speechSynthesis" in window) {
@@ -96,17 +93,19 @@ if (typeof window !== "undefined" && "speechSynthesis" in window) {
 }
 
 function sentences(text: string): string[] {
-  // Chrome's online voices stop after about 15 seconds, so speak one sentence at a time.
   const parts = text.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*["”)]?\s*/g) ?? [text];
   return parts.map((part) => part.trim()).filter(Boolean);
 }
 
 export async function unlock(): Promise<void> {
   if (!graph && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined") {
-    pickVoice();
-    const silentSpeech = new SpeechSynthesisUtterance(" ");
-    silentSpeech.volume = 0;
-    window.speechSynthesis.speak(silentSpeech);
+    const voice = pickVoice();
+    if (voice) {
+      const silentSpeech = new SpeechSynthesisUtterance(" ");
+      silentSpeech.voice = voice;
+      silentSpeech.volume = 0;
+      window.speechSynthesis.speak(silentSpeech);
+    }
   }
   const { context, speech } = audioGraph();
   const resume = context.resume();
@@ -116,7 +115,6 @@ export async function unlock(): Promise<void> {
   silent.onended = () => silent.disconnect();
   silent.start();
   void loadManifest();
-  window.setTimeout(() => void loadHostVoice(), 1500);
   await resume;
   updateMusic();
 }
@@ -323,113 +321,15 @@ function changeSpeech(delta: number) {
   updateMusic();
 }
 
-// Live host voice: Kyutai Pocket TTS (CC-BY-4.0) runs in the browser and clones the
-// approved mascot voice (content/voice/host-approved.mp3, "O3 +3") from a short
-// reference clip, so every line, scripted or AI-written, uses the same voice.
-// The reference already carries the +3 semitone pitch and the slower pace.
-export const hostVoice = { reference: "/voice/host-reference.mp3", language: "english_2026-04" };
-
-type PocketModule = typeof import("pocket-tts-js");
-let hostTts: InstanceType<PocketModule["PocketTTS"]> | undefined;
-let hostVoiceId: string | undefined;
-let hostReady: Promise<boolean> | undefined;
-let hostLoaded = false;
-let hostChain: AudioNode | undefined;
-
-export function loadHostVoice(): Promise<boolean> {
-  hostReady ??= (async () => {
-    if (typeof Worker === "undefined" || typeof WebAssembly === "undefined") return false;
-    try {
-      const { PocketTTS } = await import("pocket-tts-js");
-      const tts = new PocketTTS({ language: hostVoice.language, quantized: true, voiceCloning: true });
-      await tts.load();
-      const response = await fetch(hostVoice.reference);
-      if (!response.ok) throw new Error("Host voice reference is missing");
-      const decoded = await audioGraph().context.decodeAudioData(await response.arrayBuffer());
-      hostVoiceId = await tts.cloneVoice(decoded.getChannelData(0), { inputSampleRate: decoded.sampleRate, name: "host" });
-      hostTts = tts;
-      return hostLoaded = true;
-    } catch {
-      return false;
-    }
-  })();
-  return hostReady;
-}
-
-function hostOutput(graph: AudioGraph): AudioNode {
-  if (hostChain) return hostChain;
-  const { context } = graph;
-  const highpass = new BiquadFilterNode(context, { type: "highpass", frequency: 120 });
-  const presence = new BiquadFilterNode(context, { type: "peaking", frequency: 3500, Q: 1, gain: 3 });
-  const compressor = new DynamicsCompressorNode(context, { threshold: -20, ratio: 3, attack: 0.005, release: 0.06 });
-  highpass.connect(presence).connect(compressor).connect(graph.speech);
-  return hostChain = highpass;
-}
-
-// Pocket TTS keeps one generation at a time, so lines are synthesized in order.
-let hostQueue: Promise<unknown> = Promise.resolve();
-
-function synthesizeHost(text: string, context: AudioContext): Promise<AudioBuffer> {
-  const job = hostQueue.then(async () => {
-    const chunks: Float32Array[] = [];
-    await hostTts!.generate(text, { voice: hostVoiceId!, onChunk: (audio) => { chunks.push(audio.slice()); } });
-    const length = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-    if (!length) throw new Error("Host voice produced no audio");
-    const buffer = context.createBuffer(1, length, hostTts!.sampleRate);
-    let offset = 0;
-    for (const chunk of chunks) {
-      buffer.copyToChannel(chunk as Float32Array<ArrayBuffer>, 0, offset);
-      offset += chunk.length;
-    }
-    return buffer;
-  });
-  hostQueue = job.catch(() => {});
-  return job;
-}
-
-async function speakHost(text: string): Promise<void> {
-  const generation = playbackGeneration;
-  const output = audioGraph();
-  await ready(output);
-  const parts = sentences(text);
-  changeSpeech(1);
-  try {
-    let next = synthesizeHost(parts[0], output.context);
-    for (let index = 0; index < parts.length; index++) {
-      const buffer = await next;
-      if (generation !== playbackGeneration) return;
-      if (parts[index + 1]) {
-        next = synthesizeHost(parts[index + 1], output.context);
-        void next.catch(() => {});
-      }
-      await playBuffer(output, buffer, 1, hostOutput(output));
-    }
-  } finally {
-    changeSpeech(-1);
-  }
-}
-
-// True once the mascot's live voice is loaded; recorded clips are then skipped so
-// every line, scripted or AI-written, comes out in the same voice.
-export function hostVoiceReady(): boolean {
-  return hostLoaded;
-}
-
 export function speakFallback(text: string): Promise<void> {
-  if (!text) return Promise.resolve();
-  if (hostLoaded) return speakHost(text).catch(() => speakBrowser(text));
-  void loadHostVoice();
-  return speakBrowser(text);
-}
-
-function speakBrowser(text: string): Promise<void> {
-  if (!text || !("speechSynthesis" in window)) return Promise.resolve();
+  if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return Promise.resolve();
   // Starting speech before the first await also preserves a user gesture on iOS.
   const voice = pickVoice();
+  if (!voice) return Promise.resolve();
   const utterances = sentences(text).map((part) => {
     const utterance = new SpeechSynthesisUtterance(part);
     utterance.lang = browserVoice.lang;
-    if (voice) utterance.voice = voice;
+    utterance.voice = voice;
     utterance.rate = browserVoice.rate;
     utterance.pitch = browserVoice.pitch;
     utterance.volume = browserVoice.volume;

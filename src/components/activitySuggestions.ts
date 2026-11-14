@@ -17,8 +17,7 @@ export function availableActivities(profile: ChildProfile, preferences: Preferen
   const moves = activeModes(preferences.location).map((mode) => ({ activity: mode, title: MODES[mode].name, description: MODES[mode].description, icon: MODES[mode].icon }));
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
     { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "×" }] : [];
-  const unlocked = profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0;
-  return [quiz, memory, ...older, spaceGameMeta, ...moves, ...(unlocked ? [video] : [])];
+  return [quiz, memory, ...older, spaceGameMeta, ...moves, video];
 }
 
 export function startingActivity(profile: ChildProfile, preferences: Preferences): ActivitySuggestion {
@@ -27,10 +26,7 @@ export function startingActivity(profile: ChildProfile, preferences: Preferences
   const priorities = preferences.needs ?? [];
   const interests = preferences.interests ?? [];
   const options = availableActivities(profile, preferences);
-  if (first === "watch") {
-    return profile.ageBand === "3-5" && !(profile.activities?.quiz ?? 0)
-      ? { ...quiz, description: "Finish a quiz to unlock a video to watch together." } : video;
-  }
+  if (first === "watch") return video;
   if (first === "learn") {
     if (priorities.includes("habits")) {
       const habits = quizBank.find((item) => item.ageBand === profile.ageBand &&
@@ -52,10 +48,9 @@ export function startingActivity(profile: ChildProfile, preferences: Preferences
 export function orderedGroups(profile: ChildProfile, { first, needs = [], interests = [] }: Preferences): ActivityGroup[] {
   if (profile.ageBand === "1-2") return ["watch"];
   const groups: ActivityGroup[] = ["active", "learn", "watch"];
-  if (needs.includes("screen")) return groups;
   const hasHabitsQuiz = needs.includes("habits") && quizBank.some((item) => item.ageBand === profile.ageBand &&
     /\b(water to drink|drinking water|brush|teeth|healthy habits)\b/i.test(`${item.topic} ${item.question}`));
-  const lead = first !== "any" ? first : needs.includes("energy") ? "active" :
+  const lead = first !== "any" ? first : needs.includes("energy") || needs.includes("screen") ? "active" :
     needs.includes("listening") || needs.includes("science") || hasHabitsQuiz || interests.some((item) => item !== "Music" && item !== "Vehicles") ? "learn" :
     interests.includes("Music") ? "watch" : interests.includes("Vehicles") ? "active" : profile.ageBand === "3-5" ? "learn" : "active";
   return [lead, ...groups.filter((item) => item !== lead)];
