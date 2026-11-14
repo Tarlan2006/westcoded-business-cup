@@ -9,12 +9,12 @@ import type { ChildProfile } from "../state/progress";
 const ages = [["1-2", "1–2 yrs"], ["3-5", "3–5 yrs"], ["6-8", "6–8 yrs"]] as const;
 const needs = [
   ["energy", "⚡ Burn physical energy indoors"], ["screen", "📵 Replace passive iPad / YouTube"],
-  ["listening", "🗣️ Speech & active listening"], ["habits", "🥦 Healthy habits (water & teeth)"],
+  ["listening", "🗣️ Speech & active listening"],
   ["science", "🚀 Science & logic curiosity"],
 ] as const;
 const sessionFlows = [
-  { value: "learn", icon: "🧠", title: "Educational Video + Quiz", detail: `Curated science video → ${APP_NAME} asks fun interactive questions.` },
-  { value: "active", icon: "⚡", title: "Active Physical Missions", detail: "Zero passive watching — scavenger hunts, movement, and voice challenges." },
+  { value: "learn", icon: "🧠", title: "Educational Video + Quiz" },
+  { value: "active", icon: "⚡", title: "Active Physical Missions" },
 ] as const;
 const selectedAge = "border-[#FFD13B] bg-[#6C47FF] text-white shadow-md";
 const unselectedAge = "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-white";
@@ -27,8 +27,10 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const [age, setAge] = useState<AgeBand>(profile?.ageBand ?? "3-5");
   const [name, setName] = useState(saved?.nickname ?? "");
   const [notes, setNotes] = useState(saved?.notes ?? "");
-  const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs ?? ["energy", "screen"]);
+  const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs?.filter(need => need !== "habits") ?? ["energy", "screen"]);
   const [minutes, setMinutes] = useState(saved?.minutes ?? defaultPreferences.minutes);
+  const [customMinutes, setCustomMinutes] = useState(String(saved?.minutes ?? defaultPreferences.minutes));
+  const [custom, setCustom] = useState(!!saved && !quietTimeGoals.some(value => value === saved.minutes));
   const [flow, setFlow] = useState<(typeof sessionFlows)[number]["value"]>(saved?.first === "active" ? "active" : "learn");
   const [location, setLocation] = useState(saved?.location ?? defaultPreferences.location);
   const sound = useSoundEnabled();
@@ -40,7 +42,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       onSubmit={(event) => {
         event.preventDefault();
         uiSound("chirp", sound);
-        onSave(code, age, { ...defaultPreferences, ...saved, location, minutes, first: age === "1-2" ? "watch" : flow,
+        onSave(code, age, { ...defaultPreferences, ...saved, location, minutes: custom ? Number(customMinutes) : minutes, first: age === "1-2" ? "watch" : flow,
           nickname: name.trim() || undefined, notes: notes.trim() || undefined, needs: selected });
       }}>
       <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
@@ -90,13 +92,18 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
         <div>
-          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">Default Parent Quiet-Time Goal</div>
-          <div className="text-xs font-bold text-indigo-300">{APP_NAME} paces missions to match your break</div>
+          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">Session time limit</div>
         </div>
-        <div className="flex items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
-          {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={minutes === value}
-            onClick={() => { setMinutes(value); uiSound("chirp", sound); }}
-            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value}m</button>)}
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
+          {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
+            onClick={() => { setMinutes(value); setCustom(false); setCustomMinutes(String(value)); uiSound("chirp", sound); }}
+            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${!custom && minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value}m</button>)}
+          <label className="flex items-center gap-2 text-xs font-bold text-indigo-200">
+            Custom minutes
+            <input type="number" min={1} max={120} step={1} required value={customMinutes}
+              onFocus={() => setCustom(true)} onChange={event => { setCustom(true); setCustomMinutes(event.target.value); }}
+              className={`w-20 min-h-12 px-2 rounded-xl border-2 bg-[#100B3B] text-white ${custom ? "border-[#FFD13B]" : "border-[#4C35DE]"}`} />
+          </label>
         </div>
       </div>
 
@@ -111,7 +118,6 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
             className={`p-4 rounded-2xl border-2 text-left transition cursor-pointer ${flow === option.value ? "border-[#FFD13B] bg-[#6C47FF] shadow-md" : "border-[#4C35DE] bg-[#100B3B] hover:border-indigo-400"}`}>
             <span className="flex items-center gap-2.5 mb-1"><span className="text-2xl" aria-hidden="true">{option.icon}</span>
               <span className="font-display font-bold text-base text-white">{option.title}</span></span>
-            <span className={`block text-xs font-bold ${flow === option.value ? "text-indigo-100" : "text-indigo-300"}`}>{option.detail}</span>
           </button>)}
         </div>
         {flow === "active" && <label className="flex flex-wrap gap-2 items-center text-xs font-bold text-indigo-200">

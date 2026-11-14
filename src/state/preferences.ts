@@ -15,7 +15,7 @@ export const quietTimeGoals = [20, 30, 60] as const;
 
 export interface Preferences {
   location: "home" | "car";
-  minutes: 10 | typeof quietTimeGoals[number];
+  minutes: number;
   first: ActivityGroup | "any";
   nickname?: string;
   notes?: string;
@@ -29,7 +29,7 @@ export function readPreferences(value: unknown): Preferences | undefined {
   if (!value || typeof value !== "object") return undefined;
   const { location, minutes, first, nickname, notes, needs, interests } = value as Partial<Preferences>;
   if ((location !== "home" && location !== "car") ||
-    (minutes !== 10 && minutes !== 20 && minutes !== 30 && minutes !== 60) ||
+    (typeof minutes !== "number" || !Number.isInteger(minutes) || minutes < 1 || minutes > 120) ||
     (first !== "any" && first !== "active" && first !== "learn" && first !== "watch")) return undefined;
   return { location, minutes, first,
     nickname: typeof nickname === "string" ? nickname.trim().slice(0, 24) || undefined : undefined,

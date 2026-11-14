@@ -106,6 +106,34 @@ export default function App() {
   const launchPending = useRef(false);
   const profile = progress.profiles.find((entry) => entry.id === progress.selectedId) ?? progress.profiles[0];
   const privacy = window.location.pathname.replace(/\/$/, "") === "/privacy";
+  const [sessionEndsAt, setSessionEndsAt] = useState<number | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+
+  useEffect(() => {
+    if (welcoming || privacy || !profile?.preferences || sessionExpired || sessionEndsAt !== null ||
+      ["home", "parent", "privacy", "setup"].includes(current.screen.name)) return;
+    setSessionEndsAt(Date.now() + profile.preferences.minutes * 60_000);
+  }, [welcoming, privacy, profile?.preferences, current.screen.name, sessionExpired, sessionEndsAt]);
+
+  useEffect(() => {
+    if (sessionEndsAt === null) return;
+    const check = () => {
+      if (Date.now() < sessionEndsAt) return;
+      stopSpeech();
+      setSessionExpired(true);
+      setSessionEndsAt(null);
+      setPendingNavigation(null);
+      setHistory([entry({ name: "home" })]);
+    };
+    const timer = window.setInterval(check, 250);
+    window.addEventListener("focus", check);
+    document.addEventListener("visibilitychange", check);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener("focus", check);
+      document.removeEventListener("visibilitychange", check);
+    };
+  }, [sessionEndsAt]);
 
   useEffect(() => { document.title = APP_NAME; }, []);
 
@@ -199,6 +227,13 @@ export default function App() {
 
     if (privacy || screen.name === "privacy") return <Privacy onBack={privacy ? undefined : goBack} />;
 
+    if (sessionExpired && screen.name !== "parent") return <LearnPage title="Time for a break!">
+      <div className="panel centered-card text-center space-y-4">
+        <p>Your session is finished. Let's take a break, pal!</p>
+        <button type="button" className="primary-button" onClick={() => setScreen({ name: "parent" }, "from-home")}>Grown-ups: session settings</button>
+      </div>
+    </LearnPage>;
+
     function chooseProfile(codenameId: string, ageBand: AgeBand, choices: Preferences) {
       const updated = profile
         ? updateProfile(profile.id, codenameId, ageBand, choices)
@@ -206,6 +241,8 @@ export default function App() {
       const selected = updated.profiles.find((entry) => entry.id === updated.selectedId);
       setProgress(updated);
       if (!selected) return;
+      setSessionEndsAt(null);
+      setSessionExpired(false);
       if (screen.name === "parent") {
         setSaved(true);
         setScreen(ageBand === "1-2" ? { name: "video", id: crypto.randomUUID() } : { name: "home" }, "from-home");
