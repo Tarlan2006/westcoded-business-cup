@@ -11,17 +11,21 @@ const output = resolve(process.env.FLOW_SCREEN_DIR ?? ".wrangler/design-qa/proto
 await mkdir(output, { recursive: true });
 const errors = [], results = [];
 function pass(message) { results.push(message); console.log(`PASS ${message}`); }
-async function open(width, age = "6-8") {
+async function open(width, age = "6-8", useTestClock = false) {
   const context = await browser.newContext({ viewport: { width, height: 900 }, hasTouch: width < 600, reducedMotion: "reduce" });
   await context.addInitScript((ageBand) => {
     localStorage.setItem("mission-control.progress", JSON.stringify({ selectedId: "test-agent", profiles: [{
       id: "test-agent", codenameId: "local_codename_comet", ageBand, xp: 12, rank: 0, streak: 0,
       lastPlayedISO: "", loreNote: "", activities: {}, preferences: { location: "home", minutes: 10, first: "learn" },
     }] }));
+    const startedAt = Date.now();
+    localStorage.setItem("mission-control.session", JSON.stringify({ startedAt, sessionEndsAt: startedAt + 10 * 60_000, reminded: false }));
+    localStorage.setItem("mission-control.sound", "off");
     Object.defineProperty(window, "speechSynthesis", { value: { speak(u) { setTimeout(() => u.onend?.(), 0); }, cancel() {}, getVoices: () => [] } });
     window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
   }, age);
   const page = await context.newPage();
+  if (useTestClock) await page.clock.install();
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(base);
   await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
@@ -31,15 +35,20 @@ async function open(width, age = "6-8") {
 function tile(page, name) { return page.locator(".activity-grid").getByRole("button", { name: new RegExp(name) }); }
 function back(page) { return page.locator(".activity-header").getByRole("button", { name: "Back", exact: true }).click(); }
 function home(page) { return page.getByRole("button", { name: "Home, back to activities", exact: true }).click(); }
+async function confirmLeave(page) {
+  const leave = page.getByRole("button", { name: "Leave game", exact: true });
+  if (await leave.isVisible()) await leave.click();
+}
 async function header(page, title) {
   assert.equal(await page.locator(".activity-header").count(), 1);
   assert.equal(await page.locator(".sk-topbar, .sp-topbar").count(), 0);
   assert.equal(await page.locator(".activity-header-title").innerText(), title);
   assert.equal(await page.getByRole("navigation", { name: "Breadcrumb" }).innerText(), `Learn › ${title}`);
   assert.equal(await page.locator(".activity-header .xp-chip").innerText(), "12 XP");
+  assert.equal(await page.locator(".activity-header").getByRole("timer", { name: "Session time left" }).count(), 1);
   assert.equal(await page.getByRole("button", { name: "Back", exact: true }).count(), 1);
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-  const controls = page.locator(".activity-header button");
+  const controls = page.locator(".activity-header button:not(:disabled)");
   for (let i = 0; i < await controls.count(); i++) {
     await controls.nth(i).evaluate((node, index) => node.dataset.headerCheck = String(index), i);
   }
@@ -68,7 +77,7 @@ async function finishJourney(page, exploreOnly = false) {
   await page.getByRole("heading", { name: "Betelgeuse", exact: true }).waitFor();
   await page.getByRole("button", { name: exploreOnly ? "Finish journey" : "Start quiz", exact: true }).click();
 }
-function seconds(text) { const [m, s] = text.split(":").map(Number); return m * 60 + s; }
+function seconds(text) { const [m, s] = text.replace(" left", "").split(":").map(Number); return m * 60 + s; }
 async function holdExit(page) {
   await page.getByRole("button", { name: "Hold: Exit", exact: true }).focus();
   await page.keyboard.down("Enter");
@@ -92,6 +101,7 @@ try {
     await page.getByText("Opening the case…", { exact: true }).waitFor();
     await header(page, "Sketch Artist");
     await home(page);
+    await confirmLeave(page);
     await page.getByRole("region", { name: "Start here", exact: true }).waitFor();
     releaseChunk();
     await tile(page, "Sketch Artist").click();
@@ -104,6 +114,7 @@ try {
     assert.equal(await page.locator(".activity-header").count(), 1);
     await page.locator(".sk-match").waitFor(); await header(page, "Sketch Artist");
     await back(page);
+    await confirmLeave(page);
     await tile(page, "Space Scale").click();
     await page.getByRole("button", { name: "Start exploring" }).waitFor();
     await header(page, "Space Scale"); await snapshot(page, "space-header", width);
@@ -118,6 +129,7 @@ try {
     }
     await page.getByRole("heading", { name: "What a journey!" }).waitFor();
     await header(page, "Space Scale"); await home(page);
+    await confirmLeave(page);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")).profiles[0].xp), 12);
     await context.close();
     pass(`${width}px: one shared header through all Sketch/Space stages, loading exit, Back/Home, XP and keyboard access`);
@@ -129,36 +141,38 @@ try {
     pass(`${width}px: Space Scale is only offered to ages 6–8`);
 
     for (const mode of ["Scavenger Hunt", "Floor is Lava"]) {
-      const mission = await open(width);
+      const mission = await open(width, "6-8", true);
       const p = mission.page;
-      await p.clock.install();
-      await tile(p, mode).click(); await p.getByRole("button", { name: "Start mission", exact: true }).click();
+      await tile(p, mode).click(); await p.getByRole("button", { name: "Start game", exact: true }).click();
       await p.locator("#screen-mission").waitFor();
       await p.clock.fastForward(5100);
       assert.equal(await p.getByRole("button", { name: "Home, back to activities" }).count(), 0);
       await p.getByRole("button", { name: "Pause", exact: true }).click();
       await p.getByRole("button", { name: "Resume mission", exact: true }).waitFor();
-      const frozen = await timerState(p);
+      const pausedAt = seconds(await timerState(p));
       await p.clock.fastForward(30_000);
-      assert.equal(await timerState(p), frozen, "session clock stops during a pause");
+      assert(seconds(await timerState(p)) <= pausedAt - 29, "session clock keeps running during a mission pause");
       await home(p);
       await p.getByRole("button", { name: "Keep playing", exact: true }).click();
-      assert.equal(await timerState(p), frozen, "dismissing Home leaves the mission paused");
+      assert(await p.getByRole("button", { name: "Resume mission", exact: true }).isVisible(), "dismissing Home leaves the mission paused");
       if (mode === "Scavenger Hunt") await snapshot(p, "mission-paused", width);
       await p.getByRole("button", { name: "Resume mission", exact: true }).click();
       const remaining = seconds(await timerState(p));
       await p.clock.fastForward(1100);
       const resumed = seconds(await timerState(p));
-      assert(remaining - resumed >= 1 && remaining - resumed <= 2, "resume excludes time spent paused");
+      assert(remaining - resumed >= 1 && remaining - resumed <= 2, "resume keeps the original session deadline");
       await p.getByRole("button", { name: "Hold: Exit", exact: true }).click();
-      assert.equal(await p.locator("#screen-profile-setup").count(), 0, "a tap cannot exit a mission");
+      const settings = p.getByRole("dialog", { name: "Session settings" });
+      assert.equal(await settings.count(), 0, "a tap cannot exit a mission");
       await holdExit(p);
-      await p.locator("#screen-profile-setup").waitFor();
+      await settings.waitFor();
+      await settings.getByRole("button", { name: "End session now" }).click();
+      await p.getByRole("heading", { name: "Session complete", exact: true }).waitFor();
       assert.equal(await p.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")).profiles[0].xp), 12);
-      await p.getByRole("button", { name: "Back", exact: true }).click();
-      await p.getByRole("region", { name: "Start here", exact: true }).waitFor();
+      await p.getByRole("button", { name: "Back to start", exact: true }).click();
+      await p.locator("#screen-profile-setup").waitFor();
       await mission.context.close();
-      pass(`${width}px ${mode}: pause/resume, hold exits to Parents without double-awarding XP`);
+      pass(`${width}px ${mode}: session time during pause/resume, hold to end without double-awarding XP`);
     }
   }
   assert.deepEqual(errors, []);

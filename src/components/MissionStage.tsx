@@ -4,6 +4,7 @@ import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
 import { ActivityNavigation } from "./ActivityHeader";
 import { Mascot, poseFor, type MascotAction, type MascotMood } from "./Mascot";
+import { SessionActivity, SessionClock } from "./SessionControls";
 
 export const missionReplyStyle = "px-4 py-2 rounded-2xl bg-[#EDE9FE] hover:bg-[#DDD6FE] border-2 border-[#8B5CF6] text-[#1E1B4B] font-extrabold text-sm sm:text-base transition cursor-pointer";
 export const missionButtonStyle = "relative py-5 px-3 sm:px-4 rounded-3xl btn-game font-display font-bold text-xl sm:text-2xl flex items-center justify-center gap-2.5 cursor-pointer";
@@ -28,6 +29,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
   const tickleTimer = useRef<number>(0);
   const sound = useSoundEnabled();
   const navigation = useContext(ActivityNavigation);
+  const session = useContext(SessionActivity);
   useEffect(() => () => window.clearTimeout(tickleTimer.current), []);
   const circumference = 716.28;
   const visibleRound = (round - 1) % total;
@@ -36,15 +38,15 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
 
   return <main id="screen-mission" aria-label="Mission" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
     <h1 className="sr-only">{heading ?? "Mission"}</h1>
-    <header className="mission-stats w-full flex items-center justify-between gap-1 bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
+    <header className="mission-stats w-full flex flex-wrap items-center justify-between gap-1 bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
       <div className="flex items-center gap-2" id="starProgressContainer" aria-label={`Round ${round}`}>
         {Array.from({ length: total }, (_, index) => <span key={index} aria-hidden="true"
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
-      <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Time left">{clock}</div>
+      <SessionClock id="sessionClockDisplay" fallback={<div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Time left">{clock}</div>} />
       <div className="flex items-center gap-2">
         {paused && navigation && <button type="button" className="prototype-parent-button" aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
-        {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled} onOpen={onExit} />
+        {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled || session?.finishing} onOpen={onExit} />
       </div>
     </header>
     {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}

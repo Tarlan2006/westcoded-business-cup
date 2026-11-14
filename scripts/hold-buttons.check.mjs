@@ -11,6 +11,8 @@ try {
         id: 'hold-test', codenameId: 'local_codename_comet', ageBand: '6-8', xp: 0, rank: 0, streak: 0,
         lastPlayedISO: '', loreNote: '', activities: {}, preferences: { location: 'home', minutes: 20, first: 'learn', nickname: 'Pal' },
       }] }));
+      const startedAt = Date.now();
+      localStorage.setItem('mission-control.session', JSON.stringify({ startedAt, sessionEndsAt: startedAt + 20 * 60_000, reminded: false }));
     });
     const page = await context.newPage();
     const errors = [];
@@ -38,8 +40,8 @@ try {
     assert(await parents.evaluate(el => el.classList.contains('hold-pressed')));
     await page.waitForTimeout(1100);
     await page.keyboard.up('Enter');
-    await page.getByRole('heading', { name: 'Tell MyPal about your child' }).waitFor();
-    await page.getByRole('button', { name: 'Back', exact: true }).click();
+    const settings = page.getByRole('dialog', { name: 'Session settings' });
+    await settings.getByRole('button', { name: 'Keep playing', exact: true }).click();
     assert.equal(await page.locator('.hold-tip').count(), 0);
     await page.locator('.activity-grid').getByRole('button', { name: /Ask MyPal/ }).click();
     const talk = page.locator('button.talk-button');
@@ -72,7 +74,8 @@ try {
     await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }] });
     await page.waitForTimeout(1550);
     await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    await page.getByRole('heading', { name: 'Tell MyPal about your child' }).waitFor();
+    await settings.getByRole('button', { name: 'End session now', exact: true }).click();
+    await page.getByRole('heading', { name: 'Session complete', exact: true }).waitFor();
     assert.equal(transcriptions, 1);
     assert.deepEqual(errors, []);
     console.log(`PASS ${reducedMotion}: touch tap hint/shake, first hint/session flag, keyboard hold, progress, voice cancel/send, Hunt hint, touch hold to exit`);

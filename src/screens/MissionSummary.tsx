@@ -8,6 +8,7 @@ import { useBriefing } from "../game/useBriefing";
 import { nextEpisode, partForSession } from "../state/garage";
 import { rankName, type ChildProfile } from "../state/progress";
 import { Mascot } from "../components/Mascot";
+import { SessionActivity, SessionHeaderActions } from "../components/SessionControls";
 
 export function MissionSummary({ profile, points, onReplay, onHome, children }: {
   profile: ChildProfile; points: number; onReplay: () => void; onHome: () => void; children?: ReactNode;
@@ -15,6 +16,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
   const [garage, setGarage] = useState(false);
   const sound = useSoundEnabled();
   const navigation = useContext(ActivityNavigation);
+  const session = useContext(SessionActivity);
   const name = profile.preferences?.nickname ?? codenameFor(profile.codenameId);
   const sessions = profile.garageSessions ?? 0;
   const part = partForSession(sessions);
@@ -22,6 +24,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
   useEffect(() => uiSound("win", sound), [sound]);
 
   return <main className="relative w-full max-w-3xl mx-auto px-4 z-10">
+    {session && <header className="session-summary-header"><SessionHeaderActions /></header>}
     {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
     <section id="screen-complete" className="prototype-screen py-4 flex flex-col items-center justify-center text-center" aria-label="Mission complete">
       <div className="bg-[#1C145C] rounded-3xl p-6 sm:p-8 border-4 border-[#FFD13B] shadow-[0_16px_48px_rgba(0,0,0,0.5)] w-full space-y-5">

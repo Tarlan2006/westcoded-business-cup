@@ -11,7 +11,7 @@ export const childNeeds = [
 export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
 export type ChildNeed = typeof childNeeds[number]["value"];
 export type ChildInterest = typeof childInterests[number];
-export const quietTimeGoals = [20, 30, 60] as const;
+export const quietTimeGoals = [10, 20, 30, 60] as const;
 
 export interface Preferences {
   location: "home" | "car";

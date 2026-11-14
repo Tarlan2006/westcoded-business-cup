@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
 import { useClipSpeech } from "../audio/useClipSpeech";
@@ -7,11 +7,13 @@ import { GameButton } from "../components/GameUI";
 import { Mascot } from "../components/Mascot";
 import { LearnPage } from "./Home";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
+import { SessionActivity } from "../components/SessionControls";
 
 export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComplete, onExit = onBack }: {
   ageBand: AgeBand; topic?: string; missionMinutes?: number; cycle?: number;
   onBack: () => void; onComplete: (points: number) => void; onExit?: () => void;
 }) {
+  const session = useContext(SessionActivity);
   const bank = questions.filter((question) => question.ageBand === ageBand);
   const matching = bank.filter((question) => question.topic === topic);
   const ordered = topic ? [...matching, ...bank.filter((question) => question.topic !== topic)] : bank;
@@ -31,6 +33,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   const roundDuration = ageBand === "6-8" && index === 0 ? 40 : 35;
   const roundSeconds = Math.max(0, roundDuration - Math.floor((now - roundStartedAt) / 1000));
   const advanceOnTimeout = useEffectEvent(() => next());
+  const nextLabel = index === quiz.length - 1 || session?.finishing ? "Finish quiz" : "Next question";
 
   useEffect(() => {
     if (sound && current) void speak(current.question, clipId);
@@ -56,7 +59,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
 
   function next() {
     if (completed.current) return;
-    if (index === quiz.length - 1) {
+    if (index === quiz.length - 1 || (session && !session.canStartActivity())) {
       completed.current = true;
       onComplete(points);
     } else {
@@ -81,9 +84,9 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{choice}</button>)}
       controls={<>
         <button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E]`} disabled={answer === undefined} onClick={next}>
-          {index === quiz.length - 1 ? "Finish quiz" : "Next question"}
+          {nextLabel}
         </button>
-        <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined}
+        <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined || session?.finishing}
           onClick={() => { void speak(current.question, clipId); }}>🔊 Hear it</button>
       </>} />;
   }
@@ -94,7 +97,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         <p className="field-label">Question {index + 1} of {quiz.length}</p>
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{current.question}</h2>
-        {sound && <button type="button" className="quiet-button" onClick={() => {
+        {sound && <button type="button" className="quiet-button" disabled={session?.finishing} onClick={() => {
           void speak(current.question, clipId);
         }}>Hear it</button>}
         <div className="answer-list">
@@ -107,7 +110,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         {answer !== undefined && <>
           <Mascot pose={answer === current.answer ? "jump" : "point"} size={120} className="mx-auto" />
           <p role="status">{answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}</p>
-          <GameButton onClick={next}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</GameButton>
+          <GameButton onClick={next}>{nextLabel}</GameButton>
         </>}
       </section>}
     </LearnPage>

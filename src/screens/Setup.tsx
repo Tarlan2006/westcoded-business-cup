@@ -39,7 +39,7 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
         <fieldset>
           <legend className="field-label">How long?</legend>
           <div className="segmented">
-            {[...new Set([10, ...quietTimeGoals, preferences.minutes])].sort((a, b) => a - b).map((option) => (
+            {[...new Set([...quietTimeGoals, preferences.minutes])].sort((a, b) => a - b).map((option) => (
               <button key={option} type="button" aria-pressed={minutes === option}
                 onClick={() => setMinutes(option)}>{option} min</button>
             ))}

@@ -1,10 +1,11 @@
 import { HoldButton } from "../components/HoldButton";
 import { APP_NAME } from "../brand";
-import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
+import { SessionActivity } from "../components/SessionControls";
 import { useSoundEnabled } from "../audio/sfx";
-import { playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
+import { isSpeechActive, playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
   countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
@@ -26,8 +27,15 @@ interface Props {
 }
 
 export function Mission({ session, profile, onFinish, onExit, navigationPaused = false }: Props) {
+  const activity = useContext(SessionActivity);
   const [state, dispatch] = useReducer(
-    (current: MissionState, action: Parameters<typeof advanceMission>[1]) => advanceMission(current, action, session),
+    (current: MissionState, action: Parameters<typeof advanceMission>[1]) => {
+      // The last round can resolve during the session's grace period.
+      const withinGrace = activity && action.now >= activity.endsAt && action.now < activity.finishBy &&
+        (action.type === "submit" || action.type === "resolve");
+      const round = withinGrace ? { ...current, missionEndsAt: Math.max(current.missionEndsAt, activity.finishBy) } : current;
+      return advanceMission(round, action, session);
+    },
     session, (session) => createMission(session, Date.now()),
   );
   const [now, setNow] = useState(Date.now);
@@ -63,10 +71,15 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
   }, [navigationPaused, state.pausedAt, state.phase, finished]);
 
   useEffect(() => {
-    if (paused || finished) return;
+    if (finished || (paused && !activity?.finishing)) return;
     const tick = () => {
       const now = Date.now();
       setNow(now);
+      if (activity && !activity.canStartActivity()) {
+        const roundDone = paused || state.phase === "countdown" || (state.phase !== "resolving" && now >= state.phaseEndsAt);
+        if (roundDone && !isSpeechActive()) dispatch({ type: "finish", now });
+        return;
+      }
       dispatch({ type: "tick", now });
     };
     const timer = window.setInterval(tick, 125);
@@ -75,7 +88,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
       window.clearInterval(timer);
       document.removeEventListener("visibilitychange", tick);
     };
-  }, [paused, finished]);
+  }, [paused, finished, activity, state.phase, state.phaseEndsAt]);
 
   useEffect(() => {
     if (sound) playSfx(session.mode === "lava" ? "siren" : "radio");
@@ -103,7 +116,8 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
 
   async function submit(childSaid = "", player?: Player, answer?: string) {
     const now = Date.now();
-    if (!running || now >= Math.min(state.phaseEndsAt, state.missionEndsAt) ||
+    const missionEnd = activity && !activity.canStartActivity() ? activity.finishBy : state.missionEndsAt;
+    if (!running || now >= Math.min(state.phaseEndsAt, missionEnd) ||
       freezeHold || submittedRound.current === state.round) return;
     submittedRound.current = state.round;
     dispatch({ type: "submit", round: state.round, now });
@@ -172,7 +186,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
   }
 
   function startVoice() {
-    if (voice.status !== "idle") return;
+    if (voice.status !== "idle" || (activity && !activity.canStartActivity())) return;
     stopSpeech();
     voice.start();
   }
@@ -205,7 +219,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
       <button type="button" className={`${doneButton}${isHunt ? "" : " col-span-2"}`}
         disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> I DID IT!</button>
       {isHunt && <HoldButton talk hintKey="hunt-talk" className={`${missionButtonStyle} btn-sky text-white talk-button`}
-        disabled={!running || voice.status === "decoding"} onBegin={startVoice}
+        disabled={!running || voice.status === "decoding" || (activity?.finishing && !recording)} onBegin={startVoice}
         onRelease={() => voice.release()} onCancel={voice.cancelHold}>
         <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? "Opening mic…" : "Let go to send"
           : voice.status === "decoding" ? "Listening…" : "TALK"}</span>

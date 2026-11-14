@@ -23,12 +23,12 @@ function loadAPI() {
   });
 }
 
-export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying }: {
-  id: string; title: string; autoplay?: boolean; onEnded: () => void; onPlaying?: () => void;
+export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying, onPaused }: {
+  id: string; title: string; autoplay?: boolean; onEnded: () => void; onPlaying?: () => void; onPaused?: () => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const callbacks = useRef({ onEnded, onPlaying });
-  callbacks.current = { onEnded, onPlaying };
+  const callbacks = useRef({ onEnded, onPlaying, onPaused });
+  callbacks.current = { onEnded, onPlaying, onPaused };
   useEffect(() => {
     let disposed = false;
     let player: Player | undefined;
@@ -46,6 +46,7 @@ export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying }
       player = new api.Player(frame, { events: { onStateChange: ({ data }) => {
         if (disposed) return;
         if (data === 1) { ended = false; callbacks.current.onPlaying?.(); }
+        if (data === 2) callbacks.current.onPaused?.();
         if (data === 0 && !ended) { ended = true; callbacks.current.onEnded(); }
       } } });
     }).catch(() => { /* The ordinary iframe and manual navigation still work. */ });

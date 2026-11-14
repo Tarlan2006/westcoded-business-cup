@@ -4,6 +4,7 @@ import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
+import { SessionActivity } from "../components/SessionControls";
 import { videosFor } from "../game/videos";
 import { Mascot, MascotHead } from "../components/Mascot";
 import { ToddlerCinema } from "./ToddlerCinema";
@@ -22,14 +23,19 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
   const videos = videosFor(ageBand);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [watching, setWatching] = useState(false);
   const [autoplay, setAutoplay] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const sound = useSoundEnabled();
   const navigation = useContext(ActivityNavigation);
+  const session = useContext(SessionActivity);
+  const finishing = session?.finishing ?? false;
   const selected = videos[index];
+
   useEffect(() => {
-    if (countdown === null) return;
+    if (countdown === null || finishing) return;
     const timer = window.setTimeout(() => {
+      if (session && !session.canStartActivity()) return;
       if (countdown > 1) setCountdown(countdown - 1);
       else {
         setCountdown(null);
@@ -37,26 +43,33 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
         if (!next) return;
         setIndex(index + 1);
         setAutoplay(true);
+        setWatching(true);
         onOpen(next.id);
       }
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [countdown, index, videos, onOpen]);
+  }, [countdown, index, videos, onOpen, session, finishing]);
+
+  useEffect(() => {
+    if (finishing && !watching) session?.finishActivity();
+  }, [finishing, watching, session]);
 
   function choose(position: number) {
+    if (session && !session.canStartActivity()) return;
     uiSound("chirp", sound);
     setIndex(position);
     setPlaying(false);
+    setWatching(false);
     setAutoplay(false);
     setCountdown(null);
   }
 
   const actions = <div className={playing ? "flex flex-wrap items-center justify-between gap-2" : "video-frame-controls absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2"}>
-    <button type="button" disabled={!selected} onClick={() => index + 1 >= videos.length ? onPlay(selected?.id) : choose(index + 1)}
+    <button type="button" disabled={!selected || finishing} onClick={() => index + 1 >= videos.length ? onPlay(selected?.id) : choose(index + 1)}
       className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
       <span aria-hidden="true">⏭️</span> Next video
     </button>
-    <button type="button" onClick={() => onPlay(selected?.id)}
+    <button type="button" disabled={finishing} onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
       <MascotHead size={26} className="bg-[#FFD13B]" /> Play with {APP_NAME} Now!
     </button>
@@ -68,10 +81,13 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
     <PrototypeHeader name={name} label="Videos" detail={selected ? `Episode ${index + 1} of ${videos.length} • ${selected.channel}` : "Watch with a grown-up"}
       onParents={onParents} onHome={onHome} />
     <div className="flex-1 flex flex-col justify-center">
-      <div className={`relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden ${playing ? "prototype-frame-video" : "prototype-video-placeholder flex flex-col items-center justify-center p-6 text-center"}`}>
+      <div inert={finishing} className={`relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden ${playing ? "prototype-frame-video" : "prototype-video-placeholder flex flex-col items-center justify-center p-6 text-center"}`}>
         {playing && selected ? <YouTubeVideo key={selected.id} id={selected.id} title={selected.title} autoplay={autoplay}
-          onPlaying={() => setCountdown(null)}
+          onPlaying={() => { setWatching(true); setCountdown(null); }}
+          onPaused={() => setWatching(false)}
           onEnded={() => {
+            setWatching(false);
+            if (session && !session.canStartActivity()) { session.finishActivity(); return; }
             if (selected.id === "CH1lo6lwQ6o") onPlay(selected.id);
             else if (index + 1 < videos.length) setCountdown(5);
           }} /> : <>
@@ -87,7 +103,12 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
           </div>
           <div className="video-frame-content space-y-3 max-w-md">
             {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={`Open video: ${selected.title}`}
-              onClick={() => { setPlaying(true); onOpen(selected.id); }}>
+              onClick={() => {
+                if (session && !session.canStartActivity()) return;
+                setPlaying(true);
+                setWatching(true);
+                onOpen(selected.id);
+              }}>
               <Mascot pose="tablet" className="video-mascot" eager />
               <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
               <span className="block text-xs sm:text-sm font-bold text-indigo-200">▶ Watch video · Plays on YouTube</span>

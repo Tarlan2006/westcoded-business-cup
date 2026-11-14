@@ -45,9 +45,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   }
   const [notes, setNotes] = useState(saved?.notes ?? "");
   const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs?.filter(need => need !== "habits") ?? ["energy", "screen"]);
-  const [minutes, setMinutes] = useState(saved?.minutes ?? defaultPreferences.minutes);
-  const [customMinutes, setCustomMinutes] = useState(String(saved?.minutes ?? defaultPreferences.minutes));
-  const [custom, setCustom] = useState(!!saved && !quietTimeGoals.some(value => value === saved.minutes));
+  const [minutes, setMinutes] = useState(defaultPreferences.minutes);
+  const [customMinutes, setCustomMinutes] = useState(String(defaultPreferences.minutes));
+  const [custom, setCustom] = useState(false);
   const [flow, setFlow] = useState<(typeof sessionFlows)[number]["value"]>(saved?.first === "active" ? "active" : "learn");
   const [location, setLocation] = useState(saved?.location ?? defaultPreferences.location);
   const sound = useSoundEnabled();
@@ -120,9 +120,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
           <div className="profile-hint text-xs font-bold">{APP_NAME} plays for exactly this long, then stops.</div>
         </div>
         <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
-          {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
+          {quietTimeGoals.map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
             onClick={() => { setMinutes(value); setCustom(false); setCustomMinutes(String(value)); uiSound("chirp", sound); }}
-            className="prof-dur-btn profile-choice px-3.5 py-2 rounded-2xl font-display font-bold text-sm">{value} min</button>)}
+            className="prof-dur-btn profile-choice px-3.5 py-2 rounded-2xl font-display font-bold text-sm">{value}m</button>)}
           <label className="profile-label flex items-center gap-2 text-xs font-bold">
             Custom minutes
             <input type="number" min={1} max={120} step={1} value={customMinutes} data-selected={custom}
@@ -158,7 +158,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       <div onClick={() => { if (!validName) showNameError(); }}>
         <button type="submit" disabled={!validName}
           className={`profile-submit w-full min-h-15 py-4 px-2 rounded-2xl font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 ${validName ? "btn-game cursor-pointer" : "pointer-events-none"}`}>
-          <span className="min-w-0 wrap-anywhere">START FOR <span id="startBtnKidName">{display.toUpperCase()}</span></span><SetupIcon name="rocket" />
+          <span className="min-w-0 wrap-anywhere">START SESSION FOR <span id="startBtnKidName">{display.toUpperCase()}</span></span><SetupIcon name="rocket" />
         </button>
       </div>
       <div className={`profile-hint flex items-center justify-between gap-3 text-xs ${onBack ? "" : "sm:hidden"}`}>

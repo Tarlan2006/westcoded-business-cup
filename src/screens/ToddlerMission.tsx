@@ -1,9 +1,10 @@
 import { APP_NAME } from "../brand";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useClipSpeech } from "../audio/useClipSpeech";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import type { MascotAction, MascotMood } from "../components/Mascot";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
+import { SessionActivity } from "../components/SessionControls";
 
 const rounds = [
   { seconds: 25, demoEmoji: "👏", demoWord: "CLAP!", prop: "👏", action: "clap", mood: "happy",
@@ -21,6 +22,7 @@ const rounds = [
 }>;
 
 export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: number; onExit: () => void; onComplete: (points: number) => void }) {
+  const canStartActivity = useContext(SessionActivity)?.canStartActivity;
   const [index, setIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [seconds, setSeconds] = useState<number>(rounds[0].seconds);
@@ -42,7 +44,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
       setSeconds(next);
       if (next !== 0 || transitioning.current) return;
       transitioning.current = true;
-      if (index + 1 === rounds.length) complete.current(points);
+      if (index + 1 === rounds.length || canStartActivity?.() === false) complete.current(points);
       else {
         setElapsed((value) => value + round.seconds);
         setIndex(index + 1);
@@ -50,7 +52,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
       }
     }, 200);
     return () => window.clearInterval(id);
-  }, [index, round.seconds, points, feedback]);
+  }, [index, round.seconds, points, feedback, canStartActivity]);
 
   useEffect(() => {
     transitioning.current = false;
@@ -67,7 +69,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
     uiSound("win", sound);
     if (sound) void speak(round.praise);
     timer.current = window.setTimeout(() => {
-      if (index + 1 === rounds.length) complete.current(earned);
+      if (index + 1 === rounds.length || canStartActivity?.() === false) complete.current(earned);
       else {
         setElapsed((value) => value + round.seconds - seconds + 2);
         setIndex(index + 1);

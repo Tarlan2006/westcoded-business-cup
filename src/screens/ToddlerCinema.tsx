@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { APP_NAME } from "../brand";
 import { useSoundEnabled } from "../audio/sfx";
 import { AnimalSounds } from "../components/AnimalSounds";
 import { Mascot } from "../components/Mascot";
 import { PrototypeHeader } from "../components/PrototypeHeader";
+import { SessionActivity } from "../components/SessionControls";
 import { ToddlerPlayer, type PlayerControls, type VideoStatus } from "../components/ToddlerPlayer";
 import { videosFor } from "../game/videos";
 import "./ToddlerCinema.css";
@@ -16,6 +17,8 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
   onPlay: (videoId?: string) => void;
 }) {
   const sound = useSoundEnabled();
+  const session = useContext(SessionActivity);
+  const finishing = session?.finishing ?? false;
   const [index, setIndex] = useState(0);
   const [pending, setPending] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(breakMs);
@@ -38,10 +41,13 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
 
   useEffect(() => { if (status === "playing") opened.current(selected.id); }, [status, selected.id]);
   useEffect(() => { if (!sound) setMuted(true); }, [sound]);
+  useEffect(() => {
+    if (finishing && !animalTime && (waiting || stopped || status !== "playing")) session?.finishActivity();
+  }, [finishing, animalTime, waiting, stopped, status, session]);
 
   // Returning to a hidden tab never skips the little break.
   useEffect(() => {
-    if (pending === null) return;
+    if (pending === null || finishing) return;
     let left = breakMs;
     let previous = performance.now();
     const visibilityChanged = () => { previous = performance.now(); };
@@ -53,6 +59,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
       setRemaining(left);
       if (left > 0) return;
       window.clearInterval(interval);
+      if (session && !session.canStartActivity()) return;
       setIndex(pending);
       setStatus("loading");
       setStopped(false);
@@ -62,19 +69,22 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", visibilityChanged);
     };
-  }, [pending]);
+  }, [pending, finishing, session]);
 
   function queue(position: number) {
+    if (session && !session.canStartActivity()) return;
     setAnimalTime(false);
     if (waiting) return;
     setRemaining(breakMs);
     setPending(position);
   }
   function ended() {
+    if (session && !session.canStartActivity()) { session.finishActivity(); return; }
     setAnimalTime(true);
   }
   // The animal moment (about 20 seconds) is the breather, so the next video starts right after.
   function afterAnimals() {
+    if (session && !session.canStartActivity()) { session.finishActivity(); return; }
     setAnimalTime(false);
     if (!autoplay) return setStopped(true);
     setIndex(nextIndex);
@@ -82,6 +92,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
     setStopped(false);
   }
   function replay() {
+    if (session && !session.canStartActivity()) return;
     setStopped(false);
     setStatus("loading");
     setAttempt((value) => value + 1);
@@ -95,7 +106,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
     </section>
     <section className="toddler-tv" aria-label="Now showing">
       <div className="toddler-tv-top"><span><i aria-hidden="true" /> {waiting ? "A LITTLE BREATHER" : "NOW SHOWING"}</span><span>{String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}</span></div>
-      <div className="toddler-screen">
+      <div className="toddler-screen" inert={finishing}>
         {animalTime ? <AnimalSounds sound={sound} onDone={afterAnimals} /> : waiting ? <div className="toddler-intermission">
           <div className="toddler-break-art"><Mascot pose="tablet" /><span className="toddler-count" role="timer" aria-label={`${seconds} seconds until the next video`}>{seconds}</span></div>
           <p className="toddler-eyebrow">ONE LITTLE PAUSE</p><h2>Wiggle your fingers!</h2>
@@ -116,7 +127,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
     </section>
     <section className="toddler-now" aria-label="Playback controls">
       <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? "COMING UP NEXT" : "YOUR LITTLE ADVENTURE"}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? "A 10-second breather between every video" : selected.channel}</p></div></div>
-      <div className="toddler-controls">
+      <div className="toddler-controls" inert={finishing}>
         {!animalTime && !waiting && !stopped && status !== "error" && <>
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
             if (status === "playing") player.current?.pauseVideo();
@@ -130,8 +141,8 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
         <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? `Next in ${seconds}s` : "Next adventure →"}</button>
       </div>
     </section>
-    {selected.quizTopic && !waiting && <button type="button" className="toddler-text-button" onClick={() => onPlay(selected.id)}>Explore animal sounds with {APP_NAME} →</button>}
-    <section className="toddler-queue" aria-labelledby="toddler-queue-heading">
+    {selected.quizTopic && !waiting && <button type="button" disabled={finishing} className="toddler-text-button" onClick={() => onPlay(selected.id)}>Explore animal sounds with {APP_NAME} →</button>}
+    <section className="toddler-queue" inert={finishing} aria-labelledby="toddler-queue-heading">
       <div className="toddler-queue-heading"><h2 id="toddler-queue-heading">Little adventures, lined up</h2><button type="button" role="switch" aria-checked={autoplay} className="toddler-autoplay" onClick={() => {
         setAutoplay((value) => !value);
         if (waiting) { setPending(null); setStopped(true); }

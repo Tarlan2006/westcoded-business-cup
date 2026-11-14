@@ -10,7 +10,7 @@ try {
     await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
     await page.getByLabel('What should MyPal call your child? *', { exact: true }).fill('Pal');
     await page.getByRole('button', { name: age, exact: true }).click();
-    await page.getByRole('button', { name: /START FOR/ }).click();
+    await page.getByRole('button', { name: /^START SESSION FOR/ }).click();
     await page.getByRole('button', { name: 'Home, back to activities', exact: true }).click();
     const older = age === '6–8 yrs';
     for (const title of ['Memory', 'Balloon Count']) {

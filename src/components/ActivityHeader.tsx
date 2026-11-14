@@ -1,4 +1,5 @@
 import { createContext, useContext, type ReactNode } from "react";
+import { SessionHeaderActions } from "./SessionControls";
 
 export const ActivityXp = createContext<number | undefined>(undefined);
 export const ActivityNavigation = createContext<{
@@ -27,6 +28,7 @@ export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, chil
         {navigation?.name && <span className="prototype-agent-name">{navigation.name}</span>}
         {total !== undefined && <span className="xp-chip">{total} XP</span>}
         {children}
+        <SessionHeaderActions />
       </div>
     </header>
   );

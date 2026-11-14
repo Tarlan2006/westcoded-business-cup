@@ -304,6 +304,10 @@ export function stopSpeech(): void {
   stopCurrentSpeech?.();
 }
 
+export function isSpeechActive(): boolean {
+  return speechDepth > 0;
+}
+
 function createMusic(context: AudioContext) {
   const buffer = context.createBuffer(1, context.sampleRate * 8, context.sampleRate);
   const samples = buffer.getChannelData(0);
@@ -465,7 +469,12 @@ export function hostVoiceReady(): boolean {
 
 export function speakFallback(text: string): Promise<void> {
   if (!text) return Promise.resolve();
-  if (hostLoaded) return speakHost(text).catch(() => speakBrowser(text));
+  if (hostLoaded) {
+    const generation = playbackGeneration;
+    return speakHost(text).catch(() => {
+      if (generation === playbackGeneration) return speakBrowser(text);
+    });
+  }
   void loadHostVoice();
   return speakBrowser(text);
 }

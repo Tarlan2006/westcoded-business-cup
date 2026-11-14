@@ -4,7 +4,7 @@ MyPal is a voice game master for children aged 1–8, built by **westcoded** for
 
 ## Flow and activities
 
-On the first visit, a parent chooses an age and a 20-, 30-, or 60-minute quiet-time goal. Ages 1–2 start with the video catalogue and three short rounds with MyPal. Ages 3–8 can start with video and three quiz questions or go straight to an active mission. On later visits, the activity hub opens after the splash. Press and hold **Parents** to edit the profile or **Hold: Exit** from a mission.
+In Parent Setup, choose an age and 10, 20, 30, or 60 minutes, or enter a custom duration. The session clock starts with **Start session** and keeps running across activities and page reloads. Press and hold **Parents** or **Hold: Exit** to add five minutes or end the session. At the deadline, the current activity has up to 30 seconds to finish. **Back to start** opens Parent Setup with the same profile and a fresh duration choice.
 
 The hub offers age-appropriate videos, quiz, Memory, Space Scale, and Balloon Count. The 6–8 band also sees Ask MyPal, Tic-tac-toe, and Sketch Artist. Move supports Scavenger Hunt and Floor is Lava at home and Roadtrip Spy for passengers. Supervise play and choose a clear space. YouTube videos load on request and may display ads or related videos.
 
