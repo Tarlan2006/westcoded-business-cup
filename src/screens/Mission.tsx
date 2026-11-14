@@ -1,5 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
+import { ActivityHeader } from "../components/ActivityHeader";
+import { Mascot } from "../components/Mascot";
 import { onVolumeChange, playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
@@ -142,6 +144,13 @@ export function Mission({ session, profile, onFinish }: Props) {
     return () => setMusic(false);
   }, [paused, finished, voice.status]);
 
+  function togglePause() {
+    voice.release(true);
+    const now = Date.now();
+    setNow(now);
+    dispatch({ type: paused ? "resume" : "pause", now });
+  }
+
   function startVoice() {
     if (voice.status !== "idle") return;
     stopSpeech();
@@ -155,24 +164,21 @@ export function Mission({ session, profile, onFinish }: Props) {
 
   return (
     <main className="shell mission-shell">
-      <header className="topbar">
-        <span className="wordmark"><span className="signal" aria-hidden="true" /> {MODES[session.mode].name}</span>
-        <button type="button" className="quiet-button" disabled={state.phase === "resolving"} onClick={() => {
-          voice.release(true);
-          const now = Date.now();
-          setNow(now);
-          dispatch({ type: paused ? "resume" : "pause", now });
-        }}>{paused ? "Resume" : "Pause"}</button>
-      </header>
+      <ActivityHeader title={MODES[session.mode].name} xp={profile.xp + state.points}
+        backDisabled={state.phase === "resolving"}
+        onBack={paused ? () => dispatch({ type: "finish", now: Date.now() }) : togglePause}>
+        <button type="button" className="quiet-button" disabled={state.phase === "resolving"} onClick={togglePause}>
+          {paused ? "Resume" : "Pause"}
+        </button>
+      </ActivityHeader>
       <section className="mission-console" aria-label="Mission">
         <div className="mission-stats">
           <span>Round <strong>{state.round}</strong></span>
           <span>Mission <strong>{clock(missionSeconds)}</strong></span>
-          {isRoadtrip
-            ? <span>Score <strong>{state.players.join(" : ")}</strong></span>
-            : <span>XP <strong>{state.points}</strong></span>}
+          {isRoadtrip && <span>Score <strong>{state.players.join(" : ")}</strong></span>}
         </div>
-        <div className="timer" style={{ "--remaining": `${progress * 100}%` } as React.CSSProperties}>
+        <div className="timer" data-warm={running && remainingSeconds <= 10}
+          style={{ "--remaining": `${progress * 100}%` } as React.CSSProperties}>
           <div className="timer-center">
             <div ref={avatar} className={speaking ? "avatar speaking" : "avatar"} aria-hidden="true"><i /><i /><i /><i /><i /></div>
             <span className="timer-value">{paused ? "Ⅱ" : isFeedback ? "✦" : clock(remainingSeconds)}</span>
@@ -248,9 +254,9 @@ export function Results({ state, profile, session, onBack }: {
   const { caption } = useBriefing([outroLine], false);
   return (
     <main className="shell narrow-shell">
-      <header className="topbar"><span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span></header>
+      <ActivityHeader title={MODES[session.mode].name} xp={profile.xp} onBack={onBack} />
       <section className="panel results">
-        <span className="field-label">{MODES[session.mode].name}</span>
+        <Mascot mood="happy" />
         <h1>Mission <em>complete.</em></h1>
         <p>{rankName(profile.rank)} · {caption}</p>
         <dl className="result-stats">

@@ -11,15 +11,16 @@ import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
 import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
+import { Setup } from "./screens/Setup";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
-import { activeModes, defaultPreferences, type Preferences } from "./state/preferences";
+import { defaultPreferences, type Preferences } from "./state/preferences";
 import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
 
 type Screen =
   | { name: "home" | "parent" | "ask" }
   | { name: "gate" }
-  | { name: "mission-check"; mode: Mode }
+  | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
   | { name: "memory" | "tic-tac-toe"; id: string }
   | { name: "reward"; points: number; video: boolean }
@@ -68,11 +69,11 @@ export default function App() {
     setScreen({ name: "reward", points, video });
   }
 
-  function launch(mode: Mode, selected: Profile) {
+  function launch(mode: Mode, selected: Profile, minutes: number) {
     if (launchPending.current || selected.ageBand === "1-2") return;
     launchPending.current = true;
     const tasks = tasksFor(mode, selected.ageBand);
-    const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: preferences.minutes };
+    const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: minutes };
     void unlock().catch(() => {});
     setScreen({ name: "mission", profile: selected, session });
   }
@@ -91,19 +92,9 @@ export default function App() {
   if (screen.name === "gate") {
     return <ParentGate onPass={() => setScreen({ name: "parent" })} onBack={goHome} />;
   }
-  if (screen.name === "mission-check") {
-    const mode = screen.mode;
-    return <LearnPage title="Ready to play?" onBack={goHome}>
-      <div className="panel learn-card">
-        <p className="safety"><strong>Parent check</strong>{" "}
-          {mode === "roadtrip" ? "Passengers only. Stay buckled and keep the driver focused."
-            : "Play with an adult nearby. Clear the floor, walk, and keep both feet on the ground."}
-        </p>
-        <button className="primary-button" type="button" onClick={() => launch(mode, profile)}>
-          Start mission · {preferences.minutes} min
-        </button>
-      </div>
-    </LearnPage>;
+  if (screen.name === "setup") {
+    return <Setup key={screen.mode} initialMode={screen.mode} preferences={preferences} xp={profile.xp}
+      onBack={goHome} onStart={(mode, minutes) => launch(mode, profile, minutes)} />;
   }
   if (screen.name === "mission") {
     const { session, profile } = screen;
@@ -160,7 +151,7 @@ export default function App() {
     return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goHome} onOpen={openVideo} />;
   }
   return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
-    onMission={(mode) => setScreen({ name: "mission-check", mode })} onQuiz={() => startLearn("quiz")}
+    onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={() => startLearn("quiz")}
     onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
     onWatch={() => setScreen({ name: "video" })} />;
 }

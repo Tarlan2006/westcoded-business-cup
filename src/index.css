@@ -43,6 +43,10 @@ button:disabled { cursor: default; color: var(--muted); background: var(--bg-sof
 
 .shell { width: min(100% - 2rem, 1100px); margin-inline: auto; padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
 .topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: .65rem; border-bottom: 1px solid var(--border); }
+.activity-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .45rem; text-align: center; }
+.activity-header-title { font: 600 clamp(1rem, 3vw, 1.3rem)/1.12 var(--font-heading); }
+.activity-header-actions { display: flex; flex-wrap: wrap; gap: .35rem; justify-content: flex-end; align-items: center; }
+.xp-chip { flex: none; display: inline-flex; align-items: center; min-height: 32px; padding: .25rem .65rem; border-radius: var(--radius-pill); background: var(--sun-soft); color: var(--accent-text); font-size: .8rem; font-weight: 900; white-space: nowrap; }
 .wordmark { display: inline-flex; align-items: center; gap: .6rem; font: 600 1.2rem/1 var(--font-heading); }
 .signal { display: inline-block; width: 1rem; aspect-ratio: 1; border: 3px solid var(--primary); border-radius: 50%; background: var(--accent); }
 .quiet-button, .primary-button, .secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; text-decoration: none; text-align: center; border: 1px solid transparent; }
@@ -95,6 +99,7 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .learn-page { display: grid; gap: 1.15rem; padding-top: clamp(1.2rem, 3vw, 2.5rem); }
 .learn-page h1 { font-size: clamp(2.05rem, 6vw, 3.4rem); }
 .learn-page > .quiet-button { justify-self: start; }
+.centered-card { width: min(100%, 620px); margin-inline: auto; }
 .learn-description, .privacy p, .results > p { color: var(--muted); }
 .activity-grid { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr)); }
 .activity-tile { position: relative; display: grid; gap: .32rem; align-content: start; justify-items: start; min-height: 115px; padding: clamp(.9rem, 2vw, 1.25rem); text-align: left; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--tile-bg, var(--bg-soft)); box-shadow: var(--shadow); transition: transform .18s ease, border-color .18s ease; }
@@ -172,6 +177,7 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .parent-panel > .quiet-button { justify-self: start; }
 .privacy h2 { margin-top: .5rem; }
 .results { text-align: center; }
+.results .mascot { width: min(31vw, 132px); margin: 0 auto .5rem; }
 .results > .field-label { margin-inline: auto; }
 .results .primary-button { width: 100%; margin-top: .65rem; }
 .result-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: .65rem; margin: 1.05rem 0; }
@@ -182,6 +188,9 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @media (max-width: 700px) {
   .intake-layout { grid-template-columns: 1fr; }
   .topbar { min-height: 62px; }
+  .activity-header .quiet-button { padding-inline: .55rem; font-size: .84rem; }
+  .activity-header-actions { gap: .3rem; }
+  .xp-chip { padding-inline: .45rem; }
   .welcome-ages { grid-template-columns: 1fr; gap: .55rem; }
   .welcome-age { grid-template-columns: 2.65rem 1fr; gap: .12rem .7rem; align-content: center; padding: .85rem 2.5rem .85rem .9rem; min-height: 94px; }
   .welcome-age .activity-icon { grid-row: span 3; align-self: center; }

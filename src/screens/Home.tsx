@@ -1,20 +1,18 @@
 import type { ReactNode } from "react";
 import type { AgeBand, Mode } from "../../shared/types";
+import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
 import type { ActivityGroup, Preferences } from "../state/preferences";
 import { rankName, type ChildProfile } from "../state/progress";
 
-export function LearnPage({ title, onBack, children, wide = false }: {
-  title: string; onBack?: () => void; children: ReactNode; wide?: boolean;
+export function LearnPage({ title, onBack, backHref, children, wide = false, xp }: {
+  title: string; onBack?: () => void; backHref?: string; children: ReactNode; wide?: boolean; xp?: number;
 }) {
   return (
     <main className={wide ? "shell" : "shell learn-shell"}>
-      <header className="topbar">
-        <span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span>
-        {onBack && <button className="quiet-button" type="button" onClick={onBack}>Back</button>}
-      </header>
+      <ActivityHeader title={title} onBack={onBack} backHref={backHref} xp={xp} />
       <section className="learn-page" aria-label={title}>
         <h1>{title}</h1>
         {children}
