@@ -47,3 +47,9 @@ Rollback: inspect npx wrangler deployments list and run npx wrangler rollback VE
 ## Pending host naming release
 
 Prepared only; do not deploy until the user explicitly says “деплой”. The host is MyPal and addresses children as pal. The dedicated CONTINUE clip is common_setup_greeting. See MYPAL_HOST_HANDOFF.md for frontend integration and the regenerated clip list. Keep the current MyPal production URL, legacy URL and localhost in ALLOWED_ORIGINS. Frontend text/flow integration is owned by agent 2.
+
+## MyPal host UI published — 2026-11-15
+
+Source: b1e0868. Version: 50fbd38f-a3f4-4f5f-8a91-84112576fe2c. Published after explicit user approval, using --keep-vars; secrets unchanged. Frontend host strings and accessibility labels use APP_NAME; internal component/CSS names are retained. CONTINUE starts common_setup_greeting when sound is enabled and opens Parent Setup without waiting for audio. Forced welcome with a saved profile also opens Parent Setup.
+
+Local and production Chrome tests passed at 390px and 1280px: exact greeting, Parent Setup, MP3 request and AudioBufferSourceNode start. Muted and missing-clip scenarios preserve navigation. Typecheck, build, content (140/140 clips), Worker/FAQ tests passed. Preview greeting: https://mypal.tarlan-b06.workers.dev/?welcome=1. This supersedes the pending frontend handoff above.
