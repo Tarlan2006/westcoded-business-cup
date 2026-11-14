@@ -12,14 +12,14 @@ import { SpeechBubble } from "../components/GameUI";
 import { Mascot } from "../components/Mascot";
 import { SessionActivity } from "../components/SessionControls";
 
-type Exchange = { question: string; answer: string };
 
-async function askServer(question: string, topics: TopicId[], history: Exchange[], controller: AbortController): Promise<AskResponse> {
+
+async function askServer(question: string, controller: AbortController): Promise<AskResponse> {
   try {
     const response = await fetch("/api/ask", {
       method: "POST", cache: "no-store", signal: controller.signal,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, ageBand: "6-8", topics, history } satisfies AskRequest),
+      body: JSON.stringify({ question } satisfies AskRequest),
     });
     if (response.ok) {
       const result: Partial<AskResponse> | null = await response.json();
@@ -40,8 +40,6 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState("");
   const [result, setResult] = useState<AskResponse>();
-  // Kept only while this screen is open; never saved.
-  const history = useRef<Exchange[]>([]);
   const [topic, setTopic] = useState("sky and space");
   const [busy, setBusy] = useState(false);
   const [voiceHint, setVoiceHint] = useState("");
@@ -83,11 +81,10 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
     setQuestion("");
     const timeout = window.setTimeout(() => controller.abort(), 9000);
     try {
-      const response = await askServer(text, topics, history.current, controller);
+      const response = await askServer(text, controller);
       if (request.current !== controller) return;
       setAsked(text);
       setResult(response);
-      history.current = response.source === "llm" ? [...history.current, { question: text, answer: response.answer }].slice(-2) : history.current;
       setTopic(quizTopic(text));
       if (response.source !== "refusal") onAnswer();
       if (sound) void speakFallback(response.answer);

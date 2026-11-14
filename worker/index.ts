@@ -9,6 +9,7 @@ import { maxWavBytes, recognizeSpeech, validWav } from "./stt";
 import { isTurnRequest } from "./turn-contract";
 
 export interface Env {
+  ASSETS?: Fetcher;
   AI: Ai;
   ALLOWED_ORIGINS?: string;
   GROQ_API_KEY?: string;
@@ -18,6 +19,22 @@ export interface Env {
 type WorkerEnv = { Bindings: Env };
 const app = new Hono<WorkerEnv>();
 const limiter = new IpLimiter();
+app.use("*", async (c, next) => {
+  c.header("X-Content-Type-Options", "nosniff");
+  c.header("Referrer-Policy", "strict-origin-when-cross-origin");
+  c.header("X-Frame-Options", "DENY");
+  c.header("Content-Security-Policy", "frame-ancestors 'none'");
+  c.header("Permissions-Policy", "microphone=(self), camera=(), geolocation=()");
+  const url = new URL(c.req.url);
+  if (url.protocol === "http:" && url.hostname.endsWith(".workers.dev")) {
+    url.protocol = "https:";
+    return c.redirect(url.href, 308);
+  }
+  await next();
+  if (/^\/assets\/worker-.*\.js$/.test(url.pathname)) c.header("Referrer-Policy", "no-referrer");
+  if (/^\/assets\/.+-[\w-]+\.(js|css|woff2?|ttf)$/.test(url.pathname) && c.res.status === 200)
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+});
 app.use("/api/*", async (c,next) => {
  c.header("Cache-Control","no-store"); c.header("Vary","Origin");
  const origin=c.req.header("Origin");
@@ -61,5 +78,14 @@ app.post("/api/turn", bodyLimit({
 });
 
 app.onError((_error, c) => c.json({ error: "Request could not be processed" }, 500));
+
+app.all("/api/*", c => c.json({ error: "Let's return to the game." }, 404));
+app.get("*", async c => {
+  const url = new URL(c.req.url);
+  if (/(^|\/)\.(env|git)(\/|$|\.)|\.map$/.test(url.pathname)) return c.text("Not found", 404);
+  if (!c.env.ASSETS) return c.text("Not found", 404);
+  if (url.pathname === "/privacy" || url.pathname === "/privacy/") url.pathname = "/";
+  return c.env.ASSETS.fetch(new Request(url, c.req.raw));
+});
 
 export default app;

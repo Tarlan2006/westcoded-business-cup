@@ -1,0 +1,1134 @@
+{
+  "version": 1,
+  "meta": {
+    "applicable": {
+      "images": false,
+      "hreflang": false,
+      "anchors": false,
+      "jsonld": false,
+      "ogImage": true,
+      "twitterImage": false,
+      "fingerprints": false,
+      "multipage": false,
+      "https": true,
+      "tls": true,
+      "sitemap": false,
+      "llmsTxt": true,
+      "expect": false,
+      "psi": false,
+      "psiField": false,
+      "redirects": false,
+      "external": false,
+      "compareAs": false,
+      "hosts": false
+    },
+    "ignored": 0,
+    "origin": "https://mypal.tarlan-b06.workers.dev",
+    "pages": 1,
+    "notIndexable": 0,
+    "requests": 11,
+    "ms": 2390,
+    "date": "2026-11-14",
+    "sitemap": null
+  },
+  "findings": [
+    {
+      "level": "warn",
+      "id": "no-sitemap",
+      "title": "No sitemap found",
+      "detail": "Tried: https://mypal.tarlan-b06.workers.dev/sitemap-index.xml → 200, https://mypal.tarlan-b06.workers.dev/sitemap_index.xml → 200, https://mypal.tarlan-b06.workers.dev/sitemap.xml → 200. This run followed links from the homepage instead, which is what a crawler has to do without one — 1 pages were reached that way. A sitemap states the pages you want indexed rather than leaving it to be inferred, and carries lastmod. Pass --sitemap <url> if one exists somewhere unusual.",
+      "url": "https://mypal.tarlan-b06.workers.dev",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "warn",
+      "id": "title-short",
+      "title": "Title is very short",
+      "detail": "5 chars: \"MyPal\"",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "error",
+      "id": "h1-missing",
+      "title": "No <h1>",
+      "detail": "The page has no headline.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "warn",
+      "id": "canonical-missing",
+      "title": "No canonical link",
+      "detail": "Duplicate URLs will compete with each other.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "warn",
+      "id": "og-description-missing",
+      "title": "Missing og:description",
+      "detail": "Shared links preview with whatever text the platform scrapes.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "og-no-dimensions",
+      "title": "og:image has no declared width/height",
+      "detail": "Scrapers guess, and some skip the preview rather than guess.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "warn",
+      "id": "thin-content",
+      "title": "Thin page",
+      "detail": "1 words. Under ~300 rarely ranks for anything competitive.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "no-editorial-links",
+      "title": "No links inside the content",
+      "detail": "Only navigation links out of this page — nothing passes authority to related pages.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "robots-no-sitemap",
+      "title": "robots.txt does not list a sitemap",
+      "detail": "One line, and every crawler finds the sitemap without guessing.",
+      "url": "https://mypal.tarlan-b06.workers.dev/robots.txt"
+    },
+    {
+      "level": "error",
+      "id": "soft-404",
+      "title": "A page that does not exist answers 200",
+      "detail": "https://mypal.tarlan-b06.workers.dev/seo-audit-probe-404/ answers 200 directly, with an HTML body. Every mistyped or stale URL is a live, indexable page, so the index fills with copies of the error page. Return a real 404.",
+      "url": "https://mypal.tarlan-b06.workers.dev/seo-audit-probe-404/"
+    },
+    {
+      "level": "warn",
+      "id": "host-variant-dead",
+      "title": "https://www.mypal.tarlan-b06.workers.dev/ does not resolve to a page",
+      "detail": "Request failed: fetch failed",
+      "url": "https://www.mypal.tarlan-b06.workers.dev/"
+    },
+    {
+      "level": "warn",
+      "id": "host-variant-dead",
+      "title": "http://www.mypal.tarlan-b06.workers.dev/ does not resolve to a page",
+      "detail": "Ends at HTTP 404",
+      "url": "http://www.mypal.tarlan-b06.workers.dev/"
+    },
+    {
+      "level": "warn",
+      "id": "header-strict-transport-security",
+      "title": "HSTS not set",
+      "detail": "Browsers will try HTTP first on the next visit.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "header-x-content-type-options",
+      "title": "X-Content-Type-Options not set",
+      "detail": "nosniff stops MIME-type guessing.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "header-referrer-policy",
+      "title": "Referrer-Policy not set",
+      "detail": "Full URLs leak to third parties by default.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    },
+    {
+      "level": "info",
+      "id": "header-content-security-policy",
+      "title": "No Content-Security-Policy",
+      "detail": "The strongest defence against injected scripts.",
+      "url": "https://mypal.tarlan-b06.workers.dev/",
+      "reach": {
+        "inlinks": 0,
+        "depth": 0
+      }
+    }
+  ],
+  "causes": [
+    {
+      "id": "h1-missing",
+      "title": "No <h1>",
+      "level": "error",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Content"
+    },
+    {
+      "id": "soft-404",
+      "title": "A page that does not exist answers 200",
+      "level": "error",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/seo-audit-probe-404/"
+      ],
+      "scope": "once",
+      "area": "Indexability"
+    },
+    {
+      "id": "canonical-missing",
+      "title": "No canonical link",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Indexability"
+    },
+    {
+      "id": "header-strict-transport-security",
+      "title": "HSTS not set",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Site & security"
+    },
+    {
+      "id": "no-sitemap",
+      "title": "No sitemap found",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev"
+      ],
+      "scope": "once",
+      "area": "Sitemap & robots"
+    },
+    {
+      "id": "og-description-missing",
+      "title": "Missing og:description",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Social"
+    },
+    {
+      "id": "thin-content",
+      "title": "Thin page",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Content"
+    },
+    {
+      "id": "title-short",
+      "title": "Title is very short",
+      "level": "warn",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Content"
+    },
+    {
+      "id": "host-variant-dead",
+      "title": "https://www.mypal.tarlan-b06.workers.dev/ does not resolve to a page",
+      "level": "warn",
+      "section": "/",
+      "count": 2,
+      "pages": [
+        "https://www.mypal.tarlan-b06.workers.dev/",
+        "http://www.mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "2 pages across the site, 200% of the crawl",
+      "area": "Redirects"
+    },
+    {
+      "id": "header-content-security-policy",
+      "title": "No Content-Security-Policy",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Site & security"
+    },
+    {
+      "id": "header-referrer-policy",
+      "title": "Referrer-Policy not set",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Site & security"
+    },
+    {
+      "id": "header-x-content-type-options",
+      "title": "X-Content-Type-Options not set",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Site & security"
+    },
+    {
+      "id": "no-editorial-links",
+      "title": "No links inside the content",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Links"
+    },
+    {
+      "id": "og-no-dimensions",
+      "title": "og:image has no declared width/height",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/"
+      ],
+      "scope": "once",
+      "area": "Social"
+    },
+    {
+      "id": "robots-no-sitemap",
+      "title": "robots.txt does not list a sitemap",
+      "level": "info",
+      "section": "/",
+      "count": 1,
+      "pages": [
+        "https://mypal.tarlan-b06.workers.dev/robots.txt"
+      ],
+      "scope": "once",
+      "area": "Sitemap & robots"
+    }
+  ],
+  "score": {
+    "score": 48,
+    "grade": "F",
+    "ifErrorsFixed": 72,
+    "lost": 52,
+    "checks": {
+      "passed": 47,
+      "failed": 9,
+      "skipped": 50
+    },
+    "weights": {
+      "error": 12,
+      "warn": 4
+    },
+    "passed": [
+      {
+        "id": "page-status",
+        "area": "Indexability",
+        "pass": "Every page answers 200",
+        "worst": "error"
+      },
+      {
+        "id": "unreachable",
+        "area": "Indexability",
+        "pass": "The site answers",
+        "worst": "error"
+      },
+      {
+        "id": "nothing-crawlable",
+        "area": "Indexability",
+        "pass": "There is something to crawl",
+        "worst": "error"
+      },
+      {
+        "id": "noindex",
+        "area": "Indexability",
+        "pass": "No page in the sitemap says noindex",
+        "worst": "error"
+      },
+      {
+        "id": "x-robots-noindex",
+        "area": "Indexability",
+        "pass": "No X-Robots-Tag hides a page",
+        "worst": "error"
+      },
+      {
+        "id": "nofollow-page",
+        "area": "Indexability",
+        "pass": "No page tells Google to follow none of its links",
+        "worst": "warn"
+      },
+      {
+        "id": "robots-conflict",
+        "area": "Indexability",
+        "pass": "The robots meta and header agree",
+        "worst": "warn"
+      },
+      {
+        "id": "body-not-html",
+        "area": "Indexability",
+        "pass": "Every page served as HTML is HTML",
+        "worst": "warn"
+      },
+      {
+        "id": "canonical-multiple",
+        "area": "Indexability",
+        "pass": "No page declares two canonicals",
+        "worst": "error"
+      },
+      {
+        "id": "canonical-dead",
+        "area": "Indexability",
+        "pass": "Every canonical target loads",
+        "worst": "error"
+      },
+      {
+        "id": "canonical-redirects",
+        "area": "Indexability",
+        "pass": "No canonical points at a redirect",
+        "worst": "error"
+      },
+      {
+        "id": "canonical-noindex",
+        "area": "Indexability",
+        "pass": "No canonical points at a noindexed page",
+        "worst": "error"
+      },
+      {
+        "id": "canonical-paginated",
+        "area": "Indexability",
+        "pass": "Paginated pages name themselves",
+        "worst": "error"
+      },
+      {
+        "id": "canonical-chain",
+        "area": "Indexability",
+        "pass": "No canonical target is canonicalised again",
+        "worst": "warn"
+      },
+      {
+        "id": "title-missing",
+        "area": "Content",
+        "pass": "Every page has a title",
+        "worst": "error"
+      },
+      {
+        "id": "title-long",
+        "area": "Content",
+        "pass": "No title is cut off in results",
+        "worst": "warn"
+      },
+      {
+        "id": "desc-missing",
+        "area": "Content",
+        "pass": "Every page has a meta description",
+        "worst": "warn"
+      },
+      {
+        "id": "desc-long",
+        "area": "Content",
+        "pass": "No meta description is cut off",
+        "worst": "warn"
+      },
+      {
+        "id": "h1-multiple",
+        "area": "Content",
+        "pass": "No page has two h1s",
+        "worst": "warn"
+      },
+      {
+        "id": "heading-skip",
+        "area": "Content",
+        "pass": "Heading levels do not skip",
+        "worst": "warn"
+      },
+      {
+        "id": "lang-missing",
+        "area": "Content",
+        "pass": "Every page declares its language",
+        "worst": "warn"
+      },
+      {
+        "id": "charset-missing",
+        "area": "Content",
+        "pass": "Every page declares its character set",
+        "worst": "warn"
+      },
+      {
+        "id": "viewport-missing",
+        "area": "Content",
+        "pass": "Every page declares a viewport",
+        "worst": "error"
+      },
+      {
+        "id": "viewport-locked",
+        "area": "Content",
+        "pass": "No viewport blocks zooming",
+        "worst": "warn"
+      },
+      {
+        "id": "viewport-fixed-width",
+        "area": "Content",
+        "pass": "No viewport is a fixed pixel width",
+        "worst": "warn"
+      },
+      {
+        "id": "broken-link",
+        "area": "Links",
+        "pass": "Every internal link resolves",
+        "worst": "error"
+      },
+      {
+        "id": "link-no-text",
+        "area": "Links",
+        "pass": "Every destination has a link that names it",
+        "worst": "warn"
+      },
+      {
+        "id": "meta-refresh",
+        "area": "Redirects",
+        "pass": "No page redirects with a meta refresh",
+        "worst": "warn"
+      },
+      {
+        "id": "redirect-chain",
+        "area": "Redirects",
+        "pass": "No redirect takes more than one hop",
+        "worst": "warn"
+      },
+      {
+        "id": "trailing-slash",
+        "area": "Redirects",
+        "pass": "Trailing slashes are consistent",
+        "worst": "warn"
+      },
+      {
+        "id": "og-title-missing",
+        "area": "Social",
+        "pass": "Every page has an og:title",
+        "worst": "warn"
+      },
+      {
+        "id": "og-image-missing",
+        "area": "Social",
+        "pass": "Every page has an og:image",
+        "worst": "warn"
+      },
+      {
+        "id": "og-image-relative",
+        "area": "Social",
+        "pass": "Every og:image is an absolute URL",
+        "worst": "error"
+      },
+      {
+        "id": "og-image-broken",
+        "area": "Social",
+        "pass": "Every og:image loads",
+        "worst": "error"
+      },
+      {
+        "id": "og-image-heavy",
+        "area": "Social",
+        "pass": "No og:image is too heavy to scrape",
+        "worst": "warn"
+      },
+      {
+        "id": "og-webp",
+        "area": "Social",
+        "pass": "No og:image is WebP",
+        "worst": "warn"
+      },
+      {
+        "id": "content-language-mismatch",
+        "area": "Multilingual",
+        "pass": "html lang agrees with the Content-Language header",
+        "worst": "warn"
+      },
+      {
+        "id": "robots-missing",
+        "area": "Sitemap & robots",
+        "pass": "robots.txt is there",
+        "worst": "warn"
+      },
+      {
+        "id": "robots-blocks-all",
+        "area": "Sitemap & robots",
+        "pass": "robots.txt does not block the site",
+        "worst": "error"
+      },
+      {
+        "id": "ai-crawler-conflict",
+        "area": "AI & answer engines",
+        "pass": "robots.txt and llms.txt agree about AI assistants",
+        "worst": "warn"
+      },
+      {
+        "id": "favicon-broken",
+        "area": "Site & security",
+        "pass": "The favicon loads",
+        "worst": "warn"
+      },
+      {
+        "id": "mixed-content",
+        "area": "Site & security",
+        "pass": "No page loads an insecure subresource",
+        "worst": "error"
+      },
+      {
+        "id": "tls-expired",
+        "area": "Site & security",
+        "pass": "The TLS certificate is valid",
+        "worst": "error"
+      },
+      {
+        "id": "tls-expiring",
+        "area": "Site & security",
+        "pass": "The TLS certificate is not about to expire",
+        "worst": "warn"
+      },
+      {
+        "id": "url-uppercase",
+        "area": "Site & security",
+        "pass": "No URL has uppercase in its path",
+        "worst": "warn"
+      },
+      {
+        "id": "url-space",
+        "area": "Site & security",
+        "pass": "No URL has a space in it",
+        "worst": "warn"
+      },
+      {
+        "id": "uncompressed",
+        "area": "Performance",
+        "pass": "HTML arrives compressed",
+        "worst": "warn"
+      }
+    ],
+    "failed": [
+      {
+        "id": "h1-missing",
+        "area": "Content",
+        "level": "error",
+        "worst": "error",
+        "pages": 1,
+        "scope": "page",
+        "cost": 12
+      },
+      {
+        "id": "soft-404",
+        "area": "Indexability",
+        "level": "error",
+        "worst": "error",
+        "pages": 1,
+        "scope": "site",
+        "cost": 12
+      },
+      {
+        "id": "canonical-missing",
+        "area": "Indexability",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "page",
+        "cost": 4
+      },
+      {
+        "id": "header-strict-transport-security",
+        "area": "Site & security",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "site",
+        "cost": 4
+      },
+      {
+        "id": "host-variant-dead",
+        "area": "Redirects",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 2,
+        "scope": "site",
+        "cost": 4
+      },
+      {
+        "id": "no-sitemap",
+        "area": "Sitemap & robots",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "site",
+        "cost": 4
+      },
+      {
+        "id": "og-description-missing",
+        "area": "Social",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "page",
+        "cost": 4
+      },
+      {
+        "id": "thin-content",
+        "area": "Content",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "page",
+        "cost": 4
+      },
+      {
+        "id": "title-short",
+        "area": "Content",
+        "level": "warn",
+        "worst": "warn",
+        "pages": 1,
+        "scope": "page",
+        "cost": 4
+      }
+    ],
+    "skipped": [
+      {
+        "id": "serves-differently",
+        "area": "Indexability",
+        "pass": "Pages read the same to another visitor",
+        "why": "The pages were not fetched a second time — run with --compare-as."
+      },
+      {
+        "id": "duplicate-title",
+        "area": "Content",
+        "pass": "No two pages share a title",
+        "why": "Only one page was crawled."
+      },
+      {
+        "id": "duplicate-description",
+        "area": "Content",
+        "pass": "No two pages share a description",
+        "why": "Only one page was crawled."
+      },
+      {
+        "id": "duplicate-content",
+        "area": "Content",
+        "pass": "No page is another page again",
+        "why": "No page marks its content region, so pages cannot be compared."
+      },
+      {
+        "id": "fragment-missing",
+        "area": "Links",
+        "pass": "Every link to a section finds it",
+        "why": "No crawled page links to a section inside another crawled page."
+      },
+      {
+        "id": "external-broken",
+        "area": "Links",
+        "pass": "Every outbound link resolves",
+        "why": "Outbound links were not checked — run with --check-external.",
+        "enabledBy": "--check-external"
+      },
+      {
+        "id": "orphan-page",
+        "area": "Links",
+        "pass": "No page is linked from nowhere",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "no-path-from-home",
+        "area": "Links",
+        "pass": "Every page is reachable from the homepage",
+        "why": "Only one page was crawled."
+      },
+      {
+        "id": "missing-from-sitemap",
+        "area": "Links",
+        "pass": "Every linked page is in the sitemap",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "sitemap-redirect",
+        "area": "Redirects",
+        "pass": "No sitemap URL redirects",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "redirect-dead",
+        "area": "Redirects",
+        "pass": "Every URL in the redirect map still leads somewhere",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "redirect-broken",
+        "area": "Redirects",
+        "pass": "Every redirect lands on a page that loads",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "redirect-not-applied",
+        "area": "Redirects",
+        "pass": "Every rule in the map is in effect",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "redirect-hops",
+        "area": "Redirects",
+        "pass": "No redirect takes more than one hop",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "redirect-elsewhere",
+        "area": "Redirects",
+        "pass": "Every redirect lands where the map says",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "redirect-temporary",
+        "area": "Redirects",
+        "pass": "Permanent redirects are served as 301",
+        "why": "No redirect map was given — run with --redirects."
+      },
+      {
+        "id": "img-alt",
+        "area": "Images",
+        "pass": "Every image has an alt attribute",
+        "why": "No page carries an image."
+      },
+      {
+        "id": "img-alt-filename",
+        "area": "Images",
+        "pass": "No alt text is a filename",
+        "why": "No page carries an image."
+      },
+      {
+        "id": "img-alt-placeholder",
+        "area": "Images",
+        "pass": "No alt text is a placeholder",
+        "why": "No page carries an image."
+      },
+      {
+        "id": "img-dimensions",
+        "area": "Images",
+        "pass": "Every image declares width and height",
+        "why": "No page carries an image."
+      },
+      {
+        "id": "broken-image",
+        "area": "Images",
+        "pass": "Every image loads",
+        "why": "No page carries an image."
+      },
+      {
+        "id": "twitter-image-broken",
+        "area": "Social",
+        "pass": "Every twitter:image loads",
+        "why": "No page declares a twitter:image of its own."
+      },
+      {
+        "id": "jsonld-invalid",
+        "area": "Structured data",
+        "pass": "All JSON-LD parses",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "jsonld-no-type",
+        "area": "Structured data",
+        "pass": "All JSON-LD declares a @type",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "schema-incomplete",
+        "area": "Structured data",
+        "pass": "Structured data carries what Google requires",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "schema-date-order",
+        "area": "Structured data",
+        "pass": "Structured-data dates do not contradict each other",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "schema-date-future",
+        "area": "Structured data",
+        "pass": "No structured-data date is in the future",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "schema-image-broken",
+        "area": "Structured data",
+        "pass": "Images named in structured data load",
+        "why": "No page carries structured data."
+      },
+      {
+        "id": "schema-expected",
+        "area": "Structured data",
+        "pass": "Pages carry the schema types expected of them",
+        "why": "No schema expectations are configured."
+      },
+      {
+        "id": "hreflang-invalid",
+        "area": "Multilingual",
+        "pass": "Every hreflang code is well formed",
+        "why": "No page declares hreflang."
+      },
+      {
+        "id": "hreflang-one-way",
+        "area": "Multilingual",
+        "pass": "hreflang is reciprocal",
+        "why": "No page declares hreflang."
+      },
+      {
+        "id": "hreflang-dead",
+        "area": "Multilingual",
+        "pass": "Every hreflang alternate loads",
+        "why": "No page declares hreflang."
+      },
+      {
+        "id": "hreflang-no-self",
+        "area": "Multilingual",
+        "pass": "Every hreflang set lists its own page",
+        "why": "No page declares hreflang."
+      },
+      {
+        "id": "hreflang-lang-mismatch",
+        "area": "Multilingual",
+        "pass": "html lang agrees with hreflang",
+        "why": "No page declares hreflang."
+      },
+      {
+        "id": "robots-blocks-sitemap-url",
+        "area": "Sitemap & robots",
+        "pass": "robots.txt does not block its own sitemap URLs",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "sitemap-not-indexable",
+        "area": "Sitemap & robots",
+        "pass": "Every sitemap URL is indexable",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "sitemap-lastmod-future",
+        "area": "Sitemap & robots",
+        "pass": "No lastmod is in the future",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "sitemap-too-many-urls",
+        "area": "Sitemap & robots",
+        "pass": "Every sitemap file is within 50,000 URLs",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "sitemap-too-large",
+        "area": "Sitemap & robots",
+        "pass": "Every sitemap file is within 50MB",
+        "why": "No sitemap was found."
+      },
+      {
+        "id": "subdomain-takeover",
+        "area": "Site & security",
+        "pass": "No subdomain points at a service that is gone",
+        "why": "The rest of the domain was not enumerated — run with --hosts.",
+        "enabledBy": "--hosts"
+      },
+      {
+        "id": "staging-indexable",
+        "area": "Site & security",
+        "pass": "No staging copy is open to the index",
+        "why": "The rest of the domain was not enumerated — run with --hosts.",
+        "enabledBy": "--hosts"
+      },
+      {
+        "id": "duplicate-host",
+        "area": "Site & security",
+        "pass": "No other host serves the same site again",
+        "why": "The rest of the domain was not enumerated — run with --hosts.",
+        "enabledBy": "--hosts"
+      },
+      {
+        "id": "psi-score",
+        "area": "Performance",
+        "pass": "PageSpeed scores the pages well",
+        "why": "PageSpeed was not asked — run with --psi.",
+        "enabledBy": "--psi"
+      },
+      {
+        "id": "psi-lcp",
+        "area": "Performance",
+        "pass": "Largest Contentful Paint is good in the lab",
+        "why": "PageSpeed was not asked — run with --psi.",
+        "enabledBy": "--psi"
+      },
+      {
+        "id": "psi-cls",
+        "area": "Performance",
+        "pass": "Cumulative Layout Shift is good in the lab",
+        "why": "PageSpeed was not asked — run with --psi.",
+        "enabledBy": "--psi"
+      },
+      {
+        "id": "psi-inp",
+        "area": "Performance",
+        "pass": "Interaction to Next Paint is good in the lab",
+        "why": "PageSpeed was not asked — run with --psi.",
+        "enabledBy": "--psi"
+      },
+      {
+        "id": "psi-field-lcp",
+        "area": "Performance",
+        "pass": "Real visitors get a good Largest Contentful Paint",
+        "why": "Google has no real-visitor data for these pages yet."
+      },
+      {
+        "id": "psi-field-cls",
+        "area": "Performance",
+        "pass": "Real visitors get a good Cumulative Layout Shift",
+        "why": "Google has no real-visitor data for these pages yet."
+      },
+      {
+        "id": "psi-field-inp",
+        "area": "Performance",
+        "pass": "Real visitors get a good Interaction to Next Paint",
+        "why": "Google has no real-visitor data for these pages yet."
+      },
+      {
+        "id": "psi-opportunity",
+        "area": "Performance",
+        "pass": "PageSpeed found nothing worth a second",
+        "why": "PageSpeed was not asked — run with --psi.",
+        "enabledBy": "--psi"
+      }
+    ],
+    "areas": [
+      {
+        "name": "Content",
+        "lost": 20,
+        "passed": 11,
+        "failed": 3
+      },
+      {
+        "name": "Indexability",
+        "lost": 16,
+        "passed": 14,
+        "failed": 2
+      },
+      {
+        "name": "Redirects",
+        "lost": 4,
+        "passed": 3,
+        "failed": 1
+      },
+      {
+        "name": "Site & security",
+        "lost": 4,
+        "passed": 6,
+        "failed": 1
+      },
+      {
+        "name": "Sitemap & robots",
+        "lost": 4,
+        "passed": 2,
+        "failed": 1
+      },
+      {
+        "name": "Social",
+        "lost": 4,
+        "passed": 6,
+        "failed": 1
+      },
+      {
+        "name": "AI & answer engines",
+        "lost": 0,
+        "passed": 1,
+        "failed": 0
+      },
+      {
+        "name": "Links",
+        "lost": 0,
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "name": "Multilingual",
+        "lost": 0,
+        "passed": 1,
+        "failed": 0
+      },
+      {
+        "name": "Performance",
+        "lost": 0,
+        "passed": 1,
+        "failed": 0
+      }
+    ]
+  }
+}

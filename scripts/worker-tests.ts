@@ -15,6 +15,15 @@ const originalFetch = globalThis.fetch;
 const env = { GROQ_API_KEY:"test", LLM_MODEL:"test" };
 const request = (question: string, extra = {}) => app.request("/api/ask", {method:"POST", headers:{"Content-Type":"application/json","CF-Connecting-IP":String(++ip)}, body:JSON.stringify({question,ageBand:"6-8",...extra})}, env);
 try {
+ for (const path of ["/api/missing", "/.env", "/.git/config", "/assets/test.js.map"]) {
+  const res = await app.request(path, {}, env);
+  assert.equal(res.status, 404);
+  assert.equal(res.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.equal(res.headers.get("Permissions-Policy"), "microphone=(self), camera=(), geolocation=()");
+ }
+ const redirect = await app.request("http://mypal.tarlan-b06.workers.dev/", {}, env);
+ assert.equal(redirect.status, 308);
+ assert.equal(redirect.headers.get("Location"), "https://mypal.tarlan-b06.workers.dev/");
  const marker="PARENT_PRIVATE_CONTEXT_SENTINEL"; let forwarded="";
  globalThis.fetch=async (_url, options)=>{ forwarded+=String(options?.body); return Response.json({choices:[{message:{content:"Wheels turn to help things move."}}]}); };
  const setupResponse=await app.request("/api/setup",{method:"POST",headers:{"Content-Type":"application/json","CF-Connecting-IP":"parent-setup"},body:JSON.stringify({text:marker,parentContext:marker,notes:marker})},env);

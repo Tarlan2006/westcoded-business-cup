@@ -4,7 +4,7 @@ export type Activity = Mode | "video" | "toddler" | "quiz" | "ask" | "memory" | 
 
 export interface AskRequest {
   question: string;
-  ageBand: AgeBand;
+  ageBand?: AgeBand;
   topics?: string[];       // ids from shared/topics.ts, the child's favorite topics
   history?: { question: string; answer: string }[]; // last exchanges on this screen, for follow-ups
 }

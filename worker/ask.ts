@@ -89,6 +89,7 @@ async function workersText(messages: Message[], ai: Ai, model: string): Promise<
 // Asks the cloud models in order (Groq if a key is set, then Workers AI) and returns
 // the first reply that `accept` approves. Two attempts at most keep the wait short.
 export async function cloudComplete(messages: Message[], env: AskBindings, accept: (text: string) => boolean): Promise<string | undefined> {
+  const expiresAt = Date.now() + 7000;
   const key = env.GROQ_API_KEY?.trim();
   const attempts: (() => Promise<string | undefined>)[] = [];
   if (key) attempts.push(() => groqText(messages, key, env.LLM_MODEL?.trim() || defaultGroqModel));
@@ -99,8 +100,10 @@ export async function cloudComplete(messages: Message[], env: AskBindings, accep
     if (primary !== backupWorkersModel) attempts.push(() => workersText(messages, ai, backupWorkersModel));
   }
   for (const attempt of attempts.slice(0, 2)) {
+    const remaining = expiresAt - Date.now();
+    if (remaining <= 0) break;
     try {
-      const text = await deadline(attempt());
+      const text = await deadline(attempt(), remaining);
       if (text && accept(text)) return text;
     } catch {
       // Try the next cloud model.

@@ -34,3 +34,12 @@ Existing visual identity, colors, fonts and product copy are preserved. Error/40
 - Do not delete original design sources or recorded clips merely because static analysis misses dynamic registries.
 
 Further stage results, screenshots, scanner output, cleanup decisions and before/after measurements will be appended here.
+
+## Stage 2 — security, privacy and routing
+
+- SEC-01/02 and ROUTE-01 fixed locally: all requests pass the Worker, HTTPS redirect on public workers.dev hosts, nosniff/referrer/frame/permissions headers, explicit 404 for private-file probes and missing APIs. A friendly static 404 uses the existing palette and mascot. CSP only sets `frame-ancestors 'none'`; it does not restrict media/script sources.
+- The existing voice-worker `Referrer-Policy: no-referrer` exception is retained because model downloads require it. Camera/geolocation disabled; microphone restricted to self.
+- PRIV-01: `/api/ask` now sends `{question}` only. Removed client conversation history transmission. Structured Hunt candidates and optional STT audio remain necessary API inputs; the instruction “only question” cannot literally apply to STT/game-turn endpoints. Parent notes/nickname are not included.
+- API-01: total cloud-answer fallback deadline is seven seconds. Existing friendly 200 refusal/empty-speech bodies remain intentional, backwards-compatible successful safe responses; malformed turn requests, oversized requests, foreign origins, rate limits and missing APIs use 4xx/5xx.
+- Worker regression tests pass, including private paths, HTTPS redirect, header policy, ignored parent context, injection, CORS and mocked provider failure. Typecheck/build pass. No Cloudflare settings/secrets or production deployment changed.
+- SEO scanner before: 48/100, two errors and eight warnings; [full report](docs/audit/seo-before.md). External scanner timestamps follow its UTC clock; this audit uses the user's local date.
