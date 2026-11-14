@@ -1,0 +1,26 @@
+{
+  "viewports": [
+    360,
+    390,
+    1280
+  ],
+  "touch": "Chromium CDP, DPR 2",
+  "physicalIPhoneTested": false,
+  "report": [
+    "24 strokes can all be undone to the original white canvas",
+    "Resizing preserves the original strokes and their proportions",
+    "Clear confirmation preserves or removes the drawing correctly",
+    "Eraser paints white and can be undone as a stroke",
+    "PNG download has a valid PNG signature",
+    "Desktop complete flow, six clues, live checklist and onComplete(27)",
+    "Play again resets the drawing; blank canvas remains 0% after all checks",
+    "390px DPR 2: real touch events draw without scrolling; toolbar has two 48px rows",
+    "360px layout has no overflow and keeps tools in two rows",
+    "A single-color flooded canvas stays at or below 25% with all clues checked",
+    "SVG Image failure gracefully uses checklist-only scoring",
+    "Optional speech auto-reads new clues, Hear it repeats, Back exits",
+    "No browser errors, no HTTP requests during play, no local/session storage writes"
+  ],
+  "browserErrors": [],
+  "gameplayHttpRequests": []
+}
