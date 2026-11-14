@@ -23,6 +23,8 @@
   font-weight: 900;
 }
 .ttt-level[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.ttt-level:disabled { background: transparent; }
+.ttt-level:disabled[aria-pressed="true"] { background: var(--primary-soft); }
 .ttt-score { padding: 7px 9px; border-radius: var(--radius-pill); background: var(--sun-soft); color: var(--accent-text); font-size: .79rem; font-weight: 900; white-space: nowrap; }
 .ttt-score span { padding-inline: .15em; }
 .ttt-host { grid-area: host; display: flex; justify-content: center; align-items: center; min-height: 50px; gap: 10px; }
@@ -152,6 +154,12 @@
   .ttt-title, .ttt-controls, .ttt-host, .ttt-actions { text-align: left; justify-content: flex-start; }
   .ttt-mascot { flex-basis: 88px; }
   .ttt-bubble { background: var(--surface); }
+}
+
+@media (max-height: 680px) and (max-width: 739px) {
+  main.ttt-shell { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+  .ttt-room { margin-top: 6px; gap: 6px; }
+  .ttt-board { width: min(100%, 312px); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
