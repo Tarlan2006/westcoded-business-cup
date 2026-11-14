@@ -1,0 +1,256 @@
+{
+  "commit": "85db5da0517a30921182b4d018cc8c305f9245fa",
+  "bundles": [
+    {
+      "file": "Ask-CdNumW-n.js",
+      "bytes": 13064,
+      "gzip": 5315,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "balloons-frYIRd--.js",
+      "bytes": 11338,
+      "gzip": 4473,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "brand-U9D8-oD6.js",
+      "bytes": 29,
+      "gzip": 49,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "index-Bb8unfc7.js",
+      "bytes": 321500,
+      "gzip": 95810,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "Mascot-CSOov2iL.js",
+      "bytes": 8978,
+      "gzip": 3487,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "Memory-D85fRQbx.js",
+      "bytes": 11890,
+      "gzip": 3566,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "Mission-BW5r8upA.js",
+      "bytes": 9100,
+      "gzip": 3732,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "MissionStage-B-PwlozP.js",
+      "bytes": 5324,
+      "gzip": 2323,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "MissionSummary-4O9o1PL_.js",
+      "bytes": 3500,
+      "gzip": 1536,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "Quiz-D0sEpvb4.js",
+      "bytes": 3396,
+      "gzip": 1535,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "sketch-SL8ALBkH.js",
+      "bytes": 25216,
+      "gzip": 8533,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "space-BkVKQVee.js",
+      "bytes": 19167,
+      "gzip": 6713,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "src-DE4KrqH6.js",
+      "bytes": 3371,
+      "gzip": 1442,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "TicTacToe-3sV_q7FD.js",
+      "bytes": 6345,
+      "gzip": 2581,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "ToddlerMission-BDa26vg7.js",
+      "bytes": 2611,
+      "gzip": 1326,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "useClipSpeech-rDq_niN_.js",
+      "bytes": 381,
+      "gzip": 273,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "usePushToTalk-BcksLs3C.js",
+      "bytes": 5272,
+      "gzip": 2317,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "VideoCatalog-BY5cwzob.js",
+      "bytes": 17974,
+      "gzip": 5989,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    },
+    {
+      "file": "worker-DVqd32_V.js",
+      "bytes": 13844,
+      "gzip": 5527,
+      "consoleLog": 0,
+      "debugger": 0,
+      "localhost": 0
+    }
+  ],
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "contentType": "text/html",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/.env",
+      "status": 200,
+      "contentType": "text/html",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/.git/config",
+      "status": 200,
+      "contentType": "text/html",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/assets/index-Bb8unfc7.js.map",
+      "status": 200,
+      "contentType": "text/html",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/not-a-real-page",
+      "status": 200,
+      "contentType": "text/html",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "contentType": "application/json",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    },
+    {
+      "path": "/api/missing",
+      "status": 404,
+      "contentType": "text/plain; charset=UTF-8",
+      "headers": {
+        "x-content-type-options": null,
+        "referrer-policy": null,
+        "x-frame-options": null,
+        "permissions-policy": null,
+        "content-security-policy": null
+      },
+      "sensitiveContent": false
+    }
+  ],
+  "http": {
+    "status": 200,
+    "location": null
+  },
+  "trackedEnv": [],
+  "secretCandidates": []
+}
