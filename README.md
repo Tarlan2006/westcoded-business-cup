@@ -33,7 +33,7 @@ npm run check-sketch
 npm run check-space
 npx tsx scripts/worker-tests.ts
 npx wrangler login
-npm run deploy
+npx wrangler deploy --keep-vars
 ```
 
 The Worker tests use mocked providers. Use `/api/health` to check a deployment and the age and navigation checks under `src/screens` to exercise a built app with Playwright.

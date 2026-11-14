@@ -1,19 +1,18 @@
 # Deployment
 
-Current production URL: https://mypal.tarlan-b06.workers.dev. Worker name: `mypal` (renamed in place on 2026-11-15; immutable Worker ID unchanged). Current version: 53ee54d5-9ee4-474e-abb0-d867601591fe. Wrangler configuration now records the new name and allowed production/dev origins. Use `wrangler deploy --keep-vars` for subsequent deployments. Earlier URLs below are historical records; the old workers.dev address is no longer the canonical site.
+Production runs on the `mypal` Worker at [MyPal](https://mypal.tarlan-b06.workers.dev). Cloudflare version `dfc6fed0-ec8c-48a7-9b34-c72e71086fcd` was deployed from `a34b06b`. The deployment includes the designer screens, games, and refreshed voice clips.
 
 Verified after rename: Chrome title/Splash/meta, all seven MyPal audio hashes and decoding, Ask HTTP 200, own/dev Origin HTTP 200, foreign Origin HTTP 403. Application secrets were not read or changed. Browser profiles are origin-scoped: the new URL starts with its own localStorage; records from the old URL are not automatically transferred.
 
 1. Install Node 24, run npm i, then npm run typecheck, npm run build, npm run check-content and npx tsx scripts/worker-tests.ts.
-2. Authenticate with npx wrangler login. Keep the existing Worker name, asset configuration and AI binding. This task does not modify Wrangler or Vite configuration.
+2. Authenticate with `npx wrangler login`.
 3. Set GROQ_API_KEY using npx wrangler secret put GROQ_API_KEY. Set LLM_MODEL using npx wrangler secret put LLM_MODEL to a model enabled in your Groq account. Hunt falls back locally without both. Ask can use the existing Cloudflare AI binding without a Groq key.
-4. Set ALLOWED_ORIGINS in Worker environment variables to https://mission-control.tarlan-b06.workers.dev. Add any owned custom production origins explicitly, comma-separated, without trailing slashes. Do not use a wildcard. Production defaults to the listed workers.dev domain when the variable is absent.
+4. `wrangler.jsonc` lists the MyPal URL and development origins in `ALLOWED_ORIGINS`. Add any owned custom production origins explicitly, comma-separated, without trailing slashes.
 5. For local development only, set ALLOWED_ORIGINS in .dev.vars to the exact localhost origins printed by Vite (for example http://localhost:5173 and http://127.0.0.1:5173), plus production if needed. An empty configured value allows no browser Origin. .env.example lists names only, not secrets or defaults.
 6. WORKERS_AI_MODEL is optional. Verify the AI binding and model availability in your Cloudflare account. Configure secrets as Worker bindings, never client VITE variables.
-7. Run npm run deploy. Verify /api/health, an allowed-origin Ask request, a refused origin, and fallback with unavailable upstreams. Confirm dashboard logs do not capture request bodies. See the deployment record below.
+7. Run `npm run build` and `npx wrangler deploy --keep-vars` to preserve dashboard variables. Verify `/api/health` and run `node src/screens/flow.check.mjs` with `FLOW_SITE_URL` set to the deployment URL and Playwright available.
 
-## Manual follow-up outside this agent's allowed paths
-- The Worker ignores /api/setup bodies and returns a fixed compatible suggestion. Agent 2 must remove the frontend transmission to keep parent text entirely on-device.
+## Manual follow-up
 - The client currently gives STT about 6 seconds and Hunt about 3 seconds before local fallback, shorter than the new 8-second server deadlines. This is safe but can discard a slow successful response. Align these timeouts in src/lib/api.ts if desired.
 - Display optional STT message on empty transcription and handle 429 gently in every new UI; current helpers already catch non-2xx responses.
 - Add the worker test command to CI/package scripts later if desired; package.json is unchanged.
