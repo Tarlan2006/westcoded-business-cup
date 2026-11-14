@@ -11,7 +11,12 @@
 .sp-sticky {
   position: sticky;
   top: 0;
+  box-sizing: border-box;
+  display: grid;
+  align-content: start;
+  gap: 10px;
   min-height: 100%;
+  padding: 6px 10px 10px;
 }
 
 .sp-scene {
@@ -41,3 +46,77 @@
 }
 
 .sp-object-art { display: block; width: 100%; height: 100%; }
+
+.sp-journey-title { display: flex; align-items: end; justify-content: space-between; gap: 12px; }
+.sp-journey-title h2 { font-size: clamp(1.75rem, 5vw, 2.8rem); line-height: 1; }
+.sp-measure { display: grid; gap: 2px; text-align: right; font-size: .85rem; line-height: 1.15; }
+.sp-measure strong { font-size: clamp(.9rem, 2.8vw, 1.12rem); }
+.sp-measure span { color: var(--sp-muted, #555276); }
+
+.sp-previous-label {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--radius-pill, 999px);
+  padding: 5px 9px;
+  color: var(--sp-ink, #24204b);
+  background: var(--sp-paper, #fff);
+  font-size: .73rem;
+  font-weight: 800;
+}
+.sp-previous-label span { width: 6px; height: 6px; border-radius: 50%; background: var(--sp-accent, #5943d0); }
+
+.sp-discovery {
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 83px;
+  border: 1px solid var(--sp-line, #e5e0f9);
+  border-radius: var(--radius, 20px);
+  padding: 9px 12px;
+  color: var(--sp-muted, #555276);
+  background: var(--sp-paper, #fff);
+  font-size: .9rem;
+  line-height: 1.32;
+}
+.sp-discovery > div { flex: 1; }
+.sp-comparison { margin-bottom: 3px; color: var(--sp-ink, #24204b); font-weight: 850; }
+.sp-range { margin-top: 3px; font-size: .79rem; }
+.sp-hear { flex: none; }
+
+.sp-stops { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 5px; }
+.sp-stop {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  min-height: 48px;
+  border: 1px solid var(--sp-line, #e5e0f9);
+  border-radius: var(--radius-sm, 12px);
+  padding: 5px 2px;
+  color: var(--sp-muted, #555276);
+  background: var(--sp-paper, #fff);
+  font-size: .72rem;
+  font-weight: 800;
+  line-height: 1.05;
+  text-align: center;
+}
+.sp-stop[aria-current="step"] {
+  border-color: var(--sp-accent, #5943d0);
+  color: var(--sp-accent, #5943d0);
+  background: var(--sp-lavender, #eeebff);
+}
+.sp-stop-icon { width: 22px; height: 22px; }
+.sp-journey-actions { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 5px; }
+.sp-scroll-hint { color: var(--sp-muted, #555276); font-size: .76rem; font-weight: 800; text-align: center; }
+
+@media (max-width: 580px) {
+  .sp-stops { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sp-sticky { padding-inline: 5px; }
+  .sp-scene { height: clamp(212px, 31svh, 320px); min-height: 212px; }
+  .sp-discovery { padding-inline: 9px; }
+  .sp-scroll-hint { line-height: 1.2; }
+}
