@@ -6,6 +6,7 @@ import { Mascot } from "../components/Mascot";
 import { codenameFor, codenames } from "../game/content";
 import { defaultPreferences, quietTimeGoals, type ChildNeed, type Preferences } from "../state/preferences";
 import type { ChildProfile } from "../state/progress";
+import "./ProfileSetup.css";
 
 const ages = [["1-2", "1–2 yrs"], ["3-5", "3–5 yrs"], ["6-8", "6–8 yrs"]] as const;
 const interestsPlaceholders: Record<AgeBand, string> = {
@@ -14,16 +15,19 @@ const interestsPlaceholders: Record<AgeBand, string> = {
   "6-8": "Loves the moon and stars! Keep them busy with space-themed activities.",
 };
 const needs = [
-  ["energy", "⚡ Get energy out indoors"], ["screen", "📵 Less passive screen time"],
-  ["listening", "🗣️ Talking and listening"],
-  ["science", "🚀 Science and curiosity"],
+  ["energy", "energy", "Get energy out indoors"], ["screen", "screen", "Less passive screen time"],
+  ["listening", "speech", "Talking and listening"], ["science", "rocket", "Science and curiosity"],
 ] as const;
 const sessionFlows = [
-  { value: "learn", icon: "🧠", title: "Watch and learn", detail: `A short science video, then ${APP_NAME} asks fun questions.` },
-  { value: "active", icon: "⚡", title: "Move and play", detail: "Jumping, hunting, and voice games. No watching." },
+  { value: "learn", icon: "quiz", title: "Watch and learn", detail: `A short science video, then ${APP_NAME} asks fun questions.` },
+  { value: "active", icon: "energy", title: "Move and play", detail: "Jumping, hunting, and voice games. No watching." },
 ] as const;
-const selectedAge = "border-[#FFD13B] bg-[#6C47FF] text-white shadow-md";
-const unselectedAge = "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-white";
+
+function SetupIcon({ name, className = "" }: { name: string; className?: string }) {
+  return <svg className={`profile-icon ${className}`} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+    <use href={`${import.meta.env.BASE_URL}icons/profile-setup.svg#${name}`} />
+  </svg>;
+}
 
 export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   profile?: ChildProfile; profiles: ChildProfile[];
@@ -50,8 +54,8 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const code = profile?.codenameId ?? codenames.find((id) => !profiles.some((item) => item.codenameId === id)) ?? codenames[0];
   const display = name.trim() || codenameFor(code);
 
-  return <main id="screen-profile-setup" className="prototype-screen relative flex-1 w-full max-w-3xl mx-auto px-4 py-6 flex flex-col justify-center z-10">
-    <form className="bg-[#1C145C]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border-4 border-[#4C35DE] shadow-[0_14px_40px_rgba(0,0,0,0.45)] space-y-6"
+  return <main id="screen-profile-setup" className="prototype-screen profile-setup">
+    <form className="profile-setup-form space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
         if (!validName) { showNameError(); return; }
@@ -59,106 +63,106 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
         onSave(code, age, { ...defaultPreferences, ...saved, location, minutes: custom && customMinutes.trim() ? Number(customMinutes) : minutes, first: age === "1-2" ? "watch" : flow,
           nickname: name.trim() || undefined, notes: notes.trim() || undefined, needs: selected });
       }}>
-      <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
-        <div className="flex items-center gap-3">
+      <div className="profile-setup-heading flex flex-wrap items-center justify-between gap-2 pb-4">
+        <div className="flex min-w-0 items-center gap-3">
           <Mascot pose="wave" size={72} eager className="shrink-0" />
           <div>
-            <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">SET UP IN 1 MINUTE</span>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell {APP_NAME} about your child</h1>
+            <span className="profile-setup-kicker text-xs font-extrabold uppercase tracking-wider">SET UP IN 1 MINUTE</span>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight">Tell {APP_NAME} about your child</h1>
           </div>
         </div>
         <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
-          className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700 text-xs font-extrabold text-indigo-300" aria-label="Privacy · saved on this device">🛡️ Saved on this phone</a>
+          className="profile-local-profile hidden sm:inline-block shrink-0 px-3 py-1 rounded-full text-xs font-extrabold" aria-label="Privacy · saved on this device"><SetupIcon name="shield" /> Saved on this phone</a>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">What should {APP_NAME} call your child? *</label>
+          <label htmlFor="profileNameInput" className="profile-label block text-xs font-extrabold uppercase tracking-wider mb-2">What should {APP_NAME} call your child? *</label>
           <input ref={nameInput} id="profileNameInput" type="text" autoComplete="off" value={name} required minLength={1} maxLength={20} placeholder={codenameFor(code)}
             aria-invalid={nameError && !validName} aria-describedby={`profileNameHint${nameError && !validName ? " profileNameError" : ""}`}
             onInvalid={event => { event.preventDefault(); showNameError(); }}
             onKeyDown={event => { if (event.key === "Enter" && !validName) { event.preventDefault(); showNameError(); } }}
             onBlur={() => { if (!validName) setNameError(true); }}
-            onChange={(event) => { setName(event.target.value); setNameError(false); }} className="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg" />
-          <p className="mt-1 text-xs text-indigo-300" id="profileNameHint">A first name or nickname. Stays on this device.</p>
-          {nameError && !validName && <p id="profileNameError" role="alert" className="mt-1 text-xs text-red-400">{name.trim() ? "Please use no more than 20 characters" : "Please enter a name or nickname"}</p>}
+            onChange={(event) => { setName(event.target.value); setNameError(false); }} className="profile-field w-full px-4 py-3 rounded-2xl font-display font-semibold text-xl" />
+          <p className="profile-hint mt-1.5 text-xs" id="profileNameHint">A first name or nickname. Stays on this device.</p>
+          {nameError && !validName && <p id="profileNameError" role="alert" className="profile-error mt-1 text-xs">{name.trim() ? "Please use no more than 20 characters" : "Please enter a name or nickname"}</p>}
         </div>
         <fieldset className="min-w-0">
-          <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's age</legend>
+          <legend className="profile-label block text-xs font-extrabold uppercase tracking-wider mb-2">Child's age</legend>
           <div className="grid grid-cols-3 gap-2" id="profileAgeGroup">
             {ages.map(([value, label]) => <button key={value} type="button" data-age={value} aria-pressed={age === value}
-              className={`prof-age-btn py-3 rounded-2xl border-2 font-extrabold text-sm transition ${age === value ? selectedAge : unselectedAge}`}
+              className="prof-age-btn profile-choice min-h-13 rounded-2xl font-display font-bold text-base"
               onClick={() => { setAge(value); uiSound("chirp", sound); }}>{label}</button>)}
           </div>
         </fieldset>
       </div>
 
       <fieldset>
-        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-2">What do you want help with? (Pick any)</legend>
+        <legend className="profile-label block text-xs font-extrabold uppercase tracking-wider mb-2">What do you want help with? (Pick any)</legend>
         <div className="flex flex-wrap gap-2" id="needsChips">
-          {needs.map(([value, label]) => <button key={value} type="button" aria-pressed={selected.includes(value)}
+          {needs.map(([value, icon, label]) => <button key={value} type="button" aria-pressed={selected.includes(value)}
             onClick={() => { setNeeds((items) => items.includes(value) ? items.filter((item) => item !== value) : [...items, value]); uiSound("chirp", sound); }}
-            className={`need-chip px-3.5 py-2 rounded-2xl border-2 text-xs sm:text-sm font-extrabold transition ${selected.includes(value) ? "border-[#2CE69B] bg-[#2CE69B]/20 text-white" : "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-indigo-400"}`}>{label}</button>)}
+            className="need-chip profile-choice inline-flex min-h-11 items-center gap-2 px-3.5 py-2 rounded-2xl text-sm font-extrabold"><SetupIcon name={icon} /> {label}</button>)}
         </div>
       </fieldset>
 
       <div>
-        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's interests (Optional)</label>
+        <label htmlFor="profileNotesInput" className="profile-label block text-xs font-extrabold uppercase tracking-wider mb-2">Child's interests (Optional)</label>
         <textarea id="profileNotesInput" rows={2} maxLength={600} autoComplete="off" value={notes} onChange={(event) => setNotes(event.target.value)}
           placeholder={interestsPlaceholders[age]}
-          className="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm" />
-        <p className="mt-1 text-xs text-indigo-300">Stays on this device. Never sent to a server.</p>
+          className="profile-field w-full min-h-21 px-4 py-3 rounded-2xl font-bold text-sm" />
+        <p className="profile-hint mt-1 text-xs">Stays on this device. Never sent to a server.</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
+      <div className="profile-goal flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl">
         <div>
-          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">How much quiet time do you need?</div>
-          <div className="text-xs font-bold text-indigo-300">{APP_NAME} plays for exactly this long, then stops.</div>
+          <div className="font-display font-bold text-base" id="quietTimeLabel">How much quiet time do you need?</div>
+          <div className="profile-hint text-xs font-bold">{APP_NAME} plays for exactly this long, then stops.</div>
         </div>
         <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
           {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
             onClick={() => { setMinutes(value); setCustom(false); setCustomMinutes(String(value)); uiSound("chirp", sound); }}
-            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${!custom && minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value} min</button>)}
-          <label className="flex items-center gap-2 text-xs font-bold text-indigo-200">
+            className="prof-dur-btn profile-choice px-3.5 py-2 rounded-2xl font-display font-bold text-sm">{value} min</button>)}
+          <label className="profile-label flex items-center gap-2 text-xs font-bold">
             Custom minutes
-            <input type="number" min={1} max={120} step={1} value={customMinutes}
+            <input type="number" min={1} max={120} step={1} value={customMinutes} data-selected={custom}
               onFocus={() => setCustom(true)} onChange={event => { setCustom(true); setCustomMinutes(event.target.value); }}
-              className={`w-20 min-h-12 px-2 rounded-xl border-2 bg-[#100B3B] text-white ${custom ? "border-[#FFD13B]" : "border-[#4C35DE]"}`} />
+              className="profile-field profile-custom-time w-20 min-h-12 px-2 rounded-2xl" />
           </label>
         </div>
       </div>
 
-      {age === "1-2" ? <div id="toddlerAutoNotice" className="p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
-        🧸 Ages 1–2: Videos start right away. Little breaks come between videos.
+      {age === "1-2" ? <div id="toddlerAutoNotice" className="profile-toddler-notice p-4 rounded-2xl text-xs sm:text-sm font-extrabold">
+        <SetupIcon name="bear" /> Ages 1–2: Videos start right away. Little breaks come between videos.
       </div> : <fieldset id="parentModeSelectorWrapper" className="space-y-2">
-        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">What should your child do?</legend>
+        <legend className="profile-label block text-xs font-extrabold uppercase tracking-wider mb-2">What should your child do?</legend>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {sessionFlows.map((option) => <button key={option.value} type="button" aria-pressed={flow === option.value}
             id={option.value === "learn" ? "modeCardBrain" : "modeCardTurbo"}
             onClick={() => { setFlow(option.value); uiSound("chirp", sound); }}
-            className={`p-4 rounded-2xl border-2 text-left transition cursor-pointer ${flow === option.value ? "border-[#FFD13B] bg-[#6C47FF] shadow-md" : "border-[#4C35DE] bg-[#100B3B] hover:border-indigo-400"}`}>
-            <span className="flex items-center gap-2.5 mb-1"><span className="text-2xl" aria-hidden="true">{option.icon}</span>
-              <span className="font-display font-bold text-base text-white">{option.title}</span></span>
-            <span className={`block text-xs font-bold ${flow === option.value ? "text-indigo-100" : "text-indigo-300"}`}>{option.detail}</span>
+            className="profile-choice p-4 rounded-2xl text-left cursor-pointer">
+            <span className="flex items-center gap-2.5 mb-1"><SetupIcon name={option.icon} className="text-xl" />
+              <span className="font-display font-bold text-lg leading-tight">{option.title}</span></span>
+            <span className="profile-hint block text-xs font-bold">{option.detail}</span>
           </button>)}
         </div>
-        {flow === "active" && <label className="flex flex-wrap gap-2 items-center text-xs font-bold text-indigo-200">
+        {flow === "active" && <label className="profile-label flex flex-wrap gap-2 items-center text-xs font-bold">
           Where are you playing?
           <select value={location} onChange={(event) => setLocation(event.target.value === "car" ? "car" : "home")}
-            className="profile-location px-3 py-2 rounded-xl border-2 border-[#4C35DE] bg-[#100B3B] text-sm text-white">
+            className="profile-location profile-field px-3 py-2 rounded-2xl text-sm">
             <option value="home">At home</option><option value="car">In the car</option>
           </select>
         </label>}
       </fieldset>}
 
       <div onClick={() => { if (!validName) showNameError(); }}>
-      <button type="submit" disabled={!validName}
-        className={`w-full py-4 px-2 rounded-2xl font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 ${validName ? "btn-game btn-mint text-[#082F22] cursor-pointer" : "bg-gray-500 text-gray-200 cursor-not-allowed pointer-events-none"}`}>
-        <span className="min-w-0 wrap-anywhere"><>START FOR <span id="startBtnKidName">{display.toUpperCase()}</span></></span><span aria-hidden="true">🚀</span>
-      </button>
+        <button type="submit" disabled={!validName}
+          className={`profile-submit w-full min-h-15 py-4 px-2 rounded-2xl font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 ${validName ? "btn-game cursor-pointer" : "pointer-events-none"}`}>
+          <span className="min-w-0 wrap-anywhere">START FOR <span id="startBtnKidName">{display.toUpperCase()}</span></span><SetupIcon name="rocket" />
+        </button>
       </div>
-      <div className={`flex items-center justify-between gap-3 text-xs text-indigo-300 ${onBack ? "" : "sm:hidden"}`}>
-        {onBack && <button type="button" className="hover:text-white" onClick={onBack}><span aria-hidden="true">← </span>Back</button>}
+      <div className={`profile-hint flex items-center justify-between gap-3 text-xs ${onBack ? "" : "sm:hidden"}`}>
+        {onBack && <button type="button" onClick={onBack}><SetupIcon name="back" /> Back</button>}
         <a href="/privacy" className="sm:hidden ml-auto underline" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
       </div>
     </form>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="shield" viewBox="0 0 24 24"><path d="m12 2 8 3v6c0 5.1-3.5 8.4-8 11-4.5-2.6-8-5.9-8-11V5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m8 12 3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="back" viewBox="0 0 24 24"><path d="m10 5-7 7 7 7M3 12h18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="energy" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 10-12h-7z" fill="#ff9600" stroke="#b55e00" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+  <symbol id="screen" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3" fill="#ff4b4b"/><path d="m3 4 18 16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="speech" viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9l-6 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="#1cb0f6"/><path d="M7 8h10M7 12h7" stroke="#fff" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="rocket" viewBox="0 0 24 24"><g stroke="#1e293b" stroke-width="1.4" stroke-linejoin="round"><path d="m7 13-4 5 5-1m9-4 4 5-5-1" fill="#ff4b4b"/><path d="M10 17h4l-2 5z" fill="#ffc800"/><path d="M12 2c4 4 6 8 4 15H8C6 10 8 6 12 2Z" fill="#f8fafc"/><circle cx="12" cy="9" r="3" fill="#3fc3ff"/></g></symbol>
+  <symbol id="quiz" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M7.5 7.5a4.5 4.5 0 1 1 6.8 3.9c-1.5 1-2.3 1.9-2.3 3.6"/><path d="M12 20h.01"/></g></symbol>
+  <symbol id="bear" viewBox="0 0 24 24"><circle cx="5.5" cy="6" r="4" fill="#be8250"/><circle cx="18.5" cy="6" r="4" fill="#be8250"/><ellipse cx="12" cy="14" rx="10" ry="8" fill="#be8250"/><ellipse cx="12" cy="16" rx="5" ry="3.7" fill="#ffd09d"/><path d="M8 12h.01m8 0h.01m-5 3h2" stroke="#1e293b" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
