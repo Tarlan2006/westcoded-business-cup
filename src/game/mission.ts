@@ -1,4 +1,5 @@
 import type { Mode, TurnRequest, TurnResponse } from "../../shared/types";
+import { fallbackTurn, isTurnSelection } from "../../worker/turn-contract";
 import type { Task } from "./content";
 
 export type Player = 1 | 2;
@@ -18,6 +19,7 @@ export interface Mission {
   nextTaskIndex: number;
   done: number;
   points: number;
+  loreNote: string;
   players: [number, number];
   missionEndsAt: number;
   phaseEndsAt: number;
@@ -29,7 +31,7 @@ export interface Mission {
 type Action =
   | { type: "tick" | "pause" | "resume" | "finish"; now: number }
   | { type: "submit"; now: number; round: number }
-  | { type: "resolve"; now: number; round: number; selectedTaskId: string; completed: boolean; points: number; player?: Player; feedback: string };
+  | { type: "resolve"; now: number; round: number; selectedTaskId: string; completed: boolean; points: number; player?: Player; feedback: string; loreNote?: string };
 
 export const timeUp = "time-up";
 
@@ -37,7 +39,7 @@ export function createMission(session: Session, now: number): Mission {
   const phase = session.mode === "lava" ? "countdown" : "round";
   const phaseDuration = phase === "countdown" ? 10_000 : session.tasks[0].durationSec * 1000;
   return {
-    phase, phaseDuration, round: 1, taskIndex: 0, nextTaskIndex: 0, done: 0, points: 0,
+    phase, phaseDuration, round: 1, taskIndex: 0, nextTaskIndex: 0, done: 0, points: 0, loreNote: "",
     players: [0, 0], missionEndsAt: now + session.durationMinutes * 60_000,
     phaseEndsAt: now + phaseDuration, feedback: "", pausedAt: null,
   };
@@ -99,17 +101,10 @@ export function advanceMission(state: Mission, action: Action, session: Session)
     ...state, phase: "feedback", phaseEndsAt: action.now + 2600, feedback: action.feedback,
     nextTaskIndex: chosen < 0 ? nextIndex(state, session) : chosen,
     done: state.done + Number(action.completed), points: state.points + action.points, players,
+    loreNote: action.loreNote || state.loreNote,
   };
 }
 
 export function selectTurn(request: TurnRequest, response?: TurnResponse): TurnResponse {
-  const praiseLineId = request.candidatePraiseIds[(request.round - 1) % request.candidatePraiseIds.length];
-  const fallback = {
-    praiseLineId, nextTaskId: request.candidateNextTaskIds[0], scoreDelta: 10,
-    loreNote: request.loreNote, source: "fallback",
-  } satisfies TurnResponse;
-  if (response?.source !== "llm" || !request.candidatePraiseIds.includes(response.praiseLineId) ||
-    !request.candidateNextTaskIds.includes(response.nextTaskId) || !Number.isInteger(response.scoreDelta) ||
-    response.scoreDelta < 0 || response.scoreDelta > 10) return fallback;
-  return response;
+  return response?.source === "llm" && isTurnSelection(response, request) ? response : fallbackTurn(request);
 }

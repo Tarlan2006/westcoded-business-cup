@@ -47,7 +47,7 @@ export default function App() {
     const { session, profile } = screen;
     return <Mission key={session.id} session={session} profile={profile} onFinish={(result) => {
       const memory = result.done ? `Completed ${result.done} rounds in ${session.mode}.` : `Played ${session.mode}.`;
-      const updated = finishMission(session.id, profile.id, session.mode, result.points, memory);
+      const updated = finishMission(session.id, profile.id, session.mode, result.points, result.loreNote || memory);
       setProgress(updated);
       launchPending.current = false;
       setScreen({

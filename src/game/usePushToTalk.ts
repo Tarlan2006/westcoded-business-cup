@@ -26,6 +26,10 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
     recording.cancel ||= cancel;
     recording.released = true;
     if (recording.started) void recording.finish();
+    if (cancel) {
+      window.clearTimeout(recording.timer);
+      setStatus("idle");
+    }
   }
 
   function start() {
@@ -50,6 +54,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
         } catch {
           if (!recording.cancel) setMessage("Voice unavailable. Tap I DID IT! to keep playing.");
         } finally {
+          window.clearTimeout(recording.timer);
           if (current.current === recording) {
             current.current = null;
             setStatus("idle");
@@ -58,12 +63,18 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void) 
       },
     };
     current.current = recording;
+    recording.timer = window.setTimeout(() => {
+      release(true);
+      setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
+    }, 5000);
     void startRecording().then(() => {
+      window.clearTimeout(recording.timer);
       recording.started = true;
       if (recording.released) return recording.finish();
       setStatus("recording");
       recording.timer = window.setTimeout(() => release(), 8000);
     }).catch(() => {
+      window.clearTimeout(recording.timer);
       if (current.current === recording) {
         current.current = null;
         setStatus("idle");

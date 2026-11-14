@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
-import { playSfx } from "../audio/engine";
+import { onVolumeChange, playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
   countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
@@ -30,6 +30,7 @@ export function Mission({ session, profile, onFinish }: Props) {
   const [now, setNow] = useState(Date.now);
   const submittedRound = useRef(0);
   const delivered = useRef(false);
+  const avatar = useRef<HTMLDivElement>(null);
   const paused = state.pausedAt !== null;
   const finished = state.phase === "finished";
   const task = session.tasks[state.taskIndex];
@@ -59,7 +60,17 @@ export function Mission({ session, profile, onFinish }: Props) {
 
   useEffect(() => {
     if (session.mode === "lava") playSfx("siren");
+    else playSfx("radio");
   }, [session.mode]);
+
+  useEffect(() => {
+    const ids = [...session.tasks.flatMap((task) => task.lineIds), ...praiseFor(session.mode, profile.ageBand)];
+    void preload(ids.slice(0, 24).filter((id) => lineFor(id).file));
+  }, [session, profile.ageBand]);
+
+  useEffect(() => onVolumeChange((volume) => {
+    avatar.current?.style.setProperty("--voice-level", String(volume));
+  }), []);
 
   useEffect(() => {
     if (finished && !delivered.current) {
@@ -85,7 +96,7 @@ export function Mission({ session, profile, onFinish }: Props) {
       taskLineIds: task.lineIds, childSaid,
       candidatePraiseIds: praiseFor(session.mode, profile.ageBand),
       candidateNextTaskIds: (orderedCandidates.length ? orderedCandidates : [task]).slice(0, 4).map((option) => option.id),
-      loreNote: profile.loreNote,
+      loreNote: state.loreNote || profile.loreNote,
     };
     let response: TurnResponse | undefined;
     if (isHunt) {
@@ -101,6 +112,7 @@ export function Mission({ session, profile, onFinish }: Props) {
       type: "resolve", now: Date.now(), round: state.round, selectedTaskId: result.nextTaskId,
       completed: correct, points: correct ? result.scoreDelta : 0, player,
       feedback: correct ? result.praiseLineId : tryAgainLine,
+      loreNote: result.source === "llm" ? result.loreNote : undefined,
     });
   }
 
@@ -118,6 +130,17 @@ export function Mission({ session, profile, onFinish }: Props) {
   const assignment = task.lineIds.map((id) => lineFor(id).text).join(" ");
   const progress = isFeedback || state.phase === "resolving" ? 0 : remainingMs / state.phaseDuration;
   const recording = voice.status === "opening" || voice.status === "recording";
+
+  useEffect(() => {
+    setMusic(!paused && !finished && voice.status === "idle", { duck: true });
+    return () => setMusic(false);
+  }, [paused, finished, voice.status]);
+
+  function startVoice() {
+    if (voice.status !== "idle") return;
+    stopSpeech();
+    voice.start();
+  }
 
   function completeWithButton(player?: Player, answer?: string) {
     voice.release(true);
@@ -145,7 +168,7 @@ export function Mission({ session, profile, onFinish }: Props) {
         </div>
         <div className="timer" style={{ "--remaining": `${progress * 100}%` } as React.CSSProperties}>
           <div className="timer-center">
-            <div className={speaking ? "avatar speaking" : "avatar"} aria-hidden="true"><i /><i /><i /><i /><i /></div>
+            <div ref={avatar} className={speaking ? "avatar speaking" : "avatar"} aria-hidden="true"><i /><i /><i /><i /><i /></div>
             <span className="timer-value">{paused ? "Ⅱ" : isFeedback ? "✦" : clock(remainingSeconds)}</span>
             <span className="timer-label">{paused ? "Paused" : state.phase === "countdown" ? "Get to safety"
               : isFeedback ? "Next up" : state.phase === "resolving" ? "Checking" : "Round time"}</span>
@@ -183,7 +206,7 @@ export function Mission({ session, profile, onFinish }: Props) {
                 onPointerDown={(event) => {
                   if (!event.isPrimary || event.button !== 0) return;
                   event.currentTarget.setPointerCapture(event.pointerId);
-                  voice.start();
+                  startVoice();
                 }}
                 onPointerUp={() => voice.release()}
                 onPointerCancel={() => voice.release(true)}
@@ -192,7 +215,7 @@ export function Mission({ session, profile, onFinish }: Props) {
                 onKeyDown={(event) => {
                   if (event.key !== " " && event.key !== "Enter") return;
                   event.preventDefault();
-                  if (!event.repeat) voice.start();
+                  if (!event.repeat) startVoice();
                 }}
                 onKeyUp={(event) => {
                   if (event.key === " " || event.key === "Enter") voice.release();
@@ -213,6 +236,9 @@ export function Mission({ session, profile, onFinish }: Props) {
 export function Results({ state, profile, session, onBack }: {
   state: MissionState; profile: Profile; session: Session; onBack: () => void;
 }) {
+  useEffect(() => {
+    playSfx("fanfare");
+  }, []);
   const { caption } = useBriefing([outroLine], false);
   return (
     <main className="shell narrow-shell">

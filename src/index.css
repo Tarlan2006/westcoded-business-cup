@@ -249,10 +249,8 @@ select, .gate-answer input {
 .avatar i { width: 5px; height: 55%; border-radius: 9px; background: var(--accent); }
 .avatar i:nth-child(2n) { height: 75%; }
 .avatar i:nth-child(3) { height: 94%; }
-.avatar.speaking i { animation: talk .58s infinite alternate ease-in-out; }
-.avatar i:nth-child(2n) { animation-delay: -.28s; }
-.avatar i:nth-child(3) { animation-delay: -.44s; }
-@keyframes talk { from { transform: scaleY(.45); } to { transform: scaleY(1.15); } }
+.avatar.speaking i { transform: scaleY(calc(.5 + var(--voice-level, 0) * 1.1)); }
+.avatar.speaking i:nth-child(2n) { transform: scaleY(calc(.55 + var(--voice-level, 0) * 1.5)); }
 
 .caption { max-width: 36ch; min-height: 2.8em; display: grid; place-items: center; font-size: clamp(1.12rem, 3.9vw, 1.7rem); line-height: 1.3; font-weight: 680; }
 .assignment { max-width: 47ch; color: var(--muted); line-height: 1.35; }
@@ -286,4 +284,4 @@ select, .gate-answer input {
 }
 
 @media (max-width: 360px) { .duration-row { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { .avatar.speaking i { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .avatar.speaking i, .avatar.speaking i:nth-child(2n) { transform: none; } }

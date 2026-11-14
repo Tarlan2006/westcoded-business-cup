@@ -13,7 +13,9 @@ npm install
 npm run dev
 ```
 
-Откройте [localhost:5173](http://localhost:5173) и нажмите **Check API health**. Кнопка покажет JSON от `GET /api/health`. `POST /api/stt` и `POST /api/turn` возвращают HTTP 501.
+Откройте [localhost:5173](http://localhost:5173) и нажмите **Start mission**. Состояние Worker можно проверить через `GET /api/health`.
+
+В Scavenger Hunt кнопка **HOLD TO TALK** отправляет WAV длительностью до восьми секунд в `POST /api/stt` для распознавания через Workers AI. `POST /api/turn` выбирает реплику и задание через Groq. При недоступности модели игра выбирает следующий ход локально. Кнопка **I DID IT!** работает без доступа к микрофону.
 
 Vite подключает Workers AI через аккаунт Cloudflare. Если появится запрос на вход, выполните `npx wrangler login` или воспользуйтесь запуском через `wrangler dev --local` ниже. Для проверки API секреты Groq не нужны.
 
