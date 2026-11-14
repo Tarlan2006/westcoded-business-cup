@@ -18,6 +18,7 @@ const types: Record<string, string> = {
   child: "Person", whale: "Animal", mountain: "Mountain", moon: "Natural satellite",
   earth: "Planet", jupiter: "Gas giant", sun: "Star", star: "Red supergiant",
 };
+const artSize = 640;
 
 function useCamera() {
   const scroller = useRef<HTMLDivElement>(null);
@@ -91,7 +92,7 @@ function useCamera() {
         const size = tinySun ? 4 : clamp(naturalSize, 11, focus * (incoming ? smooth : 1));
         const horizontal = clamp(x * width, size / 2 + 8, width - size / 2 - 8);
         if (layer) {
-          layer.style.transform = `translate3d(${horizontal}px, ${baseline}px, 0) translate(-50%, -100%) scale(${tinySun ? 1 : size / 100})`;
+          layer.style.transform = `translate3d(${horizontal}px, ${baseline}px, 0) translate(-50%, -100%) scale(${tinySun ? 1 : size / artSize})`;
           layer.style.opacity = String(opacity);
           layer.toggleAttribute("data-tiny-sun", tinySun);
         }
@@ -210,7 +211,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
             <h2 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h2>
             <p className="sp-measure">{types[object.art]} · about {formatSize(object.diameterKm)} {dimension}</p>
           </header>
-          <div className="sp-scene" ref={scene} aria-hidden="true">
+          <div className="sp-scene" ref={scene} style={{ "--sp-art-size": `${artSize}px` } as CSSProperties} aria-hidden="true">
             <div className="sp-baseline" />
             {objects.map(({ id, name, art }, index) => (
               <div key={id}>
