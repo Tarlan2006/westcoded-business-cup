@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
 import { useClipSpeech } from "../audio/useClipSpeech";
+import { useSoundEnabled } from "../audio/sfx";
+import { GameButton } from "../components/GameUI";
 import { LearnPage } from "./Home";
 
 export function Quiz({ ageBand, topic, onBack, onComplete }: {
@@ -15,11 +17,13 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
   const [points, setPoints] = useState(0);
   const current = quiz[index];
   const { speak, stop } = useClipSpeech();
+  const sound = useSoundEnabled();
   const clipId = current && ageBand === "3-5" ? `quiz_${current.id}` : undefined;
 
   useEffect(() => {
-    if (current) void speak(current.question, clipId);
-  }, [clipId, current, speak]);
+    if (sound && current) void speak(current.question, clipId);
+    return stop;
+  }, [clipId, current, sound, speak, stop]);
 
   function choose(choice: string) {
     if (answer !== undefined) return;
@@ -34,9 +38,9 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
         <p className="field-label">Question {index + 1} of {quiz.length}</p>
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{current.question}</h2>
-        <button type="button" className="quiet-button" onClick={() => {
+        {sound && <button type="button" className="quiet-button" onClick={() => {
           void speak(current.question, clipId);
-        }}>Hear it</button>
+        }}>Hear it</button>}
         <div className="answer-list">
           {current.choices.map((choice) => (
             <button className="secondary-button" key={choice} type="button" disabled={answer !== undefined}
@@ -46,13 +50,13 @@ export function Quiz({ ageBand, topic, onBack, onComplete }: {
         </div>
         {answer !== undefined && <>
           <p role="status">{answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}</p>
-          <button type="button" className="primary-button" onClick={() => {
+          <GameButton onClick={() => {
             if (index === quiz.length - 1) onComplete(points);
             else {
               setAnswer(undefined);
               setIndex(index + 1);
             }
-          }}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</button>
+          }}>{index === quiz.length - 1 ? "Finish quiz" : "Next question"}</GameButton>
         </>}
       </section>}
     </LearnPage>

@@ -227,7 +227,7 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
               <button type="button" key={answer} className="secondary-button"
                 disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>
             )) : (
-              <GameButton disabled={!running || freezeHold} onClick={() => completeWithButton()}>✓ I DID IT!</GameButton>
+              <GameButton disabled={!running || freezeHold} onClick={() => completeWithButton()}><span aria-hidden="true">✓</span> I DID IT!</GameButton>
             )}
             {isHunt && (
               <GameButton tone="sky" className="talk-button" data-recording={recording || undefined} disabled={!running || voice.status === "decoding"}
@@ -250,7 +250,7 @@ export function Mission({ session, profile, onFinish, navigationPaused = false }
                 }}
                 onBlur={() => voice.release(true)}>
                 {recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
-                  : voice.status === "decoding" ? "Listening…" : "🎙 HOLD TO TALK"}
+                  : voice.status === "decoding" ? "Listening…" : <><span aria-hidden="true">🎙</span> HOLD TO TALK</>}
               </GameButton>
             )}
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { LearnPage } from "./Home";
+import { GameButton } from "../components/GameUI";
 
 const symbols = ["🐱", "🦉", "🐸", "🦋", "🐝", "🐙", "🐢", "🦊"];
 
@@ -46,7 +47,7 @@ export function Memory({ pairs, onBack, onComplete }: {
           </button>;
         })}
       </div>
-      {won && <button type="button" className="primary-button" onClick={onComplete}>Collect XP</button>}
+      {won && <GameButton onClick={onComplete}>Collect XP</GameButton>}
     </LearnPage>
   );
 }

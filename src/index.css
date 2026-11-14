@@ -445,3 +445,14 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .reward-loot strong { color: var(--accent); }
 .reward-teaser p { color: var(--ink-soft); }
 @media (max-width: 520px) { .recon-reward { grid-template-columns: 76px minmax(0, 1fr); gap: .5rem; } }
+
+.video-label { justify-self: start; padding: .35rem .65rem; border: 1px solid var(--border); border-radius: 99px; color: var(--accent); background: var(--card); }
+.video-player { border: 4px solid var(--violet); }
+.video-episodes { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem; }
+.video-episodes button[aria-current="true"] { color: var(--accent); }
+.video-actions { display: flex; flex-wrap: wrap; gap: .55rem; justify-content: space-between; padding-bottom: 6px; }
+.learn-card > .ask-answer { width: min(100%, 37rem); margin-bottom: .6rem; }
+.learn-card textarea::placeholder { color: var(--muted); }
+.memory-card { border: 2px solid var(--violet-light); box-shadow: 0 5px 0 #080524a8; }
+.memory-card.face-up { border-color: var(--success); color: var(--success-text); }
+.answer-list .secondary-button[data-result="correct"] { color: var(--success-text); background: var(--mint); box-shadow: inset 0 0 0 2px var(--success); }

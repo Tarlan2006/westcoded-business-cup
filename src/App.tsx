@@ -122,7 +122,7 @@ export default function App() {
     });
   }
   function requestNavigation(action: () => void) {
-    if (["mission", "quiz", "memory", "tic-tac-toe"].includes(current.screen.name) && Date.now() - current.enteredAt >= 5000) {
+    if (["mission", "quiz", "memory", "tic-tac-toe", "sketch", "space"].includes(current.screen.name) && Date.now() - current.enteredAt >= 5000) {
       setPendingNavigation(() => action);
     } else action();
   }

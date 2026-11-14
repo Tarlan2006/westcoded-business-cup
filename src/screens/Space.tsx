@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
+import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import type { SpaceGameProps } from "../games/space";
 import "./Space.css";
@@ -10,7 +11,8 @@ const SpaceViewer = lazy(() => import("../games/space").then(({ SpaceViewer }) =
 export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, "onBack" | "onComplete"> & {
   exploreOnly: boolean;
 }) {
-  const [sound, setSound] = useState(true);
+  const [localSound, setSound] = useState(true);
+  const sound = useSoundEnabled() && localSound;
   const Game = exploreOnly ? SpaceViewer : SpaceGame;
 
   useEffect(() => () => stopSpeech(), []);

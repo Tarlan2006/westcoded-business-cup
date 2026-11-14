@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
+import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import type { SketchGameProps } from "../games/sketch";
 
@@ -12,7 +13,8 @@ function speakClue(text: string) {
 
 /** Host audio and rewards stay outside the independent game module. */
 export function Sketch({ onBack, onComplete }: Pick<SketchGameProps, "onBack" | "onComplete">) {
-  const [sound, setSound] = useState(true);
+  const [localSound, setSound] = useState(true);
+  const sound = useSoundEnabled() && localSound;
   useEffect(() => () => stopSpeech(), []);
 
   return <main>

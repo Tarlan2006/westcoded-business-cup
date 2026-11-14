@@ -4,18 +4,8 @@ import type { AskRequest, AskResponse } from "../../shared/types";
 import { speakFallback, stopSpeech } from "../audio/engine";
 import { usePushToTalk } from "../game/usePushToTalk";
 import { LearnPage } from "./Home";
-
-interface LocalRecognition extends EventTarget {
-  processLocally: boolean;
-  lang: string;
-  start(): void;
-  abort(): void;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onerror: (() => void) | null;
-  onend: (() => void) | null;
-}
-
-type RecognitionConstructor = new () => LocalRecognition;
+import { useSoundEnabled } from "../audio/sfx";
+import { GameButton, SpeechBubble } from "../components/GameUI";
 
 async function askServer(question: string, controller: AbortController): Promise<AskResponse> {
   try {
@@ -47,71 +37,19 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
   const [voiceHint, setVoiceHint] = useState("");
   const input = useRef<HTMLTextAreaElement>(null);
   const request = useRef<AbortController | null>(null);
-  const recognition = useRef<LocalRecognition | null>(null);
-  const speechTimer = useRef<number>(undefined);
+  const sound = useSoundEnabled();
 
   function hint() {
     setVoiceHint("Type your question");
     input.current?.focus();
   }
 
-  function stopRecognition() {
-    window.clearTimeout(speechTimer.current);
-    const active = recognition.current;
-    recognition.current = null;
-    if (active) {
-      active.onend = null;
-      active.onerror = null;
-      active.onresult = null;
-      try { active.abort(); } catch { /* The recognition session already ended. */ }
-    }
-  }
-
-  function useBrowserSpeech() {
-    if (request.current) return;
-    const browser = window as Window & {
-      SpeechRecognition?: RecognitionConstructor; webkitSpeechRecognition?: RecognitionConstructor;
-    };
-    const Recognition = browser.SpeechRecognition ?? browser.webkitSpeechRecognition;
-    if (!Recognition || recognition.current) {
-      hint();
-      return;
-    }
-    const failed = () => { stopRecognition(); hint(); };
-    try {
-      const local = new Recognition();
-      if (!("processLocally" in local)) { hint(); return; }
-      local.processLocally = true;
-      local.lang = "en-US";
-      recognition.current = local;
-      setVoiceHint("Listening on this device…");
-      local.onresult = (event) => {
-        const text = event.results[0]?.[0]?.transcript;
-        stopRecognition();
-        if (text?.trim()) void submit(text);
-        else hint();
-      };
-      local.onerror = failed;
-      local.onend = failed;
-      local.start();
-      speechTimer.current = window.setTimeout(failed, 6500);
-    } catch {
-      failed();
-    }
-  }
-
-  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text); }, useBrowserSpeech);
+  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text); }, hint);
 
   useEffect(() => {
-    function stopWhenHidden() {
-      if (document.hidden) stopRecognition();
-    }
-    document.addEventListener("visibilitychange", stopWhenHidden);
     return () => {
-      document.removeEventListener("visibilitychange", stopWhenHidden);
       request.current?.abort();
       request.current = null;
-      stopRecognition();
       stopSpeech();
     };
   }, []);
@@ -119,7 +57,6 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
   async function submit(value: string) {
     const text = cleanQuestion(value);
     if (!text || request.current) return;
-    stopRecognition();
     voice.release(true);
     stopSpeech();
     const controller = new AbortController();
@@ -134,7 +71,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       setResult(response);
       setTopic(quizTopic(text));
       if (response.source !== "refusal") onAnswer();
-      void speakFallback(response.answer);
+      if (sound) void speakFallback(response.answer);
     } finally {
       window.clearTimeout(timeout);
       if (request.current === controller) {
@@ -146,7 +83,6 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
 
   function beginVoice() {
     if (busy || voice.status !== "idle") return;
-    stopRecognition();
     stopSpeech();
     setVoiceHint("");
     voice.start();
@@ -164,12 +100,12 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       <p className="learn-description">Ask about science or nature. Try “Why is the sky blue?”</p>
       {result ? (
         <section className="panel learn-card">
-          <p className="ask-answer" aria-live="polite">{result.answer}</p>
+          <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
-          <button type="button" className="quiet-button" onClick={() => {
+          {sound && <button type="button" className="quiet-button" onClick={() => {
             stopSpeech();
             void speakFallback(result.answer);
-          }}>Hear answer</button>
+          }}>Hear answer</button>}
           <div className="answer-list">
             <button type="button" className="primary-button" onClick={() => {
               stopSpeech();
@@ -183,7 +119,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
           event.preventDefault();
           void submit(question);
         }}>
-          <button type="button" className="secondary-button talk-button" disabled={busy || voice.status === "decoding"}
+          <GameButton tone="sky" className="talk-button" data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding"}
             onPointerDown={(event) => {
               if (!event.isPrimary || event.button !== 0) return;
               event.currentTarget.setPointerCapture(event.pointerId);
@@ -201,13 +137,12 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
             onKeyUp={(event) => {
               if (event.key === " " || event.key === "Enter") voice.release();
             }}
-            onBlur={cancelVoice}>{voiceLabel}</button>
+            onBlur={cancelVoice}>{voiceLabel}</GameButton>
           <label>
             <span className="field-label">Your question</span>
             <textarea ref={input} rows={2} required maxLength={200} autoComplete="off"
               value={question} onChange={(event) => {
                 voice.release(true);
-                stopRecognition();
                 setVoiceHint("");
                 setQuestion(event.target.value);
               }} placeholder="Type your question" disabled={busy} />

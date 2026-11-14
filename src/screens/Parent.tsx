@@ -6,7 +6,7 @@ export function Privacy({ onBack }: { onBack?: () => void }) {
     <LearnPage title="Privacy" onBack={onBack} backHref={onBack ? undefined : "/"}>
       <article className="panel parent-panel privacy centered-card">
         <h2>Profiles stay on this device</h2>
-        <p>{APP_NAME} needs no account, real name, or camera. Your nickname or codename, age range, setup answers, interests, and game progress stay in this browser. They are never included in game requests or read aloud. Clear this site’s data in your browser settings to remove them.</p>
+        <p>{APP_NAME} needs no account, real name, or camera. Your nickname or codename, setup choices, interests, and game progress are stored in this browser. The app keeps the nickname out of requests and voice playback. Game requests may include the age range to choose suitable content. Clear this site’s data in your browser settings to remove the saved profile.</p>
         <h2>Voice is optional</h2>
         <p>The microphone is used for a round only when you hold the talk button and allow access. Cloudflare Workers AI transcribes the audio for that request. When Groq is enabled, it receives words from the game’s vocabulary to choose the next response. Mission Control saves neither audio nor transcripts to the profile. Avoid saying names or other personal details. You can play every mission with buttons.</p>
         <h2>Questions in Learn</h2>

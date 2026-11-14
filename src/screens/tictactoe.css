@@ -176,3 +176,11 @@
   .ttt-cell[aria-disabled="false"]:hover, .ttt-cell[aria-disabled="false"]:active { transform: none; }
   .ttt-cell { transition: none; }
 }
+
+.ttt-board { background: var(--bg-soft); border: 2px solid var(--border); }
+.ttt-cell { background: var(--card); }
+.ttt-bubble { color: var(--ink-soft); background: var(--surface); }
+.ttt-star-face { color: #3d2b00; }
+.ttt-cloud-face { color: #163657; }
+.ttt-cloud { fill: #b5e3ff; stroke: #64b4f1; }
+.ttt-room[data-result="O"] .ttt-cell[data-winning="true"] { color: var(--sky-text); }
