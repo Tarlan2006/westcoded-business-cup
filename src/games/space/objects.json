@@ -1,0 +1,10 @@
+[
+  { "id": "child", "name": "Child", "label": "a child", "diameterKm": 0.0012, "measure": "height", "fact": "Children come in many heights, so this explorer is just one example.", "art": "child" },
+  { "id": "whale", "name": "Blue whale", "label": "a blue whale", "diameterKm": 0.03, "measure": "length", "fact": "The biggest animal on Earth eats tiny creatures called krill.", "art": "whale" },
+  { "id": "everest", "name": "Mount Everest", "label": "Mount Everest", "diameterKm": 8.84886, "measure": "height above sea level", "fact": "Everest's snowy peak is the highest spot above sea level on Earth.", "art": "mountain" },
+  { "id": "moon", "name": "Moon", "label": "the Moon", "diameterKm": 3474.8, "measure": "diameter", "fact": "The Moon looks bright because it reflects light from the Sun.", "art": "moon" },
+  { "id": "earth", "name": "Earth", "label": "Earth", "diameterKm": 12742, "measure": "diameter", "fact": "Oceans cover most of Earth, giving our home its blue color from space.", "art": "earth" },
+  { "id": "jupiter", "name": "Jupiter", "label": "Jupiter", "diameterKm": 139822, "measure": "diameter", "fact": "Jupiter's Great Red Spot is a giant storm.", "art": "jupiter" },
+  { "id": "sun", "name": "Sun", "label": "the Sun", "diameterKm": 1391400, "measure": "diameter", "fact": "Sunlight takes about eight minutes to reach Earth.", "art": "sun" },
+  { "id": "betelgeuse", "name": "Betelgeuse", "label": "Betelgeuse", "diameterKm": 1063000000, "measure": "diameter", "rangeKm": [900000000, 1200000000], "fact": "This reddish star is part of a group of stars we call Orion.", "art": "star" }
+]

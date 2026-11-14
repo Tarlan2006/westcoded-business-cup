@@ -1,0 +1,56 @@
+import bank from "./objects.json" with { type: "json" };
+
+export interface SpaceObject {
+  id: string;
+  name: string;
+  label: string;
+  diameterKm: number;
+  measure: string;
+  fact: string;
+  art: string;
+  rangeKm?: number[];
+}
+
+export const objects: readonly SpaceObject[] = [...bank].sort((a, b) => a.diameterKm - b.diameterKm);
+export const stopCount = objects.length - 1;
+const logStops = objects.map(({ diameterKm }) => Math.log10(diameterKm));
+const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+
+export function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(value, max));
+}
+
+export function cameraScale(progress: number, focusPx: number) {
+  const position = clamp(progress, 0, 1) * stopCount;
+  const from = Math.min(Math.floor(position), stopCount - 1);
+  const logSize = logStops[from] + (logStops[from + 1] - logStops[from]) * (position - from);
+  return 10 ** logSize / focusPx;
+}
+
+export function screenSize(diameterKm: number, kmPerPixel: number, viewportPx: number) {
+  return clamp(diameterKm / kmPerPixel, 2, viewportPx * .9);
+}
+
+function formatCompact(value: number) {
+  if (value >= 1e9) return `${number.format(value / 1e9)} billion`;
+  if (value >= 1e6) return `${number.format(value / 1e6)} million`;
+  return number.format(value);
+}
+
+export function formatSize(km: number) {
+  if (km < 1) return `${number.format(km * 1000)} m`;
+  const rounded = km >= 1000 && km < 1e6 ? Number(km.toPrecision(3)) : km;
+  return `${formatCompact(rounded)} km`;
+}
+
+export function sizeRatio(a: SpaceObject, b: SpaceObject) {
+  return Math.max(a.diameterKm, b.diameterKm) / Math.min(a.diameterKm, b.diameterKm);
+}
+
+export function compareSizes(a: SpaceObject, b: SpaceObject) {
+  const [big, small] = a.diameterKm > b.diameterKm ? [a, b] : [b, a];
+  const ratio = sizeRatio(a, b);
+  const amount = formatCompact(ratio < 10 ? ratio : Number(ratio.toPrecision(2)));
+  const name = big.label.charAt(0).toUpperCase() + big.label.slice(1);
+  return `${name} is about ${amount} times as big as ${small.label}.`;
+}
