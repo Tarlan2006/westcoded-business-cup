@@ -69,18 +69,17 @@ button:disabled { cursor: default; opacity: .5; }
 
 .quiet-button:hover, .secondary-button:hover:not(:disabled) { border-color: #6a8981; color: white; }
 
-.setup-layout {
+.intake-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 540px);
   gap: clamp(2rem, 7vw, 6rem);
-  padding-top: clamp(1.8rem, 5vw, 4.5rem);
 }
 
 h1, h2 { font-weight: 760; line-height: 1.04; letter-spacing: -.045em; }
 h1 { font-size: clamp(2.4rem, 6vw, 5rem); }
 h2 { font-size: 1.55rem; }
 h1 em { color: var(--accent); font-style: normal; }
-.setup-intro > p, .parent-panel > p, .results > p { color: var(--muted); margin-top: .9rem; }
+.intake-intro > p, .parent-panel > p, .results > p { color: var(--muted); margin-top: .9rem; }
 
 .radar {
   position: relative;
@@ -118,21 +117,6 @@ h1 em { color: var(--accent); font-style: normal; }
   box-shadow: 0 0 13px var(--accent), 0 0 0 5px #d8fa8628;
 }
 
-.progress-card {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: .5rem 1rem;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--edge);
-  border-radius: 10px;
-  background: #101c20b0;
-}
-
-.progress-card strong { display: block; margin-top: .15rem; }
-.progress-card p { grid-column: 1 / -1; color: var(--muted); font-size: .875rem; }
-.progress-values { display: flex; flex-direction: column; text-align: right; font-weight: 700; }
-.progress-values span + span { color: var(--muted); font-size: .75rem; font-weight: 500; }
-
 .panel {
   padding: clamp(1.1rem, 4vw, 1.9rem);
   border: 1px solid var(--edge);
@@ -142,8 +126,6 @@ h1 em { color: var(--accent); font-style: normal; }
 }
 
 .setup-form, .parent-panel { display: grid; gap: 1rem; align-content: start; }
-.form-row { display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
-.duration-row { grid-template-columns: minmax(0, 1fr) minmax(72px, .34fr); }
 .field-label {
   display: block;
   width: fit-content;
@@ -175,38 +157,12 @@ select, .gate-answer input {
   font-size: .86rem;
 }
 
-.segmented button[aria-pressed="true"], .mode-option[aria-pressed="true"] {
+.segmented button[aria-pressed="true"] {
   border-color: #a6cb6f;
   background: #24342b;
   color: var(--accent);
 }
 
-.mode-options { display: grid; gap: .45rem; }
-.mode-option {
-  display: grid;
-  grid-template-columns: 2.2rem minmax(0, 1fr) .75rem;
-  width: 100%;
-  gap: .7rem;
-  align-items: center;
-  padding: .55rem .8rem;
-  text-align: left;
-  border: 1px solid var(--edge);
-  border-radius: 8px;
-  background: #0b1519;
-}
-
-.mode-icon {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1;
-  border-radius: 6px;
-  background: #d8fa8615;
-  font-size: 1.4rem;
-}
-
-.mode-option small { display: block; color: var(--muted); font-size: .76rem; line-height: 1.3; }
-.selected-dot { width: .65rem; aspect-ratio: 1; border: 1px solid #71827b; border-radius: 50%; }
-[aria-pressed="true"] > .selected-dot { border-color: var(--accent); background: var(--accent); }
 .safety { color: #dcd2ad; font-size: .79rem; line-height: 1.45; padding: .6rem .8rem; border-left: 2px solid #e3c66d; background: #e3c66d0e; }
 
 .primary-button, .secondary-button {
@@ -266,13 +222,25 @@ select, .gate-answer input {
 .learn-page > .quiet-button { justify-self: start; }
 .learn-description { color: var(--muted); }
 .activity-grid { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 215px), 1fr)); }
-.age-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.intake-intro > p { max-width: 34ch; font-size: clamp(1.05rem, 2.8vw, 1.45rem); margin-top: 0; }
+.intake-intro .quiet-button { margin-top: 1rem; }
+.age-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+.age-choice { position: relative; cursor: pointer; }
+.age-choice input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.age-choice > span { display: grid; justify-items: center; align-content: center; gap: .12rem; min-height: 76px; height: 100%; padding: .25rem; border: 1px solid var(--edge); border-radius: 8px; background: #0b1519; }
+.age-choice strong { font-size: 1.4rem; }
+.age-choice span span { font-size: .72rem; color: var(--muted); text-align: center; }
+.age-choice input:checked + span { border-color: var(--accent); background: #24342b; color: var(--accent); }
+.age-choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.activity-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .7rem 1rem; }
+.summary-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1rem; color: var(--muted); font-size: .875rem; }
+.activity-section { display: grid; gap: .75rem; }
 .activity-tile { display: grid; gap: .35rem; align-content: center; justify-items: start; min-height: 108px; padding: clamp(.65rem, 3vw, 1.4rem); text-align: left; border: 1px solid var(--edge); border-radius: 12px; background: #132225; }
 .activity-tile:hover { border-color: var(--accent); background: #20332d; }
 .activity-tile strong { color: var(--accent); font-size: clamp(1.05rem, 4vw, 1.65rem); }
 .activity-tile span { color: var(--muted); }
 .activity-tile .activity-icon { color: var(--accent); font-size: 1.5rem; }
-.home-profile > button { justify-self: start; }
 .video-panel { display: grid; gap: .8rem; }
 .video-player { display: block; width: 100%; min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #0a1114; }
 .learn-card { display: grid; gap: 1rem; }
@@ -307,11 +275,9 @@ select, .gate-answer input {
 
 @media (max-width: 800px) {
   .shell { width: min(100% - 2rem, 550px); }
-  .setup-layout { grid-template-columns: 1fr; gap: 1.25rem; }
-  .radar, .desktop-break { display: none; }
-  .progress-card { margin-top: 1rem; }
+  .intake-layout { grid-template-columns: 1fr; gap: 1.25rem; }
+  .radar { display: none; }
   .topbar { min-height: 64px; }
 }
 
-@media (max-width: 360px) { .duration-row { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .avatar.speaking i, .avatar.speaking i:nth-child(2n) { transform: none; } }

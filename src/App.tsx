@@ -1,48 +1,54 @@
 import { useRef, useState } from "react";
-import type { Activity, AgeBand, Profile } from "../shared/types";
+import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { unlock } from "./audio/engine";
-import { codenames, tasksFor } from "./game/content";
+import { tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
+import { videosFor } from "./game/videos";
 import { Ask } from "./screens/Ask";
-import { Home, LearnHome, LearnPage, ParentSettings, Welcome } from "./screens/Home";
+import { Home, LearnPage } from "./screens/Home";
 import { Memory } from "./screens/Memory";
 import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
+import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
-import { Setup, type SetupOptions } from "./screens/Setup";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
+import { activeModes, defaultPreferences, type Preferences } from "./state/preferences";
 import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
 
 type Screen =
-  | { name: "home" | "setup" | "learn" | "parent" | "ask" }
+  | { name: "home" | "parent" | "ask" }
+  | { name: "gate" }
+  | { name: "mission-check"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
   | { name: "memory" | "tic-tac-toe"; id: string }
   | { name: "reward"; points: number; video: boolean }
-  | { name: "video" }
+  | { name: "video"; id?: string }
   | { name: "mission"; session: Session; profile: Profile }
-  | { name: "results"; session: Session; profile: Profile; result: MissionState }
-  | { name: "gate"; back: Screen; destination: "setup" | "parent" };
+  | { name: "results"; session: Session; profile: Profile; result: MissionState };
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: "home" });
   const [progress, setProgress] = useState(readProgress);
   const launchPending = useRef(false);
   const profile = progress.profiles.find((entry) => entry.id === progress.selectedId) ?? progress.profiles[0];
+  const preferences = profile?.preferences ?? defaultPreferences;
   const goHome = () => setScreen({ name: "home" });
-  const openParent = () => setScreen({ name: "gate", back: screen, destination: "parent" });
 
   if (window.location.pathname.replace(/\/$/, "") === "/privacy") return <Privacy />;
 
-  function chooseProfile(codenameId: string, ageBand: AgeBand) {
-    saveProfile(codenameId, ageBand);
-    setProgress(readProgress());
+  function chooseProfile(codenameId: string, ageBand: AgeBand, choices: Preferences) {
+    setProgress(profile
+      ? updateProfile(profile.id, codenameId, ageBand, choices)
+      : saveProfile(codenameId, ageBand, choices));
     goHome();
   }
 
-  if (!profile) return <Welcome onChoose={(ageBand) => chooseProfile(codenames[0], ageBand)} />;
+  if (!profile?.preferences || screen.name === "parent") {
+    return <ProfileSetup key={profile?.id ?? "new"} profile={profile} profiles={progress.profiles}
+      onBack={profile?.preferences ? goHome : undefined} onSave={chooseProfile} />;
+  }
 
-  const goLearn = () => setScreen({ name: "learn" });
   function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe") {
     void unlock().catch(() => {});
     if (name === "ask") {
@@ -59,15 +65,43 @@ export default function App() {
     setScreen({ name: "reward", points, video });
   }
 
-  function launch(options: SetupOptions, selected: Profile) {
-    if (launchPending.current || selected.ageBand === "1-2") return;
+  function launch(mode: Mode, selected: Profile) {
+    if (launchPending.current || selected.ageBand === "1-2" || !activeModes(preferences.location).includes(mode)) return;
     launchPending.current = true;
-    const tasks = tasksFor(options.mode, selected.ageBand);
-    const session: Session = { id: crypto.randomUUID(), mode: options.mode, tasks, durationMinutes: options.durationMinutes };
+    const tasks = tasksFor(mode, selected.ageBand);
+    const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: preferences.minutes };
     void unlock().catch(() => {});
     setScreen({ name: "mission", profile: selected, session });
   }
 
+  function rewardVideo() {
+    if (profile) setProgress(rewardActivity(crypto.randomUUID(), profile.id, "video", 5));
+  }
+
+  function openVideo(id: string) {
+    if (!profile || !videosFor(profile.ageBand).some((video) => video.id === id)) return;
+    if (profile.ageBand === "3-5" && !(profile.activities?.quiz ?? 0)) return;
+    rewardVideo();
+    setScreen({ name: "video", id });
+  }
+
+  if (screen.name === "gate") {
+    return <ParentGate onPass={() => setScreen({ name: "parent" })} onBack={goHome} />;
+  }
+  if (screen.name === "mission-check") {
+    const mode = screen.mode;
+    return <LearnPage title="Ready to play?" onBack={goHome}>
+      <div className="panel learn-card">
+        <p className="safety"><strong>Parent check</strong>{" "}
+          {mode === "roadtrip" ? "Passengers only. Stay buckled and keep the driver focused."
+            : "Play with an adult nearby. Clear the floor, walk, and keep both feet on the ground."}
+        </p>
+        <button className="primary-button" type="button" onClick={() => launch(mode, profile)}>
+          Start mission · {preferences.minutes} min
+        </button>
+      </div>
+    </LearnPage>;
+  }
   if (screen.name === "mission") {
     const { session, profile } = screen;
     return <Mission key={session.id} session={session} profile={profile} onFinish={(result) => {
@@ -84,69 +118,46 @@ export default function App() {
     }} />;
   }
   if (screen.name === "results") {
-    return <Results session={screen.session} profile={screen.profile} state={screen.result}
-      onBack={() => setScreen({ name: "gate", back: screen, destination: "setup" })} />;
-  }
-  if (screen.name === "gate") {
-    return <ParentGate onPass={() => setScreen({ name: screen.destination })} onBack={() => setScreen(screen.back)} />;
-  }
-  if (screen.name === "parent") {
-    return <ParentSettings key={profile.id} profile={profile} profiles={progress.profiles}
-      onSave={(codenameId, ageBand) => {
-        setProgress(updateProfile(profile.id, codenameId, ageBand));
-        goHome();
-      }} onBack={goHome} />;
-  }
-  if (screen.name === "setup" && profile.ageBand !== "1-2") {
-    return <Setup profile={profile} onStart={(options) => launch(options, profile)} onBack={goHome} />;
-  }
-  if (profile.ageBand === "1-2") {
-    return <VideoCatalog ageBand={profile.ageBand} onParent={openParent}
-      onOpen={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "video", 5))} />;
-  }
-  if (screen.name === "learn") {
-    return <LearnHome profile={profile} onBack={goHome} onQuiz={() => startLearn("quiz")}
-      onMemory={() => startLearn("memory")}
-      onAsk={profile.ageBand === "6-8" ? () => startLearn("ask") : undefined}
-      onGrid={profile.ageBand === "6-8" ? () => startLearn("tic-tac-toe") : undefined} />;
+    return <Results session={screen.session} profile={screen.profile} state={screen.result} onBack={goHome} />;
   }
   if (screen.name === "ask" && profile.ageBand === "6-8") {
-    return <Ask onBack={goLearn} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
+    return <Ask onBack={goHome} onAnswer={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "ask", 5))}
       onQuiz={(topic) => setScreen({ name: "quiz", id: crypto.randomUUID(), topic })} />;
   }
-  if (screen.name === "quiz") {
+  if (screen.name === "quiz" && profile.ageBand !== "1-2") {
     return <Quiz key={screen.id} ageBand={profile.ageBand} topic={screen.topic}
-      onBack={screen.topic ? () => setScreen({ name: "ask" }) : goLearn}
+      onBack={screen.topic ? () => setScreen({ name: "ask" }) : goHome}
       onComplete={(points) => earn(screen.id, "quiz", points, profile.ageBand === "3-5")} />;
   }
-  if (screen.name === "memory") {
+  if (screen.name === "memory" && profile.ageBand !== "1-2") {
     return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
-      onBack={goLearn} onComplete={() => earn(screen.id, "memory", 20)} />;
+      onBack={goHome} onComplete={() => earn(screen.id, "memory", 20)} />;
   }
   if (screen.name === "tic-tac-toe" && profile.ageBand === "6-8") {
-    return <TicTacToe key={screen.id} onBack={goLearn} onComplete={(won) => {
+    return <TicTacToe key={screen.id} onBack={goHome} onComplete={(won) => {
       if (won) earn(screen.id, "tic-tac-toe", 20);
       else {
         setProgress(rewardActivity(screen.id, profile.id, "tic-tac-toe", 0));
-        goLearn();
+        goHome();
       }
     }} />;
   }
   if (screen.name === "reward") {
-    return <LearnPage title="Nice work, agent!" onBack={goLearn}>
+    return <LearnPage title="Nice work, agent!" onBack={goHome}>
       <div className="panel learn-card">
         <h2>+{screen.points} XP</h2>
         <p>{profile.xp} total XP · {profile.streak} day streak</p>
         {screen.video && <button className="primary-button" type="button"
           onClick={() => setScreen({ name: "video" })}>Open video reward</button>}
-        <button className="quiet-button" type="button" onClick={goHome}>Back to profile</button>
+        <button className="quiet-button" type="button" onClick={goHome}>Back to activities</button>
       </div>
     </LearnPage>;
   }
-  if (screen.name === "video") {
-    return <VideoCatalog ageBand={profile.ageBand} onBack={goLearn}
-      onOpen={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "video", 5))} />;
+  if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
+    return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goHome} onOpen={openVideo} />;
   }
-  return <Home profile={profile} onParent={openParent} onActive={() => setScreen({ name: "setup" })}
-    onLearn={goLearn} />;
+  return <Home profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
+    onMission={(mode) => setScreen({ name: "mission-check", mode })} onQuiz={() => startLearn("quiz")}
+    onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
+    onVideo={openVideo} />;
 }

@@ -1,17 +1,14 @@
-import { useState } from "react";
 import type { AgeBand } from "../../shared/types";
-import videos from "../../content/videos.json";
-import { ActivityTile, LearnPage } from "./Home";
+import { videosFor } from "../game/videos";
+import { LearnPage, VideoShelf } from "./Home";
 
-export function VideoCatalog({ ageBand, onBack, onOpen, onParent }: {
-  ageBand: AgeBand; onBack?: () => void; onOpen: (id: string) => void; onParent?: () => void;
+export function VideoCatalog({ ageBand, id, onBack, onOpen }: {
+  ageBand: AgeBand; id?: string; onBack: () => void; onOpen: (id: string) => void;
 }) {
-  const entries = videos.filter((video) => video.ageBand === ageBand && /^[A-Za-z0-9_-]{11}$/.test(video.id) && video.id !== "REPLACE_ME");
-  const [selectedId, setSelectedId] = useState<string>();
-  const selected = entries.find((video) => video.id === selectedId);
+  const selected = videosFor(ageBand).find((video) => video.id === id);
 
   return (
-    <LearnPage title="Video library" onBack={selected ? () => setSelectedId(undefined) : onBack}>
+    <LearnPage title="Video library" onBack={onBack}>
       {selected ? (
         <div className="panel video-panel">
           <h2>{selected.title}</h2>
@@ -25,17 +22,7 @@ export function VideoCatalog({ ageBand, onBack, onOpen, onParent }: {
           />
           <p className="learn-description">Videos are hosted on YouTube</p>
         </div>
-      ) : entries.length ? (
-        <div className="activity-grid">
-          {entries.map((video) => (
-            <ActivityTile key={video.id} icon="▶" title={video.title} onClick={() => {
-              setSelectedId(video.id);
-              onOpen(video.id);
-            }}>{video.channel}</ActivityTile>
-          ))}
-        </div>
-      ) : <p className="panel learn-description">More videos coming soon</p>}
-      {onParent && <button type="button" className="quiet-button" onClick={onParent}>Parent settings</button>}
+      ) : <VideoShelf ageBand={ageBand} onSelect={onOpen} />}
     </LearnPage>
   );
 }

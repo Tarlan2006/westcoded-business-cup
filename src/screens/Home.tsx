@@ -1,13 +1,15 @@
-import { useState, type ReactNode } from "react";
-import type { AgeBand, Profile } from "../../shared/types";
-import { codenameFor, codenames } from "../game/content";
-import { rankName } from "../state/progress";
+import type { ReactNode } from "react";
+import type { Mode } from "../../shared/types";
+import { codenameFor, MODES } from "../game/content";
+import { videosFor } from "../game/videos";
+import { activeModes, type ActivityGroup, type Preferences } from "../state/preferences";
+import { rankName, type ChildProfile } from "../state/progress";
 
-const ageBands = ["1-2", "3-5", "6-8"] as const;
-
-export function LearnPage({ title, onBack, children }: { title: string; onBack?: () => void; children: ReactNode }) {
+export function LearnPage({ title, onBack, children, wide = false }: {
+  title: string; onBack?: () => void; children: ReactNode; wide?: boolean;
+}) {
   return (
-    <main className="shell learn-shell">
+    <main className={wide ? "shell" : "shell learn-shell"}>
       <header className="topbar">
         <span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span>
         {onBack && <button className="quiet-button" type="button" onClick={onBack}>Back</button>}
@@ -17,22 +19,6 @@ export function LearnPage({ title, onBack, children }: { title: string; onBack?:
         {children}
       </section>
     </main>
-  );
-}
-
-export function Welcome({ onChoose }: { onChoose: (ageBand: AgeBand) => void }) {
-  return (
-    <LearnPage title="Welcome to Mission Control">
-      <p className="learn-description">Grown-ups, pick your child’s age to get started.</p>
-      <div className="activity-grid age-grid">
-        {ageBands.map((ageBand) => (
-          <button key={ageBand} className="activity-tile" type="button" onClick={() => onChoose(ageBand)}>
-            <strong>{ageBand.replace("-", "–")}</strong><span>years old</span>
-          </button>
-        ))}
-      </div>
-      <a className="quiet-button" href="/privacy">Privacy</a>
-    </LearnPage>
   );
 }
 
@@ -47,81 +33,69 @@ export function ActivityTile({ icon, title, children, onClick }: {
   );
 }
 
-export function ProfileCard({ profile, onParent }: { profile: Profile; onParent: () => void }) {
+export function VideoShelf({ ageBand, onSelect }: {
+  ageBand: ChildProfile["ageBand"]; onSelect: (id: string) => void;
+}) {
+  const entries = videosFor(ageBand);
+  if (!entries.length) return <p className="panel learn-description">More videos coming soon</p>;
   return (
-    <div className="progress-card home-profile">
-      <div><span className="field-label">Agent {codenameFor(profile.codenameId)}</span><strong>{rankName(profile.rank)}</strong></div>
-      <div className="progress-values"><span>{profile.xp} XP</span><span>{profile.streak} day streak</span></div>
-      <button className="quiet-button" type="button" onClick={onParent}>Parent settings</button>
+    <div className="activity-grid">
+      {entries.map((video) => (
+        <ActivityTile key={video.id} icon="▶" title={video.title} onClick={() => onSelect(video.id)}>
+          {video.channel}
+        </ActivityTile>
+      ))}
     </div>
   );
 }
 
-export function Home({ profile, onParent, onActive, onLearn }: {
-  profile: Profile; onParent: () => void; onActive: () => void; onLearn: () => void;
+export function Home({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onVideo }: {
+  profile: ChildProfile; preferences: Preferences; onParent: () => void; onMission: (mode: Mode) => void;
+  onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void; onVideo: (id: string) => void;
 }) {
+  const toddler = profile.ageBand === "1-2";
+  const preschool = profile.ageBand === "3-5";
+  const groups: ActivityGroup[] = toddler ? ["watch"] : ["active", "learn", "watch"];
+  const first = preferences.first === "any" ? groups[0] : preferences.first;
+  const ordered = groups.includes(first) ? [first, ...groups.filter((group) => group !== first)] : groups;
+  const title = { active: "Active games", learn: "Learn & play", watch: preschool ? "Video rewards" : "Videos" };
+  const rewardReady = (profile.activities?.quiz ?? 0) > 0;
+
   return (
-    <LearnPage title={`Welcome, ${codenameFor(profile.codenameId)}`}>
-      <ProfileCard profile={profile} onParent={onParent} />
-      {profile.ageBand !== "1-2" && (
-        <div className="activity-grid">
-          <ActivityTile icon="⚡" title="Active" onClick={onActive}>Go on a hunt, spot clues in the car, or play Floor is Lava.</ActivityTile>
-          <ActivityTile icon="✦" title="Learn" onClick={onLearn}>
-            {profile.ageBand === "6-8" ? "Ask Mission Control, take a quiz, or play." : "Try a quiz or match emoji pairs."}
-          </ActivityTile>
+    <LearnPage title="Activities for your day" wide>
+      <div className="panel activity-summary">
+        <div>
+          <span className="field-label">Agent {codenameFor(profile.codenameId)}</span>
+          <p>Ages {profile.ageBand.replace("-", "–")}{!toddler && (preferences.location === "car" ? " · In the car" : " · At home")}</p>
         </div>
-      )}
-      <a className="quiet-button" href="/privacy">Privacy</a>
-    </LearnPage>
-  );
-}
-
-export function LearnHome({ profile, onBack, onQuiz, onMemory, onAsk, onGrid }: {
-  profile: Profile; onBack: () => void; onQuiz: () => void; onMemory: () => void;
-  onAsk?: () => void; onGrid?: () => void;
-}) {
-  return (
-    <LearnPage title="Learn" onBack={onBack}>
-      <span className="field-label">{profile.xp} XP · {rankName(profile.rank)} · {profile.streak} day streak</span>
-      <div className="activity-grid">
-        {onAsk && <ActivityTile icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask a question about science or nature.</ActivityTile>}
-        <ActivityTile icon="?" title="Quiz" onClick={onQuiz}>
-          {profile.ageBand === "3-5" ? "Practice colors, shapes, animals, and counting." : "Explore space, plants, and water."}
-        </ActivityTile>
-        <ActivityTile icon="▦" title="Memory" onClick={onMemory}>Flip cards to find matching pairs.</ActivityTile>
-        {onGrid && <ActivityTile icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>}
+        <div className="summary-actions">
+          <span>{profile.xp} XP · {rankName(profile.rank)} · {profile.streak} day streak</span>
+          <button className="quiet-button" type="button" onClick={onParent}>Change choices</button>
+        </div>
       </div>
-    </LearnPage>
-  );
-}
-
-export function ParentSettings({ profile, profiles, onSave, onBack }: {
-  profile: Profile; profiles: Profile[]; onSave: (codenameId: string, ageBand: AgeBand) => void; onBack: () => void;
-}) {
-  const [ageBand, setAgeBand] = useState(profile.ageBand);
-  const [codenameId, setCodenameId] = useState(profile.codenameId);
-  const used = new Set(profiles.filter((entry) => entry.id !== profile.id).map((entry) => entry.codenameId));
-  const options = new Set([profile.codenameId, ...codenames.filter((id) => !used.has(id))]);
-  return (
-    <LearnPage title="Parent settings" onBack={onBack}>
-      <form className="panel parent-panel" onSubmit={(event) => {
-        event.preventDefault();
-        onSave(codenameId, ageBand);
-      }}>
-        <label><span className="field-label">Codename</span>
-          <select value={codenameId} onChange={(event) => setCodenameId(event.target.value)}>
-            {[...options].map((id) => (
-              <option key={id} value={id}>{codenameFor(id)}</option>
+      {ordered.map((group) => (
+        <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
+          <h2 id={`group-${group}`}>{title[group]}</h2>
+          {group === "active" && <div className="activity-grid">
+            {activeModes(preferences.location).map((mode) => (
+              <ActivityTile key={mode} icon={MODES[mode].icon} title={MODES[mode].name} onClick={() => onMission(mode)}>
+                {preferences.minutes} min · {MODES[mode].description}
+              </ActivityTile>
             ))}
-          </select>
-        </label>
-        <label><span className="field-label">Age</span>
-          <select value={ageBand} onChange={(event) => setAgeBand(event.target.value as AgeBand)}>
-            {ageBands.map((band) => <option key={band} value={band}>{band.replace("-", "–")} years</option>)}
-          </select>
-        </label>
-        <button className="primary-button" type="submit">Save profile</button>
-      </form>
+          </div>}
+          {group === "learn" && <div className="activity-grid">
+            {!preschool && <ActivityTile icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>}
+            <ActivityTile icon="?" title="Quiz" onClick={onQuiz}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
+            <ActivityTile icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
+            {!preschool && <ActivityTile icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>}
+          </div>}
+          {group === "watch" && (preschool && !rewardReady ? (
+            <div className="activity-grid">
+              <ActivityTile icon="▶" title="Unlock a video" onClick={onQuiz}>Finish a quiz to open your video reward.</ActivityTile>
+            </div>
+          ) : <VideoShelf ageBand={profile.ageBand} onSelect={onVideo} />)}
+        </section>
+      ))}
       <a className="quiet-button" href="/privacy">Privacy</a>
     </LearnPage>
   );

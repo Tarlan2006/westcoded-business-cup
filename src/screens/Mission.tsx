@@ -260,7 +260,7 @@ export function Results({ state, profile, session, onBack }: {
           <div><dt>Day streak</dt><dd>{profile.streak}</dd></div>
         </dl>
         {session.mode === "roadtrip" && <p>Player 1: {state.players[0]} · Player 2: {state.players[1]}</p>}
-        <button type="button" className="primary-button" onClick={onBack}>Mission setup <span aria-hidden="true">↗</span></button>
+        <button type="button" className="primary-button" onClick={onBack}>Back to activities <span aria-hidden="true">↗</span></button>
       </section>
     </main>
   );

@@ -1,11 +1,16 @@
 import type { Activity, AgeBand, Mode, Profile } from "../../shared/types";
+import { readPreferences, type Preferences } from "./preferences";
 
 const storageKey = "mission-control.progress";
 const rankThresholds = [0, 30, 100, 250, 500];
 const ranks = ["Recruit", "Scout", "Field Agent", "Special Agent", "Commander"];
 
+export interface ChildProfile extends Profile {
+  preferences?: Preferences;
+}
+
 interface Progress {
-  profiles: Profile[];
+  profiles: ChildProfile[];
   selectedId?: string;
   lastFinished?: string;
 }
@@ -38,6 +43,7 @@ export function readProgress(): Progress {
           loreNote: typeof profile.loreNote === "string" ? profile.loreNote : "",
           lastMode: lastMode === "hunt" || lastMode === "roadtrip" || lastMode === "lava" ? lastMode : undefined,
           activities: profile.activities && typeof profile.activities === "object" ? profile.activities : {},
+          preferences: readPreferences(profile.preferences),
         }];
       });
       cached = { profiles: migrated, selectedId, lastFinished };
@@ -66,21 +72,21 @@ function rankFor(xp: number) {
   return rankThresholds.filter((threshold) => threshold <= xp).length - 1;
 }
 
-export function saveProfile(codenameId: string, ageBand: AgeBand) {
+export function saveProfile(codenameId: string, ageBand: AgeBand, preferences: Preferences) {
   const progress = readProgress();
   const existing = progress.profiles.find((profile) => profile.codenameId === codenameId);
-  const profile: Profile = existing
-    ? { ...existing, ageBand }
-    : { id: codenameId, codenameId, ageBand, xp: 0, rank: 0, streak: 0, lastPlayedISO: "", loreNote: "" };
+  const profile: ChildProfile = existing
+    ? { ...existing, ageBand, preferences }
+    : { id: codenameId, codenameId, ageBand, preferences, xp: 0, rank: 0, streak: 0, lastPlayedISO: "", loreNote: "" };
   const profiles = progress.profiles.filter((entry) => entry.id !== profile.id);
   saveProgress({ ...progress, selectedId: profile.id, profiles: [...profiles, profile] });
-  return profile;
+  return readProgress();
 }
 
-export function updateProfile(profileId: string, codenameId: string, ageBand: AgeBand) {
+export function updateProfile(profileId: string, codenameId: string, ageBand: AgeBand, preferences: Preferences) {
   const progress = readProgress();
   const profiles = progress.profiles.map((profile) =>
-    profile.id === profileId ? { ...profile, codenameId, ageBand } : profile);
+    profile.id === profileId ? { ...profile, codenameId, ageBand, preferences } : profile);
   return saveProgress({ ...progress, profiles, selectedId: profileId });
 }
 
