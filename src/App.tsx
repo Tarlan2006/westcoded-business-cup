@@ -12,7 +12,7 @@ import { Quiz } from "./screens/Quiz";
 import { Setup, type SetupOptions } from "./screens/Setup";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
-import { readProgress, rewardActivity, saveProfile } from "./state/progress";
+import { readProgress, rewardActivity, saveProfile, updateProfile } from "./state/progress";
 
 type Screen =
   | { name: "home" | "setup" | "learn" | "parent" | "ask" }
@@ -91,7 +91,11 @@ export default function App() {
     return <ParentGate onPass={() => setScreen({ name: screen.destination })} onBack={() => setScreen(screen.back)} />;
   }
   if (screen.name === "parent") {
-    return <ParentSettings key={profile.id} profile={profile} onSave={chooseProfile} onBack={goHome} />;
+    return <ParentSettings key={profile.id} profile={profile} profiles={progress.profiles}
+      onSave={(codenameId, ageBand) => {
+        setProgress(updateProfile(profile.id, codenameId, ageBand));
+        goHome();
+      }} onBack={goHome} />;
   }
   if (screen.name === "setup" && profile.ageBand !== "1-2") {
     return <Setup profile={profile} onStart={(options) => launch(options, profile)} onBack={goHome} />;

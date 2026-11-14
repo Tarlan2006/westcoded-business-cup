@@ -49,7 +49,6 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
   const request = useRef<AbortController | null>(null);
   const recognition = useRef<LocalRecognition | null>(null);
   const speechTimer = useRef<number>(undefined);
-  const detectedVoice = useRef(false);
 
   function hint() {
     setVoiceHint("Type your question");
@@ -64,12 +63,12 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       active.onend = null;
       active.onerror = null;
       active.onresult = null;
-      active.abort();
+      try { active.abort(); } catch { /* The recognition session already ended. */ }
     }
   }
 
   function useBrowserSpeech() {
-    if (!detectedVoice.current || request.current) return;
+    if (request.current) return;
     const browser = window as Window & {
       SpeechRecognition?: RecognitionConstructor; webkitSpeechRecognition?: RecognitionConstructor;
     };
@@ -78,25 +77,22 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       hint();
       return;
     }
-    const local = new Recognition();
-    if (!("processLocally" in local)) { hint(); return; }
-    local.processLocally = true;
-    local.lang = "en-US";
-    recognition.current = local;
-    setVoiceHint("Listening on this device…");
-    local.onresult = (event) => {
-      const text = event.results[0]?.[0]?.transcript;
-      stopRecognition();
-      if (text?.trim()) {
-        setVoiceHint("");
-        setQuestion(cleanQuestion(text));
-        input.current?.focus();
-      } else hint();
-    };
     const failed = () => { stopRecognition(); hint(); };
-    local.onerror = failed;
-    local.onend = failed;
     try {
+      const local = new Recognition();
+      if (!("processLocally" in local)) { hint(); return; }
+      local.processLocally = true;
+      local.lang = "en-US";
+      recognition.current = local;
+      setVoiceHint("Listening on this device…");
+      local.onresult = (event) => {
+        const text = event.results[0]?.[0]?.transcript;
+        stopRecognition();
+        if (text?.trim()) void submit(text);
+        else hint();
+      };
+      local.onerror = failed;
+      local.onend = failed;
       local.start();
       speechTimer.current = window.setTimeout(failed, 6500);
     } catch {
@@ -104,11 +100,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     }
   }
 
-  const voice = usePushToTalk(!busy && !result, (text) => {
-    setQuestion(cleanQuestion(text));
-    setVoiceHint("");
-    input.current?.focus();
-  }, useBrowserSpeech);
+  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text); }, useBrowserSpeech);
 
   useEffect(() => {
     function stopWhenHidden() {
@@ -124,8 +116,8 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     };
   }, []);
 
-  async function submit() {
-    const text = cleanQuestion(question);
+  async function submit(value: string) {
+    const text = cleanQuestion(value);
     if (!text || request.current) return;
     stopRecognition();
     voice.release(true);
@@ -156,18 +148,16 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
     if (busy || voice.status !== "idle") return;
     stopRecognition();
     stopSpeech();
-    detectedVoice.current = true;
     setVoiceHint("");
     voice.start();
   }
 
   function cancelVoice() {
-    detectedVoice.current = false;
     voice.release(true);
   }
 
   const voiceLabel = voice.status === "opening" ? "Opening mic…" : voice.status === "recording"
-    ? "Release to keep question" : voice.status === "decoding" ? "Transcribing…" : "Hold to talk";
+    ? "Release to ask" : voice.status === "decoding" ? "Transcribing…" : "Hold to talk";
 
   return (
     <LearnPage title="Ask Mission Control" onBack={onBack}>
@@ -175,6 +165,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       {result ? (
         <section className="panel learn-card">
           <p className="ask-answer" aria-live="polite">{result.answer}</p>
+          {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
           <button type="button" className="quiet-button" onClick={() => {
             stopSpeech();
             void speakFallback(result.answer);
@@ -190,7 +181,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
       ) : (
         <form className="panel learn-card" onSubmit={(event) => {
           event.preventDefault();
-          void submit();
+          void submit(question);
         }}>
           <button type="button" className="secondary-button talk-button" disabled={busy || voice.status === "decoding"}
             onPointerDown={(event) => {
@@ -215,6 +206,7 @@ export function Ask({ onBack, onAnswer, onQuiz }: {
             <span className="field-label">Your question</span>
             <textarea ref={input} rows={2} required maxLength={200} autoComplete="off"
               value={question} onChange={(event) => {
+                voice.release(true);
                 stopRecognition();
                 setVoiceHint("");
                 setQuestion(event.target.value);

@@ -95,11 +95,13 @@ export function LearnHome({ profile, onBack, onQuiz, onMemory, onAsk, onGrid }: 
   );
 }
 
-export function ParentSettings({ profile, onSave, onBack }: {
-  profile: Profile; onSave: (codenameId: string, ageBand: AgeBand) => void; onBack: () => void;
+export function ParentSettings({ profile, profiles, onSave, onBack }: {
+  profile: Profile; profiles: Profile[]; onSave: (codenameId: string, ageBand: AgeBand) => void; onBack: () => void;
 }) {
   const [ageBand, setAgeBand] = useState(profile.ageBand);
   const [codenameId, setCodenameId] = useState(profile.codenameId);
+  const used = new Set(profiles.filter((entry) => entry.id !== profile.id).map((entry) => entry.codenameId));
+  const options = new Set([profile.codenameId, ...codenames.filter((id) => !used.has(id))]);
   return (
     <LearnPage title="Parent settings" onBack={onBack}>
       <form className="panel parent-panel" onSubmit={(event) => {
@@ -108,7 +110,7 @@ export function ParentSettings({ profile, onSave, onBack }: {
       }}>
         <label><span className="field-label">Codename</span>
           <select value={codenameId} onChange={(event) => setCodenameId(event.target.value)}>
-            {[...new Set([profile.codenameId, ...codenames])].map((id) => (
+            {[...options].map((id) => (
               <option key={id} value={id}>{codenameFor(id)}</option>
             ))}
           </select>

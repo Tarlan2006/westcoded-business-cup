@@ -77,6 +77,13 @@ export function saveProfile(codenameId: string, ageBand: AgeBand) {
   return profile;
 }
 
+export function updateProfile(profileId: string, codenameId: string, ageBand: AgeBand) {
+  const progress = readProgress();
+  const profiles = progress.profiles.map((profile) =>
+    profile.id === profileId ? { ...profile, codenameId, ageBand } : profile);
+  return saveProgress({ ...progress, profiles, selectedId: profileId });
+}
+
 export function rewardActivity(
   sessionId: string, profileId: string, activity: Activity, points: number,
   mission?: { mode: Mode; memory: string }, date = new Date(),

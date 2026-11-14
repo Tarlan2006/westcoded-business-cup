@@ -1,6 +1,6 @@
 # Mission Control
 
-Mission Control — голосовая игра с короткими миссиями для детей. Сейчас в репозитории каркас на Vite, React, TypeScript и Tailwind CSS. Cloudflare Workers раздаёт страницу и обслуживает API на Hono.
+Mission Control — детское приложение с двумя треками, Active и Learn. Для 1–2 лет доступен видеокаталог. Для 3–5 и 6–8 лет есть активные миссии, квизы и игры. В Learn для 6–8 лет можно задать вопрос о науке и природе. Cloudflare Workers раздаёт приложение и обслуживает API на Hono.
 
 **Живой URL** [mission-control.tarlan-b06.workers.dev](https://mission-control.tarlan-b06.workers.dev)
 
@@ -16,6 +16,8 @@ npm run dev
 Откройте [localhost:5173](http://localhost:5173) и нажмите **Start mission**. Все режимы бесплатны, количество миссий не ограничено. Состояние Worker можно проверить через `GET /api/health`.
 
 В Scavenger Hunt кнопка **HOLD TO TALK** отправляет WAV длительностью до восьми секунд в `POST /api/stt` для распознавания через Workers AI. `POST /api/turn` выбирает реплику и задание через Groq. При недоступности модели игра выбирает следующий ход локально. Кнопка **I DID IT!** работает без доступа к микрофону.
+
+В Learn `POST /api/ask` отвечает через Groq при наличии `GROQ_API_KEY` и `LLM_MODEL`, а без них использует встроенный FAQ. Для наполнения видеокаталога замените `REPLACE_ME` на подходящие YouTube ID в `content/videos.json` и повторите сборку.
 
 Vite подключает Workers AI через аккаунт Cloudflare. Если появится запрос на вход, выполните `npx wrangler login` или воспользуйтесь запуском через `wrangler dev --local` ниже. Для проверки API секреты Groq не нужны.
 
