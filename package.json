@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "check-content": "node scripts/check-content.mjs",
     "check-sketch": "node src/games/sketch/scoreSketch.check.ts",
+    "check-space": "node src/games/space/scale.check.ts",
     "gen-audio": "node scripts/gen-audio.mjs",
     "deploy": "vite build && wrangler deploy",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json"

@@ -14,6 +14,7 @@ import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
 import { Setup } from "./screens/Setup";
 import { Sketch } from "./screens/Sketch";
+import { Space } from "./screens/Space";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
 import { defaultPreferences, type Preferences } from "./state/preferences";
@@ -24,7 +25,7 @@ type Screen =
   | { name: "gate" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
-  | { name: "memory" | "tic-tac-toe" | "sketch"; id: string }
+  | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
   | { name: "reward"; points: number; video: boolean }
   | { name: "video"; id?: string }
   | { name: "mission"; session: Session; profile: Profile }
@@ -55,9 +56,9 @@ export default function App() {
         onBack={profile?.preferences ? goHome : undefined} onSave={chooseProfile} />;
     }
 
-    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch") {
+    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch" | "space") {
       if (name === "sketch" && profile.ageBand !== "6-8") return;
-      void unlock().catch(() => {});
+      if (name !== "space") void unlock().catch(() => {});
       if (name === "ask") {
         setScreen({ name });
         return;
@@ -143,6 +144,10 @@ export default function App() {
       return <Sketch key={screen.id} onBack={goHome}
         onComplete={(points) => earn(screen.id, "sketch", points)} />;
     }
+    if (screen.name === "space" && profile.ageBand !== "1-2") {
+      return <Space key={screen.id} exploreOnly={profile.ageBand === "3-5"} onBack={goHome}
+        onComplete={(points) => earn(screen.id, "space", points)} />;
+    }
     if (screen.name === "reward") {
       return <LearnPage title="Nice work, agent!" onBack={goHome}>
         <div className="panel learn-card">
@@ -160,7 +165,7 @@ export default function App() {
     return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
       onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={() => startLearn("quiz")}
       onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
-      onSketch={() => startLearn("sketch")}
+      onSketch={() => startLearn("sketch")} onSpace={() => startLearn("space")}
       onWatch={() => setScreen({ name: "video" })} />;
   }
 }
