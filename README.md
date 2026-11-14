@@ -44,6 +44,26 @@ npx wrangler secret put LLM_MODEL
 
 Для автодеплоя откройте **Workers & Pages → mission-control → Settings → Builds → Connect** в панели Cloudflare. Авторизуйте приложение Cloudflare Workers & Pages в GitHub, выберите `Tarlan2006/westcoded-business-cup` и ветку `main`. Оставьте корнем репозиторий, задайте `npm run build` для сборки и `npx wrangler deploy` для деплоя. [Инструкция Cloudflare](https://developers.cloudflare.com/workers/ci-cd/builds/#connect-an-existing-worker)
 
+## Озвучка
+
+Готовые клипы лежат в `public/audio`. После изменения реплик или вопросов 3–5 лет обновите клипы, манифест и длительности. Для генерации нужны Python и FFmpeg с `libmp3lame` в PATH.
+
+```sh
+python -m pip install piper-tts==1.8.0
+python -m piper.download_voices --data-dir scripts/.cache/models en_US-hifi_tts_92-medium
+npm run gen-audio -- --dry-run
+npm run gen-audio
+npm run check-content -- --require-audio
+```
+
+В Windows с кириллицей в пути репозитория установите Piper в отдельное окружение в папке с латинским путём. Задайте `PYTHON` как путь к его `python.exe`. Через `FFMPEG` можно указать путь к исполняемому файлу FFmpeg. Для другого голоса Piper передайте `--voice <путь-к-модели.onnx>`; рядом нужен файл `.onnx.json`.
+
+- Для пробного прогона используйте `npm run gen-audio -- --only local_hunt`. Повторный запуск пропускает неизменённые клипы. `--force` перезаписывает выбранные клипы.
+- Kokoro работает через `python -m pip install kokoro soundfile` и `npm run gen-audio -- --engine kokoro --voice af_heart`. При первом запуске нужны веса модели. Для офлайн-работы загрузите их заранее.
+- Если решите использовать облачную озвучку, для ElevenLabs задайте `ELEVENLABS_API_KEY` и запустите `npm run gen-audio -- --engine elevenlabs --voice <voice-id>`. Для Aura задайте `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` и запустите `npm run gen-audio -- --engine aura --voice luna`.
+
+Перед публикацией прослушайте десять клипов из разных режимов и квиза. В Git добавляйте MP3, манифест и обновлённые банки. Веса и кэш генерации хранятся локально. [Атрибуция голоса](content/AUDIO_CREDITS.md)
+
 ## Документы
 
 - [План и контракты](docs/PLAN.md)
