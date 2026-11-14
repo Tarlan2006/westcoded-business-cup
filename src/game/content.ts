@@ -1,4 +1,5 @@
 import type { AgeBand, Line, Mode } from "../../shared/types";
+import localLines from "../../content/local-lines.json";
 
 export const MODES: Record<Mode, { name: string; icon: string; description: string }> = {
   hunt: { name: "Scavenger Hunt", icon: "⌕", description: "Find everyday objects before time runs out." },
@@ -27,12 +28,7 @@ function bank(name: string): Record<string, unknown>[] {
     : [];
 }
 
-const lines = new Map<string, Line>();
-
-function localLine(id: string, text: string, kind: Line["kind"], mode: Line["mode"] = "common") {
-  lines.set(id, { id, text, kind, mode, voice: "hq", file: "", durationMs: 0 });
-  return id;
-}
+const lines = new Map<string, Line>((localLines as Line[]).map((line) => [line.id, line]));
 
 export function lineFor(id: string): Line {
   const line = lines.get(id);
@@ -40,75 +36,34 @@ export function lineFor(id: string): Line {
   return line;
 }
 
-const names = ["Comet", "Echo", "Fox", "Nova", "Scout", "Sparrow", "Orbit", "Pixel", "Radar", "Sunny", "Raven", "Dash"];
-const localCodenames = names.map((name) => localLine(`codename_${name.toLowerCase()}`, name, "codename"));
+export const modeIntro = { hunt: "local_hunt_intro", roadtrip: "local_roadtrip_intro", lava: "local_lava_intro" };
+export const recallLine = { hunt: "local_hunt_recall", roadtrip: "local_roadtrip_recall", lava: "local_lava_recall" };
+export const countdownLine = "local_lava_countdown";
+export const outroLine = "local_outro";
+export const timeUpLine = "local_time_up";
+export const tryAgainLine = "local_try_again";
 
-export const modeIntro = {
-  hunt: localLine("local_hunt_intro", "Agent, your mission is to find objects nearby. Walk and watch your step.", "intro", "hunt"),
-  roadtrip: localLine("local_roadtrip_intro", "Agents, stay buckled and spy through your windows.", "intro", "roadtrip"),
-  lava: localLine("local_lava_intro", "Walk to your safe spot. Keep both feet on the floor.", "intro", "lava"),
-};
-
-export const recallLine = {
-  hunt: localLine("local_hunt_recall", "Last time, you tracked down objects for Mission Control.", "recall", "hunt"),
-  roadtrip: localLine("local_roadtrip_recall", "Last time, you spotted clues on the road.", "recall", "roadtrip"),
-  lava: localLine("local_lava_recall", "Last time, you stayed cool when the floor got hot.", "recall", "lava"),
-};
-
-export const countdownLine = localLine("local_lava_countdown", "Lava alert! Walk to your safe spot. You have ten seconds.", "task", "lava");
-export const outroLine = localLine("local_outro", "Mission complete. Great work, agents!", "outro");
-export const timeUpLine = localLine("local_time_up", "Time’s up. Let’s try a new assignment.", "transition");
-export const tryAgainLine = localLine("local_try_again", "Good try, agent. On to the next assignment.", "retry");
-
-const localPraise = [
-  localLine("local_praise_found", "Nicely spotted, agent!", "praise"),
-  localLine("local_praise_radio", "Mission Control copies. Great work!", "praise"),
-  localLine("local_praise_next", "Well done, agent. Ready for the next one?", "praise"),
-];
-
-const huntPrompts = [
-  ["Find a sock and a soft toy. Walk back to Mission Control.", "3-5"],
-  ["Find a pillow and something blue. Walk, agent!", "3-5"],
-  ["Find a towel and a paper napkin. Walk back to base.", "3-5"],
-  ["Find a book, a sock, and a cushion. Bring them one at a time.", "6-8"],
-  ["Find something soft, something red, and something round. Walk back to base.", "6-8"],
-  ["Find a paper napkin, a pencil, and a towel. Walk back to base.", "6-8"],
-  ["Find two soft objects of different colors. Describe them without showing them.", "6-8"],
-  ["Find a book, something striped, and something with a zipper. Walk back to base.", "6-8"],
-  ["Find something round, something square, and something blue. Walk back to base.", "6-8"],
-] as const;
-
-const roadtripPrompts = [
-  "Spot a red car through the window. Keep your seat belt on.",
-  "Who can spot a yellow sign first?",
-  "Look for a white truck.",
-  "Find a tree taller than the cars.",
-  "Spot a blue sign through your window.",
-  "Who can spot a bridge first?",
-];
-
+const localPraise = ["local_praise_found", "local_praise_radio", "local_praise_next"];
 const localTasks: Task[] = [
-  ...huntPrompts.map(([prompt, ageBand], i) => ({
-    id: `local_hunt_${i}`, mode: "hunt" as const, ageBand,
-    lineIds: [localLine(`local_hunt_task_${i}`, prompt, "task", "hunt")],
-    durationSec: ageBand === "3-5" ? 60 : i < 6 ? 50 : 45,
-  })),
-  ...roadtripPrompts.map((prompt, i) => ({
-    id: `local_roadtrip_${i}`, mode: "roadtrip" as const, ageBand: "all" as const,
-    lineIds: [localLine(`local_roadtrip_task_${i}`, prompt, "task", "roadtrip")], durationSec: 45,
+  ...localLines.filter((line) => /^local_(hunt|roadtrip)_task_/.test(line.id)).map((line, i) => ({
+    id: line.id.replace("_task_", "_"),
+    mode: line.mode as "hunt" | "roadtrip",
+    ageBand: line.ageBand as Task["ageBand"],
+    lineIds: [line.id],
+    durationSec: line.mode === "roadtrip" ? 45 : line.ageBand === "3-5" ? 60 : i < 6 ? 50 : 45,
   })),
   {
     id: "local_lava_freeze", mode: "lava", ageBand: "all", durationSec: 20,
-    lineIds: [localLine("local_lava_freeze_line", "Freeze like a statue for five seconds. Then tap I DID IT!", "task", "lava")],
+    lineIds: ["local_lava_freeze_line"],
   },
   {
     id: "local_lava_riddle_1", mode: "lava", ageBand: "all", durationSec: 20,
-    lineIds: [localLine("local_lava_riddle_line_1", "What gets wetter while it dries you?", "task", "lava")],
+    lineIds: ["local_lava_riddle_line_1"],
     riddle: { choices: ["A towel", "A sock"], answer: "A towel" },
   },
   {
     id: "local_lava_riddle_2", mode: "lava", ageBand: "all", durationSec: 20,
-    lineIds: [localLine("local_lava_riddle_line_2", "What has hands and tells the time?", "task", "lava")],
+    lineIds: ["local_lava_riddle_line_2"],
     riddle: { choices: ["A shoe", "A clock"], answer: "A clock" },
   },
 ];
@@ -150,7 +105,6 @@ for (const row of bank("tasks")) {
 
 export const codenames = [...new Set([
   ...importedLines.filter((line) => line.mode === "common" && line.kind === "codename").map((line) => line.id),
-  ...localCodenames,
 ])];
 
 export function codenameFor(id: string) {
@@ -168,5 +122,12 @@ export function praiseFor(mode: Mode, ageBand: AgeBand): string[] {
 export function tasksFor(mode: Mode, ageBand: AgeBand): Task[] {
   const matches = (task: Task) => task.mode === mode && (task.ageBand === "all" || task.ageBand === ageBand);
   const curated = importedTasks.filter(matches);
-  return curated.length ? curated : localTasks.filter(matches);
+  if (!curated.length) return localTasks.filter(matches);
+  // Keep the opening freeze after the lava countdown. Mix the remaining assignments per mission.
+  const first = mode === "lava" ? 1 : 0;
+  for (let index = curated.length - 1; index > first; index--) {
+    const next = first + Math.floor(Math.random() * (index - first + 1));
+    [curated[index], curated[next]] = [curated[next], curated[index]];
+  }
+  return curated;
 }

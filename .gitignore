@@ -9,3 +9,10 @@ dist/
 !.env.example
 *.log
 .DS_Store
+scripts/.cache/
+models/
+*.onnx
+*.onnx.json
+*.safetensors
+*.pth
+*.pt

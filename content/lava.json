@@ -1,0 +1,15 @@
+[
+  {"id":"lava_alert","voice":"hq","mode":"lava","kind":"intro","ageBand":"all","text":"Lava alert! Stay on the floor. Walk to your safe spot.","file":"/audio/lava/lava_alert.mp3","durationMs":0},
+  {"id":"lava_freeze_1","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Keep both feet on the floor and freeze like a statue.","file":"/audio/lava/lava_freeze_1.mp3","durationMs":0},
+  {"id":"lava_freeze_2","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Stand tall with both feet on the floor. Hold still.","file":"/audio/lava/lava_freeze_2.mp3","durationMs":0},
+  {"id":"lava_freeze_3","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Keep your feet still and stretch your arms out gently.","file":"/audio/lava/lava_freeze_3.mp3","durationMs":0},
+  {"id":"lava_freeze_4","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Keep both feet planted. Hold a tiny smile for five seconds.","file":"/audio/lava/lava_freeze_4.mp3","durationMs":0},
+  {"id":"lava_freeze_5","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Stand on the floor and hold your hands like little wings.","file":"/audio/lava/lava_freeze_5.mp3","durationMs":0},
+  {"id":"lava_freeze_6","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"Stand with both feet on the floor. Look ahead and freeze.","file":"/audio/lava/lava_freeze_6.mp3","durationMs":0},
+  {"id":"lava_task_riddle_1","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What gets wetter while it dries you?","file":"/audio/lava/lava_task_riddle_1.mp3","durationMs":0},
+  {"id":"lava_task_riddle_2","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What has hands and tells the time?","file":"/audio/lava/lava_task_riddle_2.mp3","durationMs":0},
+  {"id":"lava_task_riddle_3","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What has pages you can turn?","file":"/audio/lava/lava_task_riddle_3.mp3","durationMs":0},
+  {"id":"lava_task_riddle_4","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What falls from clouds in little drops?","file":"/audio/lava/lava_task_riddle_4.mp3","durationMs":0},
+  {"id":"lava_task_riddle_5","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What has stripes and looks like a horse?","file":"/audio/lava/lava_task_riddle_5.mp3","durationMs":0},
+  {"id":"lava_task_riddle_6","voice":"hq","mode":"lava","kind":"task","ageBand":"all","text":"What goes on your hand and keeps it warm?","file":"/audio/lava/lava_task_riddle_6.mp3","durationMs":0}
+]
