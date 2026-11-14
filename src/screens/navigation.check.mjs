@@ -57,8 +57,16 @@ async function snapshot(page, name, width) {
   await page.screenshot({ path: resolve(output, `flow-${name}-${width}.png`), fullPage: true });
 }
 async function finishJourney(page, exploreOnly = false) {
-  await page.locator(".sp-stops button").last().click();
-  await page.getByRole("button", { name: exploreOnly ? "Finish journey" : "Start quiz" }).click();
+  const stops = page.getByRole("navigation", { name: "Journey stops", exact: true });
+  const mobilePicker = stops.getByRole("combobox", { name: "Jump to a stop", exact: true });
+  await stops.waitFor();
+  if (await mobilePicker.isVisible()) {
+    await mobilePicker.selectOption({ label: "8. Betelgeuse" });
+  } else {
+    await stops.getByRole("button", { name: "Betelgeuse", exact: true }).click();
+  }
+  await page.getByRole("heading", { name: "Betelgeuse", exact: true }).waitFor();
+  await page.getByRole("button", { name: exploreOnly ? "Finish journey" : "Start quiz", exact: true }).click();
 }
 function seconds(text) { const [m, s] = text.split(":").map(Number); return m * 60 + s; }
 async function timerState(page) {
@@ -93,7 +101,9 @@ try {
     await header(page, "Space Scale"); await snapshot(page, "space-header", width);
     await page.getByRole("button", { name: "Start exploring" }).click();
     await header(page, "Space Scale");
-    await finishJourney(page); await header(page, "Space Scale");
+    await finishJourney(page);
+    await page.getByRole("heading", { name: "Which is bigger?", exact: true }).waitFor();
+    await header(page, "Space Scale");
     for (let question = 0; question < 5; question++) {
       await page.locator(".sp-choices button").first().click();
       await page.getByRole("button", { name: question === 4 ? "See results" : "Next question" }).click();
@@ -108,6 +118,8 @@ try {
     await tile(preschool.page, "Space Scale").click();
     await preschool.page.getByRole("button", { name: "Start exploring" }).click();
     await header(preschool.page, "Space Scale"); await finishJourney(preschool.page, true);
+    await preschool.page.getByRole("heading", { name: "What a journey!", exact: true }).waitFor();
+    assert.equal(await preschool.page.getByRole("heading", { name: "Which is bigger?", exact: true }).count(), 0);
     await header(preschool.page, "Space Scale"); await back(preschool.page);
     await preschool.context.close();
     pass(`${width}px: preschool SpaceViewer keeps the shared header and skips the quiz`);
