@@ -90,7 +90,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave }: {
     </form>
   );
 
-  if (onBack) return <LearnPage title="Parent settings" onBack={onBack}>{form}</LearnPage>;
+  if (onBack) return <LearnPage title="Parent settings" onBack={onBack}>
+    <p className="learn-description">Changes apply right away</p>{form}
+  </LearnPage>;
 
   return (
     <main className="shell learn-shell learn-page">

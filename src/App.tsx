@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
 import { unlock } from "./audio/engine";
 import { ActivityXp } from "./components/ActivityHeader";
@@ -9,7 +9,7 @@ import { Ask } from "./screens/Ask";
 import { Hub, LearnPage } from "./screens/Home";
 import { Memory } from "./screens/Memory";
 import { Mission, Results } from "./screens/Mission";
-import { ParentGate, Privacy } from "./screens/Parent";
+import { Privacy } from "./screens/Parent";
 import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
 import { Setup } from "./screens/Setup";
@@ -22,7 +22,6 @@ import { readProgress, rewardActivity, saveProfile, updateProfile } from "./stat
 
 type Screen =
   | { name: "home" | "parent" | "ask" }
-  | { name: "gate" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space"; id: string }
@@ -34,9 +33,15 @@ type Screen =
 export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: "home" });
   const [progress, setProgress] = useState(readProgress);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    if (!saved) return;
+    const timer = window.setTimeout(() => setSaved(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, [saved]);
   const launchPending = useRef(false);
   const profile = progress.profiles.find((entry) => entry.id === progress.selectedId) ?? progress.profiles[0];
-  return <ActivityXp value={profile?.xp}>{renderScreen()}</ActivityXp>;
+  return <ActivityXp value={profile?.xp}>{saved && <div className="flow-saved" role="status">Saved ✓</div>}{renderScreen()}</ActivityXp>;
 
   function renderScreen() {
     const preferences = profile?.preferences ?? defaultPreferences;
@@ -45,6 +50,7 @@ export default function App() {
     if (window.location.pathname.replace(/\/$/, "") === "/privacy") return <Privacy />;
 
     function chooseProfile(codenameId: string, ageBand: AgeBand, choices: Preferences) {
+      if (screen.name === "parent") setSaved(true);
       setProgress(profile
         ? updateProfile(profile.id, codenameId, ageBand, choices)
         : saveProfile(codenameId, ageBand, choices));
@@ -93,9 +99,6 @@ export default function App() {
       setScreen({ name: "video", id });
     }
 
-    if (screen.name === "gate") {
-      return <ParentGate onPass={() => setScreen({ name: "parent" })} onBack={goHome} />;
-    }
     if (screen.name === "setup") {
       return <Setup key={screen.mode} initialMode={screen.mode} preferences={preferences} xp={profile.xp}
         onBack={goHome} onStart={(mode, minutes) => launch(mode, profile, minutes)} />;
@@ -162,7 +165,7 @@ export default function App() {
     if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
       return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goHome} onOpen={openVideo} />;
     }
-    return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
+    return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "parent" })}
       onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={() => startLearn("quiz")}
       onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
       onSketch={() => startLearn("sketch")} onSpace={() => startLearn("space")}

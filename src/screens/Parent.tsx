@@ -1,30 +1,4 @@
-import { useState } from "react";
 import { LearnPage } from "./Home";
-
-export function ParentGate({ onPass, onBack }: { onPass: () => void; onBack: () => void }) {
-  const [numbers] = useState(() => [7 + Math.floor(Math.random() * 6), 4 + Math.floor(Math.random() * 5)]);
-  const [answer, setAnswer] = useState("");
-  const [wrong, setWrong] = useState(false);
-  return (
-    <LearnPage title="For grown-ups" onBack={onBack}>
-      <form className="panel parent-panel centered-card" onSubmit={(event) => {
-        event.preventDefault();
-        if (answer.trim() && Number(answer) === numbers[0] + numbers[1]) onPass();
-        else setWrong(true);
-      }}>
-        <label className="gate-answer">
-          <span className="field-label">What is {numbers[0]} + {numbers[1]}?</span>
-          <input autoComplete="off" inputMode="numeric" value={answer} onChange={(event) => {
-            setAnswer(event.target.value);
-            setWrong(false);
-          }} required />
-        </label>
-        {wrong && <p role="alert">Try that answer again.</p>}
-        <button type="submit" className="primary-button">Continue</button>
-      </form>
-    </LearnPage>
-  );
-}
 
 export function Privacy() {
   return (

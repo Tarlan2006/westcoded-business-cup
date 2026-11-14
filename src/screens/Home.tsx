@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Mode } from "../../shared/types";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
+import { GrownUpsButton } from "../components/GrownUpsButton";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
 import { sketchGameMeta } from "../games/sketch/meta";
@@ -62,14 +63,14 @@ function RankCard({ profile, preferences, onParent }: { profile: ChildProfile; p
       <div className="hub-profile-body">
         <h1>Agent {codenameFor(profile.codenameId)}</h1>
         <p>{rankName(profile.rank)} <span aria-hidden="true">·</span> {profile.streak} day streak</p>
-        <p>Ages {profile.ageBand.replace("-", "–")} · {preferences.minutes} min planned{profile.ageBand !== "1-2" &&
+        <p>Ages {profile.ageBand.replace("-", "–")}{profile.ageBand !== "1-2" &&
           ` · ${preferences.location === "car" ? "In the car" : "At home"}`}</p>
         {next ? <>
           <progress value={Math.max(0, profile.xp - previous)} max={next - previous} aria-label="XP progress to next rank" />
           <p className="field-label">{profile.xp} / {next} XP to {rankName(profile.rank + 1)}</p>
         </> : <p className="field-label">{profile.xp} XP · Top rank</p>}
       </div>
-      <button className="quiet-button" type="button" onClick={onParent}>Parent settings</button>
+      <GrownUpsButton onOpen={onParent} />
     </div>
   );
 }
