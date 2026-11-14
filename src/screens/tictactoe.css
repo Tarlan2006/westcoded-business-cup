@@ -1,4 +1,61 @@
+.ttt-shell { max-width: 850px; }
+.ttt-room {
+  display: grid;
+  grid-template-areas: "title" "controls" "host" "board" "actions";
+  gap: 12px;
+  max-width: 430px;
+  margin: 12px auto 0;
+}
+
+.ttt-title { grid-area: title; text-align: center; }
+.ttt-title h1 { font-size: clamp(2.08rem, 8vw, 4.5rem); letter-spacing: -.02em; }
+.ttt-title p { margin-top: 3px; color: var(--muted); font-weight: 800; }
+.ttt-controls { grid-area: controls; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
+.ttt-levels { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--radius-pill); background: var(--bg-soft); }
+.ttt-level {
+  min-width: 62px;
+  min-height: 48px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+  font-size: .875rem;
+  font-weight: 900;
+}
+.ttt-level[aria-pressed="true"] { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
+.ttt-score { padding: 7px 9px; border-radius: var(--radius-pill); background: var(--sun-soft); color: var(--accent-text); font-size: .79rem; font-weight: 900; white-space: nowrap; }
+.ttt-score span { padding-inline: .15em; }
+.ttt-host { grid-area: host; display: flex; justify-content: center; align-items: center; min-height: 50px; gap: 10px; }
+.ttt-mascot { flex: 0 0 66px; }
+.ttt-bubble {
+  position: relative;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-soft);
+  color: var(--text);
+  font-weight: 900;
+  line-height: 1.25;
+}
+.ttt-bubble::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 4px);
+  left: -5px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.ttt-actions { grid-area: actions; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.ttt-actions > button { flex: 0 1 auto; min-height: 48px; padding: 7px 13px; }
+.ttt-actions > button:disabled { border-color: var(--border); }
+
 .ttt-board {
+  grid-area: board;
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(88px, 1fr));
@@ -48,3 +105,23 @@
 
 @keyframes ttt-pop { 0% { transform: scale(0); } 66% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes ttt-blink { 0%, 92%, 100% { transform: scaleY(1); } 95%, 97% { transform: scaleY(.15); } }
+
+@media (min-width: 740px) {
+  .ttt-room {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "title board" "controls board" "host board" "actions board";
+    align-items: center;
+    align-content: center;
+    max-width: 100%;
+    min-height: 470px;
+    margin-top: 22px;
+    padding: 25px 32px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-soft);
+    box-shadow: var(--shadow);
+  }
+  .ttt-title, .ttt-controls, .ttt-host, .ttt-actions { text-align: left; justify-content: flex-start; }
+  .ttt-mascot { flex-basis: 88px; }
+  .ttt-bubble { background: var(--surface); }
+}

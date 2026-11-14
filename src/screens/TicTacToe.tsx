@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { LearnPage } from "./Home";
+import { useEffect, useReducer, useState } from "react";
+import { ActivityHeader } from "../components/ActivityHeader";
+import { Mascot } from "../components/Mascot";
 import { Piece } from "./ttt/Piece";
 import "./tictactoe.css";
 
@@ -58,37 +59,89 @@ function cleverMove(board: Cell[]) {
   return bestMove;
 }
 
-export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComplete: (won: boolean) => void }) {
-  const [board, setBoard] = useState<Cell[]>(() => Array<Cell>(9).fill(null));
-  const winningLine = winner(board);
-  const win = winningLine && board[winningLine[0]];
-  const done = Boolean(win) || board.every(Boolean);
+type Difficulty = "Easy" | "Clever";
+type Result = Mark | "tie";
+type Match = {
+  board: Cell[];
+  starter: Mark;
+  turn: Mark;
+  result: Result | null;
+  scores: Record<Result, number>;
+};
+type Move = { mark: Mark; index: number; board: Cell[] };
 
-  function play(index: number) {
-    setBoard((current) => {
-      if (current[index] || winner(current) || current.every(Boolean)) return current;
-      const next = place(current, index, "X");
-      if (winner(next)) return next;
-      const move = easyMove(next, Math.random(), Math.random());
-      return move === undefined ? next : place(next, move, "O");
-    });
+function startRound(starter: Mark, scores: Match["scores"]): Match {
+  return { board: Array<Cell>(9).fill(null), starter, turn: starter, result: null, scores };
+}
+
+function playRound(match: Match, move: Move | "rematch"): Match {
+  if (move === "rematch") {
+    return match.result ? startRound(match.starter === "X" ? "O" : "X", match.scores) : match;
   }
+  if (match.result || match.board !== move.board || match.turn !== move.mark || match.board[move.index] !== null) return match;
+
+  const board = place(match.board, move.index, move.mark);
+  const result = winner(board) ? move.mark : board.every(Boolean) ? "tie" : null;
+  const scores = result ? { ...match.scores, [result]: match.scores[result] + 1 } : match.scores;
+  return { ...match, board, result, scores, turn: move.mark === "X" ? "O" : "X" };
+}
+
+export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComplete: (won: boolean) => void }) {
+  const [difficulty, setDifficulty] = useState<Difficulty>("Easy");
+  const [{ board, turn, scores, result }, dispatch] = useReducer(playRound, undefined,
+    () => startRound("X", { X: 0, O: 0, tie: 0 }));
+  const winningLine = winner(board);
+  const thinking = !result && turn === "O";
+  const canPlay = !result && !thinking;
+  const message = result === "X" ? "Oh no, you got me! You win!" : result === "O" ? "Good game! Want a rematch?"
+    : result === "tie" ? "It's a tie, great game!" : thinking ? "Hmm, let me think..."
+      : board.includes("X") ? "Nice move! Your turn." : "Your turn!";
+
+  useEffect(() => {
+    if (!thinking) return;
+    const timer = window.setTimeout(() => {
+      const index = difficulty === "Clever" ? cleverMove(board) : easyMove(board, Math.random(), Math.random());
+      if (index !== undefined) dispatch({ mark: "O", index, board });
+    }, 420);
+    return () => window.clearTimeout(timer);
+  }, [board, difficulty, thinking]);
 
   return (
-    <LearnPage title="Tic-tac-toe" onBack={onBack}>
-      <p role="status">{win === "X" ? "You win! +20 XP" : win === "O" ? "Good game! The computer wins." : done
-        ? "It’s a tie!" : "You’re X. Tap an open square."}</p>
-      <div className="ttt-board" role="group" aria-label="Tic-tac-toe board">
-        {board.map((cell, index) => (
-          <button key={index} type="button" className="ttt-cell" aria-disabled={done || Boolean(cell)}
-            aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}, ${cell === "X" ? "star" : cell === "O" ? "cloud" : "empty"}`}
-            data-mark={cell ?? undefined} data-winning={winningLine?.includes(index) || undefined}
-            onClick={() => play(index)}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
-        ))}
-      </div>
-      {done && <button type="button" className="primary-button" onClick={() => onComplete(win === "X")}>
-        {win === "X" ? "Collect XP" : "Finish game"}
-      </button>}
-    </LearnPage>
+    <main className="shell ttt-shell">
+      <ActivityHeader title="Tic-tac-toe" onBack={scores.X === 0 && scores.O + scores.tie > 0 ? () => onComplete(false) : onBack} />
+      <section className="ttt-room" aria-labelledby="ttt-title">
+        <header className="ttt-title">
+          <h1 id="ttt-title">Stars vs. Clouds</h1>
+          <p>You're the star. Make a row of three!</p>
+        </header>
+        <div className="ttt-controls">
+          <div className="ttt-levels" role="group" aria-label="Difficulty">
+            {(["Easy", "Clever"] as const).map((level) => (
+              <button key={level} type="button" className="ttt-level" aria-pressed={difficulty === level}
+                onClick={() => setDifficulty(level)}>{level}</button>
+            ))}
+          </div>
+          <p className="ttt-score">You {scores.X} <span aria-hidden="true">·</span> Computer {scores.O} <span aria-hidden="true">·</span> Ties {scores.tie}</p>
+        </div>
+        <div className="ttt-host">
+          <div className="ttt-mascot"><Mascot mood={thinking ? "thinking" : result ? "happy" : "idle"} /></div>
+          <p className="ttt-bubble" aria-live="polite" aria-atomic="true">{message}</p>
+        </div>
+        <div className="ttt-board" role="group" aria-label="Tic-tac-toe board">
+          {board.map((cell, index) => (
+            <button key={index} type="button" className="ttt-cell" aria-disabled={!canPlay || Boolean(cell)}
+              aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}, ${cell === "X" ? "star" : cell === "O" ? "cloud" : "empty"}`}
+              data-winning={winningLine?.includes(index) || undefined}
+              onClick={() => dispatch({ mark: "X", index, board })}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
+          ))}
+        </div>
+        <div className="ttt-actions">
+          <button type="button" className="primary-button" disabled={!result} onClick={() => dispatch("rematch")}>
+            <span aria-hidden="true">↻</span> Play again
+          </button>
+          {scores.X > 0 && <button type="button" className="secondary-button" onClick={() => onComplete(true)}>Collect XP</button>}
+        </div>
+      </section>
+    </main>
   );
 }
