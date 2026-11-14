@@ -1,3 +1,4 @@
+import { HoldButton } from "../components/HoldButton";
 import { APP_NAME } from "../brand";
 import { useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
@@ -7,7 +8,7 @@ import { speakFallback, stopSpeech } from "../audio/engine";
 import { usePushToTalk } from "../game/usePushToTalk";
 import { LearnPage } from "./Home";
 import { useSoundEnabled } from "../audio/sfx";
-import { GameButton, SpeechBubble } from "../components/GameUI";
+import { SpeechBubble } from "../components/GameUI";
 import { Mascot } from "../components/Mascot";
 
 type Exchange = { question: string; answer: string };
@@ -99,7 +100,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   }
 
   const voiceLabel = voice.status === "opening" ? "Opening mic…" : voice.status === "recording"
-    ? "Release to ask" : voice.status === "decoding" ? "Listening…" : "Hold to talk";
+    ? "Let go to send" : voice.status === "decoding" ? "Listening…" : "Hold to talk";
 
   return (
     <LearnPage title={`Ask ${APP_NAME}`} onBack={onBack}>
@@ -130,28 +131,11 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           void submit(question);
         }}>
           <Mascot pose={busy || voice.status === "decoding" ? "tablet" : "point"} className="ask-mascot-large" eager />
-          <GameButton tone="sky" className="talk-button" data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding"}
-            onPointerDown={(event) => {
-              if (!event.isPrimary || event.button !== 0) return;
-              // Keep a denied microphone tap from moving focus back from the question field.
-              event.preventDefault();
-              event.currentTarget.focus({ preventScroll: true });
-              event.currentTarget.setPointerCapture(event.pointerId);
-              beginVoice();
-            }}
-            onPointerUp={() => voice.release()}
-            onPointerCancel={voice.cancelHold}
-            onLostPointerCapture={voice.cancelHold}
-            onContextMenu={(event) => event.preventDefault()}
-            onKeyDown={(event) => {
-              if (event.key !== " " && event.key !== "Enter") return;
-              event.preventDefault();
-              if (!event.repeat) beginVoice();
-            }}
-            onKeyUp={(event) => {
-              if (event.key === " " || event.key === "Enter") voice.release();
-            }}
-            onBlur={voice.cancelHold}>{voiceLabel}</GameButton>
+          <HoldButton talk hintKey="ask-talk" className="game-button talk-button" data-button-tone="sky"
+            data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding"}
+            onBegin={beginVoice} onRelease={() => voice.release()} onCancel={voice.cancelHold}>
+            {voiceLabel}
+          </HoldButton>
           <label>
             <span className="field-label">Your question</span>
             <textarea ref={input} rows={2} required maxLength={200} autoComplete="off"

@@ -1,3 +1,4 @@
+import { HoldButton } from "../components/HoldButton";
 import { APP_NAME } from "../brand";
 import { useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
@@ -203,23 +204,11 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
       disabled={!running} onClick={() => completeWithButton(player)}>Player {player} spotted it!</button>) : <>
       <button type="button" className={`${doneButton}${isHunt ? "" : " col-span-2"}`}
         disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> I DID IT!</button>
-      {isHunt && <button type="button" className={`${missionButtonStyle} btn-sky text-white talk-button${recording ? " voice-pulse" : ""}`}
-        disabled={!running || voice.status === "decoding"}
-        onPointerDown={(event) => {
-          if (!event.isPrimary || event.button !== 0) return;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          startVoice();
-        }}
-        onPointerUp={() => voice.release()} onPointerCancel={voice.cancelHold} onLostPointerCapture={voice.cancelHold}
-        onContextMenu={(event) => event.preventDefault()} onKeyDown={(event) => {
-          if (event.key !== " " && event.key !== "Enter") return;
-          event.preventDefault();
-          if (!event.repeat) startVoice();
-        }} onKeyUp={(event) => {
-          if (event.key === " " || event.key === "Enter") voice.release();
-        }} onBlur={voice.cancelHold}>
-        <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? "Opening mic…" : "Release to send"
+      {isHunt && <HoldButton talk hintKey="hunt-talk" className={`${missionButtonStyle} btn-sky text-white talk-button`}
+        disabled={!running || voice.status === "decoding"} onBegin={startVoice}
+        onRelease={() => voice.release()} onCancel={voice.cancelHold}>
+        <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? "Opening mic…" : "Let go to send"
           : voice.status === "decoding" ? "Listening…" : "TALK"}</span>
-      </button>}
+      </HoldButton>}
     </>} />;
 }
