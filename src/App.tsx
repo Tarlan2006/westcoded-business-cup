@@ -14,6 +14,7 @@ import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { Hub, LearnPage } from "./screens/Home";
 import { Privacy } from "./screens/Parent";
+import { Plans } from "./screens/Plans";
 import { ProfileSetup } from "./screens/ProfileSetup";
 import { Setup } from "./screens/Setup";
 import { Sketch } from "./screens/Sketch";
@@ -34,7 +35,7 @@ const VideoCatalog = lazy(() => import("./screens/VideoCatalog").then(({ VideoCa
 const Balloons = lazy(() => import("./games/balloons"));
 
 type Screen =
-  | { name: "home" | "parent" | "ask" | "privacy" }
+  | { name: "home" | "parent" | "ask" | "privacy" | "plans" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string; afterVideo?: boolean }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space" | "balloons"; id: string }
@@ -50,6 +51,7 @@ function breadcrumb(screen: Screen): string {
   switch (screen.name) {
     case "parent": return "Grown-ups › Parent settings";
     case "privacy": return "Grown-ups › Privacy";
+    case "plans": return `Grown-ups › ${APP_NAME} Plus`;
     case "setup": return `Move › ${MODES[screen.mode].name} › Setup`;
     case "mission": return `Move › ${MODES[screen.session.mode].name}`;
     case "results": return `Move › ${MODES[screen.session.mode].name} › Results`;
@@ -111,7 +113,7 @@ export default function App() {
 
   useEffect(() => {
     if (welcoming || privacy || !profile?.preferences || sessionExpired || sessionEndsAt !== null ||
-      ["home", "parent", "privacy", "setup"].includes(current.screen.name)) return;
+      ["home", "parent", "privacy", "setup", "plans"].includes(current.screen.name)) return;
     setSessionEndsAt(Date.now() + profile.preferences.minutes * 60_000);
   }, [welcoming, privacy, profile?.preferences, current.screen.name, sessionExpired, sessionEndsAt]);
 
@@ -226,6 +228,7 @@ export default function App() {
     const preferences = profile?.preferences ?? defaultPreferences;
 
     if (privacy || screen.name === "privacy") return <Privacy onBack={privacy ? undefined : goBack} />;
+    if (screen.name === "plans") return <Plans onBack={goBack} />;
 
     if (sessionExpired && screen.name !== "parent") return <LearnPage title="Time for a break!">
       <div className="panel centered-card text-center space-y-4">
@@ -388,6 +391,7 @@ export default function App() {
         }} />;
     }
     return <Hub profile={profile} preferences={preferences} onActivity={openActivity} onToggleSound={toggleSound}
-      onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })} />;
+      onParent={() => setScreen({ name: "parent" })} onPrivacy={() => setScreen({ name: "privacy" })}
+      onPlans={() => setScreen({ name: "plans" })} />;
   }
 }

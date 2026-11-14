@@ -1,0 +1,41 @@
+import { useState } from "react";
+import { APP_NAME } from "../brand";
+import { Mascot } from "../components/Mascot";
+import { lockedGames, plans, type PlanId } from "../game/premium";
+import { LearnPage } from "./Home";
+
+/** Shown after tapping a locked game: what MyPal Plus includes and its two plans. */
+export function Plans({ onBack }: { onBack: () => void }) {
+  const [chosen, setChosen] = useState<PlanId | null>(null);
+  const picked = plans.find((plan) => plan.id === chosen);
+
+  return <LearnPage title={`${APP_NAME} Plus`} onBack={onBack}>
+    <section className="plans-hero panel">
+      <Mascot pose="jump" size={130} eager />
+      <div>
+        <p className="field-label">For grown-ups</p>
+        <h2>Unlock more games and adventures</h2>
+        <ul className="plans-games" aria-label="Games you unlock">
+          {lockedGames.map((game) => <li key={game.id}><span aria-hidden="true">{game.icon}</span> {game.title}</li>)}
+        </ul>
+      </div>
+    </section>
+    <div className="plans-grid">
+      {plans.map((plan) => <article key={plan.id} className="plan-card panel" data-plan={plan.id} aria-labelledby={`plan-${plan.id}`}>
+        {"badge" in plan && <span className="plan-badge">{plan.badge}</span>}
+        <h2 id={`plan-${plan.id}`}>{plan.name}</h2>
+        <p className="plan-price"><strong>{plan.price}</strong> <span>{plan.period}</span></p>
+        <p className="plan-note">{plan.note}</p>
+        <ul className="plan-features">
+          {plan.features.map((feature) => <li key={feature}><span aria-hidden="true">✓</span> {feature}</li>)}
+        </ul>
+        <button type="button" className={plan.id === "yearly" ? "primary-button" : "secondary-button"}
+          aria-pressed={chosen === plan.id} onClick={() => setChosen(plan.id)}>Choose {plan.name.toLowerCase()}</button>
+      </article>)}
+    </div>
+    {picked && <p className="plans-status panel" role="status">
+      Thanks! {APP_NAME} Plus {picked.name.toLowerCase()} ({picked.price} {picked.period}) is coming soon. No payment was taken.
+    </p>}
+    <p className="learn-description text-sm">Prices in US dollars. Subscriptions are not available to buy yet.</p>
+  </LearnPage>;
+}

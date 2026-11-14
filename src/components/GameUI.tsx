@@ -1,4 +1,5 @@
 import { useId, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { APP_NAME } from "../brand";
 import { Mascot } from "./Mascot";
 import type { ActivitySuggestion } from "./activitySuggestions";
 
@@ -22,6 +23,17 @@ export function HubTile({ icon, title, children, onClick, tone }: {
 /** Tile icon: Ask MyPal shows MyPal himself, every other activity its emoji. */
 export function ActivityIcon({ item }: { item: ActivitySuggestion }) {
   return item.activity === "ask" ? <Mascot pose="point" className="tile-mascot" /> : item.icon;
+}
+
+/** A MyPal Plus game: locks on both sides; tapping it opens the plans. */
+export function LockedTile({ icon, title, children, onClick }: { icon: string; title: string; children: ReactNode; onClick: () => void }) {
+  return <button className="activity-tile hub-tile locked-tile" type="button" onClick={onClick} aria-label={`${title}, locked. See ${APP_NAME} Plus plans`}>
+    <span className="locked-lock locked-lock-left" aria-hidden="true">🔒</span>
+    <span className="locked-lock locked-lock-right" aria-hidden="true">🔒</span>
+    <span className="activity-icon" aria-hidden="true">{icon}</span>
+    <strong>{title}</strong><span className="tile-description">{children}</span>
+    <span className="locked-cta" aria-hidden="true">Unlock</span>
+  </button>;
 }
 
 export function Chip({ selected, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { selected: boolean }) {

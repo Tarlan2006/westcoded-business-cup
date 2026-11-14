@@ -4,7 +4,8 @@ import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { availableActivities, orderedGroups, startingActivity, type ActivitySuggestion } from "../components/activitySuggestions";
 import { Garage } from "../components/Garage";
-import { ActivityIcon, HubTile } from "../components/GameUI";
+import { ActivityIcon, HubTile, LockedTile } from "../components/GameUI";
+import { lockedGames } from "../game/premium";
 import { Mascot } from "../components/Mascot";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { APP_NAME } from "../brand";
@@ -35,8 +36,8 @@ function groupOf(activity: Activity): ActivityGroup {
   return "learn";
 }
 
-export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, onActivity }: {
-  profile: ChildProfile; preferences: Preferences; onToggleSound: () => void; onParent: () => void; onPrivacy: () => void;
+export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, onActivity, onPlans }: {
+  profile: ChildProfile; preferences: Preferences; onToggleSound: () => void; onParent: () => void; onPrivacy: () => void; onPlans: () => void;
   onActivity: (activity: Activity, topic?: string) => void;
 }) {
   const [garage, setGarage] = useState(false);
@@ -72,6 +73,12 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
             tone={tileTone[item.activity] ?? "learn"} icon={<ActivityIcon item={item} />} title={item.title} onClick={() => open(item)}>{item.description}</HubTile>)}
         </div>
       </section>)}
+      <section className="activity-section" aria-labelledby="group-plus">
+        <h2 id="group-plus" className="font-display text-2xl font-bold">Unlock more <span aria-hidden="true">🔒</span></h2>
+        <div className="activity-grid locked-grid">
+          {lockedGames.map((game) => <LockedTile key={game.id} icon={game.icon} title={game.title} onClick={onPlans}>{game.description}</LockedTile>)}
+        </div>
+      </section>
       <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
     </div>
     {garage && <Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} />}
