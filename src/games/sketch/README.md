@@ -1,6 +1,6 @@
-# Sketch Artist — isolated module
+# Sketch Artist — reusable game module
 
-An original drawing mystery for ages 6–8. The only playable case is **The Wall-Climber**, featuring **Gecko Hero**. Nothing imports this module from the site: there is no menu card, route, activity type, reward wiring, or production preview entry.
+An original drawing mystery for ages 6–8. The only playable case is **The Wall-Climber**, featuring **Gecko Hero**. The site now offers it in **Learn → Sketch Artist** for ages 6–8. The game and its styles load on demand; the host wrapper handles speech, navigation and XP. The independent dev preview remains available and is not included in production.
 
 ## Preview
 
@@ -26,6 +26,8 @@ No extra packages or package.json scripts are required for the scorer:
 
 ```sh
 node src/games/sketch/scoreSketch.check.ts
+# Equivalent project command:
+npm run check-sketch
 # If needed on an earlier Node release:
 node --experimental-strip-types src/games/sketch/scoreSketch.check.ts
 
@@ -48,6 +50,8 @@ The harness verifies the complete desktop and touch flows, 24-step Undo, erasing
 
 Screenshots of intro, drawing and reveal at **390px** and **1280px**, plus the machine-readable report, are in [`screens/`](./screens/). Mobile drawing was tested using Chromium touch events at DPR 2. Physical iPhone/Safari testing has not been performed. Reduced motion was enabled during these checks.
 
+`integration.check.mjs` uses the same optional Playwright environment to test the production site at `http://127.0.0.1:5175` (override with `SKETCH_SITE_URL`). Run `npm run build`, serve `dist/client`, then execute `node src/games/sketch/integration.check.mjs`. It verifies age gating, lazy JS/CSS loading, speech replacement/mute/cleanup, the reward screen, persistence and duplicate-click protection at 390/1280px. Its screenshots and report use the `site-` and `integration-` prefixes in `screens/`. Only XP and activity progress enter the host's normal storage; drawings remain private and in memory.
+
 ## Design and scoring
 
 - The canvas keeps vector strokes in memory and replays them when its size/DPR changes. Mouse, pen and touch use Pointer Events and pointer capture; drawing has `touch-action: none`. Undo has no fixed step limit. Clear is explicitly confirmed. PNG export uses `toBlob`.
@@ -63,8 +67,8 @@ Runtime imports stay inside this folder or React. `preview.tsx` additionally imp
 
 Add a case to `cases.json`, create its original SVG with a `0 0 400 500` viewBox and white background in `art/`, then register its case ID in `art/index.ts`. The clue/checklist lengths and case selection are data-driven. Replay selects a different case when alternatives exist. A missing SVG gracefully falls back to the checklist. No game-logic changes are needed.
 
-The local `.gitignore` intentionally excludes this folder from Tailwind v4's automatic scanner, which otherwise turns words in unimported game code into site-wide utilities. These files are tracked with `git add -f`; tracked edits can use `git add -u`. Force-add **only the new intended files** when extending the module. Keep this exclusion while the game remains isolated. Styling is ordinary CSS with `sk-` class names and theme-variable fallbacks.
+The local `.gitignore` intentionally excludes this folder from Tailwind v4's automatic scanner, which otherwise turns words in game code into site-wide utilities. These files are tracked with `git add -f`; tracked edits can use `git add -u`. Force-add **only the new intended files** when extending the module. Keep this exclusion: the game uses ordinary imported CSS with `sk-` class names and theme-variable fallbacks, not Tailwind utilities.
 
 The game never calls a network API, requests device permissions, or writes a drawing to browser storage. Pixel data and strokes live in memory until replay/unmount. Only **Save my picture** downloads a PNG. The host controls any behavior of a supplied `speak` callback.
 
-See [INTEGRATION.md](./INTEGRATION.md) for the deferred site changes.
+See [INTEGRATION.md](./INTEGRATION.md) for the implemented site connection.

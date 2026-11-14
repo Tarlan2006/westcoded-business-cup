@@ -13,6 +13,7 @@ import { ParentGate, Privacy } from "./screens/Parent";
 import { ProfileSetup } from "./screens/ProfileSetup";
 import { Quiz } from "./screens/Quiz";
 import { Setup } from "./screens/Setup";
+import { Sketch } from "./screens/Sketch";
 import { TicTacToe } from "./screens/TicTacToe";
 import { VideoCatalog } from "./screens/VideoCatalog";
 import { defaultPreferences, type Preferences } from "./state/preferences";
@@ -23,7 +24,7 @@ type Screen =
   | { name: "gate" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string }
-  | { name: "memory" | "tic-tac-toe"; id: string }
+  | { name: "memory" | "tic-tac-toe" | "sketch"; id: string }
   | { name: "reward"; points: number; video: boolean }
   | { name: "video"; id?: string }
   | { name: "mission"; session: Session; profile: Profile }
@@ -54,7 +55,8 @@ export default function App() {
         onBack={profile?.preferences ? goHome : undefined} onSave={chooseProfile} />;
     }
 
-    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe") {
+    function startLearn(name: "quiz" | "memory" | "ask" | "tic-tac-toe" | "sketch") {
+      if (name === "sketch" && profile.ageBand !== "6-8") return;
       void unlock().catch(() => {});
       if (name === "ask") {
         setScreen({ name });
@@ -137,6 +139,10 @@ export default function App() {
         }
       }} />;
     }
+    if (screen.name === "sketch" && profile.ageBand === "6-8") {
+      return <Sketch key={screen.id} onBack={goHome}
+        onComplete={(points) => earn(screen.id, "sketch", points)} />;
+    }
     if (screen.name === "reward") {
       return <LearnPage title="Nice work, agent!" onBack={goHome}>
         <div className="panel learn-card">
@@ -154,6 +160,7 @@ export default function App() {
     return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
       onMission={(mode) => setScreen({ name: "setup", mode })} onQuiz={() => startLearn("quiz")}
       onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
+      onSketch={() => startLearn("sketch")}
       onWatch={() => setScreen({ name: "video" })} />;
   }
 }

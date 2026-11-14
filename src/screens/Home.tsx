@@ -4,6 +4,7 @@ import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
+import { sketchGameMeta } from "../games/sketch/meta";
 import { activeModes, type ActivityGroup, type Preferences } from "../state/preferences";
 import { rankName, type ChildProfile } from "../state/progress";
 
@@ -72,9 +73,9 @@ function RankCard({ profile, preferences, onParent }: { profile: ChildProfile; p
   );
 }
 
-export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onWatch }: {
+export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onSketch, onWatch }: {
   profile: ChildProfile; preferences: Preferences; onParent: () => void; onMission: (mode: Mode) => void;
-  onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void; onWatch: () => void;
+  onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void; onSketch: () => void; onWatch: () => void;
 }) {
   const toddler = profile.ageBand === "1-2";
   const preschool = profile.ageBand === "3-5";
@@ -106,6 +107,9 @@ export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemor
                   <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>
                   <ActivityTile tone="mint" icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>
                 </>}
+                {sketchGameMeta.ageBands.some((ageBand) => ageBand === profile.ageBand) &&
+                  <ActivityTile key={sketchGameMeta.id} tone="sun" icon={sketchGameMeta.icon}
+                    title={sketchGameMeta.title} onClick={onSketch}>{sketchGameMeta.description}</ActivityTile>}
               </>}
               {group === "watch" && <ActivityTile tone="watch" icon="▶" title="Video library" onClick={preschool && !rewardReady ? onQuiz : onWatch}>
                 {preschool && !rewardReady ? "Finish a quiz to open your video reward." : "Pick a short video to watch together."}

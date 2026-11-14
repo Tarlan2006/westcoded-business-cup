@@ -1,6 +1,6 @@
 export type Mode = "hunt" | "roadtrip" | "lava";
 export type AgeBand = "1-2" | "3-5" | "6-8";
-export type Activity = Mode | "video" | "quiz" | "ask" | "memory" | "tic-tac-toe";
+export type Activity = Mode | "video" | "quiz" | "ask" | "memory" | "tic-tac-toe" | "sketch";
 
 export interface AskRequest {
   question: string;

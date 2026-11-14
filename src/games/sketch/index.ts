@@ -9,7 +9,4 @@ export interface SketchGameProps {
 
 export { SketchGame } from "./SketchGame";
 
-export const sketchGameMeta = {
-  id: "sketch", title: "Sketch Artist", description: "Listen, then draw the hero!",
-  icon: "✏️", ageBands: ["6-8"], activity: "sketch",
-} as const;
+export { sketchGameMeta } from "./meta";

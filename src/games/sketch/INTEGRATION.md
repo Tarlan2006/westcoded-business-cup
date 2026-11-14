@@ -1,15 +1,15 @@
-# Deferred integration — not implemented here
+# Site integration
 
-Only `src/games/sketch/**` and `dev/sketch-preview.html` were added or edited for this module. A separate integration change should perform these eight steps:
+Sketch Artist is now connected to the site's Learn section for ages 6–8. The game module still has no host audio, state or screen imports. The connection is implemented as follows:
 
-1. Add `"sketch"` to `Activity` in `shared/types.ts`. Check any exhaustive activity maps or switches in the host; do not change the game's props to import the shared type.
-2. Add a route and screen wrapper in `src/App.tsx`, reachable from Learn for ages `6-8` only. Keep its lifecycle separate from other games; unmount on Back and after completion.
-3. Lazy-load the named export with `React.lazy` (or the named `lazy` import) and wrap it in `Suspense`. The game imports its own CSS; no import in `src/index.css` is needed.
-4. Pass `speak={speakFallback}`, `onComplete={(p) => earn(id, "sketch", p)}` and the host's `onBack` callback. Import `speakFallback` from `src/audio/engine` in the **wrapper only**. Use the existing stable activity/session `id`. The game awards nothing by itself and emits Done only once per play; keep the host's reward deduplication too. Cancel host speech on route exit and when replacing an utterance. Respect the host's sound preference by omitting `speak` when muted.
-5. Add a Learn card for ages `6-8` using `sketchGameMeta` (`id`, `title`, `description`, `icon`, `ageBands`, `activity`). To keep the game genuinely lazy, don't eagerly import the barrel solely for metadata: dynamically load metadata or move a shared copy into a lightweight metadata file in a later integration change.
-6. Add `"check-sketch": "node src/games/sketch/scoreSketch.check.ts"` to `package.json` and include it in CI. No new package dependencies or lockfile changes are needed.
-7. Check the host's theme and global element rules at 360/390/1280px, text-only behavior, navigation from every screen, repeated reward prevention and actual iPhone touch/PNG behavior. Keep the module's scoped CSS. Keep the local `.gitignore` scanner exclusion unless a deliberate Tailwind integration requires removing it; the module uses no Tailwind utilities. Add no camera/microphone/network requirement. Any host speech provider must respect the product's privacy settings.
-8. Keep `dev/sketch-preview.html` as a development-only entry, outside the Vite production inputs. Run typecheck, build, content and scoring checks, then repeat the preview flow and inspect Network. Do not wire the preview harness or its test runner into the production application.
+1. `Activity` in `shared/types.ts` includes `"sketch"`. The game's props do not import the shared type.
+2. `src/App.tsx` has a `sketch` screen with a unique session ID, age checks on launch and render, and `earn(id, "sketch", points)` on completion. Back returns to the activity hub without awarding XP.
+3. `src/screens/Sketch.tsx` loads the game with `React.lazy` and `Suspense`. The game's CSS is in a separate lazy asset. The loading state includes a working Back button.
+4. The wrapper supplies a stable speech callback using `stopSpeech()` then `speakFallback(text)`. It stops speech on replacement, mute, Back, Done and unmount. A per-game **Clue audio on/off** control omits `speak` when muted; XP is shown from the host's existing context. No shared sound preference exists in the current profile format.
+5. `src/screens/Home.tsx` uses lightweight `sketchGameMeta` from `meta.ts` for the Learn card and age eligibility. `index.ts` re-exports the same metadata to preserve the public API. The barrel is not eagerly imported for the card.
+6. `npm run check-sketch` runs the pure Node scoring checks. No dependencies or lockfile changes were required. There is no existing repository CI workflow; include this command if CI is added later.
+7. `integration.check.mjs` verifies the production host at 390/1280px: age gating, lazy loading, speech controls, completion, persisted XP exactly once even on a duplicate click, and Back without reward. The standalone checks also cover 360px and touch input. Physical iPhone testing remains manual. The Tailwind scanner exclusion stays in place because the module uses its own scoped CSS.
+8. `dev/sketch-preview.html` and both browser test harnesses remain development-only. The production entry does not include the preview. The module makes no API calls or uploads; the host persists only its ordinary activity/XP progress, never the picture.
 
 Minimal wrapper usage (the wrapper supplies `id`, `earn`, `speakFallback`, `onBack`):
 
@@ -29,4 +29,4 @@ interface SketchGameProps {
 }
 ```
 
-The site currently enables Cloudflare AI in its Vite plugin, so its normal dev server may require Cloudflare login. The module itself does not need it; the isolated fallback preview command is in [README.md](./README.md). No Cloudflare, Vite, audio-engine or host-state changes were made here.
+The site enables Cloudflare AI in its Vite plugin, so its normal dev server may require Cloudflare login. The game itself does not need it; the fallback preview command is in [README.md](./README.md). No Cloudflare, Vite, audio-engine or reward-storage changes were needed for this integration.
