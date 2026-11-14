@@ -1,5 +1,5 @@
 import { APP_NAME } from "../brand";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { Mascot } from "../components/Mascot";
@@ -8,6 +8,11 @@ import { defaultPreferences, quietTimeGoals, type ChildNeed, type Preferences } 
 import type { ChildProfile } from "../state/progress";
 
 const ages = [["1-2", "1–2 yrs"], ["3-5", "3–5 yrs"], ["6-8", "6–8 yrs"]] as const;
+const interestsPlaceholders: Record<AgeBand, string> = {
+  "1-2": "My child loves animals, so maybe some cartoon videos and interactives about them while I prepare dinner.",
+  "3-5": "Keep them busy with dinosaur games and puzzles while I'm on a work call.",
+  "6-8": "Loves the moon and stars! Keep them busy with space-themed activities.",
+};
 const needs = [
   ["energy", "⚡ Get energy out indoors"], ["screen", "📵 Less passive screen time"],
   ["listening", "🗣️ Talking and listening"],
@@ -27,6 +32,13 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
   const saved = profile?.preferences;
   const [age, setAge] = useState<AgeBand>(profile?.ageBand ?? "3-5");
   const [name, setName] = useState(saved?.nickname ?? "");
+  const nameInput = useRef<HTMLInputElement>(null);
+  const [nameError, setNameError] = useState(false);
+  const validName = name.trim().length > 0 && name.length <= 20;
+  function showNameError() {
+    setNameError(true);
+    nameInput.current?.focus();
+  }
   const [notes, setNotes] = useState(saved?.notes ?? "");
   const [selected, setNeeds] = useState<ChildNeed[]>(saved?.needs?.filter(need => need !== "habits") ?? ["energy", "screen"]);
   const [minutes, setMinutes] = useState(saved?.minutes ?? defaultPreferences.minutes);
@@ -42,8 +54,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
     <form className="bg-[#1C145C]/95 backdrop-blur-md rounded-3xl p-6 sm:p-8 border-4 border-[#4C35DE] shadow-[0_14px_40px_rgba(0,0,0,0.45)] space-y-6"
       onSubmit={(event) => {
         event.preventDefault();
+        if (!validName) { showNameError(); return; }
         uiSound("chirp", sound);
-        onSave(code, age, { ...defaultPreferences, ...saved, location, minutes: custom ? Number(customMinutes) : minutes, first: age === "1-2" ? "watch" : flow,
+        onSave(code, age, { ...defaultPreferences, ...saved, location, minutes: custom && customMinutes.trim() ? Number(customMinutes) : minutes, first: age === "1-2" ? "watch" : flow,
           nickname: name.trim() || undefined, notes: notes.trim() || undefined, needs: selected });
       }}>
       <div className="flex items-center justify-between gap-2 border-b border-indigo-800/80 pb-4">
@@ -60,10 +73,15 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">What should {APP_NAME} call your child?</label>
-          <input id="profileNameInput" type="text" autoComplete="off" value={name} maxLength={24} placeholder={codenameFor(code)} aria-describedby="profileNameHint"
-            onChange={(event) => setName(event.target.value)} className="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg" />
+          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">What should {APP_NAME} call your child? *</label>
+          <input ref={nameInput} id="profileNameInput" type="text" autoComplete="off" value={name} required minLength={1} maxLength={20} placeholder={codenameFor(code)}
+            aria-invalid={nameError && !validName} aria-describedby={`profileNameHint${nameError && !validName ? " profileNameError" : ""}`}
+            onInvalid={event => { event.preventDefault(); showNameError(); }}
+            onKeyDown={event => { if (event.key === "Enter" && !validName) { event.preventDefault(); showNameError(); } }}
+            onBlur={() => { if (!validName) setNameError(true); }}
+            onChange={(event) => { setName(event.target.value); setNameError(false); }} className="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg" />
           <p className="mt-1 text-xs text-indigo-300" id="profileNameHint">A first name or nickname. Stays on this device.</p>
+          {nameError && !validName && <p id="profileNameError" role="alert" className="mt-1 text-xs text-red-400">{name.trim() ? "Please use no more than 20 characters" : "Please enter a name or nickname"}</p>}
         </div>
         <fieldset className="min-w-0">
           <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's age</legend>
@@ -87,7 +105,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       <div>
         <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's interests (Optional)</label>
         <textarea id="profileNotesInput" rows={2} maxLength={600} autoComplete="off" value={notes} onChange={(event) => setNotes(event.target.value)}
-          placeholder="Example: loves dinosaurs and space rockets."
+          placeholder={interestsPlaceholders[age]}
           className="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm" />
         <p className="mt-1 text-xs text-indigo-300">Stays on this device. Never sent to a server.</p>
       </div>
@@ -103,7 +121,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
             className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${!custom && minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value} min</button>)}
           <label className="flex items-center gap-2 text-xs font-bold text-indigo-200">
             Custom minutes
-            <input type="number" min={1} max={120} step={1} required value={customMinutes}
+            <input type="number" min={1} max={120} step={1} value={customMinutes}
               onFocus={() => setCustom(true)} onChange={event => { setCustom(true); setCustomMinutes(event.target.value); }}
               className={`w-20 min-h-12 px-2 rounded-xl border-2 bg-[#100B3B] text-white ${custom ? "border-[#FFD13B]" : "border-[#4C35DE]"}`} />
           </label>
@@ -133,9 +151,12 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
         </label>}
       </fieldset>}
 
-      <button type="submit" className="w-full py-4 px-2 rounded-2xl btn-game btn-mint text-[#082F22] font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 cursor-pointer">
+      <div onClick={() => { if (!validName) showNameError(); }}>
+      <button type="submit" disabled={!validName}
+        className={`w-full py-4 px-2 rounded-2xl font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 ${validName ? "btn-game btn-mint text-[#082F22] cursor-pointer" : "bg-gray-500 text-gray-200 cursor-not-allowed pointer-events-none"}`}>
         <span className="min-w-0 wrap-anywhere"><>START FOR <span id="startBtnKidName">{display.toUpperCase()}</span></></span><span aria-hidden="true">🚀</span>
       </button>
+      </div>
       <div className={`flex items-center justify-between gap-3 text-xs text-indigo-300 ${onBack ? "" : "sm:hidden"}`}>
         {onBack && <button type="button" className="hover:text-white" onClick={onBack}><span aria-hidden="true">← </span>Back</button>}
         <a href="/privacy" className="sm:hidden ml-auto underline" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
