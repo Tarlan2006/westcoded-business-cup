@@ -5,7 +5,7 @@ import { codenames, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { videosFor } from "./game/videos";
 import { Ask } from "./screens/Ask";
-import { Home, LearnPage, Welcome } from "./screens/Home";
+import { Hub, LearnPage, Welcome } from "./screens/Home";
 import { Memory } from "./screens/Memory";
 import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
@@ -69,7 +69,7 @@ export default function App() {
   }
 
   function launch(mode: Mode, selected: Profile) {
-    if (launchPending.current || selected.ageBand === "1-2" || !activeModes(preferences.location).includes(mode)) return;
+    if (launchPending.current || selected.ageBand === "1-2") return;
     launchPending.current = true;
     const tasks = tasksFor(mode, selected.ageBand);
     const session: Session = { id: crypto.randomUUID(), mode, tasks, durationMinutes: preferences.minutes };
@@ -159,8 +159,8 @@ export default function App() {
   if (screen.name === "video" && (profile.ageBand !== "3-5" || (profile.activities?.quiz ?? 0) > 0)) {
     return <VideoCatalog ageBand={profile.ageBand} id={screen.id} onBack={goHome} onOpen={openVideo} />;
   }
-  return <Home profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
+  return <Hub profile={profile} preferences={preferences} onParent={() => setScreen({ name: "gate" })}
     onMission={(mode) => setScreen({ name: "mission-check", mode })} onQuiz={() => startLearn("quiz")}
     onMemory={() => startLearn("memory")} onAsk={() => startLearn("ask")} onGrid={() => startLearn("tic-tac-toe")}
-    onVideo={openVideo} />;
+    onWatch={() => setScreen({ name: "video" })} />;
 }

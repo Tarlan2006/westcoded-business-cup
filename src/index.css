@@ -107,6 +107,8 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 [data-tone="active"] { --tile-bg: var(--coral-soft); --tile-ink: var(--coral-text); }
 [data-tone="learn"] { --tile-bg: var(--primary-soft); --tile-ink: var(--primary); }
 [data-tone="watch"] { --tile-bg: var(--sky); --tile-ink: var(--sky-text); }
+[data-tone="sun"] { --tile-bg: var(--sun-soft); --tile-ink: var(--accent-text); }
+[data-tone="mint"] { --tile-bg: var(--mint); --tile-ink: var(--success-text); }
 .tile-arrow { position: absolute; top: 1.05rem; right: 1.1rem; font-weight: 900; }
 .welcome { padding-top: clamp(1.1rem, 5vw, 4.2rem); }
 .welcome-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 36%); align-items: center; gap: 1rem; padding: clamp(1.45rem, 5vw, 4rem); border-radius: var(--radius-lg); background: var(--bg-soft); }
@@ -137,8 +139,16 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .age-choice input:checked + span { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 .age-choice input:focus-visible + span { outline: 3px solid var(--primary); outline-offset: 2px; }
 .interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.activity-summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .7rem 1rem; }
-.summary-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1rem; color: var(--muted); font-size: .875rem; }
+.hub { padding-top: clamp(.9rem, 3vw, 1.6rem); }
+.hub-profile { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: .65rem 1.1rem; background: var(--bg-soft); }
+.hub-profile-body { display: grid; gap: .22rem; }
+.hub-profile h1 { font-size: clamp(1.85rem, 5vw, 2.8rem); }
+.hub-profile p { color: var(--muted); }
+.hub-profile .quiet-button { font-size: .84rem; justify-self: start; }
+.hub-profile progress { width: min(100%, 280px); height: .7rem; margin: .15rem 0; accent-color: var(--primary); border: 0; border-radius: var(--radius-pill); overflow: hidden; background: var(--border); }
+.hub-profile progress::-webkit-progress-bar { background: var(--border); }
+.hub-profile progress::-webkit-progress-value { background: var(--primary); }
+.hub-profile progress::-moz-progress-bar { background: var(--primary); }
 .activity-section { display: grid; gap: .75rem; }
 .video-panel { display: grid; gap: .8rem; }
 .video-player { display: block; width: 100%; min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; border: 0; border-radius: var(--radius-sm); background: var(--bg-soft); }
@@ -175,6 +185,8 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
   .welcome-ages { grid-template-columns: 1fr; gap: .55rem; }
   .welcome-age { grid-template-columns: 2.65rem 1fr; gap: .12rem .7rem; align-content: center; padding: .85rem 2.5rem .85rem .9rem; min-height: 94px; }
   .welcome-age .activity-icon { grid-row: span 3; align-self: center; }
+  .hub-profile { grid-template-columns: 62px minmax(0, 1fr); }
+  .hub-profile > .quiet-button { grid-column: 2; }
 }
 
 @media (prefers-reduced-motion: reduce) {

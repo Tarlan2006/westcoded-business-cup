@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
-import type { Mode } from "../../shared/types";
-import type { AgeBand } from "../../shared/types";
+import type { AgeBand, Mode } from "../../shared/types";
 import { Mascot } from "../components/Mascot";
 import { codenameFor, MODES } from "../game/content";
 import { videosFor } from "../game/videos";
-import { activeModes, type ActivityGroup, type Preferences } from "../state/preferences";
+import type { ActivityGroup, Preferences } from "../state/preferences";
 import { rankName, type ChildProfile } from "../state/progress";
 
 export function LearnPage({ title, onBack, children, wide = false }: {
@@ -64,13 +63,14 @@ export function Welcome({ onChoose }: { onChoose: (age: AgeBand) => void }) {
   );
 }
 
-export function ActivityTile({ icon, title, children, onClick }: {
-  icon: string; title: string; children: ReactNode; onClick: () => void;
+export function ActivityTile({ icon, title, children, onClick, tone }: {
+  icon: string; title: string; children: ReactNode; onClick: () => void; tone?: ActivityGroup | "mint" | "sun";
 }) {
   return (
-    <button className="activity-tile" type="button" onClick={onClick}>
+    <button className="activity-tile" type="button" onClick={onClick} data-tone={tone}>
       <span className="activity-icon" aria-hidden="true">{icon}</span>
-      <strong>{title}</strong><span>{children}</span>
+      <strong>{title}</strong><span className="tile-description">{children}</span>
+      <span aria-hidden="true" className="tile-arrow">→</span>
     </button>
   );
 }
@@ -91,54 +91,76 @@ export function VideoShelf({ ageBand, onSelect }: {
   );
 }
 
-export function Home({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onVideo }: {
+const modes: Mode[] = ["hunt", "roadtrip", "lava"];
+
+function RankCard({ profile, onParent }: { profile: ChildProfile; onParent: () => void }) {
+  // The thresholds mirror the existing XP ranks. The rank itself comes from the saved profile.
+  const thresholds = [0, 30, 100, 250, 500];
+  const previous = thresholds[profile.rank] ?? 0;
+  const next = thresholds[profile.rank + 1];
+  return (
+    <div className="panel hub-profile">
+      <Mascot mood="happy" />
+      <div className="hub-profile-body">
+        <h1>Agent {codenameFor(profile.codenameId)}</h1>
+        <p>{rankName(profile.rank)} <span aria-hidden="true">·</span> {profile.streak} day streak</p>
+        {next ? <>
+          <progress value={Math.max(0, profile.xp - previous)} max={next - previous} aria-label="XP progress to next rank" />
+          <p className="field-label">{profile.xp} / {next} XP to {rankName(profile.rank + 1)}</p>
+        </> : <p className="field-label">{profile.xp} XP · Top rank</p>}
+      </div>
+      <button className="quiet-button" type="button" onClick={onParent}>Parent settings</button>
+    </div>
+  );
+}
+
+export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemory, onAsk, onGrid, onWatch }: {
   profile: ChildProfile; preferences: Preferences; onParent: () => void; onMission: (mode: Mode) => void;
-  onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void; onVideo: (id: string) => void;
+  onQuiz: () => void; onMemory: () => void; onAsk: () => void; onGrid: () => void; onWatch: () => void;
 }) {
   const toddler = profile.ageBand === "1-2";
   const preschool = profile.ageBand === "3-5";
   const groups: ActivityGroup[] = toddler ? ["watch"] : ["active", "learn", "watch"];
   const first = preferences.first === "any" ? groups[0] : preferences.first;
   const ordered = groups.includes(first) ? [first, ...groups.filter((group) => group !== first)] : groups;
-  const title = { active: "Active games", learn: "Learn & play", watch: preschool ? "Video rewards" : "Videos" };
+  const titles = { active: "Move", learn: "Learn", watch: "Watch" };
   const rewardReady = (profile.activities?.quiz ?? 0) > 0;
 
   return (
-    <LearnPage title="Activities for your day" wide>
-      <div className="panel activity-summary">
-        <div>
-          <span className="field-label">Agent {codenameFor(profile.codenameId)}</span>
-          <p>Ages {profile.ageBand.replace("-", "–")}{!toddler && (preferences.location === "car" ? " · In the car" : " · At home")}</p>
-        </div>
-        <div className="summary-actions">
-          <span>{profile.xp} XP · {rankName(profile.rank)} · {profile.streak} day streak</span>
-          <button className="quiet-button" type="button" onClick={onParent}>Change choices</button>
-        </div>
-      </div>
+    <main className="shell">
+      <header className="topbar"><span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span></header>
+      <div className="learn-page hub">
+        <RankCard profile={profile} onParent={onParent} />
       {ordered.map((group) => (
         <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
-          <h2 id={`group-${group}`}>{title[group]}</h2>
+          <h2 id={`group-${group}`}>{titles[group]}</h2>
           {group === "active" && <div className="activity-grid">
-            {activeModes(preferences.location).map((mode) => (
-              <ActivityTile key={mode} icon={MODES[mode].icon} title={MODES[mode].name} onClick={() => onMission(mode)}>
-                {preferences.minutes} min · {MODES[mode].description}
+            {modes.map((mode) => (
+              <ActivityTile key={mode} tone={mode === "roadtrip" ? "sun" : "active"} icon={MODES[mode].icon}
+                title={MODES[mode].name} onClick={() => onMission(mode)}>
+                {MODES[mode].description}
               </ActivityTile>
             ))}
           </div>}
           {group === "learn" && <div className="activity-grid">
-            {!preschool && <ActivityTile icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>}
-            <ActivityTile icon="?" title="Quiz" onClick={onQuiz}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
-            <ActivityTile icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
-            {!preschool && <ActivityTile icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>}
+            <ActivityTile tone="learn" icon="?" title="Quiz" onClick={onQuiz}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
+            <ActivityTile tone="mint" icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
+            {!preschool && <>
+              <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>
+              <ActivityTile tone="mint" icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>
+            </>}
           </div>}
-          {group === "watch" && (preschool && !rewardReady ? (
+          {group === "watch" && (
             <div className="activity-grid">
-              <ActivityTile icon="▶" title="Unlock a video" onClick={onQuiz}>Finish a quiz to open your video reward.</ActivityTile>
+              <ActivityTile tone="watch" icon="▶" title="Video library" onClick={preschool && !rewardReady ? onQuiz : onWatch}>
+                {preschool && !rewardReady ? "Finish a quiz to open your video reward." : "Pick a short video to watch together."}
+              </ActivityTile>
             </div>
-          ) : <VideoShelf ageBand={profile.ageBand} onSelect={onVideo} />)}
+          )}
         </section>
       ))}
       <a className="quiet-button" href="/privacy">Privacy</a>
-    </LearnPage>
+      </div>
+    </main>
   );
 }
