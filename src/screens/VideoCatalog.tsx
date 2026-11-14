@@ -53,7 +53,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
   const actions = <div className={playing ? "flex flex-wrap items-center justify-between gap-2" : "video-frame-controls absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2"}>
     <button type="button" disabled={!selected} onClick={() => index + 1 >= videos.length ? onPlay(selected?.id) : choose(index + 1)}
       className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
-      <span aria-hidden="true">⏭️</span> Next Video in Catalog
+      <span aria-hidden="true">⏭️</span> Next video
     </button>
     <button type="button" onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
@@ -64,7 +64,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
   return <main id="screen-video" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-4 flex flex-col justify-between z-10 space-y-4" aria-label="Video library">
     {selected && <h1 className="sr-only">Video library</h1>}
     {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
-    <PrototypeHeader name={name} label="Video Catalog" detail={selected ? `Episode ${index + 1} of ${videos.length} • ${selected.channel}` : "Watch with a grown-up"}
+    <PrototypeHeader name={name} label="Videos" detail={selected ? `Episode ${index + 1} of ${videos.length} • ${selected.channel}` : "Watch with a grown-up"}
       onParents={onParents} onHome={onHome} />
     <div className="flex-1 flex flex-col justify-center">
       <div className={`relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden ${playing ? "prototype-frame-video" : "prototype-video-placeholder flex flex-col items-center justify-center p-6 text-center"}`}>
@@ -82,14 +82,14 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
                 <span aria-hidden="true" className={`block w-8 h-2.5 rounded-full transition-all ${index === position ? "bg-[#FFD13B]" : "bg-white/25"}`} />
               </button>)}
             </nav>
-            <span className="px-3 py-1 rounded-full bg-black/40 text-xs font-black text-indigo-200">{selected ? "Watch on YouTube ✨" : "Curated Video Slot ✨"}</span>
+            <span className="px-3 py-1 rounded-full bg-black/40 text-xs font-black text-indigo-200">{selected ? "Watch on YouTube ✨" : "Videos coming soon ✨"}</span>
           </div>
           <div className="video-frame-content space-y-3 max-w-md">
             {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={`Open video: ${selected.title}`}
               onClick={() => { setPlaying(true); onOpen(selected.id); }}>
               <span aria-hidden="true" className="block text-6xl sm:text-7xl animate-bounce">{ageBand === "1-2" ? "👏" : ageBand === "3-5" ? "🚀" : "🪐"}</span>
               <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
-              <span className="block text-xs sm:text-sm font-bold text-indigo-200">▶ Open video · Hosted on YouTube</span>
+              <span className="block text-xs sm:text-sm font-bold text-indigo-200">▶ Watch video · Plays on YouTube</span>
             </button> : <>
               <p aria-hidden="true" className="text-6xl sm:text-7xl animate-bounce">{ageBand === "1-2" ? "👏" : "🚀"}</p>
               <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">More videos coming soon</h1>
@@ -104,7 +104,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
           <p role="status" aria-live="polite">Next video in {countdown} seconds</p>
           <button type="button" className="min-h-12 px-4 rounded-2xl btn-game" onClick={() => setCountdown(null)}>Cancel autoplay</button>
         </div>}
-        <p className="text-xs text-indigo-300">Videos are hosted on YouTube</p>
+        <p className="text-xs text-indigo-300">Videos play on YouTube</p>
         {actions}
       </div>}
     </div>

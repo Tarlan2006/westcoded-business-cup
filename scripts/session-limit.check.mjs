@@ -19,7 +19,7 @@ try {
       assert.equal(await custom.evaluate(input => input.checkValidity()), false);
     }
     await custom.fill('17');
-    await page.getByRole('button', { name: /START SESSION/ }).click();
+    await page.getByRole('button', { name: /START FOR/ }).click();
     await page.getByRole('main', { name: 'Video library' }).waitFor();
     await page.getByRole('button', { name: /Open video:/ }).click();
     assert.equal(await page.locator('iframe').count(), 1);
@@ -33,8 +33,8 @@ try {
     assert.equal(await page.getByLabel('Custom minutes').inputValue(), '17');
     await page.screenshot({ path: `scripts/.cache/session-setup-${width}.png`, fullPage: true });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
-    await page.getByRole('button', { name: '30m', exact: true }).click();
-    await page.getByRole('button', { name: 'SAVE SETTINGS', exact: true }).click();
+    await page.getByRole('button', { name: '30 min', exact: true }).click();
+    await page.getByRole('button', { name: /START FOR/, exact: true }).click();
     assert.equal(await page.getByRole('heading', { name: 'Time for a break!' }).count(), 0);
     assert.deepEqual(errors, []);
     console.log(`PASS ${width}px: removed labels, validation, 17-minute limit, stopped player, saved custom value, preset reset`);

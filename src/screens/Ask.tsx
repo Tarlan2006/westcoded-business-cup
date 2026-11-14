@@ -98,11 +98,11 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   }
 
   const voiceLabel = voice.status === "opening" ? "Opening mic…" : voice.status === "recording"
-    ? "Release to ask" : voice.status === "decoding" ? "Transcribing…" : "Hold to talk";
+    ? "Release to ask" : voice.status === "decoding" ? "Listening…" : "Hold to talk";
 
   return (
     <LearnPage title={`Ask ${APP_NAME}`} onBack={onBack}>
-      <p className="learn-description">Ask about anything: space, animals, how things work, or your favorite hero. Hold the button and talk!</p>
+      <p className="learn-description">Ask about space, animals, or how things work. Hold the button and talk!</p>
       {result ? (
         <section className="panel learn-card">
           {asked && <p className="field-label ask-question">You asked: “{asked}”</p>}

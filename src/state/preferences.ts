@@ -2,11 +2,11 @@ import type { Mode } from "../../shared/types";
 
 export type ActivityGroup = "active" | "learn" | "watch";
 export const childNeeds = [
-  { value: "energy", label: "Burn energy indoors" },
-  { value: "screen", label: "Replace passive iPad / YouTube time" },
-  { value: "listening", label: "Speech & active listening" },
-  { value: "habits", label: "Healthy habits (water & teeth)" },
-  { value: "science", label: "Science & logic curiosity" },
+  { value: "energy", label: "Get energy out indoors" },
+  { value: "screen", label: "Less passive screen time" },
+  { value: "listening", label: "Talking and listening" },
+  { value: "habits", label: "Healthy habits (water, teeth)" },
+  { value: "science", label: "Science and curiosity" },
 ] as const;
 export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
 export type ChildNeed = typeof childNeeds[number]["value"];

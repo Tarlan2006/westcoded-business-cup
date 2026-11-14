@@ -39,7 +39,7 @@ export function GrownUpsButton({ onOpen, exit = false, variant = "default", disa
   return <div className={variant === "default" ? "flow-grownups" : undefined}>
     <button type="button" className={variant === "default" ? "flow-hold-button" : "prototype-parent-button"} disabled={disabled}
       style={{ "--flow-hold-progress": `${progress * 360}deg` } as CSSProperties}
-      aria-label={exiting ? "Hold: Exit" : variant === "parents" ? "Parents, press and hold" : "Grown-ups settings, press and hold for one and a half seconds"}
+      aria-label={exiting ? "Hold: Exit" : variant === "parents" ? "Parents, press and hold" : "Grown-ups: hold for 1.5 seconds"}
       onClick={(event) => event.preventDefault()} onContextMenu={(event) => event.preventDefault()}
       onPointerDown={(event) => {
         if (!event.isPrimary || event.button !== 0) return;

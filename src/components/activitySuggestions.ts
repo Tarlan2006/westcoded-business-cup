@@ -8,7 +8,7 @@ import { activeModes, type ActivityGroup, type Preferences } from "../state/pref
 import type { ChildProfile } from "../state/progress";
 
 export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string; topic?: string }
-const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "A little question, a big discovery. Let's think together.", icon: "🧠" };
+const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "Answer fun questions. Let's think together.", icon: "🧠" };
 const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "🃏" };
 const ask: ActivitySuggestion = { activity: "ask", title: `Ask ${APP_NAME}`, description: "Ask about space, animals, or your favorite hero.", icon: "🤖" };
 const video: ActivitySuggestion = { activity: "video", title: "Video library", description: "Pick a short video to watch together.", icon: "▶️" };

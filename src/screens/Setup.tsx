@@ -13,13 +13,13 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
   const location = mode === "roadtrip" ? "car" : "home";
 
   return (
-    <LearnPage title="Mission setup" xp={xp} onBack={onBack}>
+    <LearnPage title="Choose your game" xp={xp} onBack={onBack}>
       <form className="panel setup-form centered-card" onSubmit={(event) => {
         event.preventDefault();
         onStart(mode, minutes);
       }}>
         <fieldset>
-          <legend className="field-label">Location</legend>
+          <legend className="field-label">Where will you play?</legend>
           <div className="segmented">
             <button type="button" aria-pressed={location === "home"} onClick={() => {
               if (location === "car") setMode("hunt");
@@ -28,7 +28,7 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
           </div>
         </fieldset>
         <fieldset>
-          <legend className="field-label">Mission</legend>
+          <legend className="field-label">Game</legend>
           <div className="segmented">
             {activeModes(location).map((option) => (
               <button key={option} type="button" aria-pressed={mode === option}
@@ -37,7 +37,7 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
           </div>
         </fieldset>
         <fieldset>
-          <legend className="field-label">Duration</legend>
+          <legend className="field-label">How long?</legend>
           <div className="segmented">
             {[...new Set([10, ...quietTimeGoals, preferences.minutes])].sort((a, b) => a - b).map((option) => (
               <button key={option} type="button" aria-pressed={minutes === option}
@@ -49,7 +49,7 @@ export function Setup({ initialMode, preferences, xp, onBack, onStart }: {
           {location === "car" ? "Passengers only. Stay buckled and keep the driver focused."
             : "Play with an adult nearby. Clear the floor, walk, and keep both feet on the ground."}
         </p>
-        <button className="primary-button" type="submit">Start mission</button>
+        <button className="primary-button" type="submit">Start game</button>
       </form>
     </LearnPage>
   );

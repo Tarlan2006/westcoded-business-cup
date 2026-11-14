@@ -47,7 +47,7 @@ async function fresh(width, height, captures = false) {
   await button(page, "Sound").click();
   await button(page, "CONTINUE").click();
   await page.getByRole("heading", { name: "Tell MyPal About Your Child", exact: true }).waitFor();
-  await page.getByLabel("Child's Nickname", { exact: true }).fill("CometQA");
+  await page.getByLabel("What should MyPal call your child?", { exact: true }).fill("CometQA");
   await page.getByLabel(/Child's Interests/).fill("PRIVATE_CONTEXT_EXAMPLE");
   if (captures) await shot(page, "profile-setup");
   return { context, page, sent, errors };
@@ -56,7 +56,7 @@ async function fresh(width, height, captures = false) {
 async function educational(width, height) {
   const { context, page, sent, errors } = await fresh(width, height, true);
   await button(page, "60m").click();
-  await button(page, /START SESSION FOR COMETQA/).click();
+  await button(page, /START FOR COMETQA/).click();
   await page.locator("#screen-video").waitFor();
   await shot(page, "video");
   assert.equal(await page.locator("iframe").count(), 0, "load the player after a tap");
@@ -93,7 +93,7 @@ async function educational(width, height) {
   await page.locator("#screen-profile-setup").waitFor();
   assert.equal(await page.getByLabel(/Child's Interests/).inputValue(), "PRIVATE_CONTEXT_EXAMPLE");
   assert.equal(await button(page, "60m").getAttribute("aria-pressed"), "true");
-  await button(page, "SAVE SETTINGS").click();
+  await button(page, /START FOR/).click();
   await hub(page).waitFor();
   assert(!sent.join().includes("PRIVATE_CONTEXT_EXAMPLE"));
   assert(!sent.join().includes("CometQA"));
@@ -104,8 +104,8 @@ async function educational(width, height) {
 async function active(width, height) {
   const { context, page, sent, errors } = await fresh(width, height);
   await button(page, "6–8 yrs").click();
-  await button(page, /Active Physical Missions/).click();
-  await button(page, /START SESSION/).click();
+  await button(page, /Move and play/).click();
+  await button(page, /START FOR/).click();
   await page.locator("#screen-mission").waitFor();
   await shot(page, "mission");
   await button(page, "Tickle MyPal").click();
@@ -142,7 +142,7 @@ async function toddler(width, height) {
   await button(page, "1–2 yrs").click();
   assert.equal(await page.locator("#parentModeSelectorWrapper").count(), 0);
   await page.locator("#toddlerAutoNotice").waitFor();
-  await button(page, /START SESSION/).click();
+  await button(page, /START FOR/).click();
   await button(page, "Next Video in Catalog").click();
   assert.match(await page.locator("#screen-video header").innerText(), /Episode 2 of 2/);
   await button(page, "Play with MyPal Now!").click();
@@ -161,9 +161,9 @@ async function toddler(width, height) {
 async function roadtrip(width, height) {
   const { context, page, sent } = await fresh(width, height);
   await button(page, "6–8 yrs").click();
-  await button(page, /Active Physical Missions/).click();
+  await button(page, /Move and play/).click();
   await page.getByLabel("Where are you playing?").selectOption("car");
-  await button(page, /START SESSION/).click();
+  await button(page, /START FOR/).click();
   await page.getByRole("heading", { name: "Roadtrip Spy", exact: true }).waitFor();
   assert.equal(await page.locator(".talk-button").count(), 0);
   await button(page, "Player 1 spotted it!").click();
@@ -176,7 +176,7 @@ async function roadtrip(width, height) {
 async function educationalTimeout(age, firstRoundSeconds) {
   const { context, page } = await fresh(390, 844);
   await button(page, `${age} yrs`).click();
-  await button(page, /START SESSION/).click();
+  await button(page, /START FOR/).click();
   await page.clock.install();
   await button(page, "Play with MyPal Now!").click();
   await page.getByRole("heading", { name: "Quiz", exact: true }).waitFor();

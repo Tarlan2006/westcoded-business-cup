@@ -13,7 +13,7 @@ export function LeaveGameDialog({ onStay, onLeave }: { onStay: () => void; onLea
     onCancel={(event) => { event.preventDefault(); onStay(); }}>
     <span className="flow-leave-icon" aria-hidden="true">☁</span>
     <h2 id="flow-leave-title">Leave this game?</h2>
-    <p id="flow-leave-description">It's okay to take a break. Your finished activities are saved, but this round will start over.</p>
+    <p id="flow-leave-description">It's okay to take a break. Finished games are saved. This round will start over.</p>
     <div className="flow-form-actions">
       <button ref={stay} type="button" className="primary-button" onClick={onStay}>Keep playing</button>
       <button type="button" className="secondary-button" onClick={onLeave}>Leave game</button>

@@ -8,13 +8,13 @@ import type { ChildProfile } from "../state/progress";
 
 const ages = [["1-2", "1–2 yrs"], ["3-5", "3–5 yrs"], ["6-8", "6–8 yrs"]] as const;
 const needs = [
-  ["energy", "⚡ Burn physical energy indoors"], ["screen", "📵 Replace passive iPad / YouTube"],
-  ["listening", "🗣️ Speech & active listening"],
-  ["science", "🚀 Science & logic curiosity"],
+  ["energy", "⚡ Get energy out indoors"], ["screen", "📵 Less passive screen time"],
+  ["listening", "🗣️ Talking and listening"],
+  ["science", "🚀 Science and curiosity"],
 ] as const;
 const sessionFlows = [
-  { value: "learn", icon: "🧠", title: "Educational Video + Quiz" },
-  { value: "active", icon: "⚡", title: "Active Physical Missions" },
+  { value: "learn", icon: "🧠", title: "Watch and learn", detail: `A short science video, then ${APP_NAME} asks fun questions.` },
+  { value: "active", icon: "⚡", title: "Move and play", detail: "Jumping, hunting, and voice games. No watching." },
 ] as const;
 const selectedAge = "border-[#FFD13B] bg-[#6C47FF] text-white shadow-md";
 const unselectedAge = "border-[#4C35DE] bg-[#100B3B] text-indigo-200 hover:border-white";
@@ -49,23 +49,23 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
         <div className="flex items-center gap-3">
           <div aria-hidden="true" className="w-12 h-12 shrink-0 rounded-2xl bg-[#6C47FF] border-2 border-white/40 flex items-center justify-center text-2xl shadow-md">👨‍👩‍👧</div>
           <div>
-            <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">Parent Setup • 1-Time Profile</span>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell {APP_NAME} About Your Child</h1>
+            <span className="text-xs font-extrabold uppercase tracking-wider text-[#38BDF8]">SET UP IN 1 MINUTE</span>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">Tell {APP_NAME} about your child</h1>
           </div>
         </div>
         <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
-          className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700 text-xs font-extrabold text-indigo-300" aria-label="Privacy · saved on this device">🛡️ Local Profile</a>
+          className="hidden sm:inline-block shrink-0 px-3 py-1 rounded-full bg-indigo-950 border border-indigo-700 text-xs font-extrabold text-indigo-300" aria-label="Privacy · saved on this device">🛡️ Saved on this phone</a>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's Nickname</label>
+          <label htmlFor="profileNameInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">What should {APP_NAME} call your child?</label>
           <input id="profileNameInput" type="text" autoComplete="off" value={name} maxLength={24} placeholder={codenameFor(code)} aria-describedby="profileNameHint"
             onChange={(event) => setName(event.target.value)} className="w-full px-4 py-3.5 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-extrabold text-lg" />
-          <p className="mt-1 text-xs text-indigo-300" id="profileNameHint">First name or fun nickname, saved only on this device.</p>
+          <p className="mt-1 text-xs text-indigo-300" id="profileNameHint">A first name or nickname. Stays on this device.</p>
         </div>
         <fieldset className="min-w-0">
-          <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Age Group</legend>
+          <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's age</legend>
           <div className="grid grid-cols-3 gap-2" id="profileAgeGroup">
             {ages.map(([value, label]) => <button key={value} type="button" data-age={value} aria-pressed={age === value}
               className={`prof-age-btn py-3 rounded-2xl border-2 font-extrabold text-sm transition ${age === value ? selectedAge : unselectedAge}`}
@@ -75,7 +75,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </div>
 
       <fieldset>
-        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-2">What does your child need most right now? (Select all that apply)</legend>
+        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-2">What do you want help with? (Pick any)</legend>
         <div className="flex flex-wrap gap-2" id="needsChips">
           {needs.map(([value, label]) => <button key={value} type="button" aria-pressed={selected.includes(value)}
             onClick={() => { setNeeds((items) => items.includes(value) ? items.filter((item) => item !== value) : [...items, value]); uiSound("chirp", sound); }}
@@ -84,20 +84,22 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </fieldset>
 
       <div>
-        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Child's Interests, Sensitivities, or Parent Context (Optional)</label>
+        <label htmlFor="profileNotesInput" className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300 mb-1.5">Anything {APP_NAME} should know? (Optional)</label>
         <textarea id="profileNotesInput" rows={2} maxLength={600} autoComplete="off" value={notes} onChange={(event) => setNotes(event.target.value)}
-          placeholder="e.g., Loves dinosaurs & space rockets; needs 25 mins of quiet play while I'm on a work call; avoid loud sirens."
+          placeholder="Example: loves dinosaurs. Afraid of loud sounds."
           className="w-full px-4 py-3 rounded-2xl bg-[#100B3B] border-2 border-[#4C35DE] focus:border-[#38BDF8] text-white font-bold text-sm" />
+        <p className="mt-1 text-xs text-indigo-300">Stays on this device. Never sent to a server.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#100B3B] p-4 rounded-2xl border border-[#4C35DE]">
         <div>
-          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">Session time limit</div>
+          <div className="font-extrabold text-sm text-white" id="quietTimeLabel">How much quiet time do you need?</div>
+          <div className="text-xs font-bold text-indigo-300">{APP_NAME} plays for exactly this long, then stops.</div>
         </div>
         <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="quietTimeLabel" id="profileDurationPills">
           {(saved?.minutes === 10 ? [10 as const, ...quietTimeGoals] : quietTimeGoals).map((value) => <button key={value} type="button" data-min={value} aria-pressed={!custom && minutes === value}
             onClick={() => { setMinutes(value); setCustom(false); setCustomMinutes(String(value)); uiSound("chirp", sound); }}
-            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${!custom && minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value}m</button>)}
+            className={`prof-dur-btn px-3.5 py-2 rounded-xl border-2 font-black text-xs ${!custom && minutes === value ? "bg-[#6C47FF] border-[#FFD13B] text-white" : "bg-[#1C145C] border-[#4C35DE] text-indigo-200"}`}>{value} min</button>)}
           <label className="flex items-center gap-2 text-xs font-bold text-indigo-200">
             Custom minutes
             <input type="number" min={1} max={120} step={1} required value={customMinutes}
@@ -108,9 +110,9 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </div>
 
       {age === "1-2" ? <div id="toddlerAutoNotice" className="p-4 rounded-2xl bg-[#2CE69B]/15 border-2 border-[#2CE69B] text-xs sm:text-sm font-extrabold text-[#2CE69B]">
-        🧸 Toddler Mode (1-2 yrs): Your little cinema opens right away, with a 10-second breather between videos.
+        🧸 Ages 1–2: Videos start right away. Little breaks come between videos.
       </div> : <fieldset id="parentModeSelectorWrapper" className="space-y-2">
-        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">Choose Session Flow for Your Child</legend>
+        <legend className="block text-xs font-extrabold uppercase tracking-wider text-indigo-300">What should your child do?</legend>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {sessionFlows.map((option) => <button key={option.value} type="button" aria-pressed={flow === option.value}
             id={option.value === "learn" ? "modeCardBrain" : "modeCardTurbo"}
@@ -118,6 +120,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
             className={`p-4 rounded-2xl border-2 text-left transition cursor-pointer ${flow === option.value ? "border-[#FFD13B] bg-[#6C47FF] shadow-md" : "border-[#4C35DE] bg-[#100B3B] hover:border-indigo-400"}`}>
             <span className="flex items-center gap-2.5 mb-1"><span className="text-2xl" aria-hidden="true">{option.icon}</span>
               <span className="font-display font-bold text-base text-white">{option.title}</span></span>
+            <span className={`block text-xs font-bold ${flow === option.value ? "text-indigo-100" : "text-indigo-300"}`}>{option.detail}</span>
           </button>)}
         </div>
         {flow === "active" && <label className="flex flex-wrap gap-2 items-center text-xs font-bold text-indigo-200">
@@ -130,7 +133,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
       </fieldset>}
 
       <button type="submit" className="w-full py-4 px-2 rounded-2xl btn-game btn-mint text-[#082F22] font-display font-bold text-xl tracking-wide flex items-center justify-center gap-2 cursor-pointer">
-        <span className="min-w-0 wrap-anywhere">{onBack ? "SAVE SETTINGS" : <>START SESSION FOR <span id="startBtnKidName">{display.toUpperCase()}</span></>}</span><span aria-hidden="true">🚀</span>
+        <span className="min-w-0 wrap-anywhere"><>START FOR <span id="startBtnKidName">{display.toUpperCase()}</span></></span><span aria-hidden="true">🚀</span>
       </button>
       <div className={`flex items-center justify-between gap-3 text-xs text-indigo-300 ${onBack ? "" : "sm:hidden"}`}>
         {onBack && <button type="button" className="hover:text-white" onClick={onBack}><span aria-hidden="true">← </span>Back</button>}

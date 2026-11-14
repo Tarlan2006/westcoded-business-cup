@@ -41,7 +41,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
         {Array.from({ length: total }, (_, index) => <span key={index} aria-hidden="true"
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
-      <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Session time">{clock}</div>
+      <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Time left">{clock}</div>
       <div className="flex items-center gap-2">
         {paused && navigation && <button type="button" className="prototype-parent-button" aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
         {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled} onOpen={onExit} />

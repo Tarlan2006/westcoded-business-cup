@@ -22,7 +22,7 @@ export function RewardCard({ profile, points, mission, children }: {
     <ParticlePop />
     <div className="reward-bleep"><Mascot mood="excited" action="clap" /></div>
     <div className="reward-main">
-      <p className="reward-ribbon">{mission ? "Mission accomplished!" : "Activity complete!"}</p>
+      <p className="reward-ribbon">{mission ? "You did it!" : "All done!"}</p>
       <Heading>Way to go, Agent {name}!</Heading>
       <p className="flow-earned">+{points} XP</p>
       <p className="flow-progress-note">{rankName(profile.rank)} · {profile.xp} total XP · {profile.streak} day streak</p>

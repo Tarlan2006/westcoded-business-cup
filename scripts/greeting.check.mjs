@@ -11,7 +11,7 @@ try { for(const [width,muted,failed] of [[390,false,false],[1280,false,false],[3
  await page.getByRole('heading',{name:'Hey pal! Ready for a screen-free adventure?',exact:true}).waitFor();
  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
  await page.getByRole('heading',{name:'Tell MyPal About Your Child',exact:true}).waitFor();
- await page.getByLabel("Child's Nickname",{exact:true}).waitFor();
+ await page.getByLabel("What should MyPal call your child?",{exact:true}).waitFor();
  assert(!(await page.locator('body').innerText()).includes('Bleep'));
  if(!muted&&!failed){await page.waitForFunction(()=>window.__voiceStarts.some(d=>d>1));assert.equal(clipRequests,1);}
  if(muted)assert.equal(clipRequests,0);
