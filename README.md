@@ -1,40 +1,48 @@
-# westcoded: Business Cup 2.0 (Zimran)
+# Mission Control
 
-B2C web-продукт для взрослых американцев 25-45. Команда: **westcoded**.
+Mission Control — голосовая игра с короткими миссиями для детей. Сейчас в репозитории каркас на Vite, React, TypeScript и Tailwind CSS. Cloudflare Workers раздаёт страницу и обслуживает API на Hono.
 
-> Статус: каркас. Тема продукта выбирается; текущий пресет (BillCheck, проверка медицинских счетов) является заглушкой, чтобы каркас работал end-to-end. Подробнее: `docs/IDEA_SWAP.md`.
+**Живой URL** [mission-control.tarlan-b06.workers.dev](https://mission-control.tarlan-b06.workers.dev)
 
-**Живой URL:** _(добавить после деплоя)_
+## Локальный запуск
 
-## Что внутри
+Нужны Node.js 24 и npm.
 
-- Next.js 15 (App Router) + TypeScript + Tailwind
-- Без регистрации и логина: открыл URL и пользуешься
-- `POST /api/analyze`: AI-анализ (Anthropic или OpenAI), rate limit, demo-режим без ключа
-- Paywall: бесплатные проверки, затем Stripe Payment Link (test mode) или demo-разблокировка
-- Вся тема продукта в одном файле: `src/config/product.ts`
-
-## Запуск локально
-
-```bash
+```sh
 npm install
-cp .env.example .env.local   # ключ необязателен: без него работает demo-режим
-npm run dev                  # http://localhost:3000
+npm run dev
 ```
 
-## Деплой (Vercel)
+Откройте [localhost:5173](http://localhost:5173) и нажмите **Check API health**. Кнопка покажет JSON от `GET /api/health`. `POST /api/stt` и `POST /api/turn` возвращают HTTP 501.
 
-1. Import Project -> выбрать этот репозиторий.
-2. Environment Variables: `LLM_PROVIDER`, `ANTHROPIC_API_KEY` (или `OPENAI_API_KEY`), `NEXT_PUBLIC_PAYMENT_LINK`, `NEXT_PUBLIC_SITE_URL`.
-3. Deploy. Проверить URL в инкогнито.
+Vite подключает Workers AI через аккаунт Cloudflare. Если появится запрос на вход, выполните `npx wrangler login` или воспользуйтесь запуском через `wrangler dev --local` ниже. Для проверки API секреты Groq не нужны.
+
+Для локальной разработки с ключами скопируйте `.dev.vars.example` в `.dev.vars` и заполните `GROQ_API_KEY` и `LLM_MODEL`.
+
+```sh
+npm run typecheck
+npm run build
+npx wrangler dev
+```
+
+После сборки Wrangler раздаёт приложение на [localhost:8787](http://localhost:8787). Чтобы проверить API без подключения к Workers AI, запустите `npx wrangler dev --local`. Собранное приложение также можно запустить командой `npm run preview`.
+
+## Деплой на Cloudflare Workers
+
+```sh
+npx wrangler login
+npm run deploy
+npx wrangler secret put GROQ_API_KEY
+npx wrangler secret put LLM_MODEL
+```
+
+`npm run deploy` выполняет `vite build && wrangler deploy`. После публикации откройте указанный Wrangler адрес и проверьте `/api/health`.
+
+Для автодеплоя откройте **Workers & Pages → mission-control → Settings → Builds → Connect** в панели Cloudflare. Авторизуйте приложение Cloudflare Workers & Pages в GitHub, выберите `Tarlan2006/westcoded-business-cup` и ветку `main`. Оставьте корнем репозиторий, задайте `npm run build` для сборки и `npx wrangler deploy` для деплоя. [Инструкция Cloudflare](https://developers.cloudflare.com/workers/ci-cd/builds/#connect-an-existing-worker)
 
 ## Документы
 
-- `docs/SUBMISSION_CHECKLIST.md`: что сдать и как нас оценивают
-- `docs/PITCH_OUTLINE.md`: 10 слайдов
-- `docs/IDEA_SWAP.md`: как перенастроить под выбранную идею
-- `docs/CODEX_TASKS.md`: разделение задач между агентами и командой
-
-## Дисклеймер
-
-Информационный сервис, не юридическая, не медицинская и не финансовая консультация.
+- [План и контракты](docs/PLAN.md)
+- [Промпты команды](docs/CODEX_PROMPTS.md)
+- [Что сдаём](docs/SUBMISSION_CHECKLIST.md)
+- [План презентации](docs/PITCH_OUTLINE.md)
