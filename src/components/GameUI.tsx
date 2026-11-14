@@ -1,4 +1,5 @@
-import { useId, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { Chains } from "./Chains";
 import { APP_NAME } from "../brand";
 import { Mascot } from "./Mascot";
 import type { ActivitySuggestion } from "./activitySuggestions";
@@ -25,14 +26,21 @@ export function ActivityIcon({ item }: { item: ActivitySuggestion }) {
   return item.activity === "ask" ? <Mascot pose="point" className="tile-mascot" /> : item.icon;
 }
 
-/** A MyPal Plus game: locks on both sides; tapping it opens the plans. */
+/** A MyPal Plus game, wrapped in chains. A tap rattles them, then opens the plans. */
 export function LockedTile({ icon, title, children, onClick }: { icon: string; title: string; children: ReactNode; onClick: () => void }) {
-  return <button className="activity-tile hub-tile locked-tile" type="button" onClick={onClick} aria-label={`${title}, locked. See ${APP_NAME} Plus plans`}>
-    <span className="locked-lock locked-lock-left" aria-hidden="true">🔒</span>
-    <span className="locked-lock locked-lock-right" aria-hidden="true">🔒</span>
+  const [rattling, setRattling] = useState(false);
+  const timer = useRef(0);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  return <button className="activity-tile hub-tile locked-tile" type="button" data-rattling={rattling || undefined}
+    aria-label={`${title}, locked. See ${APP_NAME} Plus plans`} onClick={() => {
+      if (rattling) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return onClick();
+      setRattling(true);
+      timer.current = window.setTimeout(() => { setRattling(false); onClick(); }, 550);
+    }}>
     <span className="activity-icon" aria-hidden="true">{icon}</span>
     <strong>{title}</strong><span className="tile-description">{children}</span>
-    <span className="locked-cta" aria-hidden="true">Unlock</span>
+    <Chains />
   </button>;
 }
 

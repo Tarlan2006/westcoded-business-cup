@@ -489,12 +489,22 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @keyframes splash-title { from { transform: translateY(12px) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
 
 /* MyPal Plus: locked games in the Hub and the plans page. */
-.locked-tile { position: relative; border-style: dashed; padding-inline: 2.6rem; }
-.locked-tile .activity-icon { filter: grayscale(.35); }
-.locked-lock { position: absolute; top: 50%; transform: translateY(-50%); font-size: 1.35rem; filter: drop-shadow(0 2px 0 rgba(0,0,0,.25)); }
-.locked-lock-left { left: .6rem; }
-.locked-lock-right { right: .6rem; }
-.locked-tile .locked-cta { justify-self: start; width: fit-content; margin-top: .35rem; padding: .2rem .65rem; border-radius: 99px; background: #ffd13b; color: #1e1b4b !important; font: 800 .75rem var(--font-heading); text-transform: uppercase; letter-spacing: .04em; }
+.locked-tile { position: relative; overflow: hidden; border-style: solid; }
+.locked-tile > :not(.chains) { opacity: .72; }
+.locked-tile .activity-icon { filter: grayscale(.6); }
+.chains { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.locked-hint { display: flex; align-items: flex-end; gap: .6rem; margin: -.2rem 0 .3rem; }
+.locked-hint .mypal-mascot { flex: none; }
+.locked-hint p { margin: 0 0 1.2rem; }
+.plus-badge { padding: .2rem .6rem; border-radius: 99px; background: #ffd13b; color: #1e1b4b; font: 800 .7rem var(--font-heading); letter-spacing: .06em; vertical-align: middle; }
+@media (prefers-reduced-motion: no-preference) {
+  .locked-tile[data-rattling] { animation: locked-shake .55s ease-in-out; }
+  .locked-tile[data-rattling] .chains { animation: chains-rattle .55s ease-in-out; }
+  .locked-tile[data-rattling] .chains-padlock { animation: padlock-swing .55s ease-in-out; transform-box: fill-box; transform-origin: 50% 0; }
+}
+@keyframes locked-shake { 20% { transform: rotate(-1.5deg); } 40% { transform: rotate(1.5deg); } 60% { transform: rotate(-1deg); } 80% { transform: rotate(.6deg); } }
+@keyframes chains-rattle { 15%, 55% { transform: translate(-3px, 2px); } 35%, 75% { transform: translate(3px, -2px); } }
+@keyframes padlock-swing { 25% { transform: rotate(14deg); } 55% { transform: rotate(-10deg); } 80% { transform: rotate(5deg); } }
 .plans-hero { display: flex; align-items: center; gap: 1rem; }
 .plans-hero h2 { margin: .2rem 0 .5rem; font-size: clamp(1.35rem, 4.5vw, 2rem); }
 .plans-games { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }

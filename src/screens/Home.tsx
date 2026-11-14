@@ -74,7 +74,11 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
         </div>
       </section>)}
       <section className="activity-section" aria-labelledby="group-plus">
-        <h2 id="group-plus" className="font-display text-2xl font-bold">Unlock more <span aria-hidden="true">🔒</span></h2>
+        <h2 id="group-plus" className="font-display text-2xl font-bold">Unlock more <span className="plus-badge">{APP_NAME.toUpperCase()} PLUS</span></h2>
+        <div className="locked-hint">
+          <Mascot pose="point" size={84} />
+          <p className="hub-greeting-bubble">These games are still locked up. Ask a grown-up!</p>
+        </div>
         <div className="activity-grid locked-grid">
           {lockedGames.map((game) => <LockedTile key={game.id} icon={game.icon} title={game.title} onClick={onPlans}>{game.description}</LockedTile>)}
         </div>
