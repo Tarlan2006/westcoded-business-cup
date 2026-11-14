@@ -129,35 +129,31 @@ export function Hub({ profile, preferences, onParent, onMission, onQuiz, onMemor
       <header className="topbar"><span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span></header>
       <div className="learn-page hub">
         <RankCard profile={profile} onParent={onParent} />
-      {ordered.map((group) => (
-        <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
-          <h2 id={`group-${group}`}>{titles[group]}</h2>
-          {group === "active" && <div className="activity-grid">
-            {modes.map((mode) => (
-              <ActivityTile key={mode} tone={mode === "roadtrip" ? "sun" : "active"} icon={MODES[mode].icon}
-                title={MODES[mode].name} onClick={() => onMission(mode)}>
-                {MODES[mode].description}
-              </ActivityTile>
-            ))}
-          </div>}
-          {group === "learn" && <div className="activity-grid">
-            <ActivityTile tone="learn" icon="?" title="Quiz" onClick={onQuiz}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
-            <ActivityTile tone="mint" icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
-            {!preschool && <>
-              <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>
-              <ActivityTile tone="mint" icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>
-            </>}
-          </div>}
-          {group === "watch" && (
-            <div className="activity-grid">
-              <ActivityTile tone="watch" icon="▶" title="Video library" onClick={preschool && !rewardReady ? onQuiz : onWatch}>
+        {ordered.map((group) => (
+          <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
+            <h2 id={`group-${group}`}>{titles[group]}</h2>
+            <div className="activity-grid" data-group={group}>
+              {group === "active" && modes.map((mode) => (
+                <ActivityTile key={mode} tone={mode === "roadtrip" ? "sun" : "active"} icon={MODES[mode].icon}
+                  title={MODES[mode].name} onClick={() => onMission(mode)}>
+                  {MODES[mode].description}
+                </ActivityTile>
+              ))}
+              {group === "learn" && <>
+                <ActivityTile tone="learn" icon="?" title="Quiz" onClick={onQuiz}>{preschool ? "Colors, shapes, animals, and counting." : "Space, nature, and science."}</ActivityTile>
+                <ActivityTile tone="mint" icon="▦" title="Memory" onClick={onMemory}>{preschool ? "Match 4 pairs." : "Match 8 pairs."}</ActivityTile>
+                {!preschool && <>
+                  <ActivityTile tone="learn" icon="✦" title="Ask Mission Control" onClick={onAsk}>Ask about science or nature.</ActivityTile>
+                  <ActivityTile tone="mint" icon="×" title="Tic-tac-toe" onClick={onGrid}>Get three in a row against the computer.</ActivityTile>
+                </>}
+              </>}
+              {group === "watch" && <ActivityTile tone="watch" icon="▶" title="Video library" onClick={preschool && !rewardReady ? onQuiz : onWatch}>
                 {preschool && !rewardReady ? "Finish a quiz to open your video reward." : "Pick a short video to watch together."}
-              </ActivityTile>
+              </ActivityTile>}
             </div>
-          )}
-        </section>
-      ))}
-      <a className="quiet-button" href="/privacy">Privacy</a>
+          </section>
+        ))}
+        <a className="quiet-button" href="/privacy">Privacy</a>
       </div>
     </main>
   );
