@@ -94,6 +94,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
   const winningLine = winner(board);
   const thinking = !result && turn === "O";
   const canPlay = !result && !thinking;
+  const canChangeLevel = Boolean(result) || board.every((cell) => cell === null);
   const message = result === "X" ? "Oh no, you got me! You win!" : result === "O" ? "Good game! Want a rematch?"
     : result === "tie" ? "It's a tie, great game!" : thinking ? "Hmm, let me think..."
       : board.includes("X") ? "Nice move! Your turn." : "Your turn!";
@@ -118,7 +119,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
         <div className="ttt-controls">
           <div className="ttt-levels" role="group" aria-label="Difficulty">
             {(["Easy", "Clever"] as const).map((level) => (
-              <button key={level} type="button" className="ttt-level" aria-pressed={difficulty === level}
+              <button key={level} type="button" className="ttt-level" aria-pressed={difficulty === level} disabled={!canChangeLevel}
                 onClick={() => setDifficulty(level)}>{level}</button>
             ))}
           </div>
