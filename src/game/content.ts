@@ -73,9 +73,9 @@ const huntPrompts = [
   ["Find a book, a sock, and a cushion. Bring them one at a time.", "6-8"],
   ["Find something soft, something red, and something round. Walk back to base.", "6-8"],
   ["Find a paper napkin, a pencil, and a towel. Walk back to base.", "6-8"],
-  ["Find two soft objects of different colors. Describe them without showing them.", "9-11"],
-  ["Find a book, something striped, and something with a zipper. Walk back to base.", "9-11"],
-  ["Find something round, something square, and something blue. Walk back to base.", "9-11"],
+  ["Find two soft objects of different colors. Describe them without showing them.", "6-8"],
+  ["Find a book, something striped, and something with a zipper. Walk back to base.", "6-8"],
+  ["Find something round, something square, and something blue. Walk back to base.", "6-8"],
 ] as const;
 
 const roadtripPrompts = [
@@ -91,7 +91,7 @@ const localTasks: Task[] = [
   ...huntPrompts.map(([prompt, ageBand], i) => ({
     id: `local_hunt_${i}`, mode: "hunt" as const, ageBand,
     lineIds: [localLine(`local_hunt_task_${i}`, prompt, "task", "hunt")],
-    durationSec: { "3-5": 60, "6-8": 50, "9-11": 45 }[ageBand],
+    durationSec: ageBand === "3-5" ? 60 : i < 6 ? 50 : 45,
   })),
   ...roadtripPrompts.map((prompt, i) => ({
     id: `local_roadtrip_${i}`, mode: "roadtrip" as const, ageBand: "all" as const,
@@ -118,7 +118,10 @@ for (const mode of ["common", "hunt", "roadtrip", "lava"] as const) {
   for (const row of bank(mode)) {
     if (typeof row.id !== "string" || typeof row.text !== "string" || row.voice !== "hq" ||
       row.mode !== mode || typeof row.kind !== "string") continue;
-    const line = { ...row, file: typeof row.file === "string" ? row.file : "" } as unknown as Line;
+    const line = {
+      ...row, ageBand: row.ageBand === "9-11" ? "6-8" : row.ageBand,
+      file: typeof row.file === "string" ? row.file : "",
+    } as unknown as Line;
     lines.set(line.id, line);
     importedLines.push(line);
   }
@@ -126,9 +129,10 @@ for (const mode of ["common", "hunt", "roadtrip", "lava"] as const) {
 
 const importedTasks: Task[] = [];
 for (const row of bank("tasks")) {
-  const { id, mode, ageBand, lineIds, durationSec } = row;
+  const { id, mode, lineIds, durationSec } = row;
+  const ageBand = row.ageBand === "9-11" ? "6-8" : row.ageBand;
   if (typeof id !== "string" || (mode !== "hunt" && mode !== "roadtrip" && mode !== "lava") ||
-    (ageBand !== "all" && ageBand !== "3-5" && ageBand !== "6-8" && ageBand !== "9-11") ||
+    (ageBand !== "all" && ageBand !== "3-5" && ageBand !== "6-8") ||
     !Array.isArray(lineIds) || !lineIds.length || !lineIds.every((id) => typeof id === "string" && lines.has(id))) continue;
   const defaultDuration = mode === "hunt" ? 60 : mode === "roadtrip" ? 45 : 20;
   const duration = typeof durationSec === "number" && Number.isFinite(durationSec) && durationSec > 0
@@ -148,6 +152,10 @@ export const codenames = [...new Set([
   ...importedLines.filter((line) => line.mode === "common" && line.kind === "codename").map((line) => line.id),
   ...localCodenames,
 ])];
+
+export function codenameFor(id: string) {
+  return codenames.includes(id) ? lineFor(id).text : "Agent";
+}
 
 export function praiseFor(mode: Mode, ageBand: AgeBand): string[] {
   const curated = importedLines.filter((line) =>

@@ -1,28 +1,22 @@
 import { useState } from "react";
-import type { AgeBand, Mode, Profile } from "../../shared/types";
-import { codenames, lineFor, MODES, recallLine } from "../game/content";
+import type { Mode, Profile } from "../../shared/types";
+import { codenameFor, lineFor, MODES, recallLine } from "../game/content";
 import { rankName } from "../state/progress";
 
 export interface SetupOptions {
-  codenameId: string;
-  ageBand: AgeBand;
   mode: Mode;
   durationMinutes: number;
 }
 
 interface Props {
-  profiles: Profile[];
-  selectedId?: string;
+  profile: Profile;
+  onBack: () => void;
   onStart: (options: SetupOptions) => void;
 }
 
-export function Setup({ profiles, selectedId, onStart }: Props) {
-  const saved = profiles.find((profile) => profile.id === selectedId);
-  const [codenameId, setCodenameId] = useState(saved && codenames.includes(saved.codenameId) ? saved.codenameId : codenames[0]);
-  const [ageBand, setAgeBand] = useState<AgeBand>(saved?.ageBand ?? "6-8");
+export function Setup({ profile, onStart, onBack }: Props) {
   const [mode, setMode] = useState<Mode>("hunt");
   const [durationMinutes, setDurationMinutes] = useState(10);
-  const profile = profiles.find((entry) => entry.codenameId === codenameId);
   const inCar = mode === "roadtrip";
 
   function changeLocation(car: boolean) {
@@ -34,7 +28,7 @@ export function Setup({ profiles, selectedId, onStart }: Props) {
     <main className="shell">
       <header className="topbar">
         <span className="wordmark"><span className="signal" aria-hidden="true" /> Mission Control</span>
-        <a className="quiet-button" href="/privacy">Privacy</a>
+        <button type="button" className="quiet-button" onClick={onBack}>Home</button>
       </header>
       <section className="setup-layout">
         <div className="setup-intro">
@@ -43,7 +37,7 @@ export function Setup({ profiles, selectedId, onStart }: Props) {
           <div className="radar" aria-hidden="true"><span /><span /><span /><i /></div>
           <aside className="progress-card">
             <div>
-              <span className="field-label">Agent {lineFor(codenameId).text}</span>
+              <span className="field-label">Agent {codenameFor(profile.codenameId)}</span>
               <strong>{rankName(profile?.rank ?? 0)}</strong>
             </div>
             <div className="progress-values">
@@ -55,26 +49,9 @@ export function Setup({ profiles, selectedId, onStart }: Props) {
         </div>
         <form className="panel setup-form" onSubmit={(event) => {
           event.preventDefault();
-          onStart({ codenameId, ageBand, mode, durationMinutes });
+          onStart({ mode, durationMinutes });
         }}>
           <h2>Mission setup</h2>
-          <div className="form-row">
-            <label><span className="field-label">Codename</span>
-              <select value={codenameId} onChange={(event) => {
-                const id = event.target.value;
-                setCodenameId(id);
-                const savedProfile = profiles.find((entry) => entry.codenameId === id);
-                if (savedProfile) setAgeBand(savedProfile.ageBand);
-              }}>
-                {codenames.map((id) => <option key={id} value={id}>{lineFor(id).text}</option>)}
-              </select>
-            </label>
-            <label><span className="field-label">Age</span>
-              <select value={ageBand} onChange={(event) => setAgeBand(event.target.value as AgeBand)}>
-                {(["3-5", "6-8", "9-11"] as const).map((band) => <option value={band} key={band}>{band.replace("-", "–")}</option>)}
-              </select>
-            </label>
-          </div>
           <fieldset>
             <legend className="field-label">Location</legend>
             <div className="segmented">

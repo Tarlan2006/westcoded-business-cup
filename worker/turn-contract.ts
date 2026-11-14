@@ -28,7 +28,7 @@ export function isTurnRequest(value: unknown): value is TurnRequest {
   const request = value as Partial<TurnRequest> | null;
   return !!request && (
     (request.mode === "hunt" || request.mode === "roadtrip" || request.mode === "lava") &&
-    (request.ageBand === "3-5" || request.ageBand === "6-8" || request.ageBand === "9-11") &&
+    (request.ageBand === "3-5" || request.ageBand === "6-8") &&
     boundedInteger(request.round, 1, 300) && boundedInteger(request.elapsedSec, 0, 1800) &&
     ids(request.taskLineIds) && ids(request.candidatePraiseIds) && ids(request.candidateNextTaskIds) &&
     typeof request.childSaid === "string" && request.childSaid.length <= maxTranscriptLength &&
