@@ -16,7 +16,7 @@ export async function within<T>(promise: Promise<T>, milliseconds: number, fallb
   }
 }
 
-export function useBriefing(ids: string[], paused: boolean) {
+export function useBriefing(ids: string[], paused: boolean, preferClips = false) {
   const [spoken, setSpoken] = useState({ key: "", caption: "", speaking: false });
   const key = ids.join(" ");
 
@@ -29,7 +29,7 @@ export function useBriefing(ids: string[], paused: boolean) {
         const line = lineFor(id);
         setSpoken({ key, caption: line.text, speaking: true });
         try {
-          if (line.file && !hostVoiceReady()) {
+          if (line.file && (preferClips || !hostVoiceReady())) {
             try {
               await playQueue([id]);
               continue;
@@ -48,7 +48,7 @@ export function useBriefing(ids: string[], paused: boolean) {
       active = false;
       stopSpeech();
     };
-  }, [key, paused]);
+  }, [key, paused, preferClips]);
 
   const fallback = ids.length ? lineFor(ids.at(-1)!).text : "";
   return {
