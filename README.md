@@ -1,72 +1,37 @@
-# Mission Control
+# Mission Control — Bleep
 
-Mission Control — детское приложение с двумя треками, Active и Learn. Для 1–2 лет доступен видеокаталог. Для 3–5 и 6–8 лет есть активные миссии, квизы и игры. В Learn для 6–8 лет можно задать вопрос о науке и природе. Cloudflare Workers раздаёт приложение и обслуживает API на Hono.
+A voice game master for children aged 1–8, built by **westcoded** for **Business Cup 2.0**.
+[Try the live demo](https://mission-control.tarlan-b06.workers.dev).
 
-**Живой URL** [mission-control.tarlan-b06.workers.dev](https://mission-control.tarlan-b06.workers.dev)
+For working parents seeking a 15–30 minute break from passive screen time. Active missions encourage listening and movement; setup and some controls still need a screen. This is not childcare: a grown-up should choose a safe space and supervise age-appropriate play.
 
-## Локальный запуск
+## Flow and activities
+A parent selects an age, location, interests and session length. The activity hub offers Active, Learn and Watch. Hunt, Road Trip and Floor Is Lava use spoken tasks; the child can confirm with a button or optional microphone. Learn includes quizzes, Memory, Sketch Artist and Space Scale. Ask Bleep answers questions with cloud models or a prepared FAQ. The youngest band uses a parent-selected video catalogue. Balloon Count is an isolated preview module, not a published hub activity.
 
-Нужны Node.js 24 и npm.
+Watch embeds YouTube: third-party requests and ads may occur. It is not an ad-free promise.
+
+## Stack
+Vite, React, TypeScript and Tailwind; Hono on Cloudflare Workers serves APIs and assets. Groq selects validated mission IDs and answers questions. Workers AI provides Whisper transcription and optional language-model fallback. Pre-rendered Piper clips support scripted speech; current dynamic speech also has browser/local-model fallback paths. See [architecture](docs/ARCHITECTURE.md) and [privacy](docs/PRIVACY.md).
+
+## Run
+Use Node 24:
 
 ```sh
-npm install
+npm i
 npm run dev
 ```
 
-Откройте [localhost:5173](http://localhost:5173), выберите возраст и параметры и нажмите **Show activities**. Каталог подбирает занятия по возрасту и месту, а предпочтение определяет первый раздел. Все режимы бесплатны, количество миссий не ограничено. Состояние Worker можно проверить через `GET /api/health`.
+Open the localhost address printed by Vite. Cloudflare AI bindings may require Wrangler login. Use the variable names in [.env.example](.env.example), but put local Worker values in an untracked `.dev.vars` file; a Vite `.env` file does not automatically configure Worker bindings. Never expose keys through VITE-prefixed variables.
 
-В Scavenger Hunt кнопка **HOLD TO TALK** отправляет WAV длительностью до восьми секунд в `POST /api/stt` для распознавания через Workers AI. `POST /api/turn` выбирает реплику и задание через Groq. При недоступности модели игра выбирает следующий ход локально. Кнопка **I DID IT!** работает без доступа к микрофону.
-
-В Learn `POST /api/ask` отвечает через Groq при наличии `GROQ_API_KEY` и `LLM_MODEL`, а без них использует встроенный FAQ. Ролики подбираются по возрасту из `content/videos.json`. Для 3–5 лет раздел видео открывается после первого квиза.
-
-Vite подключает Workers AI через аккаунт Cloudflare. Если появится запрос на вход, выполните `npx wrangler login` или воспользуйтесь запуском через `wrangler dev --local` ниже. Для проверки API секреты Groq не нужны.
-
-Для локальной разработки с ключами скопируйте `.dev.vars.example` в `.dev.vars` и заполните `GROQ_API_KEY` и `LLM_MODEL`.
+## Check and deploy
 
 ```sh
 npm run typecheck
 npm run build
-npx wrangler dev
-```
-
-После сборки Wrangler раздаёт приложение на [localhost:8787](http://localhost:8787). Чтобы проверить API без подключения к Workers AI, запустите `npx wrangler dev --local`. Собранное приложение также можно запустить командой `npm run preview`.
-
-## Деплой на Cloudflare Workers
-
-```sh
+npm run check-content
+npx tsx scripts/worker-tests.ts
 npx wrangler login
 npm run deploy
-npx wrangler secret put GROQ_API_KEY
-npx wrangler secret put LLM_MODEL
 ```
 
-`npm run deploy` выполняет `vite build && wrangler deploy`. После публикации откройте указанный Wrangler адрес и проверьте `/api/health`.
-
-Для автодеплоя откройте **Workers & Pages → mission-control → Settings → Builds → Connect** в панели Cloudflare. Авторизуйте приложение Cloudflare Workers & Pages в GitHub, выберите `Tarlan2006/westcoded-business-cup` и ветку `main`. Оставьте корнем репозиторий, задайте `npm run build` для сборки и `npx wrangler deploy` для деплоя. [Инструкция Cloudflare](https://developers.cloudflare.com/workers/ci-cd/builds/#connect-an-existing-worker)
-
-## Озвучка
-
-Готовые клипы лежат в `public/audio`. После изменения реплик или вопросов 3–5 лет обновите клипы, манифест и длительности. Для генерации нужны Python и FFmpeg с `libmp3lame` в PATH.
-
-```sh
-python -m pip install piper-tts==1.8.0
-python -m piper.download_voices --data-dir scripts/.cache/models en_US-hifi_tts_92-medium
-npm run gen-audio -- --dry-run
-npm run gen-audio
-npm run check-content -- --require-audio
-```
-
-В Windows с кириллицей в пути репозитория установите Piper в отдельное окружение в папке с латинским путём. Задайте `PYTHON` как путь к его `python.exe`. Через `FFMPEG` можно указать путь к исполняемому файлу FFmpeg. Для другого голоса Piper передайте `--voice <путь-к-модели.onnx>`; рядом нужен файл `.onnx.json`.
-
-- Для пробного прогона используйте `npm run gen-audio -- --only local_hunt`. Повторный запуск пропускает неизменённые клипы. `--force` перезаписывает выбранные клипы.
-- Kokoro работает через `python -m pip install kokoro soundfile` и `npm run gen-audio -- --engine kokoro --voice af_heart`. При первом запуске нужны веса модели. Для офлайн-работы загрузите их заранее.
-- Если решите использовать облачную озвучку, для ElevenLabs задайте `ELEVENLABS_API_KEY` и запустите `npm run gen-audio -- --engine elevenlabs --voice <voice-id>`. Для Aura задайте `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` и запустите `npm run gen-audio -- --engine aura --voice luna`.
-
-Перед публикацией прослушайте десять клипов из разных режимов и квиза. В Git добавляйте MP3, манифест и обновлённые банки. Веса и кэш генерации хранятся локально. [Атрибуция голоса](content/AUDIO_CREDITS.md)
-
-## Документы
-
-- [План и контракты](docs/PLAN.md)
-- [Промпты команды](docs/CODEX_PROMPTS.md)
-- [Что сдаём](docs/SUBMISSION_CHECKLIST.md)
-- [План презентации](docs/PITCH_OUTLINE.md)
+See [deployment and secrets](docs/DEPLOY.md). No new test dependencies or package scripts are required. Worker tests mock upstreams and do not send children's data. Safety controls reduce risk; they are not a guarantee that every model output is appropriate.
