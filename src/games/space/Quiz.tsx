@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ObjectArt, RocketArt } from "./art/ObjectArt";
 import { compareSizes, objects, type SpaceObject } from "./scale";
 
@@ -21,6 +21,7 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
   const [picked, setPicked] = useState<string>();
   const [correct, setCorrect] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
+  const headingId = useId();
   const pair = questions[index];
   const bigger = pair[0].diameterKm > pair[1].diameterKm ? pair[0] : pair[1];
 
@@ -39,11 +40,11 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
   }
 
   return (
-    <section className="sp-quiz" aria-labelledby="sp-quiz-heading">
+    <section className="sp-quiz" aria-labelledby={headingId}>
       <div className="sp-quiz-title">
         <div>
           <p className="sp-kicker">Question {index + 1} of {questions.length}</p>
-          <h2 id="sp-quiz-heading" ref={heading} tabIndex={-1}>Which is bigger?</h2>
+          <h2 id={headingId} ref={heading} tabIndex={-1}>Which is bigger?</h2>
         </div>
         <div className="sp-quiz-rocket"><RocketArt /></div>
       </div>

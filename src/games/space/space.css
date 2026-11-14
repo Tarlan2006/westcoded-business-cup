@@ -144,7 +144,7 @@
   display: grid;
   align-content: start;
   gap: 10px;
-  min-height: 100%;
+  min-height: calc(100% - var(--sp-track-distance, 3000px));
   padding: 6px 10px 10px;
 }
 
@@ -244,7 +244,6 @@
 
 .sp-quiz, .sp-result {
   width: min(100%, 670px);
-  min-height: 430px;
   margin: 16px auto 0;
   border: 1px solid var(--sp-line, #e5e0f9);
   border-radius: var(--radius-lg, 30px);
@@ -275,7 +274,7 @@
 .sp-choice-art { display: block; width: clamp(64px, 14vw, 120px); aspect-ratio: 1; }
 .sp-quiz-feedback { min-height: 3.3em; color: var(--sp-muted, #555276); }
 .sp-quiz-feedback strong { color: var(--sp-ink, #231f43); }
-.sp-result { display: grid; place-items: center; align-content: center; gap: 11px; text-align: center; }
+.sp-result { display: grid; min-height: 380px; place-items: center; align-content: center; gap: 11px; text-align: center; }
 .sp-result p { color: var(--sp-muted, #555276); }
 .sp-result-art { display: flex; justify-content: center; align-items: end; gap: 8px; width: min(100%, 290px); }
 .sp-result-art > div { width: 21%; }
