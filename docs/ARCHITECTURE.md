@@ -6,7 +6,7 @@ flowchart TD
  Client --> Clips[Pre-rendered Piper clips]
  Client --> Speech[Installed browser voice]
  Worker --> Guard[Origin allowlist + IP buckets + body limits]
- Guard --> Ask[Ask: input checks + short Bleep prompt]
+ Guard --> Ask[Ask: input checks + short MyPal prompt]
  Ask --> Groq[Groq chat completion]
  Ask --> AI[Workers AI language model fallback]
  Groq --> Filter[Output safety filter]

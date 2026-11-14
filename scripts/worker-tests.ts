@@ -1,8 +1,15 @@
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 import app from "../worker/index";
 import { IpLimiter, safeOutput, safeReply, deadline } from "../worker/safety";
 import { answerFromFaq } from "../shared/ask-faq";
 import faq from "../content/faq.json";
+const common = JSON.parse(readFileSync(new URL("../content/common.json", import.meta.url), "utf8"));
+const greeting = common.find((line: { id: string }) => line.id === "common_setup_greeting");
+assert.equal(greeting?.text, "Hey pal! Let's set up your adventure!");
+assert(greeting.durationMs > 0);
+const audioManifest = JSON.parse(readFileSync(new URL("../public/audio/manifest.json", import.meta.url), "utf8"));
+assert.equal(audioManifest.clips.common_setup_greeting, greeting.file);
 let ip = 0, calls = 0;
 const originalFetch = globalThis.fetch;
 const env = { GROQ_API_KEY:"test", LLM_MODEL:"test" };
@@ -13,6 +20,7 @@ try {
  const setupResponse=await app.request("/api/setup",{method:"POST",headers:{"Content-Type":"application/json","CF-Connecting-IP":"parent-setup"},body:JSON.stringify({text:marker,parentContext:marker,notes:marker})},env);
  assert.equal(setupResponse.status,200); assert(!JSON.stringify(await setupResponse.json()).includes(marker)); assert.equal(forwarded,"");
  await request("How do wheels work?",{parentContext:marker,notes:marker,parent:{context:marker},history:[{question:"How do wheels work?",answer:"They turn.",parentNotes:marker}]});
+ assert(forwarded.includes("You are MyPal, a friendly game host for kids.")); assert(forwarded.includes("Address the child as pal."));
  assert(!forwarded.includes(marker)); assert(forwarded.includes("How do wheels work?"));
 
  globalThis.fetch = async () => { calls++; return Response.json({choices:[{message:{content:"A wheel turns around its middle. It helps things move."}}]}); };
