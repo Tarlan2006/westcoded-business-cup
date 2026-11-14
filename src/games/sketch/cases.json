@@ -1,0 +1,22 @@
+[
+  {
+    "id": "gecko_hero",
+    "title": "The Wall-Climber",
+    "clues": [
+      { "id": "head", "text": "The hero wears a round green mask with two very big goggles." },
+      { "id": "face", "text": "Under the goggles there is a wide, happy smile." },
+      { "id": "body", "text": "The suit is green, with a bright yellow stripe across the chest." },
+      { "id": "hands", "text": "Each hand has four fingers, and every fingertip is a big round sticky dot." },
+      { "id": "cape", "text": "A short yellow cape flutters behind the hero." },
+      { "id": "tail", "text": "A long curly tail swings from the back, with a little star at the tip." }
+    ],
+    "checklist": [
+      "Round green mask with big goggles",
+      "A wide happy smile",
+      "Yellow stripe on the chest",
+      "Big round sticky fingertips",
+      "Short yellow cape",
+      "Long curly tail with a star"
+    ]
+  }
+]
