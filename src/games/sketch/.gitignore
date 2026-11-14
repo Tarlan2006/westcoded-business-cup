@@ -1,0 +1,5 @@
+# Keep Tailwind's automatic source scanner out of this isolated module.
+# The source files are intentionally tracked with git add -f.
+# This prevents words in game code/content from adding site-wide utilities.
+/*
+!/.gitignore
