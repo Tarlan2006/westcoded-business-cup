@@ -1,11 +1,11 @@
 import faq from "../content/faq.json" with { type: "json" };
 import type { AskResponse } from "./types";
 
-export const askRefusal = "Let's try a different question, agent. You could ask about space, animals, or your favorite hero.";
+export const askRefusal = "Let's ask a grown-up! We can explore animals or space together.";
 const generalAnswer = "Great question! Let's ask a grown-up and find out together.";
 
 export function cleanQuestion(question: string) {
-  return question.trim().slice(0, 200);
+  return question.trim().slice(0, 300);
 }
 
 // Clearly unsafe topics are refused before any model call. Everything else (heroes,
@@ -23,9 +23,13 @@ function bestMatch(question: string) {
   const words = ` ${question.toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim()} `;
   let best: (typeof faq)[number] | undefined;
   let bestScore = 0;
+  const stop = new Set(["why", "how", "do", "does", "is", "are", "it", "the", "a", "we"]);
   for (const entry of faq) {
-    const score = entry.keywords.reduce((max, keyword) => words.includes(` ${keyword} `)
-      ? Math.max(max, keyword.length + (keyword.includes(" ") ? 20 : 0)) : max, 0);
+    const score = entry.keywords.reduce((max, keyword) => {
+      const tokens = keyword.split(" ").filter(t => !stop.has(t));
+      if (!tokens.every(t => words.includes(` ${t} `))) return max;
+      return Math.max(max, tokens.length * 100 + keyword.length);
+    }, 0);
     if (score > bestScore) {
       best = entry;
       bestScore = score;
