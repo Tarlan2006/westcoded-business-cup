@@ -336,3 +336,22 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
   .game-button, .primary-button, .secondary-button, .activity-tile { transition: none; }
   .game-button:active:not(:disabled), .primary-button:active:not(:disabled), .secondary-button:active:not(:disabled), .activity-tile:is(:hover,:active) { transform: none; }
 }
+
+.bleep-touch { position: relative; display: block; width: 100%; min-width: 48px; min-height: 48px; border: 0; background: transparent; border-radius: 50%; }
+@media (prefers-reduced-motion: no-preference) {
+  .bleep-float { animation: bleep-float 3.2s ease-in-out infinite; transform-origin: 110px 120px; }
+  .bleep-antenna { animation: bleep-antenna 1.7s ease-in-out infinite; transform-origin: 110px 62px; }
+  .mascot[data-speaking] .bleep-antenna { animation-duration: .3s; }
+  .mascot[data-action="wave"] .bleep-hand, .mascot[data-action="clap"] .bleep-hand { animation: bleep-wave .65s ease-in-out infinite alternate; transform-origin: 169px 120px; }
+  .mascot[data-action="jump"] .bleep-pose { animation: bleep-jump .7s ease-out both; }
+  .mascot[data-action="sneak"] .bleep-pose { animation: bleep-sneak 1.7s ease-in-out infinite; transform-origin: center; }
+  .mascot[data-action="drink"] .bleep-pose { animation: bleep-sip 1s ease-in-out infinite alternate; transform-origin: center; }
+  .mascot[data-mood="giggle"] .bleep-pose { animation: bleep-giggle .13s ease-in-out 5 alternate; }
+}
+@keyframes bleep-float { 50% { transform: translateY(-7px) rotate(2deg); } }
+@keyframes bleep-antenna { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes bleep-wave { to { transform: rotate(24deg); } }
+@keyframes bleep-jump { 45% { transform: translateY(-15px); } }
+@keyframes bleep-sneak { 50% { transform: translateX(5px) rotate(-4deg); } }
+@keyframes bleep-sip { to { transform: rotate(5deg); } }
+@keyframes bleep-giggle { to { transform: translateX(3px); } }
