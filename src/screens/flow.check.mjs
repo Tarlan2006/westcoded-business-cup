@@ -173,6 +173,23 @@ async function roadtrip(width, height) {
   await context.close();
 }
 
+async function educationalTimeout(age, firstRoundSeconds) {
+  const { context, page } = await fresh(390, 844);
+  await button(page, `${age} yrs`).click();
+  await button(page, /START SESSION/).click();
+  await page.clock.install();
+  await button(page, "Play with Bleep Now!").click();
+  await page.getByRole("heading", { name: "Quiz", exact: true }).waitFor();
+  assert.equal(await page.locator("#roundSecondsBadge").innerText(), `${firstRoundSeconds}s`);
+  for (let round = 1; round <= 3; round++) {
+    await page.locator(`#starProgressContainer[aria-label="Round ${round}"]`).waitFor();
+    await page.clock.fastForward((round === 1 ? firstRoundSeconds + 1 : 36) * 1000);
+  }
+  await complete(page).waitFor();
+  assert.equal((await storage(page)).xp, 0, "let the quiz finish without penalty for skipped questions");
+  await context.close();
+}
+
 try {
   for (const [width, height] of [[390, 844], [1280, 720]]) {
     await educational(width, height);
@@ -181,4 +198,7 @@ try {
     await roadtrip(width, height);
     console.log(`PASS ${width}×${height}: first/repeat visit, all tracks, replay, XP, parents, garage, catalog and games`);
   }
+  await educationalTimeout("3–5", 35);
+  await educationalTimeout("6–8", 40);
+  console.log("PASS video quiz round countdown and penalty-free advance for both ages");
 } finally { await browser.close(); }

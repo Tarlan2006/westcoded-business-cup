@@ -135,11 +135,15 @@ try {
       await tile(p, mode).click(); await p.getByRole("button", { name: "Start mission", exact: true }).click();
       await p.locator("#screen-mission").waitFor();
       await p.clock.fastForward(5100);
+      assert.equal(await p.getByRole("button", { name: "Home, back to activities" }).count(), 0);
       await p.getByRole("button", { name: "Pause", exact: true }).click();
       await p.getByRole("button", { name: "Resume mission", exact: true }).waitFor();
       const frozen = await timerState(p);
       await p.clock.fastForward(30_000);
       assert.equal(await timerState(p), frozen, "session clock stops during a pause");
+      await home(p);
+      await p.getByRole("button", { name: "Keep playing", exact: true }).click();
+      assert.equal(await timerState(p), frozen, "dismissing Home leaves the mission paused");
       if (mode === "Scavenger Hunt") await snapshot(p, "mission-paused", width);
       await p.getByRole("button", { name: "Resume mission", exact: true }).click();
       const remaining = seconds(await timerState(p));

@@ -41,7 +41,10 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
       <div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Session time">{clock}</div>
-      <div className="flex items-center gap-2">{toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled} onOpen={onExit} /></div>
+      <div className="flex items-center gap-2">
+        {paused && navigation && <button type="button" className="prototype-parent-button" aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
+        {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled} onOpen={onExit} />
+      </div>
     </header>
     {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
 import { useClipSpeech } from "../audio/useClipSpeech";
@@ -20,11 +20,16 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   const [answer, setAnswer] = useState<string>();
   const [points, setPoints] = useState(0);
   const [startedAt] = useState(Date.now);
+  const [roundStartedAt, setRoundStartedAt] = useState(startedAt);
   const [now, setNow] = useState(startedAt);
+  const completed = useRef(false);
   const current = quiz[index];
   const { speak, stop } = useClipSpeech();
   const sound = useSoundEnabled();
   const clipId = current && ageBand === "3-5" ? `quiz_${current.id}` : undefined;
+  const roundDuration = ageBand === "6-8" && index === 0 ? 40 : 35;
+  const roundSeconds = Math.max(0, roundDuration - Math.floor((now - roundStartedAt) / 1000));
+  const advanceOnTimeout = useEffectEvent(() => next());
 
   useEffect(() => {
     if (sound && current) void speak(current.question, clipId);
@@ -37,6 +42,10 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     return () => window.clearInterval(timer);
   }, [missionMinutes]);
 
+  useEffect(() => {
+    if (missionMinutes && current && roundSeconds === 0 && answer === undefined) advanceOnTimeout();
+  }, [missionMinutes, current, roundSeconds, answer]);
+
   function choose(choice: string) {
     if (answer !== undefined) return;
     setAnswer(choice);
@@ -45,16 +54,24 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   }
 
   function next() {
-    if (index === quiz.length - 1) onComplete(points);
-    else {
+    if (completed.current) return;
+    if (index === quiz.length - 1) {
+      completed.current = true;
+      onComplete(points);
+    } else {
       setAnswer(undefined);
+      if (missionMinutes) {
+        const time = Date.now();
+        setNow(time);
+        setRoundStartedAt(time);
+      }
       setIndex(index + 1);
     }
   }
 
   if (current && missionMinutes) {
     const seconds = Math.max(0, missionMinutes * 60 - Math.floor((now - startedAt) / 1000));
-    return <MissionStage heading="Quiz" round={index + 1} total={quiz.length} seconds={seconds} clockSeconds={seconds} ratio={seconds / (missionMinutes * 60)}
+    return <MissionStage heading="Quiz" round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
       demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord="QUIZ!" prop="💭"
       action={answer === undefined ? "wave" : "clap"} mood={answer === undefined ? "detective" : "excited"} onExit={onExit}
       prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}
