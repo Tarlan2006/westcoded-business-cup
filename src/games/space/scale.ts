@@ -50,7 +50,7 @@ export function sizeRatio(a: SpaceObject, b: SpaceObject) {
 export function compareSizes(a: SpaceObject, b: SpaceObject) {
   const [big, small] = a.diameterKm > b.diameterKm ? [a, b] : [b, a];
   const ratio = sizeRatio(a, b);
-  const amount = formatCompact(ratio < 10 ? ratio : Number(ratio.toPrecision(2)));
+  const amount = formatCompact(ratio < 10 ? ratio : ratio < 1000 ? Math.round(ratio) : Number(ratio.toPrecision(2)));
   const name = big.label.charAt(0).toUpperCase() + big.label.slice(1);
   return `${name} is about ${amount} times as big as ${small.label}.`;
 }

@@ -30,6 +30,7 @@ const byId = (id: string) => objects.find((object) => object.id === id)!;
 assert(Math.abs(sizeRatio(byId("earth"), byId("moon")) - 3.7) < .05);
 assert(Math.abs(sizeRatio(byId("sun"), byId("earth")) - 109) < .25);
 assert.equal(compareSizes(byId("earth"), byId("jupiter")), "Jupiter is about 11 times as big as Earth.");
+assert.equal(compareSizes(byId("sun"), byId("earth")), "The Sun is about 109 times as big as Earth.");
 assert.equal(compareSizes(byId("child"), byId("whale")), "A blue whale is about 25 times as big as a child.");
 for (const [size, formatted] of [
   [.0012, "1.2 m"], [.03, "30 m"], [8.84886, "8.8 km"],
