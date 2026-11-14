@@ -273,6 +273,8 @@ select, .gate-answer input {
 .activity-tile span { color: var(--muted); }
 .activity-tile .activity-icon { color: var(--accent); font-size: 1.5rem; }
 .home-profile > button { justify-self: start; }
+.video-panel { display: grid; gap: .8rem; }
+.video-player { display: block; width: 100%; min-width: 200px; min-height: 200px; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #0a1114; }
 .narrow-shell .panel { margin-top: clamp(1.3rem, 5vw, 4rem); }
 .narrow-shell h1 { font-size: clamp(2.2rem, 7vw, 3.7rem); }
 .gate-answer { max-width: 15rem; }

@@ -7,6 +7,7 @@ import { Home, ParentSettings, Welcome } from "./screens/Home";
 import { Mission, Results } from "./screens/Mission";
 import { ParentGate, Privacy } from "./screens/Parent";
 import { Setup, type SetupOptions } from "./screens/Setup";
+import { VideoCatalog } from "./screens/VideoCatalog";
 import { readProgress, rewardActivity, saveProfile } from "./state/progress";
 
 type Screen =
@@ -69,6 +70,10 @@ export default function App() {
   }
   if (screen.name === "setup" && profile.ageBand !== "1-2") {
     return <Setup profile={profile} onStart={(options) => launch(options, profile)} onBack={goHome} />;
+  }
+  if (profile.ageBand === "1-2") {
+    return <VideoCatalog ageBand={profile.ageBand} onParent={openParent}
+      onOpen={() => setProgress(rewardActivity(crypto.randomUUID(), profile.id, "video", 5))} />;
   }
   return <Home profile={profile} onParent={openParent} onActive={() => setScreen({ name: "setup" })}
     onLearn={() => setScreen({ name: "learn" })} />;
