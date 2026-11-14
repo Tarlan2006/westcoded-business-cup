@@ -14,3 +14,21 @@
 - Display optional STT message on empty transcription and handle 429 gently in every new UI; current helpers already catch non-2xx responses.
 - Add the worker test command to CI/package scripts later if desired; package.json is unchanged.
 - For serious production traffic, replace per-isolate buckets with a shared limiter and review provider retention/consent. Origin checks do not authenticate callers.
+
+## Deployment record — 2026-11-15 (Asia/Qyzylorda)
+
+- Source: main commit d255641 (based on 7b0a2be); Worker plus Vite frontend assets built together. No src files were changed by this task.
+- Live URL: https://mission-control.tarlan-b06.workers.dev
+- Cloudflare version: bd1e316d-3ac9-4250-906d-a30cb3a68da2, deployed to 100% traffic.
+- Previous version: 5b317da5-5030-4a7b-91a2-43663394078e.
+- Command: npx wrangler deploy --keep-vars --var "ALLOWED_ORIGINS:https://mission-control.tarlan-b06.workers.dev,http://localhost:5173"
+- Existing model keys/settings were not read or changed. Keep --keep-vars on future deployments so dashboard variables survive; pass the origin allowlist explicitly or configure it in the deployment environment.
+- Parent setup bodies are ignored with a fixed HTTP 200 SetupSuggestion response. Extra parent-context fields in Ask are not included in its explicitly selected LLM messages. Tests verify no sentinel context is forwarded. The frontend still needs to stop sending this data to the Worker itself.
+
+### Verification
+TypeScript, build and worker/FAQ tests passed. Production smoke checks: HTML and JS asset HTTP 200; Ask ordinary question HTTP 200 with short LLM answer; injection and 301-character input HTTP 200 with warm refusal; foreign Origin HTTP 403 without allow-origin; production and localhost Origin allowed; Hunt HTTP 200 with validated fallback selection; parent setup HTTP 200 with fixed response. A bounded 40-request empty-input burst returned 24 HTTP 200 and 16 HTTP 429 responses with Retry-After.
+
+Groq 500/timeout fallbacks passed mocked local tests. No production outage was induced and no model credentials were changed, so this is not evidence of a forced Groq-outage test on production. Hunt's production response used its normal fallback path. Ask's LLM source does not identify which configured provider answered.
+
+### Rollback
+Run npx wrangler rollback 5b317da5-5030-4a7b-91a2-43663394078e and confirm the prompt, then check the active version with npx wrangler deployments list and repeat /api/health and smoke checks. This restores the previous deployed Worker/assets/configuration, including its earlier privacy and safety behaviour; it can re-enable parent setup model forwarding. Verify ALLOWED_ORIGINS after rollback. Do not reset Git main or change model secrets to roll back a deployment. Prefer a corrected forward deployment if restoring the older privacy behaviour is unacceptable.
