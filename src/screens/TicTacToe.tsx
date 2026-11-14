@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { LearnPage } from "./Home";
+import { Piece } from "./ttt/Piece";
+import "./tictactoe.css";
 
 type Mark = "X" | "O";
 type Cell = Mark | null;
@@ -76,12 +78,12 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
     <LearnPage title="Tic-tac-toe" onBack={onBack}>
       <p role="status">{win === "X" ? "You win! +20 XP" : win === "O" ? "Good game! The computer wins." : done
         ? "It’s a tie!" : "You’re X. Tap an open square."}</p>
-      <div className="tic-grid" aria-label="Tic-tac-toe board">
+      <div className="ttt-board" role="group" aria-label="Tic-tac-toe board">
         {board.map((cell, index) => (
-          <button key={index} type="button" className="memory-card" disabled={done || Boolean(cell)}
-            aria-label={`Square ${index + 1}${cell ? `, ${cell}` : ""}`}
+          <button key={index} type="button" className="ttt-cell" aria-disabled={done || Boolean(cell)}
+            aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}, ${cell === "X" ? "star" : cell === "O" ? "cloud" : "empty"}`}
             data-mark={cell ?? undefined} data-winning={winningLine?.includes(index) || undefined}
-            onClick={() => play(index)}>{cell ?? ""}</button>
+            onClick={() => play(index)}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
         ))}
       </div>
       {done && <button type="button" className="primary-button" onClick={() => onComplete(win === "X")}>

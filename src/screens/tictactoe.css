@@ -1,0 +1,50 @@
+.ttt-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(88px, 1fr));
+  gap: 8px;
+  width: min(100%, 356px);
+  margin-inline: auto;
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  background: var(--primary-soft);
+  box-shadow: var(--shadow);
+}
+
+.ttt-cell {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: 88px;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 3px 0 var(--border), var(--shadow);
+  transition: transform 180ms cubic-bezier(.2, 1.6, .5, 1), background-color 180ms ease;
+}
+
+.ttt-cell[aria-disabled="true"] { cursor: default; }
+.ttt-cell:focus-visible { z-index: 2; }
+@media (hover: hover) {
+  .ttt-cell[aria-disabled="false"]:hover { transform: translateY(-3px); background: var(--bg-soft); }
+}
+.ttt-cell[aria-disabled="false"]:active { transform: translateY(1px) scale(.96); }
+.ttt-piece { display: block; width: 74%; max-width: 88px; overflow: visible; }
+.ttt-cell .ttt-piece { animation: ttt-pop 250ms ease-out both; }
+.ttt-star, .ttt-cloud { stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.ttt-star { fill: var(--accent); stroke: var(--coral-text); }
+.ttt-cloud { fill: var(--sky); stroke: var(--sky-text); }
+.ttt-star-shine, .ttt-cloud-shine { fill: none; stroke-width: 4; stroke-linecap: round; }
+.ttt-star-shine { stroke: var(--sun-soft); }
+.ttt-cloud-shine { stroke: var(--surface); }
+.ttt-star-face { color: var(--accent-text); }
+.ttt-cloud-face { color: var(--sky-text); }
+.ttt-star-face path, .ttt-cloud-face path { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
+.ttt-cloud-eyes { fill: currentColor; transform-box: fill-box; transform-origin: center; animation: ttt-blink 5.7s 900ms infinite; }
+.ttt-cell:nth-child(even) .ttt-cloud-eyes { animation-delay: 2100ms; }
+.ttt-cheek { fill: var(--coral); }
+
+@keyframes ttt-pop { 0% { transform: scale(0); } 66% { transform: scale(1.15); } 100% { transform: scale(1); } }
+@keyframes ttt-blink { 0%, 92%, 100% { transform: scaleY(1); } 95%, 97% { transform: scaleY(.15); } }
