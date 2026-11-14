@@ -1,16 +1,16 @@
 import type { Mode } from "../../shared/types";
 
 export type ActivityGroup = "active" | "learn" | "watch";
-export const childNeeds = [
+const childNeeds = [
   { value: "energy", label: "Get energy out indoors" },
   { value: "screen", label: "Less passive screen time" },
   { value: "listening", label: "Talking and listening" },
   { value: "habits", label: "Healthy habits (water, teeth)" },
   { value: "science", label: "Science and curiosity" },
 ] as const;
-export const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
+const childInterests = ["Dinosaurs", "Space", "Animals", "Vehicles", "Music", "Art", "Superheroes"] as const;
 export type ChildNeed = typeof childNeeds[number]["value"];
-export type ChildInterest = typeof childInterests[number];
+type ChildInterest = typeof childInterests[number];
 export const quietTimeGoals = [10, 20, 30, 60] as const;
 
 export interface Preferences {

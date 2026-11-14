@@ -1,5 +1,5 @@
 const defaultDurationLimit = 8000;
-export const maxDurationLimit = 15_000;
+const maxDurationLimit = 15_000;
 const sampleRate = 16_000;
 const formatChoices = ["audio/webm;codecs=opus", "audio/mp4", "audio/ogg;codecs=opus"];
 

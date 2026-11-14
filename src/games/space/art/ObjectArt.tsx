@@ -121,26 +121,3 @@ export function ObjectArt({ art }: { art: string }) {
     <Figure />
   </svg>;
 }
-
-export function RocketArt() {
-  const gradient = useId();
-  const lilac = "var(--sp-art-lilac)";
-  const violet = "var(--sp-art-violet)";
-  const pale = "var(--sp-art-white)";
-  return <svg viewBox="0 0 164 152" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient id={gradient} x2="0" y2="1" gradientUnits="objectBoundingBox">
-        <stop stopColor={gold} /><stop offset="1" stopColor={blush} />
-      </linearGradient>
-    </defs>
-    <ellipse cx="80" cy="143" rx="43" ry="6" fill={lilac} opacity=".55" />
-    <path d="M72 104c-5 13 5 23 10 33 5-10 16-20 10-33Z" fill={`url(#${gradient})`} />
-    <path d="M63 71c-14 5-22 25-24 36 11-6 21-6 29-4m33-32c14 5 22 25 24 36-11-6-21-6-29-4" fill={lilac} stroke={violet} strokeWidth="3" strokeLinejoin="round" />
-    <path d="M82 9C59 27 50 63 65 103h34c15-40 6-76-17-94Z" fill={pale} stroke={violet} strokeWidth="3" />
-    <path d="M66 34c4-12 11-19 16-24 6 5 13 12 17 24-10 4-23 4-33 0Z" fill={blush} />
-    <circle cx="82" cy="63" r="17" fill={blue} stroke={violet} strokeWidth="3" />
-    <Face x={82} y={61} scale={.65} />
-    <path d="M20 58q12 0 12-12 0 12 12 12-12 0-12 12 0-12-12-12Zm102-22q9 0 9-9 0 9 9 9-9 0-9 9 0-9-9-9Z" fill={gold} />
-    <g fill={lilac}><circle cx="29" cy="89" r="4" /><circle cx="143" cy="70" r="4" /><circle cx="47" cy="28" r="3" /></g>
-  </svg>;
-}

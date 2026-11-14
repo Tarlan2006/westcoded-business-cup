@@ -25,12 +25,9 @@ let musicBuffer: AudioBuffer | undefined;
 let musicEnabled = false;
 let duckEnabled = true;
 let speechDepth = 0;
-let simulatedSpeech = false;
 let playbackGeneration = 0;
 let stopCurrentClip: (() => void) | undefined;
 let stopCurrentSpeech: (() => void) | undefined;
-const observers = new Set<(volume: number) => void>();
-let meterFrame = 0;
 
 function audioGraph(): AudioGraph {
   if (graph) return graph;
@@ -52,7 +49,7 @@ function audioGraph(): AudioGraph {
 // Settings for the live browser voice (Ask answers and any clip without a recording).
 // Names are tried in order; the first one installed on the device wins. They are
 // warm US female voices that sit close to the recorded Piper clips.
-export const browserVoice = {
+const browserVoice = {
   preferred: [
     "Ava (Premium)",
     "Ava (Enhanced)",
@@ -360,7 +357,7 @@ function changeSpeech(delta: number) {
 // The reference already carries the +3 semitone pitch and the slower pace.
 // Temperature 0.3 (library default 0.7) keeps the same pitch and intonation but
 // halves the sudden jumps into a squeak (patches/pocket-tts-js+0.1.0.patch).
-export const hostVoice = { reference: "/voice/host-reference.mp3", language: "english_2026-04", temperature: 0.3 };
+const hostVoice = { reference: "/voice/host-reference.mp3", language: "english_2026-04", temperature: 0.3 };
 
 type PocketModule = typeof import("pocket-tts-js");
 let hostTts: InstanceType<PocketModule["PocketTTS"]> | undefined;
@@ -376,7 +373,7 @@ function canLoadHostVoice() {
   return !device.connection?.saveData && (device.deviceMemory ?? 4) >= 2;
 }
 
-export function loadHostVoice(): Promise<boolean> {
+function loadHostVoice(): Promise<boolean> {
   hostReady ??= (async () => {
     if (!canLoadHostVoice()) return false;
     try {
@@ -496,7 +493,6 @@ function speakBrowser(text: string): Promise<void> {
   if (!utterances.length) return Promise.resolve();
   return new Promise<void>((resolve) => {
     changeSpeech(1);
-    simulatedSpeech = true;
     let done = false;
     const stop = () => {
       window.speechSynthesis.cancel();
@@ -509,7 +505,6 @@ function speakBrowser(text: string): Promise<void> {
       done = true;
       window.clearTimeout(timeout);
       if (stopCurrentSpeech === stop) stopCurrentSpeech = undefined;
-      simulatedSpeech = false;
       changeSpeech(-1);
       resolve();
     }
@@ -524,29 +519,4 @@ function speakBrowser(text: string): Promise<void> {
       finish();
     }
   });
-}
-
-export function onVolumeChange(observer: (volume: number) => void): () => void {
-  observers.add(observer);
-  if (!meterFrame) {
-    const values = new Uint8Array(256);
-    const update = (time: number) => {
-      graph?.analyser.getByteTimeDomainData(values);
-      let energy = 0;
-      if (graph) {
-        for (const value of values) energy += ((value - 128) / 128) ** 2;
-      }
-      const measured = Math.sqrt(energy / values.length) * 3;
-      const level = simulatedSpeech ? 0.2 + 0.17 * Math.abs(Math.sin(time / 95)) : Math.min(1, measured);
-      for (const listener of observers) listener(level);
-      meterFrame = observers.size ? window.requestAnimationFrame(update) : 0;
-    };
-    meterFrame = window.requestAnimationFrame(update);
-  }
-  return () => {
-    observers.delete(observer);
-    if (observers.size || !meterFrame) return;
-    window.cancelAnimationFrame(meterFrame);
-    meterFrame = 0;
-  };
 }

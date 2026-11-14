@@ -7,7 +7,7 @@ import "./AnimalSounds.css";
 // After a toddler video, MyPal names each animal and says its sound, then the real
 // animal is heard a moment later. Nothing needs a tap; it ends on its own.
 // Recordings: content/AUDIO_CREDITS.md ("Animal sounds").
-export const animals = [
+const animals = [
   { id: "cow", emoji: "🐮", name: "Cow", sound: "Moo!", line: "Look, a cow! The cow says moo, moo!", file: "/audio/animals/animal_cow.mp3" },
   { id: "cat", emoji: "🐱", name: "Cat", sound: "Meow!", line: "Look, a cat! The cat says meow, meow!", file: "/audio/animals/animal_cat.mp3" },
   { id: "dog", emoji: "🐶", name: "Dog", sound: "Woof!", line: "Look, a dog! The dog says woof, woof!", file: "/audio/animals/animal_dog.mp3" },

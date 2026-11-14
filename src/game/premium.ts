@@ -8,7 +8,7 @@ export const lockedGames = [
   { id: "story-quest", icon: "📖", title: "Story Quest", description: "Choose what happens next in a spoken adventure." },
 ] as const;
 
-export const plusFeatures = [
+const plusFeatures = [
   "Unlock Dino Dig, Music Band, and Story Quest",
   "New missions and quizzes every week",
   "Unlimited Ask MyPal questions",

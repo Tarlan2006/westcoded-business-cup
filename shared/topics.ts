@@ -20,14 +20,6 @@ export function readTopics(value: unknown): TopicId[] {
   return [...new Set(value.filter((id): id is TopicId => typeof id === "string" && known.has(id)))].slice(0, maxTopics);
 }
 
-export function topicsFromInterests(interests: readonly string[] = []): TopicId[] {
-  return readTopics(interests.map((label) => topics.find((topic) => topic.label === label)?.id));
-}
-
-export function interestsFromTopics(ids: readonly string[]): string[] {
-  return readTopics(ids).map((id) => topics.find((topic) => topic.id === id)!.label);
-}
-
 export function topicLabels(ids: readonly TopicId[]): string[] {
   return ids.map((id) => topics.find((topic) => topic.id === id)!.label.toLowerCase());
 }
