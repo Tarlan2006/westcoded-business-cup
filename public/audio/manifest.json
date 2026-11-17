@@ -143,5 +143,6 @@
     "roadtrip_task_tall_tree": "/audio/roadtrip/roadtrip_task_tall_tree.mp3",
     "roadtrip_task_white_truck": "/audio/roadtrip/roadtrip_task_white_truck.mp3",
     "roadtrip_task_yellow_sign": "/audio/roadtrip/roadtrip_task_yellow_sign.mp3"
-  }
+  },
+  "voice": "aidos-luna-v1"
 }

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 const base=process.env.SMOKE_URL??'http://127.0.0.1:5197';
 assert(new URL(base).hostname==='127.0.0.1','Use a local Vite dev server for direct module tests');
 const out='scripts/.cache/3d-audit';await mkdir(out,{recursive:true});
@@ -33,7 +33,7 @@ try {
     return rows;
   });
   assert(repeats.every(r=>r.starts===1&&r.startMs<1000),JSON.stringify(repeats));
-  await page.route('**/common_recall_08.mp3',async route=>{await new Promise(r=>setTimeout(r,2000));await route.continue();});
+  await page.route('**/common_recall_08.mp3*',async route=>{await new Promise(r=>setTimeout(r,2000));await route.continue();});
   const replacement=await page.evaluate(async()=>{
     const old=window.engine.playQueue(['common_recall_08']);
     await new Promise(r=>setTimeout(r,100));window.engine.stopSpeech();
@@ -47,6 +47,11 @@ try {
   assert.equal(await page.evaluate(()=>window.oscillators),0,'No repeated electronic cues');
   assert(!requests.some(url=>/huggingface|safetensors|pocket-tts|onnx/.test(url)),'No live model downloads');
   assert.equal(errors.length,0,errors.join('\n'));
+  const catalogue=JSON.parse(await readFile('content/voice/catalog.json','utf8'));
+  const lines=[catalogue.find(r=>r.text.includes('cow say')),catalogue.find(r=>r.text.includes('round green mask')),catalogue.find(r=>r.text.startsWith('Yes! 3 balloons')),catalogue.find(r=>r.text.includes('scatter blue'))].map(r=>r.text);
+  const gamePlayback=await page.evaluate(async lines=>{const results=[];for(const text of lines){const before=window.audioStarts.length,t=performance.now();await window.engine.speakFallback(text);results.push({text,startMs:window.audioStarts[before]-t,starts:window.audioStarts.length-before});}return results;},lines);
+  assert(gamePlayback.every(r=>r.starts===1&&r.startMs<1000),JSON.stringify(gamePlayback));
+  assert(!requests.some(url=>url.endsWith('/api/voice')),'Fixed game/FAQ lines must use prepared voice assets');
   const retry=await browser.newPage();let manifestAttempts=0;
   await retry.route('**/audio/manifest.json',route=>++manifestAttempts===1?route.fulfill({status:503,body:''}):route.continue());
   await retry.goto(base+'/privacy');
@@ -54,6 +59,6 @@ try {
   await retry.locator('#retry-unlock').click();await retry.waitForTimeout(150);
   await retry.evaluate(()=>window.engine.playQueue(['common_setup_greeting']));
   assert(manifestAttempts>=2,'Manifest must recover after a transient failure');await retry.close();
-  await writeFile(out+'/audio-latency.json',JSON.stringify({repeats,replacement,manifestAttempts,errors,passed:true},null,2));
+  await writeFile(out+'/audio-latency.json',JSON.stringify({repeats,replacement,gamePlayback,manifestAttempts,errors,passed:true},null,2));
   console.log('PASS three actual MP3 plays, cancelled slow fetch, no stale speech, no repeated beeps, no model download',repeats,replacement);
 } finally {await browser.close();}

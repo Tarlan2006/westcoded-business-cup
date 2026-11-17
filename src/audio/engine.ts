@@ -1,3 +1,4 @@
+import { AIDOS_VOICE, normalizeSpeech } from "../../shared/voice";
 import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
 import { changeVoicePlayback, setSpeechMeter } from "./speechMotion";
 type SoundEffect = "siren" | "tick" | "radio" | "fanfare" | "whoosh";
@@ -32,7 +33,6 @@ let duckEnabled = true;
 let speechDepth = 0;
 let playbackGeneration = 0;
 let stopCurrentClip: (() => void) | undefined;
-let stopCurrentSpeech: (() => void) | undefined;
 
 function audioGraph(): AudioGraph {
   if (graph) return graph;
@@ -59,64 +59,7 @@ function audioGraph(): AudioGraph {
   return graph;
 }
 
-// Settings for the live browser voice (Ask answers and any clip without a recording).
-// Names are tried in order; the first one installed on the device wins. They are
-// warm US female voices that sit close to the recorded Piper clips.
-const browserVoice = {
-  preferred: [
-    "Ava (Premium)",
-    "Ava (Enhanced)",
-    "Samantha (Enhanced)",
-    "Samantha",
-    "Ava",
-    "Microsoft Zira",
-  ],
-  lang: "en-US",
-  rate: 0.95,
-  pitch: 1.1,
-  volume: 1,
-};
-
-let chosenVoice: SpeechSynthesisVoice | null | undefined;
-
-function pickVoice(): SpeechSynthesisVoice | null {
-  if (chosenVoice !== undefined) return chosenVoice;
-  const voices = window.speechSynthesis.getVoices();
-  // Chrome fills the list asynchronously; try again on the next call.
-  if (!voices.length) return null;
-  const local = voices.filter((voice) => voice.localService);
-  const english = local.filter((voice) => voice.lang.replace("_", "-").toLowerCase() === "en-us");
-  chosenVoice = null;
-  for (const name of browserVoice.preferred) {
-    const match = english.find((voice) => voice.name === name) ??
-      english.find((voice) => voice.name.startsWith(name));
-    if (match) return chosenVoice = match;
-  }
-  return chosenVoice = english.find((voice) => voice.default) ?? english[0] ?? local[0] ?? null;
-}
-
-if (typeof window !== "undefined" && "speechSynthesis" in window) {
-  window.speechSynthesis.addEventListener?.("voiceschanged", () => {
-    chosenVoice = undefined;
-    pickVoice();
-  });
-}
-
-function sentences(text: string): string[] {
-  const parts = text.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*["”)]?\s*/g) ?? [text];
-  return parts.map((part) => part.trim()).filter(Boolean);
-}
-
 export async function unlock(): Promise<void> {
-  if (!graph && "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined") {
-    const voice = pickVoice();
-    if (voice) {
-      const silentSpeech = new SpeechSynthesisUtterance(" ");
-      silentSpeech.voice = voice;
-      silentSpeech.volume = 0;
-      window.speechSynthesis.speak(silentSpeech);
-    }
-  }
   const { context, speech } = audioGraph();
   const resume = context.resume();
   const silent = context.createBufferSource();
@@ -125,6 +68,7 @@ export async function unlock(): Promise<void> {
   silent.onended = () => silent.disconnect();
   silent.start();
   void loadManifest();
+  void loadVoiceIndex();
   void preload(["common_setup_greeting"]);
   await resume;
   updateMusic();
@@ -138,6 +82,7 @@ function loadManifest(): Promise<Map<string, string>> {
       const data: unknown = await response.json();
       if (!data || typeof data !== "object") return new Map();
       const root = data as Record<string, unknown>;
+      if (root.voice !== AIDOS_VOICE) return new Map();
       const entries = root.clips ?? root.lines ?? data;
       if (!entries || typeof entries !== "object") return new Map();
       const rows: [string, unknown][] = Array.isArray(entries)
@@ -169,7 +114,7 @@ async function loadClip(id: string, context: AudioContext): Promise<AudioBuffer>
   const path = (await loadManifest()).get(id);
   if (!path) throw new Error("Clip is missing from the audio manifest.");
   const loading = clips.get(id) ?? (async () => {
-    const response = await fetch(path, { signal: AbortSignal.timeout(3000) });
+    const response = await fetch(path + "?voice=" + AIDOS_VOICE, { signal: AbortSignal.timeout(3000) });
     if (!response.ok) throw new Error("Clip is unavailable.");
     return context.decodeAudioData(await response.arrayBuffer());
   })();
@@ -336,7 +281,6 @@ export function stopSpeech(): void {
   playbackGeneration += 1;
   queue = Promise.resolve(); // A cancelled download must not block the next prompt.
   stopCurrentClip?.();
-  stopCurrentSpeech?.();
 }
 
 export function isSpeechActive(): boolean {
@@ -409,63 +353,44 @@ function changeSpeech(delta: number) {
   updateMusic();
 }
 
-// Fixed lines use recordings. Dynamic answers use the installed browser voice.
-// Never start a model download or unbounded CPU synthesis during a child's game.
-export function speakFallback(text: string): Promise<void> {
-  if (!text.trim()) return Promise.resolve();
-  stopSpeech();
-  return speakBrowser(text);
+// Every spoken line uses the pinned AIdos voice. Never switch to a device voice.
+let voiceIndex: Promise<Record<string,string>> | undefined;
+const spokenBuffers = new Map<string, Promise<AudioBuffer>>();
+function loadVoiceIndex() {
+  voiceIndex ??= fetch('/audio/voice-index.json?voice=' + AIDOS_VOICE, {signal: AbortSignal.timeout(2500)})
+    .then(async response => { if(!response.ok) throw new Error('voice_index'); const data=await response.json(); if(data.voice!==AIDOS_VOICE)throw new Error('voice_version');return data.texts as Record<string,string>; })
+    .catch(() => { voiceIndex=undefined; return {}; });
+  return voiceIndex;
 }
-
-function speakBrowser(text: string): Promise<void> {
-  if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return Promise.resolve();
-  // Starting speech before the first await also preserves a user gesture on iOS.
-  const voice = pickVoice();
-
-  const utterances = sentences(text).map((part) => {
-    const utterance = new SpeechSynthesisUtterance(part);
-    utterance.lang = browserVoice.lang;
-    if (voice) utterance.voice = voice;
-    utterance.rate = browserVoice.rate;
-    utterance.pitch = browserVoice.pitch;
-    utterance.volume = browserVoice.volume;
-    return utterance;
-  });
-  if (!utterances.length) return Promise.resolve();
-  return new Promise<void>((resolve) => {
+async function voiceBuffer(text: string, context: AudioContext) {
+  let result=spokenBuffers.get(text);
+  if(!result){
+    result=(async()=>{
+      const index=await loadVoiceIndex();
+      let response: Response | undefined;
+      if(index[text]) response=await fetch(index[text]+'?voice='+AIDOS_VOICE,{signal:AbortSignal.timeout(3000)}).catch(()=>undefined);
+      if(!response?.ok){
+        response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text}),signal:AbortSignal.timeout(7500)});
+        if(response.headers.get('X-AIdos-Voice')!==AIDOS_VOICE)throw new Error('voice_version');
+      }
+      if(!response.ok)throw new Error('voice_unavailable');
+      return context.decodeAudioData(await response.arrayBuffer());
+    })();
+    if(spokenBuffers.size>=48)spokenBuffers.delete(spokenBuffers.keys().next().value!);
+    spokenBuffers.set(text,result);
+  }
+  try {return await result;}catch(error){spokenBuffers.delete(text);throw error;}
+}
+export function speakFallback(raw: string): Promise<void> {
+  const text=normalizeSpeech(raw);
+  if(!text) return Promise.resolve();
+  stopSpeech();
+  const generation=playbackGeneration;
+  return enqueue(async()=>{
+    const output=audioGraph();await ready(output);
+    const buffer=await voiceBuffer(text,output.context);
+    if(generation!==playbackGeneration)return;
     changeSpeech(1);
-    let done = false;
-    let talking = false;
-    const stopMouth = () => {
-      if (talking) { talking = false; changeVoicePlayback('browser', -1); }
-    };
-    const stop = () => {
-      window.speechSynthesis.cancel();
-      finish();
-    };
-    const timeout = window.setTimeout(stop, Math.max(3000, text.length * 90 / browserVoice.rate));
-    stopCurrentSpeech = stop;
-    function finish() {
-      if (done) return;
-      done = true;
-      stopMouth();
-      window.clearTimeout(timeout);
-      if (stopCurrentSpeech === stop) stopCurrentSpeech = undefined;
-      changeSpeech(-1);
-      resolve();
-    }
-    const last = utterances[utterances.length - 1];
-    for (const utterance of utterances) {
-      utterance.onstart = () => {
-        if (!done && !talking) { talking = true; changeVoicePlayback('browser', 1); }
-      };
-      utterance.onerror = finish;
-      utterance.onend = () => { stopMouth(); if (utterance === last) finish(); };
-    }
-    try {
-      for (const utterance of utterances) window.speechSynthesis.speak(utterance);
-    } catch {
-      finish();
-    }
-  });
+    try {await playBuffer(output,buffer);} finally {changeSpeech(-1);}
+  }).catch(()=>{ /* Keep captions and Hear it; never use a different fallback voice. */ });
 }

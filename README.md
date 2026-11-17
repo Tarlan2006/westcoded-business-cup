@@ -26,7 +26,7 @@ Movement modes include Scavenger Hunt, Floor is Lava and Roadtrip Spy for passen
 
 ## What makes it different
 
-A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. The live mascot voice runs locally when the device supports it.
+A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. All speech uses one pinned server voice, with prepared recordings for fixed text.
 
 ## Business model and current limits
 
@@ -36,7 +36,7 @@ There are no accounts, cross-device sync or payment processing. Reload recovery 
 
 ## Stack and architecture
 
-Vite + React + TypeScript + Tailwind + Three.js; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses pre-rendered Piper clips and installed browser voices for dynamic text.
+Vite + React + TypeScript + Tailwind; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses prepared Aura-2 Luna recordings and the same pinned speaker through Workers AI for new text.
 
 ```mermaid
 flowchart LR
@@ -44,7 +44,7 @@ flowchart LR
   API --> Groq[Groq]
   API --> Whisper[Workers AI / Whisper]
   API --> FAQ[Prepared fallback]
-  UI --> Clips[Piper clips / local voice]
+  UI --> Clips[Prepared Aura-2 Luna voice]
 ```
 
 [Detailed architecture](docs/ARCHITECTURE.md). Parent notes and nicknames stay local. Ask sends only the question. Optional STT sends audio; missions send structured game words/IDs. No camera or geolocation. This is a data-minimisation/COPPA-oriented approach, not compliance certification.
@@ -95,9 +95,11 @@ Cloudflare Builds publishes `main` automatically to the `westcoded-business-cup`
 
 Games and quizzes share nine quiet music themes and matching animated decorations. **Music on/off** controls the background separately; **Sound off** mutes it too. Music pauses for microphone use, hidden tabs and parent dialogs, and stays off during videos. Reduced-motion settings disable decoration movement. Tracks are generated locally without audio downloads. See the [follow-up audit and staged plan](docs/AUDIT-2026-11-17.md) for checks and device-testing limits.
 
-Available Piper recordings always play directly. Dynamic answers use the installed browser voice, which can sound different across devices. The former 146 MB runtime cloning model is disabled: it delayed prompts and competed with games for CPU. Archived voice references remain for offline authoring. Cancelled prompts cannot block the next recording, and routine taps/countdowns no longer beep.
+All 238 prepared lines and new answers use `aidos-luna-v1` (Cloudflare Aura-2, speaker Luna). The app never switches to a device voice. Known text plays from local assets; decoded repeats stay in a bounded memory cache. New text requires a network synthesis call, so zero latency cannot be guaranteed. If synthesis is unavailable, captions remain and the child can retry with Hear it. Parent notes and nicknames are not submitted to speech synthesis.
 
-AIdos is a procedural Three.js character with articulated arms, head and speech-driven mouth, turquoise Kazakh clothing, gold oyu and taqiya. One shared WebGL renderer serves every placement. Reduced motion stops gestures; devices without WebGL retain the illustrated fallback.
+The mascot is the exact user-approved PNG in `public/mascot/aidos-reference.png`, without a procedural reinterpretation of the face or clothing. The earlier Three.js model is no longer loaded by the app.
+
+To rebuild the current voice catalogue, run `node scripts/voice-catalog.mjs`, then `node scripts/generate-unified-voice.mjs` against the deployed voice service. Generation resumes from its ignored cache. The older Piper commands below are historical authoring tools and cannot overwrite a pinned production voice.
 
 ```sh
 python -m pip install piper-tts==1.8.0

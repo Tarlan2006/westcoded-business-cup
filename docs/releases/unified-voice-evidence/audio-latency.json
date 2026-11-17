@@ -1,0 +1,48 @@
+{
+  "repeats": [
+    {
+      "iteration": 1,
+      "startMs": 58.70000001788139,
+      "starts": 1
+    },
+    {
+      "iteration": 2,
+      "startMs": 0.4000000059604645,
+      "starts": 1
+    },
+    {
+      "iteration": 3,
+      "startMs": 0.19999998807907104,
+      "starts": 1
+    }
+  ],
+  "replacement": {
+    "startMs": 0.19999998807907104,
+    "starts": 1
+  },
+  "gamePlayback": [
+    {
+      "text": "What does the cow say?",
+      "startMs": 20.80000001192093,
+      "starts": 1
+    },
+    {
+      "text": "The hero wears a round green mask with two very big goggles.",
+      "startMs": 28.19999998807907,
+      "starts": 1
+    },
+    {
+      "text": "Yes! 3 balloons! Great counting!",
+      "startMs": 28.900000005960464,
+      "starts": 1
+    },
+    {
+      "text": "Sunlight has many colors, like a rainbow. Tiny bits of air scatter blue light in all directions, so the sky looks blue.",
+      "startMs": 28.200000017881393,
+      "starts": 1
+    }
+  ],
+  "manifestAttempts": 2,
+  "errors": [],
+  "passed": true
+}

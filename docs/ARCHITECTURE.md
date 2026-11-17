@@ -3,11 +3,9 @@
 ```mermaid
 flowchart TD
  Client[React client: local profile and progress] --> Worker[Hono / Cloudflare Worker]
- Client --> Clips[Pre-rendered Piper clips]
- Client --> Speech[Installed browser voice for dynamic text]
- Clips --> Motion[Speech analyser and 3D host mouth]
- Speech --> Motion
- Client --> Host[Shared Three.js renderer: articulated AIdos]
+ Client --> Clips[Prepared Aura-2 Luna clips]
+ Client --> Speech[Worker TTS: same pinned Aura-2 Luna speaker]
+ Client --> Host[Exact approved AIdos PNG]
  Worker --> Guard[Origin allowlist + IP buckets + body limits]
  Guard --> Ask[Ask: input checks + short AIdos prompt]
  Ask --> Groq[Groq chat completion]

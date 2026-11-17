@@ -1,0 +1,10 @@
+{
+  "base": "http://127.0.0.1:5201",
+  "voice": "aidos-luna-v1",
+  "voiceRequests": 1,
+  "replays": 3,
+  "deviceVoiceCalls": 0,
+  "beeps": 0,
+  "errors": [],
+  "passed": true
+}

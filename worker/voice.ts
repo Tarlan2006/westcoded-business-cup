@@ -25,6 +25,7 @@ function failure(error: unknown) {
   const message=error instanceof Error ? error.message : '';
   if(/^voice_(unavailable|size|binding)$/.test(message))return message;
   if(error instanceof TypeError)return 'provider_type';
+  if(/daily|neurons|free allocation|10,?000/i.test(message))return 'provider_daily_limit';
   if(/quota|limit|capacity|neuron/i.test(message))return 'provider_limit';
   if(/fetch|network|connect/i.test(message))return 'provider_network';
   if(/timeout/i.test(message))return 'timeout';

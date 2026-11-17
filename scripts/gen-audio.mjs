@@ -160,6 +160,7 @@ async function main() {
     console.log(`Dry run · ${engine} / ${voice ?? "(voice ID required for generation)"} · ${selected.length} clips · ${characters} characters · ${stored} existing bytes · ~${Math.round(estimate)} estimated bytes · 0 errors`);
     return;
   }
+  if (readJson(manifestPath).voice === "aidos-luna-v1") throw new Error("Use node scripts/generate-unified-voice.mjs to preserve the single AIdos voice.");
   if (!voice) throw new Error(`Pass --voice for ${engine}`);
 
   mkdirSync(cacheDir, { recursive: true });

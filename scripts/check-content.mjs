@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { answerFromFaq } from "../shared/ask-faq.ts";
 import { audioDir, audioPath, fileSize, modes, readClips, readManifest, readRows, sizeLimit } from "./audio-content.mjs";
@@ -122,6 +122,14 @@ function verify() {
   }
   const missing = clips.length - Object.keys(manifest).length;
   assert(!requireAudio || !missing, `Manifest is missing ${missing} required clips`);
+  const voiceIndex = JSON.parse(readFileSync("public/audio/voice-index.json", "utf8"));
+  const voiceManifest = JSON.parse(readFileSync("public/audio/manifest.json", "utf8"));
+  assert(voiceIndex.voice === "aidos-luna-v1" && voiceManifest.voice === voiceIndex.voice, "Voice versions must match");
+  const catalogue = JSON.parse(readFileSync("content/voice/catalog.json", "utf8"));
+  for (const line of catalogue) {
+    assert(catalogue.some(other => other.text === line.text && other.file === voiceIndex.texts[line.text]), `Voice text mismatch: ${line.id}`);
+    assert(fileSize(audioPath(line.file)) > 100, `Unified clip missing: ${line.id}`);
+  }
   let audioBytes = 0;
   try {
     audioBytes = readdirSync(audioDir, { recursive: true, withFileTypes: true })
@@ -131,7 +139,7 @@ function verify() {
   }
   assert(audioBytes <= sizeLimit, `public/audio is ${audioBytes} bytes, over the ${sizeLimit} byte limit`);
   console.log(`Content OK · ${lineMap.size} lines · ${tasks.length} tasks · ${quiz.length} quiz questions · ${faq.length} FAQ answers · ${clips.length - missing}/${clips.length} clips`);
-  if (missing) console.log(`${missing} missing clips use browser speech.`);
+  if (missing) console.log(`${missing} missing clips require prepared AIdos audio.`);
 }
 
 try {

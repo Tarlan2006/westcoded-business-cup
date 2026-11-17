@@ -15,9 +15,12 @@
   },
   "approvedSample": "host-approved.mp3",
   "runtime": {
-    "engine": "Pre-rendered Piper MP3 for known clips; installed browser speech for dynamic text",
+    "engine": "Cloudflare Workers AI Aura-2 English",
+    "model": "@cf/deepgram/aura-2-en",
+    "speaker": "luna",
+    "voice": "aidos-luna-v1",
     "code": "src/audio/engine.ts",
-    "note": "Runtime Pocket TTS disabled after latency audit. No model download or live voice cloning. Reference files retained for offline authoring."
+    "note": "Prepared clips and dynamic replies share this pinned voice. Historical reference samples are not used at runtime. No pitch shift or browser voice."
   },
   "edited": "2026-11-17",
   "edit": "Removed the former-brand introduction; retained the same approved voice without resynthesis."

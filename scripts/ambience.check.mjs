@@ -8,13 +8,14 @@ class Context {
   createGain() { const n = Object.assign(new Node(), {gain:new Param()}); this.gains.push(n); return n; }
   createAnalyser() { return new Node(); }
   createBuffer(channels, length) { const data=new Float32Array(length); return { getChannelData:()=>data, duration:length/this.sampleRate }; }
-  createBufferSource() { const n=Object.assign(new Node(), {start(){this.started=true},stop(at){this.stopped=true;this.stopAt=at}}); this.sources.push(n); return n; }
+  createBufferSource() { const n=Object.assign(new Node(), {playbackRate:new Param(),start(){this.started=true},stop(at){this.stopped=true;this.stopAt=at}}); this.sources.push(n); return n; }
+  async decodeAudioData() { return this.createBuffer(1,1000); }
   async resume() {}
 }
 globalThis.AudioContext = Context;
 globalThis.SpeechSynthesisUtterance = class { constructor(text) { this.text=text; } };
 globalThis.window = {setTimeout:()=>1,clearTimeout(){},speechSynthesis:{getVoices:()=>[{name:'Samantha',lang:'en-US',localService:true}],addEventListener(){},speak:u=>spoken.push(u),cancel(){}}};
-globalThis.fetch = async url => { requests.push(url); return {ok:true,json:async()=>({clips:{}})}; };
+globalThis.fetch = async url => { requests.push(url); return {ok:true,json:async()=>url.includes('voice-index')?{voice:'aidos-luna-v1',texts:{'Hello, pal.':'/audio/test.mp3'}}:{voice:'aidos-luna-v1',clips:{}},arrayBuffer:async()=>new ArrayBuffer(10)}; };
 const {setMusic,pauseMusic,unlock,speakFallback}=await import('../src/audio/engine.ts');
 const {ambienceThemes,themeForActivity}=await import('../src/audio/ambienceThemes.ts');
 setMusic(true,{theme:'cosmic'});assert.equal(contexts.length,0,'No AudioContext/autoplay before gesture');
@@ -30,8 +31,8 @@ for(const theme of Object.keys(ambienceThemes)) {
 const mic=Symbol(),tab=Symbol();pauseMusic(mic,true);assert.equal(bus.gain.value,0);assert.equal(active().length,0);
 pauseMusic(tab,true);pauseMusic(mic,false);assert.equal(active().length,0,'Another pause must keep silence');
 pauseMusic(tab,false);assert.equal(active().length,1);
-const speech=speakFallback('Hello, pal.');assert.equal(bus.gain.value,.004,'Speech ducks background');spoken.at(-1).onend();await speech;assert.equal(bus.gain.value,.028);
+const speech=speakFallback('Hello, pal.');await new Promise(r=>setTimeout(r,0));assert.equal(bus.gain.value,.004,'Speech ducks background');c.sources.at(-1).onended();await speech;assert.equal(bus.gain.value,.028);
 setMusic(false);assert.equal(active().length,0);assert.equal(bus.gain.value,0);
 assert.equal(themeForActivity('space'),'cosmic');assert.equal(themeForActivity('quiz'),'curious');assert.equal(themeForActivity('sketch'),'studio');
-assert(requests.every(p=>p==='/audio/manifest.json'),'Music must not fetch tracks or a remote service');
+assert(requests.every(p=>p.startsWith('/audio/')),'Cached speech and music need no external service');assert.equal(spoken.length,0,'No device speech');
 console.log('PASS nine music themes, gesture gate, single loop, fades, independent pause owners, speech ducking and mute');

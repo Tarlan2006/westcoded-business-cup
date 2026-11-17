@@ -1,3 +1,15 @@
+## Current release: exact AIdos reference and one voice (2026-11-17)
+
+Production: https://aidos.nexcel.kz. Deploy through the connected Cloudflare Builds project `westcoded-business-cup` by pushing tested main. Do not use the unrelated CLI account. Existing AI binding, environment values and secrets stay unchanged.
+
+All prepared speech and new Ask replies use `@cf/deepgram/aura-2-en`, speaker `luna`, voice version `aidos-luna-v1`. Generate the fixed catalogue with `node scripts/generate-unified-voice.mjs` after the matching Worker voice route is live. Requires FFmpeg (set FFMPEG to its path). The generator resumes from its ignored local cache. Commit prepared MP3s, durations, manifest and voice-index together with the client. Never ship a client voice version without its complete asset set. No alternate browser voice is used during outages; visible text remains available.
+
+The mascot uses the exact supplied PNG. Procedural 3D and the historical voice-model runtime are not loaded. Review the release evidence in `docs/releases/unified-voice.md`.
+
+Rollback: select the prior known-good deployment in Cloudflare Builds, or revert the final voice release commit on main and let Builds publish it. The foundation commit `220816c` retains the exact reference image and the voice endpoint but restores the earlier client audio. Reverting farther may restore the unwanted procedural character. Do not reset shared main or alter secrets. Check health, image hash, manifest voice version and playback after rollback.
+
+---
+
 # Deployment
 
 ## Procedural 3D and audio reliability release
