@@ -20,6 +20,15 @@ export async function synthesize(ai: Ai,text: string):Promise<ArrayBuffer> {
   return bytes;
 }
 const audio=(bytes:ArrayBuffer)=>new Response(bytes,{headers:{'Content-Type':'audio/mpeg','X-AIdos-Voice':AIDOS_VOICE,'Cache-Control':'private, no-store'}});
+function failure(error: unknown) {
+  const message=error instanceof Error ? error.message : '';
+  if(/^voice_(unavailable|size)$/.test(message))return message;
+  if(/timeout/i.test(message))return 'timeout';
+  if(/agree|terms|license/i.test(message))return 'model_terms';
+  if(/unauthorized|permission|not authorized/i.test(message))return 'model_access';
+  const code=message.match(/\b(1\d{3,4})\b/)?.[1];
+  return code ? `provider_${code}` : 'provider_unavailable';
+}
 
 // Only fixed public catalogue text can be cached. No profile, nickname or parent notes.
 voice.get('/api/voice/:id',async c=>{
@@ -34,7 +43,7 @@ voice.get('/api/voice/:id',async c=>{
     if(!job){job=synthesize(c.env.AI,text);pending.set(id,job);void job.finally(()=>pending.delete(id)).catch(()=>{});}
     const result=audio(await job);result.headers.set('Cache-Control','public, max-age=2592000');
     c.executionCtx.waitUntil(cache.put(key,result.clone()));return result;
-  }catch{return c.body(null,503);}
+  }catch(error){c.header('X-Voice-Failure',failure(error));return c.body(null,503);}
 });
 
 voice.post('/api/voice',bodyLimit({maxSize:2048,onError:c=>c.body(null,413)}),async c=>{
@@ -42,5 +51,5 @@ voice.post('/api/voice',bodyLimit({maxSize:2048,onError:c=>c.body(null,413)}),as
   if(typeof body?.text!=='string')return c.body(null,400);
   const text=normalizeSpeech(body.text);
   if(!text || text.length>280 || unsafe(text) || refuseQuestion(text))return c.body(null,400);
-  try{return audio(await synthesize(c.env.AI,text));}catch{return c.body(null,503);}
+  try{return audio(await synthesize(c.env.AI,text));}catch(error){c.header('X-Voice-Failure',failure(error));return c.body(null,503);}
 });
