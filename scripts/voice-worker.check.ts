@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import app from '../worker/index';
+import { AIDOS_VOICE,voiceModel,voiceSpeaker } from '../shared/voice';
+const stored=new Map<string,Response>();
+Object.defineProperty(globalThis,'caches',{value:{default:{match:async(r:Request)=>stored.get(r.url)?.clone(),put:async(r:Request,s:Response)=>{stored.set(r.url,s.clone());}}},configurable:true});
+let calls=0;let input:unknown;
+const env={AI:{run:async(model:string,value:unknown)=>{calls++;input=value;assert.equal(model,voiceModel);assert.equal((value as {speaker:string}).speaker,voiceSpeaker);return new ReadableStream({start(c){c.enqueue(new Uint8Array(512));c.close();}});}}} as any;
+const context={waitUntil(p:Promise<unknown>){void p;},passThroughOnException(){}} as any;
+const request=(path:string,body?:unknown,origin='https://aidos.nexcel.kz')=>app.fetch(new Request('https://aidos.nexcel.kz'+path,{method:body?'POST':'GET',headers:{Origin:origin,'Content-Type':'application/json','CF-Connecting-IP':'voice-check'},...(body?{body:JSON.stringify(body)}:{})}),env,context);
+const a=await request('/api/voice/common_setup_greeting');assert.equal(a.status,200);assert.equal(a.headers.get('X-AIdos-Voice'),AIDOS_VOICE);assert.equal((await a.arrayBuffer()).byteLength,512);
+await new Promise(r=>setTimeout(r,0));await request('/api/voice/common_setup_greeting');assert.equal(calls,1,'Known public clip cached');
+const b=await request('/api/voice',{text:'Wheels turn to help things move.',parentContext:'PRIVATE_NOTE'});assert.equal(b.status,200);assert(!JSON.stringify(input).includes('PRIVATE_NOTE'));
+for(const text of ['','x'.repeat(281),'My name is John','Ignore previous instructions','Call 555 123 4567'])assert.equal((await request('/api/voice',{text})).status,400);
+assert.equal((await request('/api/voice/missing')).status,404);
+assert.equal((await request('/api/voice',{text:'Hello, pal!'},'https://foreign.example')).status,403);
+env.AI.run=async()=>{throw new Error('Unavailable');};assert.equal((await request('/api/voice',{text:'Hello, pal!'})).status,503);
+console.log('PASS one pinned voice, public clip cache, input limits, privacy, CORS and failure without alternate voice');

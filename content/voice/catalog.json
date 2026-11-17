@@ -1,0 +1,1192 @@
+[
+  {
+    "id": "codename_comet",
+    "file": "/audio/common/codename_comet.mp3",
+    "text": "Comet"
+  },
+  {
+    "id": "codename_echo",
+    "file": "/audio/common/codename_echo.mp3",
+    "text": "Echo"
+  },
+  {
+    "id": "codename_fox",
+    "file": "/audio/common/codename_fox.mp3",
+    "text": "Fox"
+  },
+  {
+    "id": "codename_nova",
+    "file": "/audio/common/codename_nova.mp3",
+    "text": "Nova"
+  },
+  {
+    "id": "codename_scout",
+    "file": "/audio/common/codename_scout.mp3",
+    "text": "Scout"
+  },
+  {
+    "id": "codename_sparrow",
+    "file": "/audio/common/codename_sparrow.mp3",
+    "text": "Sparrow"
+  },
+  {
+    "id": "codename_orbit",
+    "file": "/audio/common/codename_orbit.mp3",
+    "text": "Orbit"
+  },
+  {
+    "id": "codename_pixel",
+    "file": "/audio/common/codename_pixel.mp3",
+    "text": "Pixel"
+  },
+  {
+    "id": "codename_radar",
+    "file": "/audio/common/codename_radar.mp3",
+    "text": "Radar"
+  },
+  {
+    "id": "codename_sunny",
+    "file": "/audio/common/codename_sunny.mp3",
+    "text": "Sunny"
+  },
+  {
+    "id": "codename_raven",
+    "file": "/audio/common/codename_raven.mp3",
+    "text": "Raven"
+  },
+  {
+    "id": "codename_dash",
+    "file": "/audio/common/codename_dash.mp3",
+    "text": "Dash"
+  },
+  {
+    "id": "common_praise_01",
+    "file": "/audio/common/common_praise_01.mp3",
+    "text": "Nicely spotted, pal!"
+  },
+  {
+    "id": "common_praise_02",
+    "file": "/audio/common/common_praise_02.mp3",
+    "text": "AIdos copies. Great work!"
+  },
+  {
+    "id": "common_praise_03",
+    "file": "/audio/common/common_praise_03.mp3",
+    "text": "You did it! I knew you could."
+  },
+  {
+    "id": "common_praise_04",
+    "file": "/audio/common/common_praise_04.mp3",
+    "text": "Nice thinking, pal."
+  },
+  {
+    "id": "common_praise_05",
+    "file": "/audio/common/common_praise_05.mp3",
+    "text": "That's another clue for the team."
+  },
+  {
+    "id": "common_praise_06",
+    "file": "/audio/common/common_praise_06.mp3",
+    "text": "Well done. You kept looking!"
+  },
+  {
+    "id": "common_praise_07",
+    "file": "/audio/common/common_praise_07.mp3",
+    "text": "Good work, detective."
+  },
+  {
+    "id": "common_praise_08",
+    "file": "/audio/common/common_praise_08.mp3",
+    "text": "You found it. High five!"
+  },
+  {
+    "id": "common_praise_09",
+    "file": "/audio/common/common_praise_09.mp3",
+    "text": "Excellent teamwork out there."
+  },
+  {
+    "id": "common_praise_10",
+    "file": "/audio/common/common_praise_10.mp3",
+    "text": "You made that look easy!"
+  },
+  {
+    "id": "common_retry_01",
+    "file": "/audio/common/common_retry_01.mp3",
+    "text": "Good try, pal. On to the next assignment."
+  },
+  {
+    "id": "common_retry_02",
+    "file": "/audio/common/common_retry_02.mp3",
+    "text": "Let's try another clue together."
+  },
+  {
+    "id": "common_retry_03",
+    "file": "/audio/common/common_retry_03.mp3",
+    "text": "That was a tricky one. Keep exploring."
+  },
+  {
+    "id": "common_retry_04",
+    "file": "/audio/common/common_retry_04.mp3",
+    "text": "Every try helps us learn."
+  },
+  {
+    "id": "common_retry_05",
+    "file": "/audio/common/common_retry_05.mp3",
+    "text": "Take a breath. We've got another clue."
+  },
+  {
+    "id": "common_retry_06",
+    "file": "/audio/common/common_retry_06.mp3",
+    "text": "Good effort, pal. Ready to try again?"
+  },
+  {
+    "id": "common_transition_01",
+    "file": "/audio/common/common_transition_01.mp3",
+    "text": "Time's up. Let's try a new assignment."
+  },
+  {
+    "id": "common_transition_02",
+    "file": "/audio/common/common_transition_02.mp3",
+    "text": "Stand by, pal. Another clue is coming."
+  },
+  {
+    "id": "common_transition_03",
+    "file": "/audio/common/common_transition_03.mp3",
+    "text": "Next clue coming in loud and clear."
+  },
+  {
+    "id": "common_transition_04",
+    "file": "/audio/common/common_transition_04.mp3",
+    "text": "Let's see what's next on the map."
+  },
+  {
+    "id": "common_transition_05",
+    "file": "/audio/common/common_transition_05.mp3",
+    "text": "Ready for a fresh assignment?"
+  },
+  {
+    "id": "common_transition_06",
+    "file": "/audio/common/common_transition_06.mp3",
+    "text": "Back to AIdos for the next clue."
+  },
+  {
+    "id": "common_recall_01",
+    "file": "/audio/common/common_recall_01.mp3",
+    "text": "Last time you tracked down objects for AIdos."
+  },
+  {
+    "id": "common_recall_02",
+    "file": "/audio/common/common_recall_02.mp3",
+    "text": "Last time you spotted clues on the road."
+  },
+  {
+    "id": "common_recall_03",
+    "file": "/audio/common/common_recall_03.mp3",
+    "text": "Last time you stayed on your safe spot."
+  },
+  {
+    "id": "common_recall_04",
+    "file": "/audio/common/common_recall_04.mp3",
+    "text": "Last time your team found a soft clue."
+  },
+  {
+    "id": "common_recall_05",
+    "file": "/audio/common/common_recall_05.mp3",
+    "text": "Last time you noticed colors on the road."
+  },
+  {
+    "id": "common_recall_06",
+    "file": "/audio/common/common_recall_06.mp3",
+    "text": "Last time you held still like a statue."
+  },
+  {
+    "id": "common_recall_07",
+    "file": "/audio/common/common_recall_07.mp3",
+    "text": "Last time you looked for shapes around base."
+  },
+  {
+    "id": "common_recall_08",
+    "file": "/audio/common/common_recall_08.mp3",
+    "text": "Last time you helped AIdos crack a clue."
+  },
+  {
+    "id": "common_outro_01",
+    "file": "/audio/common/common_outro_01.mp3",
+    "text": "Mission complete. Great work, agents!"
+  },
+  {
+    "id": "common_outro_02",
+    "file": "/audio/common/common_outro_02.mp3",
+    "text": "That's a wrap, team. Thanks for exploring!"
+  },
+  {
+    "id": "common_outro_03",
+    "file": "/audio/common/common_outro_03.mp3",
+    "text": "Base is signing off. You did a great job."
+  },
+  {
+    "id": "common_outro_04",
+    "file": "/audio/common/common_outro_04.mp3",
+    "text": "Mission complete. See you on the next adventure!"
+  },
+  {
+    "id": "common_intro_01",
+    "file": "/audio/common/common_intro_01.mp3",
+    "text": "Hey pal! Ready for your next mission?"
+  },
+  {
+    "id": "common_intro_02",
+    "file": "/audio/common/common_intro_02.mp3",
+    "text": "AIdos here. Let's explore together."
+  },
+  {
+    "id": "common_intro_03",
+    "file": "/audio/common/common_intro_03.mp3",
+    "text": "Hello, team. Your first clue is on the way."
+  },
+  {
+    "id": "common_setup_greeting",
+    "file": "/audio/common/common_setup_greeting.mp3",
+    "text": "Hey pal! Let's set up your adventure!"
+  },
+  {
+    "id": "hunt_task_sock_01",
+    "file": "/audio/hunt/hunt_task_sock_01.mp3",
+    "text": "Find a sock and a soft toy. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_pillow_02",
+    "file": "/audio/hunt/hunt_task_pillow_02.mp3",
+    "text": "Find a pillow and something blue. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_towel_03",
+    "file": "/audio/hunt/hunt_task_towel_03.mp3",
+    "text": "Find a towel and a paper napkin. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_book_04",
+    "file": "/audio/hunt/hunt_task_book_04.mp3",
+    "text": "Find a book and a soft cushion. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_yellow_05",
+    "file": "/audio/hunt/hunt_task_yellow_05.mp3",
+    "text": "Find something yellow and something soft. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_circle_06",
+    "file": "/audio/hunt/hunt_task_circle_06.mp3",
+    "text": "Find something round and a piece of paper. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_toy_07",
+    "file": "/audio/hunt/hunt_task_toy_07.mp3",
+    "text": "Find a toy animal and a sock. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_square_08",
+    "file": "/audio/hunt/hunt_task_square_08.mp3",
+    "text": "Find something square and something green. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_blanket_09",
+    "file": "/audio/hunt/hunt_task_blanket_09.mp3",
+    "text": "Find a blanket and something white. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_shirt_10",
+    "file": "/audio/hunt/hunt_task_shirt_10.mp3",
+    "text": "Find a shirt and something blue. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_box_11",
+    "file": "/audio/hunt/hunt_task_box_11.mp3",
+    "text": "Find a small empty box and a soft toy. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_ball_12",
+    "file": "/audio/hunt/hunt_task_ball_12.mp3",
+    "text": "Find a soft ball and a pillow. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_stripe_01",
+    "file": "/audio/hunt/hunt_task_stripe_01.mp3",
+    "text": "Find a striped sock and a shirt with a different pattern. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_zipper_02",
+    "file": "/audio/hunt/hunt_task_zipper_02.mp3",
+    "text": "Find something with a zipper and something with a button. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_red_03",
+    "file": "/audio/hunt/hunt_task_red_03.mp3",
+    "text": "Find one soft red object and one soft blue object. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_pair_04",
+    "file": "/audio/hunt/hunt_task_pair_04.mp3",
+    "text": "Find two socks that match. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_flat_05",
+    "file": "/audio/hunt/hunt_task_flat_05.mp3",
+    "text": "Find something flat, something soft, and something round. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_letter_06",
+    "file": "/audio/hunt/hunt_task_letter_06.mp3",
+    "text": "Find a book with a letter you recognize on its cover. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_shapes_07",
+    "file": "/audio/hunt/hunt_task_shapes_07.mp3",
+    "text": "Find something round, something square, and something blue. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_pattern_08",
+    "file": "/audio/hunt/hunt_task_pattern_08.mp3",
+    "text": "Find a towel and a shirt with different patterns. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_smooth_09",
+    "file": "/audio/hunt/hunt_task_smooth_09.mp3",
+    "text": "Find something smooth and something fuzzy. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_size_10",
+    "file": "/audio/hunt/hunt_task_size_10.mp3",
+    "text": "Find two soft toys of different sizes. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_colors_11",
+    "file": "/audio/hunt/hunt_task_colors_11.mp3",
+    "text": "Find three soft objects of different colors. Walk, don't run."
+  },
+  {
+    "id": "hunt_task_fold_12",
+    "file": "/audio/hunt/hunt_task_fold_12.mp3",
+    "text": "Find a piece of paper and a towel. Fold the towel in half. Walk, don't run."
+  },
+  {
+    "id": "roadtrip_task_red_car",
+    "file": "/audio/roadtrip/roadtrip_task_red_car.mp3",
+    "text": "Look outside for a red car."
+  },
+  {
+    "id": "roadtrip_task_yellow_sign",
+    "file": "/audio/roadtrip/roadtrip_task_yellow_sign.mp3",
+    "text": "See if you can spot a yellow sign."
+  },
+  {
+    "id": "roadtrip_task_white_truck",
+    "file": "/audio/roadtrip/roadtrip_task_white_truck.mp3",
+    "text": "Look for a white truck."
+  },
+  {
+    "id": "roadtrip_task_tall_tree",
+    "file": "/audio/roadtrip/roadtrip_task_tall_tree.mp3",
+    "text": "Spot a tree taller than the cars."
+  },
+  {
+    "id": "roadtrip_task_blue_sign",
+    "file": "/audio/roadtrip/roadtrip_task_blue_sign.mp3",
+    "text": "Look for a blue sign outside."
+  },
+  {
+    "id": "roadtrip_task_bridge",
+    "file": "/audio/roadtrip/roadtrip_task_bridge.mp3",
+    "text": "Can you see a bridge ahead?"
+  },
+  {
+    "id": "roadtrip_task_bus",
+    "file": "/audio/roadtrip/roadtrip_task_bus.mp3",
+    "text": "Spot a bus through the window."
+  },
+  {
+    "id": "roadtrip_task_cloud",
+    "file": "/audio/roadtrip/roadtrip_task_cloud.mp3",
+    "text": "Find a cloud that looks like something you know."
+  },
+  {
+    "id": "roadtrip_task_green_car",
+    "file": "/audio/roadtrip/roadtrip_task_green_car.mp3",
+    "text": "Look for a green car."
+  },
+  {
+    "id": "roadtrip_task_bike",
+    "file": "/audio/roadtrip/roadtrip_task_bike.mp3",
+    "text": "See if you can spot a bicycle."
+  },
+  {
+    "id": "roadtrip_task_brick",
+    "file": "/audio/roadtrip/roadtrip_task_brick.mp3",
+    "text": "Look for a building made of bricks."
+  },
+  {
+    "id": "roadtrip_task_four_doors",
+    "file": "/audio/roadtrip/roadtrip_task_four_doors.mp3",
+    "text": "Spot a car with four doors."
+  },
+  {
+    "id": "roadtrip_task_flag",
+    "file": "/audio/roadtrip/roadtrip_task_flag.mp3",
+    "text": "Look for a flag moving in the breeze."
+  },
+  {
+    "id": "roadtrip_task_round_sign",
+    "file": "/audio/roadtrip/roadtrip_task_round_sign.mp3",
+    "text": "Spot a round sign through the window."
+  },
+  {
+    "id": "lava_alert",
+    "file": "/audio/lava/lava_alert.mp3",
+    "text": "Lava alert! Stay on the floor. Walk to your safe spot."
+  },
+  {
+    "id": "lava_freeze_1",
+    "file": "/audio/lava/lava_freeze_1.mp3",
+    "text": "Keep both feet on the floor and freeze like a statue."
+  },
+  {
+    "id": "lava_freeze_2",
+    "file": "/audio/lava/lava_freeze_2.mp3",
+    "text": "Stand tall with both feet on the floor. Hold still."
+  },
+  {
+    "id": "lava_freeze_3",
+    "file": "/audio/lava/lava_freeze_3.mp3",
+    "text": "Keep your feet still and stretch your arms out gently."
+  },
+  {
+    "id": "lava_freeze_4",
+    "file": "/audio/lava/lava_freeze_4.mp3",
+    "text": "Keep both feet planted. Hold a tiny smile for five seconds."
+  },
+  {
+    "id": "lava_freeze_5",
+    "file": "/audio/lava/lava_freeze_5.mp3",
+    "text": "Stand on the floor and hold your hands like little wings."
+  },
+  {
+    "id": "lava_freeze_6",
+    "file": "/audio/lava/lava_freeze_6.mp3",
+    "text": "Stand with both feet on the floor. Look ahead and freeze."
+  },
+  {
+    "id": "lava_task_riddle_1",
+    "file": "/audio/lava/lava_task_riddle_1.mp3",
+    "text": "What gets wetter while it dries you?"
+  },
+  {
+    "id": "lava_task_riddle_2",
+    "file": "/audio/lava/lava_task_riddle_2.mp3",
+    "text": "What has hands and tells the time?"
+  },
+  {
+    "id": "lava_task_riddle_3",
+    "file": "/audio/lava/lava_task_riddle_3.mp3",
+    "text": "What has pages you can turn?"
+  },
+  {
+    "id": "lava_task_riddle_4",
+    "file": "/audio/lava/lava_task_riddle_4.mp3",
+    "text": "What falls from clouds in little drops?"
+  },
+  {
+    "id": "lava_task_riddle_5",
+    "file": "/audio/lava/lava_task_riddle_5.mp3",
+    "text": "What has stripes and looks like a horse?"
+  },
+  {
+    "id": "lava_task_riddle_6",
+    "file": "/audio/lava/lava_task_riddle_6.mp3",
+    "text": "What goes on your hand and keeps it warm?"
+  },
+  {
+    "id": "local_hunt_task_0",
+    "file": "/audio/hunt/local_hunt_task_0.mp3",
+    "text": "Find a sock and a soft toy. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_1",
+    "file": "/audio/hunt/local_hunt_task_1.mp3",
+    "text": "Find a pillow and something blue. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_2",
+    "file": "/audio/hunt/local_hunt_task_2.mp3",
+    "text": "Find a towel and a paper napkin. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_3",
+    "file": "/audio/hunt/local_hunt_task_3.mp3",
+    "text": "Find a book, a sock, and a cushion. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_4",
+    "file": "/audio/hunt/local_hunt_task_4.mp3",
+    "text": "Find something soft, something red, and something round. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_5",
+    "file": "/audio/hunt/local_hunt_task_5.mp3",
+    "text": "Find a paper napkin, a small toy, and a towel. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_6",
+    "file": "/audio/hunt/local_hunt_task_6.mp3",
+    "text": "Find two soft objects of different colors. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_7",
+    "file": "/audio/hunt/local_hunt_task_7.mp3",
+    "text": "Find a book and something striped. Walk, don't run."
+  },
+  {
+    "id": "local_hunt_task_8",
+    "file": "/audio/hunt/local_hunt_task_8.mp3",
+    "text": "Find something round, something square, and something blue. Walk, don't run."
+  },
+  {
+    "id": "local_roadtrip_task_0",
+    "file": "/audio/roadtrip/local_roadtrip_task_0.mp3",
+    "text": "Look outside for a red car."
+  },
+  {
+    "id": "local_roadtrip_task_1",
+    "file": "/audio/roadtrip/local_roadtrip_task_1.mp3",
+    "text": "See if you can spot a yellow sign."
+  },
+  {
+    "id": "local_roadtrip_task_2",
+    "file": "/audio/roadtrip/local_roadtrip_task_2.mp3",
+    "text": "Look for a white truck."
+  },
+  {
+    "id": "local_roadtrip_task_3",
+    "file": "/audio/roadtrip/local_roadtrip_task_3.mp3",
+    "text": "Spot a tree taller than the cars."
+  },
+  {
+    "id": "local_roadtrip_task_4",
+    "file": "/audio/roadtrip/local_roadtrip_task_4.mp3",
+    "text": "Look for a blue sign outside."
+  },
+  {
+    "id": "local_roadtrip_task_5",
+    "file": "/audio/roadtrip/local_roadtrip_task_5.mp3",
+    "text": "Can you see a bridge ahead?"
+  },
+  {
+    "id": "local_hunt_intro",
+    "file": "/audio/hunt/local_hunt_intro.mp3",
+    "text": "Hey pal! Find the clues close by. Walk, don't run."
+  },
+  {
+    "id": "local_roadtrip_intro",
+    "file": "/audio/roadtrip/local_roadtrip_intro.mp3",
+    "text": "Keep your seat belt on. Look outside and spot clues together."
+  },
+  {
+    "id": "local_lava_intro",
+    "file": "/audio/lava/local_lava_intro.mp3",
+    "text": "Walk to your safe spot. Keep both feet on the floor."
+  },
+  {
+    "id": "local_hunt_recall",
+    "file": "/audio/hunt/local_hunt_recall.mp3",
+    "text": "Last time you tracked down objects for AIdos."
+  },
+  {
+    "id": "local_roadtrip_recall",
+    "file": "/audio/roadtrip/local_roadtrip_recall.mp3",
+    "text": "Last time you spotted clues on the road."
+  },
+  {
+    "id": "local_lava_recall",
+    "file": "/audio/lava/local_lava_recall.mp3",
+    "text": "Last time you stayed on your safe spot."
+  },
+  {
+    "id": "local_lava_countdown",
+    "file": "/audio/lava/local_lava_countdown.mp3",
+    "text": "Lava alert! Walk to your safe spot. Keep both feet on the floor."
+  },
+  {
+    "id": "local_outro",
+    "file": "/audio/common/local_outro.mp3",
+    "text": "Mission complete. Great work, agents!"
+  },
+  {
+    "id": "local_time_up",
+    "file": "/audio/common/local_time_up.mp3",
+    "text": "Time's up. Let's try a new assignment."
+  },
+  {
+    "id": "local_try_again",
+    "file": "/audio/common/local_try_again.mp3",
+    "text": "Good try, pal. On to the next assignment."
+  },
+  {
+    "id": "local_praise_found",
+    "file": "/audio/common/local_praise_found.mp3",
+    "text": "Nicely spotted, pal!"
+  },
+  {
+    "id": "local_praise_radio",
+    "file": "/audio/common/local_praise_radio.mp3",
+    "text": "AIdos copies. Great work!"
+  },
+  {
+    "id": "local_praise_next",
+    "file": "/audio/common/local_praise_next.mp3",
+    "text": "Great job, pal! Ready for the next one?"
+  },
+  {
+    "id": "local_lava_freeze_line",
+    "file": "/audio/lava/local_lava_freeze_line.mp3",
+    "text": "Freeze like a statue. Keep both feet on the floor."
+  },
+  {
+    "id": "local_lava_riddle_line_1",
+    "file": "/audio/lava/local_lava_riddle_line_1.mp3",
+    "text": "What gets wetter while it dries you?"
+  },
+  {
+    "id": "local_lava_riddle_line_2",
+    "file": "/audio/lava/local_lava_riddle_line_2.mp3",
+    "text": "What has hands and tells the time?"
+  },
+  {
+    "id": "quiz_color-apple",
+    "file": "/audio/quiz/quiz_color-apple.mp3",
+    "text": "Which color matches this apple?"
+  },
+  {
+    "id": "quiz_color-banana",
+    "file": "/audio/quiz/quiz_color-banana.mp3",
+    "text": "Which color matches this banana?"
+  },
+  {
+    "id": "quiz_shape-round",
+    "file": "/audio/quiz/quiz_shape-round.mp3",
+    "text": "Which shape is round?"
+  },
+  {
+    "id": "quiz_shape-three",
+    "file": "/audio/quiz/quiz_shape-three.mp3",
+    "text": "Which shape has three sides?"
+  },
+  {
+    "id": "quiz_animal-meow",
+    "file": "/audio/quiz/quiz_animal-meow.mp3",
+    "text": "Which animal says meow?"
+  },
+  {
+    "id": "quiz_animal-quack",
+    "file": "/audio/quiz/quiz_animal-quack.mp3",
+    "text": "Which animal says quack?"
+  },
+  {
+    "id": "quiz_count-stars",
+    "file": "/audio/quiz/quiz_count-stars.mp3",
+    "text": "Count the stars. How many do you see?"
+  },
+  {
+    "id": "quiz_count-fingers",
+    "file": "/audio/quiz/quiz_count-fingers.mp3",
+    "text": "How many fingers on one hand, including your thumb?"
+  },
+  {
+    "id": "quiz_animal-sounds-cow",
+    "file": "/audio/quiz/quiz_animal-sounds-cow.mp3",
+    "text": "What does the cow say?"
+  },
+  {
+    "id": "quiz_animal-sounds-duck",
+    "file": "/audio/quiz/quiz_animal-sounds-duck.mp3",
+    "text": "What does the duck say?"
+  },
+  {
+    "id": "quiz_animal-sounds-cat",
+    "file": "/audio/quiz/quiz_animal-sounds-cat.mp3",
+    "text": "What does the cat say?"
+  },
+  {
+    "id": "voice_1246afecdc6a3b9a",
+    "text": "Which color of sunlight scatters more and makes the daytime sky look blue?",
+    "file": "/audio/unified/voice_1246afecdc6a3b9a.mp3"
+  },
+  {
+    "id": "voice_9b974b3e70347d19",
+    "text": "Which star is closest to Earth?",
+    "file": "/audio/unified/voice_9b974b3e70347d19.mp3"
+  },
+  {
+    "id": "voice_a8341e185b99d3b9",
+    "text": "What lights up the Moon?",
+    "file": "/audio/unified/voice_a8341e185b99d3b9.mp3"
+  },
+  {
+    "id": "voice_c6409ed64f68b9a9",
+    "text": "What makes day turn into night?",
+    "file": "/audio/unified/voice_c6409ed64f68b9a9.mp3"
+  },
+  {
+    "id": "voice_37cda617c3375b9a",
+    "text": "Which part of a plant takes in water from the soil?",
+    "file": "/audio/unified/voice_37cda617c3375b9a.mp3"
+  },
+  {
+    "id": "voice_0922f78e1ce26ca8",
+    "text": "What are most clouds made of?",
+    "file": "/audio/unified/voice_0922f78e1ce26ca8.mp3"
+  },
+  {
+    "id": "voice_90b81693967ff28e",
+    "text": "What does water become when it freezes?",
+    "file": "/audio/unified/voice_90b81693967ff28e.mp3"
+  },
+  {
+    "id": "voice_ff5edd5a1919fcb7",
+    "text": "What helps a green plant make its food?",
+    "file": "/audio/unified/voice_ff5edd5a1919fcb7.mp3"
+  },
+  {
+    "id": "voice_7f15ff2a4bc7cc16",
+    "text": "What carries most sounds from across a room to your ears?",
+    "file": "/audio/unified/voice_7f15ff2a4bc7cc16.mp3"
+  },
+  {
+    "id": "voice_2a2eb85027e142d9",
+    "text": "What do we call a sound that bounces back to us?",
+    "file": "/audio/unified/voice_2a2eb85027e142d9.mp3"
+  },
+  {
+    "id": "voice_b5392f62113b434d",
+    "text": "What pumps blood around your body?",
+    "file": "/audio/unified/voice_b5392f62113b434d.mp3"
+  },
+  {
+    "id": "voice_b0aee4912dd6859e",
+    "text": "What helps a fish get oxygen from water?",
+    "file": "/audio/unified/voice_b0aee4912dd6859e.mp3"
+  },
+  {
+    "id": "voice_bca5aed2e60a0812",
+    "text": "What can a caterpillar grow into?",
+    "file": "/audio/unified/voice_bca5aed2e60a0812.mp3"
+  },
+  {
+    "id": "voice_eac8c9a440fb509f",
+    "text": "What does a bird move to push air down and fly?",
+    "file": "/audio/unified/voice_eac8c9a440fb509f.mp3"
+  },
+  {
+    "id": "voice_f4892c519ae7bf2d",
+    "text": "Where does water from a drying puddle go?",
+    "file": "/audio/unified/voice_f4892c519ae7bf2d.mp3"
+  },
+  {
+    "id": "voice_2c2fd3add3e42cd6",
+    "text": "What pulls a dropped ball toward Earth?",
+    "file": "/audio/unified/voice_2c2fd3add3e42cd6.mp3"
+  },
+  {
+    "id": "voice_808957d772415aff",
+    "text": "Sunlight has many colors, like a rainbow. Tiny bits of air scatter blue light in all directions, so the sky looks blue.",
+    "file": "/audio/unified/voice_808957d772415aff.mp3"
+  },
+  {
+    "id": "voice_53baacb915c1e217",
+    "text": "Grass has a green helper called chlorophyll that catches sunlight. Think of each blade as a little solar panel that helps the grass make food.",
+    "file": "/audio/unified/voice_53baacb915c1e217.mp3"
+  },
+  {
+    "id": "voice_6133ce60d83b5d12",
+    "text": "Sleep gives your body time to rest and your brain time to sort what you learned. It is a bit like putting your toys back in their boxes after playing.",
+    "file": "/audio/unified/voice_6133ce60d83b5d12.mp3"
+  },
+  {
+    "id": "voice_bddcaf12b22da1c2",
+    "text": "Rivers carry tiny bits of salt from rocks into the sea. When water rises into the air, the salt stays behind, a little like salt left in a bowl after water dries.",
+    "file": "/audio/unified/voice_bddcaf12b22da1c2.mp3"
+  },
+  {
+    "id": "voice_27207c6baeb48f36",
+    "text": "Clouds are full of tiny drops of water that bump together and grow. When they get heavy enough, they fall like drops from a wet sponge.",
+    "file": "/audio/unified/voice_27207c6baeb48f36.mp3"
+  },
+  {
+    "id": "voice_4088884c4b8ab522",
+    "text": "Stars are huge balls of hot gas that make their own light. They look like tiny lights because most are very far away. The Sun is our closest star.",
+    "file": "/audio/unified/voice_4088884c4b8ab522.mp3"
+  },
+  {
+    "id": "voice_e302bb35175e9a7e",
+    "text": "The Moon shines because sunlight bounces off its surface. Think of it like a ball lit by a flashlight.",
+    "file": "/audio/unified/voice_e302bb35175e9a7e.mp3"
+  },
+  {
+    "id": "voice_04c0580bd0257a02",
+    "text": "Earth spins like a top. When your part faces the Sun it is day, and when it turns away it is night.",
+    "file": "/audio/unified/voice_04c0580bd0257a02.mp3"
+  },
+  {
+    "id": "voice_02e6c2e9649e2ca1",
+    "text": "Plants use sunlight, air, and water to make food and grow. Their roots take in water like little drinking straws.",
+    "file": "/audio/unified/voice_02e6c2e9649e2ca1.mp3"
+  },
+  {
+    "id": "voice_e3cf049fecf4ced9",
+    "text": "Clouds are made of tiny drops of water or bits of ice. A cloud is a little like fog floating high above the ground.",
+    "file": "/audio/unified/voice_e3cf049fecf4ced9.mp3"
+  },
+  {
+    "id": "voice_fab2fa6148a46799",
+    "text": "When water gets cold enough, its tiny pieces slow down and lock together to make ice. Think of loose building blocks snapping into a solid shape.",
+    "file": "/audio/unified/voice_fab2fa6148a46799.mp3"
+  },
+  {
+    "id": "voice_3ac791f6ff38b949",
+    "text": "When sunlight passes through raindrops, the drops spread its colors out. Each drop is a bit like a tiny piece of shiny glass.",
+    "file": "/audio/unified/voice_3ac791f6ff38b949.mp3"
+  },
+  {
+    "id": "voice_2dd20db2b8c3342f",
+    "text": "Dogs let heat out when they pant. Moving air over their wet tongues cools them a little, like a breeze on damp skin.",
+    "file": "/audio/unified/voice_2dd20db2b8c3342f.mp3"
+  },
+  {
+    "id": "voice_7402736cebec4e21",
+    "text": "A cat makes a purr by moving parts in its throat as it breathes. Cats often purr when relaxed, a little like a quiet motor.",
+    "file": "/audio/unified/voice_7402736cebec4e21.mp3"
+  },
+  {
+    "id": "voice_23429839ff570f19",
+    "text": "Birds push air down with their wings, and the air pushes the birds up. You can think of their wings as paddles that push against the air.",
+    "file": "/audio/unified/voice_23429839ff570f19.mp3"
+  },
+  {
+    "id": "voice_6d07049b42af90bf",
+    "text": "Fish pass water over their gills, which pick up oxygen from the water. Gills do a job a little like your lungs, but in water.",
+    "file": "/audio/unified/voice_6d07049b42af90bf.mp3"
+  },
+  {
+    "id": "voice_7a793a257220d30c",
+    "text": "Bees can make a buzz by moving their wings very fast. The quick movements shake the air, like a tiny drum beating very quickly.",
+    "file": "/audio/unified/voice_7a793a257220d30c.mp3"
+  },
+  {
+    "id": "voice_7d35bf26effc9e4c",
+    "text": "A caterpillar changes inside a shell called a chrysalis. When that change is done, a butterfly comes out with wings.",
+    "file": "/audio/unified/voice_7d35bf26effc9e4c.mp3"
+  },
+  {
+    "id": "voice_95794c733c11ffd6",
+    "text": "Your heart squeezes to push blood through your body. It works like a little pump that keeps moving while you work, play, or sleep.",
+    "file": "/audio/unified/voice_95794c733c11ffd6.mp3"
+  },
+  {
+    "id": "voice_121324832ffdd0ad",
+    "text": "Your bones hold your body up and protect parts inside you. Together, they make a frame a bit like the beams that hold up a house.",
+    "file": "/audio/unified/voice_121324832ffdd0ad.mp3"
+  },
+  {
+    "id": "voice_9c53f856ba78fe7c",
+    "text": "Sound makes the air wiggle, and those wiggles move a thin part inside your ear. Your ear and brain work together to tell you what made the sound.",
+    "file": "/audio/unified/voice_9c53f856ba78fe7c.mp3"
+  },
+  {
+    "id": "voice_c8ba5d4c516266d8",
+    "text": "An echo happens when sound bounces off something and comes back to you. It is like rolling a ball toward a wall and watching it bounce back.",
+    "file": "/audio/unified/voice_c8ba5d4c516266d8.mp3"
+  },
+  {
+    "id": "voice_f9d5aeff22fdd6fc",
+    "text": "A sneeze is a quick blast of air that can clear dust from your nose. It is like your nose’s own little cleaning puff.",
+    "file": "/audio/unified/voice_f9d5aeff22fdd6fc.mp3"
+  },
+  {
+    "id": "voice_4afb9b98befdf54d",
+    "text": "Lightning heats the air around it very quickly. That air pushes outward, making the loud sound we call thunder.",
+    "file": "/audio/unified/voice_4afb9b98befdf54d.mp3"
+  },
+  {
+    "id": "voice_a37e3a3ef3ea89f3",
+    "text": "Snow starts as tiny bits of ice inside clouds. More ice sticks to them as they grow, like little building blocks making a pattern.",
+    "file": "/audio/unified/voice_a37e3a3ef3ea89f3.mp3"
+  },
+  {
+    "id": "voice_4d781a43e9e5f432",
+    "text": "Sunlight warms some places more than others. Air moves as warmer air rises, and that moving air is wind.",
+    "file": "/audio/unified/voice_4d781a43e9e5f432.mp3"
+  },
+  {
+    "id": "voice_ee1f7d3a6cf94d7a",
+    "text": "Water in a puddle can turn into a gas and mix with the air. That is why a puddle grows smaller like wet clothes drying on a line.",
+    "file": "/audio/unified/voice_ee1f7d3a6cf94d7a.mp3"
+  },
+  {
+    "id": "voice_99cdf34649336893",
+    "text": "A candle flame gets its fuel from melted wax that moves up the wick. The wick is like a tiny straw that brings wax to the flame.",
+    "file": "/audio/unified/voice_99cdf34649336893.mp3"
+  },
+  {
+    "id": "voice_2ee93125261759fd",
+    "text": "Saturn’s rings are made of many pieces of ice and rock moving around the planet. From far away, those pieces look like wide, bright bands.",
+    "file": "/audio/unified/voice_2ee93125261759fd.mp3"
+  },
+  {
+    "id": "voice_ca3bb7992b6430cb",
+    "text": "Gravity pulls things toward Earth. It is like an invisible tug that keeps your feet on the ground and brings a dropped ball back down.",
+    "file": "/audio/unified/voice_ca3bb7992b6430cb.mp3"
+  },
+  {
+    "id": "voice_be36cd625e17d1bf",
+    "text": "The hero wears a round green mask with two very big goggles.",
+    "file": "/audio/unified/voice_be36cd625e17d1bf.mp3"
+  },
+  {
+    "id": "voice_161a4db5538a4c25",
+    "text": "Under the goggles there is a wide, happy smile.",
+    "file": "/audio/unified/voice_161a4db5538a4c25.mp3"
+  },
+  {
+    "id": "voice_2af0ab794fd44d01",
+    "text": "The suit is green, with a bright yellow stripe across the chest.",
+    "file": "/audio/unified/voice_2af0ab794fd44d01.mp3"
+  },
+  {
+    "id": "voice_4069dffd3619dd02",
+    "text": "Each hand has four fingers, and every fingertip is a big round sticky dot.",
+    "file": "/audio/unified/voice_4069dffd3619dd02.mp3"
+  },
+  {
+    "id": "voice_d281e4a7c749d8c6",
+    "text": "A short yellow cape flutters behind the hero.",
+    "file": "/audio/unified/voice_d281e4a7c749d8c6.mp3"
+  },
+  {
+    "id": "voice_e8e7eb266acae122",
+    "text": "A long curly tail swings from the back, with a little star at the tip.",
+    "file": "/audio/unified/voice_e8e7eb266acae122.mp3"
+  },
+  {
+    "id": "voice_3557ae99fa02f821",
+    "text": "Child. Children come in many heights, so this explorer is just one example.",
+    "file": "/audio/unified/voice_3557ae99fa02f821.mp3"
+  },
+  {
+    "id": "voice_b4a5d9db707f5978",
+    "text": "Blue whale. The biggest animal on Earth eats tiny creatures called krill.",
+    "file": "/audio/unified/voice_b4a5d9db707f5978.mp3"
+  },
+  {
+    "id": "voice_173a684de2800e20",
+    "text": "Mount Everest. Everest's snowy peak is the highest spot above sea level on Earth.",
+    "file": "/audio/unified/voice_173a684de2800e20.mp3"
+  },
+  {
+    "id": "voice_1e43c451c563e308",
+    "text": "Moon. The Moon looks bright because it reflects light from the Sun.",
+    "file": "/audio/unified/voice_1e43c451c563e308.mp3"
+  },
+  {
+    "id": "voice_4f71cb60f6c4b9a9",
+    "text": "Earth. Oceans cover most of Earth, giving our home its blue color from space.",
+    "file": "/audio/unified/voice_4f71cb60f6c4b9a9.mp3"
+  },
+  {
+    "id": "voice_2cae80848e5f1442",
+    "text": "Jupiter. Jupiter's Great Red Spot is a giant storm.",
+    "file": "/audio/unified/voice_2cae80848e5f1442.mp3"
+  },
+  {
+    "id": "voice_03f89d431000c501",
+    "text": "Sun. Sunlight takes about eight minutes to reach Earth.",
+    "file": "/audio/unified/voice_03f89d431000c501.mp3"
+  },
+  {
+    "id": "voice_c1b66badb14ab9c0",
+    "text": "Betelgeuse. This reddish star is part of a group of stars we call Orion.",
+    "file": "/audio/unified/voice_c1b66badb14ab9c0.mp3"
+  },
+  {
+    "id": "voice_279630fa56e0bedf",
+    "text": "Let us clap our hands together! Clap, clap, clap!",
+    "file": "/audio/unified/voice_279630fa56e0bedf.mp3"
+  },
+  {
+    "id": "voice_f293f2b0d949a711",
+    "text": "Super clapping!",
+    "file": "/audio/unified/voice_f293f2b0d949a711.mp3"
+  },
+  {
+    "id": "voice_c65d2f21fcf5bbd3",
+    "text": "Peek-a-boo! I see you! Wave your hand!",
+    "file": "/audio/unified/voice_c65d2f21fcf5bbd3.mp3"
+  },
+  {
+    "id": "voice_f704e36eb47cfe22",
+    "text": "Peek-a-boo! You are so fast!",
+    "file": "/audio/unified/voice_f704e36eb47cfe22.mp3"
+  },
+  {
+    "id": "voice_16c07eb389f160ee",
+    "text": "Look, a friendly cow! What does the cow say? Moooo!",
+    "file": "/audio/unified/voice_16c07eb389f160ee.mp3"
+  },
+  {
+    "id": "voice_cfb4af2e89caaf93",
+    "text": "Moooo! Amazing job!",
+    "file": "/audio/unified/voice_cfb4af2e89caaf93.mp3"
+  },
+  {
+    "id": "voice_c43d4f87ef50db6b",
+    "text": "Look, a cow! The cow says moo, moo!",
+    "file": "/audio/unified/voice_c43d4f87ef50db6b.mp3"
+  },
+  {
+    "id": "voice_4a9be67925584e43",
+    "text": "Look, a cat! The cat says meow, meow!",
+    "file": "/audio/unified/voice_4a9be67925584e43.mp3"
+  },
+  {
+    "id": "voice_f4deea3cf7343321",
+    "text": "Look, a dog! The dog says woof, woof!",
+    "file": "/audio/unified/voice_f4deea3cf7343321.mp3"
+  },
+  {
+    "id": "voice_00af00cd54784212",
+    "text": "Yes! 1 balloons! Great counting!",
+    "file": "/audio/unified/voice_00af00cd54784212.mp3"
+  },
+  {
+    "id": "voice_d130b1f71b06f928",
+    "text": "Close! There were 1. Next one!",
+    "file": "/audio/unified/voice_d130b1f71b06f928.mp3"
+  },
+  {
+    "id": "voice_d38e0702301d50d3",
+    "text": "Yes! 2 balloons! Great counting!",
+    "file": "/audio/unified/voice_d38e0702301d50d3.mp3"
+  },
+  {
+    "id": "voice_2432c65cde2df9b5",
+    "text": "Close! There were 2. Next one!",
+    "file": "/audio/unified/voice_2432c65cde2df9b5.mp3"
+  },
+  {
+    "id": "voice_f0f3e2d23569f34e",
+    "text": "Yes! 3 balloons! Great counting!",
+    "file": "/audio/unified/voice_f0f3e2d23569f34e.mp3"
+  },
+  {
+    "id": "voice_dcbe914230a97b82",
+    "text": "Close! There were 3. Next one!",
+    "file": "/audio/unified/voice_dcbe914230a97b82.mp3"
+  },
+  {
+    "id": "voice_81003873274a17e3",
+    "text": "Yes! 4 balloons! Great counting!",
+    "file": "/audio/unified/voice_81003873274a17e3.mp3"
+  },
+  {
+    "id": "voice_05b8f424408aeee7",
+    "text": "Close! There were 4. Next one!",
+    "file": "/audio/unified/voice_05b8f424408aeee7.mp3"
+  },
+  {
+    "id": "voice_bb946ad31a21a6d1",
+    "text": "Yes! 5 balloons! Great counting!",
+    "file": "/audio/unified/voice_bb946ad31a21a6d1.mp3"
+  },
+  {
+    "id": "voice_1cf9d36dbde77371",
+    "text": "Close! There were 5. Next one!",
+    "file": "/audio/unified/voice_1cf9d36dbde77371.mp3"
+  },
+  {
+    "id": "voice_ff516f8962f5b277",
+    "text": "Yes! 6 balloons! Great counting!",
+    "file": "/audio/unified/voice_ff516f8962f5b277.mp3"
+  },
+  {
+    "id": "voice_1eae952512ca2888",
+    "text": "Close! There were 6. Next one!",
+    "file": "/audio/unified/voice_1eae952512ca2888.mp3"
+  },
+  {
+    "id": "voice_87816aa1f3e87d51",
+    "text": "Yes! 7 balloons! Great counting!",
+    "file": "/audio/unified/voice_87816aa1f3e87d51.mp3"
+  },
+  {
+    "id": "voice_feaaa27107dcf281",
+    "text": "Close! There were 7. Next one!",
+    "file": "/audio/unified/voice_feaaa27107dcf281.mp3"
+  },
+  {
+    "id": "voice_e1459d9fd8cbd4a0",
+    "text": "Yes! 8 balloons! Great counting!",
+    "file": "/audio/unified/voice_e1459d9fd8cbd4a0.mp3"
+  },
+  {
+    "id": "voice_0b6a1bed6f6aca8a",
+    "text": "Close! There were 8. Next one!",
+    "file": "/audio/unified/voice_0b6a1bed6f6aca8a.mp3"
+  },
+  {
+    "id": "voice_89a2e30fd10b4d86",
+    "text": "Yes! 9 balloons! Great counting!",
+    "file": "/audio/unified/voice_89a2e30fd10b4d86.mp3"
+  },
+  {
+    "id": "voice_6bb643b9c3436525",
+    "text": "Close! There were 9. Next one!",
+    "file": "/audio/unified/voice_6bb643b9c3436525.mp3"
+  },
+  {
+    "id": "voice_b84cd20a83eebb45",
+    "text": "Yes! 10 balloons! Great counting!",
+    "file": "/audio/unified/voice_b84cd20a83eebb45.mp3"
+  },
+  {
+    "id": "voice_ac3a32963f20abb9",
+    "text": "Close! There were 10. Next one!",
+    "file": "/audio/unified/voice_ac3a32963f20abb9.mp3"
+  },
+  {
+    "id": "voice_4be9e8aa0a9eb715",
+    "text": "Count the balloons!",
+    "file": "/audio/unified/voice_4be9e8aa0a9eb715.mp3"
+  },
+  {
+    "id": "voice_7642dd736944280b",
+    "text": "Two more minutes, pal!",
+    "file": "/audio/unified/voice_7642dd736944280b.mp3"
+  },
+  {
+    "id": "voice_7872f40816d7c8ce",
+    "text": "Let's ask a grown-up! We can explore animals or space together.",
+    "file": "/audio/unified/voice_7872f40816d7c8ce.mp3"
+  },
+  {
+    "id": "voice_9aecca2e184ab778",
+    "text": "Great question! Let's ask a grown-up and find out together.",
+    "file": "/audio/unified/voice_9aecca2e184ab778.mp3"
+  },
+  {
+    "id": "voice_b5814a340c66d554",
+    "text": "I didn't hear that, try again!",
+    "file": "/audio/unified/voice_b5814a340c66d554.mp3"
+  },
+  {
+    "id": "voice_2533155913101cf6",
+    "text": "Let's take a little break and try again soon!",
+    "file": "/audio/unified/voice_2533155913101cf6.mp3"
+  }
+]

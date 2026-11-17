@@ -4,6 +4,7 @@ import { bodyLimit } from "hono/body-limit";
 
 import { ask } from "./ask";
 import { setup } from "./setup";
+import { voice } from "./voice";
 import { chooseTurn } from "./groq";
 import { maxWavBytes, recognizeSpeech, validWav } from "./stt";
 import { isTurnRequest } from "./turn-contract";
@@ -48,7 +49,7 @@ app.use("/api/*", async (c,next) => {
  }
  await next();
 });
-app.route("/",ask); app.route("/",setup);
+app.route("/",ask); app.route("/",setup); app.route("/",voice);
 app.get("/api/health", (c) => c.json({ ok: true, time: new Date().toISOString() }));
 
 app.post("/api/stt", bodyLimit({
