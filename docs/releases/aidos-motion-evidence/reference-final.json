@@ -1,0 +1,14 @@
+[
+  {
+    "path": "content/voice/host-approved.mp3",
+    "transcript": " First mission, find something soft and blue. Ready? Go! Great job!  The sky looks blue because tiny bits of air scatter blue light all around."
+  },
+  {
+    "path": "content/voice/host-reference.wav",
+    "transcript": " For first mission, find something soft and blue.  Ready?  Go!  Great job!  The sky looks blue because tiny bits of air scatter blue light all around."
+  },
+  {
+    "path": "public/voice/host-reference-aidos.mp3",
+    "transcript": " First mission, find something soft and blue. Ready? Go! Great job!  The sky looks blue because tiny bits of air scatter blue light all around."
+  }
+]

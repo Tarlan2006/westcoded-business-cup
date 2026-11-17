@@ -1,4 +1,4 @@
-# Connect Space Scale to MyPal
+# Connect Space Scale to AIdos
 
 The module can run via `dev/space-preview.html`. Follow these steps when adding it to the production app.
 

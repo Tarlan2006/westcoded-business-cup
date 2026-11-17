@@ -1,5 +1,11 @@
 # Deployment
 
+## AIdos motion release — 2026-11-17
+
+This release adds speech-driven mouth keyframes and stable mascot frames, updates installation branding, and removes obsolete public mascot/voice-reference assets. See [host audit](releases/aidos-motion-2026-11-17.md). Publish through the existing main → Cloudflare Builds connection for **https://aidos.nexcel.kz**; no secret changes are required.
+
+The previous successful release is source `4140852403f384596596b53cfa7d23c49cec37f2`, Cloudflare version prefix `3a2f39ed`. To undo this release, select that successful deployment in Worker `westcoded-business-cup` → Deployments → Rollback, verify the domain, then revert the motion commit in Git before another push. Do not reset main or change secrets. A rollback restores the previous static host and old voice-reference URL.
+
 ## Current target — AIdos, 2026-11-17
 
 The production site is **https://aidos.nexcel.kz**, served by Worker **westcoded-business-cup** in the Cloudflare account that owns **nexcel.kz**. The old `mypal.tarlan-b06.workers.dev` address is retired/unavailable; its 404 is not a failure of the new custom domain. Records below this section describe historical deployments.

@@ -1,4 +1,5 @@
 import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
+import { changeVoicePlayback, setSpeechMeter } from "./speechMotion";
 type SoundEffect = "siren" | "tick" | "radio" | "fanfare" | "whoosh";
 
 const effects: Record<SoundEffect, { tones: number[]; length: number; wave: OscillatorType }> = {
@@ -41,6 +42,14 @@ function audioGraph(): AudioGraph {
   const effects = context.createGain();
   const analyser = context.createAnalyser();
   analyser.fftSize = 256;
+  const waveform = new Uint8Array(analyser.fftSize);
+  setSpeechMeter(() => {
+    if (context.state !== 'running') return 0;
+    analyser.getByteTimeDomainData(waveform);
+    let energy = 0;
+    for (const value of waveform) energy += ((value - 128) / 128) ** 2;
+    return Math.min(1, Math.sqrt(energy / waveform.length) * 9);
+  });
   ambience.gain.value = 0;
   effects.gain.value = 0.075;
   speech.connect(analyser).connect(context.destination);
@@ -194,7 +203,7 @@ async function ready(graph: AudioGraph) {
   if (!resumed) throw new Error("Audio is suspended.");
 }
 
-function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: AudioNode = graph.speech): Promise<void> {
+function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: AudioNode = graph.speech, voice = true): Promise<void> {
   return new Promise((resolve) => {
     const source = graph.context.createBufferSource();
     source.buffer = buffer;
@@ -205,7 +214,11 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
       finish();
     };
     const timeout = window.setTimeout(stop, buffer.duration * 1000 / rate + 700);
+    let finished = false;
     function finish() {
+      if (finished) return;
+      finished = true;
+      if (voice) changeVoicePlayback('recorded', -1);
       window.clearTimeout(timeout);
       if (stopCurrentClip === stop) stopCurrentClip = undefined;
       source.disconnect();
@@ -214,6 +227,7 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
     stopCurrentClip = stop;
     source.onended = finish;
     source.start();
+    if (voice) changeVoicePlayback('recorded', 1);
   });
 }
 
@@ -266,7 +280,7 @@ export function playSound(path: string): Promise<void> {
     if (generation !== playbackGeneration) return;
     changeSpeech(1);
     try {
-      await playBuffer(output, buffer, 1, output.context.destination);
+      await playBuffer(output, buffer, 1, output.context.destination, false);
     } finally {
       changeSpeech(-1);
     }
@@ -381,7 +395,7 @@ function changeSpeech(delta: number) {
 // The reference already carries the +3 semitone pitch and the slower pace.
 // Temperature 0.3 (library default 0.7) keeps the same pitch and intonation but
 // halves the sudden jumps into a squeak (patches/pocket-tts-js+0.1.0.patch).
-const hostVoice = { reference: "/voice/host-reference.mp3", language: "english_2026-04", temperature: 0.3 };
+const hostVoice = { reference: "/voice/host-reference-aidos.mp3", language: "english_2026-04", temperature: 0.3 };
 
 type PocketModule = typeof import("pocket-tts-js");
 let hostTts: InstanceType<PocketModule["PocketTTS"]> | undefined;
@@ -518,6 +532,10 @@ function speakBrowser(text: string): Promise<void> {
   return new Promise<void>((resolve) => {
     changeSpeech(1);
     let done = false;
+    let talking = false;
+    const stopMouth = () => {
+      if (talking) { talking = false; changeVoicePlayback('browser', -1); }
+    };
     const stop = () => {
       window.speechSynthesis.cancel();
       finish();
@@ -527,6 +545,7 @@ function speakBrowser(text: string): Promise<void> {
     function finish() {
       if (done) return;
       done = true;
+      stopMouth();
       window.clearTimeout(timeout);
       if (stopCurrentSpeech === stop) stopCurrentSpeech = undefined;
       changeSpeech(-1);
@@ -534,8 +553,11 @@ function speakBrowser(text: string): Promise<void> {
     }
     const last = utterances[utterances.length - 1];
     for (const utterance of utterances) {
+      utterance.onstart = () => {
+        if (!done && !talking) { talking = true; changeVoicePlayback('browser', 1); }
+      };
       utterance.onerror = finish;
-      if (utterance === last) utterance.onend = finish;
+      utterance.onend = () => { stopMouth(); if (utterance === last) finish(); };
     }
     try {
       for (const utterance of utterances) window.speechSynthesis.speak(utterance);

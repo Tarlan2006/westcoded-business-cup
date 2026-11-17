@@ -1,10 +1,10 @@
 {
-  "name": "Mission Control host (final)",
+  "name": "AIdos host",
   "approved": "2026-11-14",
   "engine": "OmniVoice (k2-fsa/OmniVoice, Apache-2.0)",
   "howToReproduce": "Zero-shot clone: generate(text, ref_audio=host-reference.wav, ref_text=referenceText), then apply post.",
   "reference": "host-reference.wav",
-  "referenceText": "Hi, agent! Mission Control here. Your first mission: find something soft and blue. Ready? Go! ... Great job! The sky looks blue because tiny bits of air scatter blue light all around.",
+  "referenceText": "Your first mission: find something soft and blue. Ready? Go! Great job! The sky looks blue because tiny bits of air scatter blue light all around.",
   "designedWith": "female, teenager, high pitch, american accent",
   "language": "English",
   "post": {
@@ -16,9 +16,11 @@
   "approvedSample": "host-approved.mp3",
   "runtime": {
     "engine": "Kyutai Pocket TTS in the browser (pocket-tts-js, INT8 ONNX, CC-BY-4.0)",
-    "cloneReference": "public/voice/host-reference.mp3 (0.3–8.6 s of host-approved.mp3, already +3 semitones and x0.85)",
+    "cloneReference": "public/voice/host-reference-aidos.mp3 (neutral excerpt of the approved sample, already +3 semitones and x0.85)",
     "code": "src/audio/engine.ts → hostVoice",
     "temperature": 0.3,
     "note": "Library default 0.7 gives squeaky pitch jumps (8% of voiced frames); 0.3 keeps the 304 Hz median and intonation and drops them to 3.5%. Each line gets 10 ms / 40 ms edge fades against clicks."
-  }
+  },
+  "edited": "2026-11-17",
+  "edit": "Removed the former-brand introduction; retained the same approved voice without resynthesis."
 }

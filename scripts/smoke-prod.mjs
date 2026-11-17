@@ -15,12 +15,21 @@ const privateMarker = 'PRIVATE_PARENT_NOTE_7D31';
 async function shot(page, name, size) {
   await page.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some(el => el.getClientRects().length && /Getting things ready|Opening Balloon Count|Opening Space Scale/.test(el.textContent)));
   await page.evaluate(() => document.fonts.ready);
+  await page.evaluate(async () => {
+    await Promise.all([...document.querySelectorAll('.aidos-mascot img')].filter(img => img.getClientRects().length && !img.closest('[hidden],[inert]')).map(img => { img.loading = 'eager'; return img.decode(); }));
+  });
   await page.waitForTimeout(100);
   await page.screenshot({ path: `${output}/${name}-${size}.png`, fullPage: true });
   const layout = await page.evaluate(() => {
     const visible = el => el.getClientRects().length && !el.closest('[hidden],[inert]');
     return {
       overflow: document.documentElement.scrollWidth > innerWidth + 1,
+      oldBrand: /MyPal|Bleep/i.test(document.body.innerText),
+      mascots: [...document.querySelectorAll('.aidos-mascot')].filter(visible).map(el => {
+        const box = el.getBoundingClientRect();
+        const art = el.querySelector('.aid-pose').getBoundingClientRect();
+        return { pose: el.dataset.pose, loaded: [...el.querySelectorAll('img')].every(img => img.naturalWidth && /\/mascot\/aidos-/.test(img.currentSrc)), contained: art.left >= box.left - 3 && art.right <= box.right + 3, width: box.width, height: box.height };
+      }),
       headings: [...document.querySelectorAll('h1')].filter(visible).map(el => el.textContent),
       smallTargets: [...document.querySelectorAll('button,a,input,select')].filter(visible).filter(el => {
         const target = el instanceof HTMLInputElement && ['checkbox', 'radio'].includes(el.type) ? el.labels?.[0] ?? el : el;
@@ -178,6 +187,8 @@ try {
   assert(report.network.every(r => !r.privateData), 'Private parent/child data left the browser');
   assert(report.network.filter(r => r.path === '/api/ask').every(r => JSON.stringify(r.keys) === '["question"]'), 'Ask payload must contain only question');
   assert.equal(report.errors.length, 0, JSON.stringify(report.errors));
+  assert(report.screens.every(s => !s.oldBrand), 'Old brand visible');
+  assert(report.screens.every(s => s.mascots.every(m => m.loaded && m.contained)), 'Mascot missing or outside its frame');
   assert(report.screens.every(s => !s.overflow), 'Horizontal overflow: ' + report.screens.filter(s=>s.overflow).map(s=>s.name+' '+s.size));
   assert(report.screens.every(s => s.headings.length === 1), 'Each screen must have one visible h1');
   assert(report.screens.every(s => !s.smallTargets.length), 'Touch target smaller than 44px');

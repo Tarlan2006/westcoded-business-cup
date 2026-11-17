@@ -1,0 +1,860 @@
+[
+  {
+    "id": "codename_comet",
+    "path": "/audio/common/codename_comet.mp3",
+    "transcript": " comment.",
+    "flagged": false
+  },
+  {
+    "id": "codename_dash",
+    "path": "/audio/common/codename_dash.mp3",
+    "transcript": " I wish.",
+    "flagged": false
+  },
+  {
+    "id": "codename_echo",
+    "path": "/audio/common/codename_echo.mp3",
+    "transcript": " Echo.",
+    "flagged": false
+  },
+  {
+    "id": "codename_fox",
+    "path": "/audio/common/codename_fox.mp3",
+    "transcript": " Folks.",
+    "flagged": false
+  },
+  {
+    "id": "codename_nova",
+    "path": "/audio/common/codename_nova.mp3",
+    "transcript": " Nova.",
+    "flagged": false
+  },
+  {
+    "id": "codename_orbit",
+    "path": "/audio/common/codename_orbit.mp3",
+    "transcript": " orbit.",
+    "flagged": false
+  },
+  {
+    "id": "codename_pixel",
+    "path": "/audio/common/codename_pixel.mp3",
+    "transcript": " pixel.",
+    "flagged": false
+  },
+  {
+    "id": "codename_radar",
+    "path": "/audio/common/codename_radar.mp3",
+    "transcript": " radar.",
+    "flagged": false
+  },
+  {
+    "id": "codename_raven",
+    "path": "/audio/common/codename_raven.mp3",
+    "transcript": " Raven.",
+    "flagged": false
+  },
+  {
+    "id": "codename_scout",
+    "path": "/audio/common/codename_scout.mp3",
+    "transcript": " Scout.",
+    "flagged": false
+  },
+  {
+    "id": "codename_sparrow",
+    "path": "/audio/common/codename_sparrow.mp3",
+    "transcript": " It's barren.",
+    "flagged": false
+  },
+  {
+    "id": "codename_sunny",
+    "path": "/audio/common/codename_sunny.mp3",
+    "transcript": " Sunny.",
+    "flagged": false
+  },
+  {
+    "id": "common_intro_01",
+    "path": "/audio/common/common_intro_01.mp3",
+    "transcript": " Hey pal, ready for your next mission.",
+    "flagged": false
+  },
+  {
+    "id": "common_intro_02",
+    "path": "/audio/common/common_intro_02.mp3",
+    "transcript": " eye does here. Let's explore together.",
+    "flagged": false
+  },
+  {
+    "id": "common_intro_03",
+    "path": "/audio/common/common_intro_03.mp3",
+    "transcript": " Hello team, your first clue is on the way.",
+    "flagged": false
+  },
+  {
+    "id": "common_outro_01",
+    "path": "/audio/common/common_outro_01.mp3",
+    "transcript": " Mission complete. Great work agents.",
+    "flagged": false
+  },
+  {
+    "id": "common_outro_02",
+    "path": "/audio/common/common_outro_02.mp3",
+    "transcript": " That's a wrap team. Thanks for exploring.",
+    "flagged": false
+  },
+  {
+    "id": "common_outro_03",
+    "path": "/audio/common/common_outro_03.mp3",
+    "transcript": " faces signing off. You did a great job.",
+    "flagged": false
+  },
+  {
+    "id": "common_outro_04",
+    "path": "/audio/common/common_outro_04.mp3",
+    "transcript": " mission complete. See you on the next adventure.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_01",
+    "path": "/audio/common/common_praise_01.mp3",
+    "transcript": " nicely spotted pal.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_02",
+    "path": "/audio/common/common_praise_02.mp3",
+    "transcript": " I do copies, great work.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_03",
+    "path": "/audio/common/common_praise_03.mp3",
+    "transcript": " You did it.  Any you could.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_04",
+    "path": "/audio/common/common_praise_04.mp3",
+    "transcript": " Nice thinking, pal.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_05",
+    "path": "/audio/common/common_praise_05.mp3",
+    "transcript": " That's another clue for the team.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_06",
+    "path": "/audio/common/common_praise_06.mp3",
+    "transcript": " Well done! You kept looking!",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_07",
+    "path": "/audio/common/common_praise_07.mp3",
+    "transcript": " good work, detective.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_08",
+    "path": "/audio/common/common_praise_08.mp3",
+    "transcript": " you found it.  High five.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_09",
+    "path": "/audio/common/common_praise_09.mp3",
+    "transcript": " Excellent teamwork out there.",
+    "flagged": false
+  },
+  {
+    "id": "common_praise_10",
+    "path": "/audio/common/common_praise_10.mp3",
+    "transcript": " You made that look easy.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_01",
+    "path": "/audio/common/common_recall_01.mp3",
+    "transcript": " Last time, you tracked down objects for IDAs.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_02",
+    "path": "/audio/common/common_recall_02.mp3",
+    "transcript": " Last time you spotted clues on the road.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_03",
+    "path": "/audio/common/common_recall_03.mp3",
+    "transcript": " Last time you stayed on your safe spot.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_04",
+    "path": "/audio/common/common_recall_04.mp3",
+    "transcript": " Last time your team found a soft clue.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_05",
+    "path": "/audio/common/common_recall_05.mp3",
+    "transcript": " last time you noticed colours on the road.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_06",
+    "path": "/audio/common/common_recall_06.mp3",
+    "transcript": " Last time you held still like a statue.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_07",
+    "path": "/audio/common/common_recall_07.mp3",
+    "transcript": " Last time you looked for shapes around base.",
+    "flagged": false
+  },
+  {
+    "id": "common_recall_08",
+    "path": "/audio/common/common_recall_08.mp3",
+    "transcript": " And thus, tiny helpdiders crack a clue.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_01",
+    "path": "/audio/common/common_retry_01.mp3",
+    "transcript": " Good try, pal, onto the next assignment.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_02",
+    "path": "/audio/common/common_retry_02.mp3",
+    "transcript": " Let's try another clue together.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_03",
+    "path": "/audio/common/common_retry_03.mp3",
+    "transcript": " That was a tricky one. Keep exploring.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_04",
+    "path": "/audio/common/common_retry_04.mp3",
+    "transcript": " every try helps us learn.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_05",
+    "path": "/audio/common/common_retry_05.mp3",
+    "transcript": " take a breath, we've got another clue.",
+    "flagged": false
+  },
+  {
+    "id": "common_retry_06",
+    "path": "/audio/common/common_retry_06.mp3",
+    "transcript": " Good effort, pal. Ready to try again.",
+    "flagged": false
+  },
+  {
+    "id": "common_setup_greeting",
+    "path": "/audio/common/common_setup_greeting.mp3",
+    "transcript": " Hey pal, let's set up your adventure.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_01",
+    "path": "/audio/common/common_transition_01.mp3",
+    "transcript": " time's up. Let's try a new assignment.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_02",
+    "path": "/audio/common/common_transition_02.mp3",
+    "transcript": " Stand by pal, another clue is coming.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_03",
+    "path": "/audio/common/common_transition_03.mp3",
+    "transcript": " Next glue coming in loud and clear.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_04",
+    "path": "/audio/common/common_transition_04.mp3",
+    "transcript": " Let's see what's next on the map.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_05",
+    "path": "/audio/common/common_transition_05.mp3",
+    "transcript": " ready for a fresh assignment.",
+    "flagged": false
+  },
+  {
+    "id": "common_transition_06",
+    "path": "/audio/common/common_transition_06.mp3",
+    "transcript": " back to ideas for the next clue.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_ball_12",
+    "path": "/audio/hunt/hunt_task_ball_12.mp3",
+    "transcript": " Find a soft ball and a pillow.  Walked and run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_blanket_09",
+    "path": "/audio/hunt/hunt_task_blanket_09.mp3",
+    "transcript": " find a blanket and something white, walk, don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_book_04",
+    "path": "/audio/hunt/hunt_task_book_04.mp3",
+    "transcript": " Find a book and a soft cushion.  Walked out round.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_box_11",
+    "path": "/audio/hunt/hunt_task_box_11.mp3",
+    "transcript": " Find a small empty box in the soft toy. Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_circle_06",
+    "path": "/audio/hunt/hunt_task_circle_06.mp3",
+    "transcript": " Find something round and a piece of paper.  Walked and run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_colors_11",
+    "path": "/audio/hunt/hunt_task_colors_11.mp3",
+    "transcript": " Find three soft objects of different colors.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_flat_05",
+    "path": "/audio/hunt/hunt_task_flat_05.mp3",
+    "transcript": " Find something flat, something soft, and something round, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_fold_12",
+    "path": "/audio/hunt/hunt_task_fold_12.mp3",
+    "transcript": " Find a piece of paper and a towel.  Fold the towel in half.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_letter_06",
+    "path": "/audio/hunt/hunt_task_letter_06.mp3",
+    "transcript": " Find a book with a letter you recognize on its cover.  Walk down to run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_pair_04",
+    "path": "/audio/hunt/hunt_task_pair_04.mp3",
+    "transcript": " Find two socks that match.  Walk, don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_pattern_08",
+    "path": "/audio/hunt/hunt_task_pattern_08.mp3",
+    "transcript": " find a towel and a shirt with different patterns.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_pillow_02",
+    "path": "/audio/hunt/hunt_task_pillow_02.mp3",
+    "transcript": " Find a pillow and something blue.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_red_03",
+    "path": "/audio/hunt/hunt_task_red_03.mp3",
+    "transcript": " Find one soft red object and one soft blue object.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_shapes_07",
+    "path": "/audio/hunt/hunt_task_shapes_07.mp3",
+    "transcript": " Find something round, something square, and something blue, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_shirt_10",
+    "path": "/audio/hunt/hunt_task_shirt_10.mp3",
+    "transcript": " find a shirt and something blue.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_size_10",
+    "path": "/audio/hunt/hunt_task_size_10.mp3",
+    "transcript": " Find two soft toys of different sizes, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_smooth_09",
+    "path": "/audio/hunt/hunt_task_smooth_09.mp3",
+    "transcript": " Find something smooth and something fussy, walked and ran.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_sock_01",
+    "path": "/audio/hunt/hunt_task_sock_01.mp3",
+    "transcript": " find a sock in the soft toy, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_square_08",
+    "path": "/audio/hunt/hunt_task_square_08.mp3",
+    "transcript": " Find something square and something green, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_stripe_01",
+    "path": "/audio/hunt/hunt_task_stripe_01.mp3",
+    "transcript": " find a striped sock and a shirt with a different pattern. Walk don't ram.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_towel_03",
+    "path": "/audio/hunt/hunt_task_towel_03.mp3",
+    "transcript": " find a towel and a paper napkin. Walk, don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_toy_07",
+    "path": "/audio/hunt/hunt_task_toy_07.mp3",
+    "transcript": " Find a toy animal in the sock, walk down to run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_yellow_05",
+    "path": "/audio/hunt/hunt_task_yellow_05.mp3",
+    "transcript": " Find something yellow and something soft, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "hunt_task_zipper_02",
+    "path": "/audio/hunt/hunt_task_zipper_02.mp3",
+    "transcript": " Find something with a zipper and something with a button, walked in to run.",
+    "flagged": false
+  },
+  {
+    "id": "lava_alert",
+    "path": "/audio/lava/lava_alert.mp3",
+    "transcript": " love our alert, stay on the floor, walk to your safe spot.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_1",
+    "path": "/audio/lava/lava_freeze_1.mp3",
+    "transcript": " keep both feet on the floor and freeze like a statue.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_2",
+    "path": "/audio/lava/lava_freeze_2.mp3",
+    "transcript": " stand tall with both feet on the floor, hold still.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_3",
+    "path": "/audio/lava/lava_freeze_3.mp3",
+    "transcript": " keep your feet still and stretch your arms out gently.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_4",
+    "path": "/audio/lava/lava_freeze_4.mp3",
+    "transcript": " keep both feet planted, hold a tiny smile for 5 seconds.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_5",
+    "path": "/audio/lava/lava_freeze_5.mp3",
+    "transcript": " Stand on the floor and hold your hands like little wings.",
+    "flagged": false
+  },
+  {
+    "id": "lava_freeze_6",
+    "path": "/audio/lava/lava_freeze_6.mp3",
+    "transcript": " Stand with both feet on the floor.  Look ahead and freeze.",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_1",
+    "path": "/audio/lava/lava_task_riddle_1.mp3",
+    "transcript": " What gets wetter while it dries you?",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_2",
+    "path": "/audio/lava/lava_task_riddle_2.mp3",
+    "transcript": " What has hands and tells the time?",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_3",
+    "path": "/audio/lava/lava_task_riddle_3.mp3",
+    "transcript": " What has pages you can turn?",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_4",
+    "path": "/audio/lava/lava_task_riddle_4.mp3",
+    "transcript": " what falls from clouds in little drops.",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_5",
+    "path": "/audio/lava/lava_task_riddle_5.mp3",
+    "transcript": " What is stripes and looks like a horse?",
+    "flagged": false
+  },
+  {
+    "id": "lava_task_riddle_6",
+    "path": "/audio/lava/lava_task_riddle_6.mp3",
+    "transcript": " What goes on your hand and keeps it warm?",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_intro",
+    "path": "/audio/hunt/local_hunt_intro.mp3",
+    "transcript": " Hey pal, find the clues close by, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_recall",
+    "path": "/audio/hunt/local_hunt_recall.mp3",
+    "transcript": " Last time you tracked down objects for our ideas.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_0",
+    "path": "/audio/hunt/local_hunt_task_0.mp3",
+    "transcript": " Find a sock and a soft toy. Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_1",
+    "path": "/audio/hunt/local_hunt_task_1.mp3",
+    "transcript": " Find a pillow in something blue, or don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_2",
+    "path": "/audio/hunt/local_hunt_task_2.mp3",
+    "transcript": " Find a towel and a paper napkin.  Walk, don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_3",
+    "path": "/audio/hunt/local_hunt_task_3.mp3",
+    "transcript": " Find a book, a sock and a cushion. Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_4",
+    "path": "/audio/hunt/local_hunt_task_4.mp3",
+    "transcript": " Find something soft, something red, and something round.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_5",
+    "path": "/audio/hunt/local_hunt_task_5.mp3",
+    "transcript": " Find a paper napkin, a small toy and a towel. Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_6",
+    "path": "/audio/hunt/local_hunt_task_6.mp3",
+    "transcript": " Find two soft objects of different colours. Walk, don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_7",
+    "path": "/audio/hunt/local_hunt_task_7.mp3",
+    "transcript": " Find a book and something striped, walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_hunt_task_8",
+    "path": "/audio/hunt/local_hunt_task_8.mp3",
+    "transcript": " Find something round, something square, and something blue.  Walk don't run.",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_countdown",
+    "path": "/audio/lava/local_lava_countdown.mp3",
+    "transcript": " Love a lard, walk to your safe spot. Keep both feet on the floor.",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_freeze_line",
+    "path": "/audio/lava/local_lava_freeze_line.mp3",
+    "transcript": " freeze like a statue. Keep both feet on the floor.",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_intro",
+    "path": "/audio/lava/local_lava_intro.mp3",
+    "transcript": " Walk to your safe spot. Keep both feet on the floor.",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_recall",
+    "path": "/audio/lava/local_lava_recall.mp3",
+    "transcript": " Last time you stayed on your safe spot.",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_riddle_line_1",
+    "path": "/audio/lava/local_lava_riddle_line_1.mp3",
+    "transcript": " What gets wetter while it dries you?",
+    "flagged": false
+  },
+  {
+    "id": "local_lava_riddle_line_2",
+    "path": "/audio/lava/local_lava_riddle_line_2.mp3",
+    "transcript": " What has hands and tells the time?",
+    "flagged": false
+  },
+  {
+    "id": "local_outro",
+    "path": "/audio/common/local_outro.mp3",
+    "transcript": " Mission complete. Great work agents.",
+    "flagged": false
+  },
+  {
+    "id": "local_praise_found",
+    "path": "/audio/common/local_praise_found.mp3",
+    "transcript": " Nicely spotted pal.",
+    "flagged": false
+  },
+  {
+    "id": "local_praise_next",
+    "path": "/audio/common/local_praise_next.mp3",
+    "transcript": " Read job pal, ready for the next one.",
+    "flagged": false
+  },
+  {
+    "id": "local_praise_radio",
+    "path": "/audio/common/local_praise_radio.mp3",
+    "transcript": " I do's copies. Great work!",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_intro",
+    "path": "/audio/roadtrip/local_roadtrip_intro.mp3",
+    "transcript": " Keep your seat belt on.  Look outside and spot close together.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_recall",
+    "path": "/audio/roadtrip/local_roadtrip_recall.mp3",
+    "transcript": " Last time you spotted clues on the road.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_0",
+    "path": "/audio/roadtrip/local_roadtrip_task_0.mp3",
+    "transcript": " Look outside for a red car.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_1",
+    "path": "/audio/roadtrip/local_roadtrip_task_1.mp3",
+    "transcript": " See if you can spot a yellow sign.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_2",
+    "path": "/audio/roadtrip/local_roadtrip_task_2.mp3",
+    "transcript": " Look for a white truck.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_3",
+    "path": "/audio/roadtrip/local_roadtrip_task_3.mp3",
+    "transcript": " spot a tree taller than the cars.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_4",
+    "path": "/audio/roadtrip/local_roadtrip_task_4.mp3",
+    "transcript": " Look for a blue sign outside.",
+    "flagged": false
+  },
+  {
+    "id": "local_roadtrip_task_5",
+    "path": "/audio/roadtrip/local_roadtrip_task_5.mp3",
+    "transcript": " Can you see a bridge ahead?",
+    "flagged": false
+  },
+  {
+    "id": "local_time_up",
+    "path": "/audio/common/local_time_up.mp3",
+    "transcript": " time's up. Let's try a new assignment.",
+    "flagged": false
+  },
+  {
+    "id": "local_try_again",
+    "path": "/audio/common/local_try_again.mp3",
+    "transcript": " Good try pal, onto the next assignment.",
+    "flagged": false
+  },
+  {
+    "id": "quiz_animal-meow",
+    "path": "/audio/quiz/quiz_animal-meow.mp3",
+    "transcript": " Which animal says, meow?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_animal-quack",
+    "path": "/audio/quiz/quiz_animal-quack.mp3",
+    "transcript": " Which animal says quack?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_animal-sounds-cat",
+    "path": "/audio/quiz/quiz_animal-sounds-cat.mp3",
+    "transcript": " What does the cat say?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_animal-sounds-cow",
+    "path": "/audio/quiz/quiz_animal-sounds-cow.mp3",
+    "transcript": " What does the cow say?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_animal-sounds-duck",
+    "path": "/audio/quiz/quiz_animal-sounds-duck.mp3",
+    "transcript": " What does the dark say?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_color-apple",
+    "path": "/audio/quiz/quiz_color-apple.mp3",
+    "transcript": " which color matches this apple.",
+    "flagged": false
+  },
+  {
+    "id": "quiz_color-banana",
+    "path": "/audio/quiz/quiz_color-banana.mp3",
+    "transcript": " Which color matches this banana?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_count-fingers",
+    "path": "/audio/quiz/quiz_count-fingers.mp3",
+    "transcript": " How many fingers on one hand, including your thumb?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_count-stars",
+    "path": "/audio/quiz/quiz_count-stars.mp3",
+    "transcript": " Count the stars, how many do you see?",
+    "flagged": false
+  },
+  {
+    "id": "quiz_shape-round",
+    "path": "/audio/quiz/quiz_shape-round.mp3",
+    "transcript": " which shape is round.",
+    "flagged": false
+  },
+  {
+    "id": "quiz_shape-three",
+    "path": "/audio/quiz/quiz_shape-three.mp3",
+    "transcript": " which shape has three sides.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_bike",
+    "path": "/audio/roadtrip/roadtrip_task_bike.mp3",
+    "transcript": " See if you can spot a bicycle.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_blue_sign",
+    "path": "/audio/roadtrip/roadtrip_task_blue_sign.mp3",
+    "transcript": " Look for a blue sign outside.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_brick",
+    "path": "/audio/roadtrip/roadtrip_task_brick.mp3",
+    "transcript": " look for building made of bricks.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_bridge",
+    "path": "/audio/roadtrip/roadtrip_task_bridge.mp3",
+    "transcript": " Can you see a bridge ahead?",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_bus",
+    "path": "/audio/roadtrip/roadtrip_task_bus.mp3",
+    "transcript": " spot a bus through the window.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_cloud",
+    "path": "/audio/roadtrip/roadtrip_task_cloud.mp3",
+    "transcript": " Find a cloud that looks like something you know.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_flag",
+    "path": "/audio/roadtrip/roadtrip_task_flag.mp3",
+    "transcript": " Look for a flag moving in the breeze.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_four_doors",
+    "path": "/audio/roadtrip/roadtrip_task_four_doors.mp3",
+    "transcript": " spot a car with four doors.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_green_car",
+    "path": "/audio/roadtrip/roadtrip_task_green_car.mp3",
+    "transcript": " Look for a green car.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_red_car",
+    "path": "/audio/roadtrip/roadtrip_task_red_car.mp3",
+    "transcript": " Look outside for a red car.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_round_sign",
+    "path": "/audio/roadtrip/roadtrip_task_round_sign.mp3",
+    "transcript": " spot around signs for the window.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_tall_tree",
+    "path": "/audio/roadtrip/roadtrip_task_tall_tree.mp3",
+    "transcript": " spot a tree taller than the cars.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_white_truck",
+    "path": "/audio/roadtrip/roadtrip_task_white_truck.mp3",
+    "transcript": " Look for a white truck.",
+    "flagged": false
+  },
+  {
+    "id": "roadtrip_task_yellow_sign",
+    "path": "/audio/roadtrip/roadtrip_task_yellow_sign.mp3",
+    "transcript": " See if you can spot a yellow sign.",
+    "flagged": false
+  }
+]

@@ -47,7 +47,7 @@
 .bl-game .bl-primary:disabled { opacity: .65; box-shadow: 0 4px 0 #0f8f60; }
 .bl-companion { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-bottom: 50px; }
 .bl-guide { display: block; width: 220px; flex-shrink: 0; }
-.bl-guide .mypal-mascot { display: block; width: 100%; height: auto; }
+.bl-guide .aidos-mascot { display: block; width: 100%; height: auto; }
 .bl-bubble { position: relative; max-width: 280px; padding: 18px 20px; color: #1e1b4b; background: #fff; border: 3px solid #d9d0ff; border-radius: 22px; box-shadow: 0 5px 0 #130e45; text-align: center; font-size: 17px; }
 .bl-bubble::before { content: ""; position: absolute; top: -12px; left: 50%; width: 18px; height: 18px; transform: rotate(45deg); background: #fff; border-top: 3px solid #d9d0ff; border-left: 3px solid #d9d0ff; }
 .bl-answer-panel { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px; }
