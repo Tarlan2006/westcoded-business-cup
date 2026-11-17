@@ -11,6 +11,7 @@ const pending=new Map<string,Promise<ArrayBuffer>>();
 export const voice=new Hono<{Bindings:{AI:Ai}}>();
 
 export async function synthesize(ai: Ai,text: string):Promise<ArrayBuffer> {
+  if (!ai || typeof ai.run !== "function") throw new Error("voice_binding");
   const stream=await deadline(ai.run(voiceModel as Parameters<Ai['run']>[0],{
     text,speaker:voiceSpeaker,encoding:'mp3',bit_rate:48000,
   } as never),6000) as unknown as ReadableStream;
@@ -22,7 +23,10 @@ export async function synthesize(ai: Ai,text: string):Promise<ArrayBuffer> {
 const audio=(bytes:ArrayBuffer)=>new Response(bytes,{headers:{'Content-Type':'audio/mpeg','X-AIdos-Voice':AIDOS_VOICE,'Cache-Control':'private, no-store'}});
 function failure(error: unknown) {
   const message=error instanceof Error ? error.message : '';
-  if(/^voice_(unavailable|size)$/.test(message))return message;
+  if(/^voice_(unavailable|size|binding)$/.test(message))return message;
+  if(error instanceof TypeError)return 'provider_type';
+  if(/quota|limit|capacity|neuron/i.test(message))return 'provider_limit';
+  if(/fetch|network|connect/i.test(message))return 'provider_network';
   if(/timeout/i.test(message))return 'timeout';
   if(/bit.?rate|sample.?rate|encoding/i.test(message))return 'audio_format';
   if(/agree|terms|license/i.test(message))return 'model_terms';
