@@ -8,5 +8,7 @@ const effects = { chirp: "whoosh", win: "fanfare", giggle: "radio", tick: "tick"
 
 export function uiSound(effect: keyof typeof effects, enabled: boolean) {
   if (!enabled) return;
+  // Routine taps and tickles need no electronic chirp over the guide's voice.
+  if (effect === 'chirp' || effect === 'giggle' || effect === 'tick') return;
   void unlock().then(() => playSfx(effects[effect])).catch(() => {});
 }

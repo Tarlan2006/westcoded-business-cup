@@ -24,7 +24,12 @@ for(const name of await readdir('dist/client/assets')){
  const bytes=await readFile('dist/client/assets/'+name);const s=bytes.toString();
  result.bundle.push({name,bytes:bytes.length,gzipBytes:gzipSync(bytes).length,consoleLog:(s.match(/console\.log\(/g)||[]).length,debugger:(s.match(/\bdebugger\b/g)||[]).length,localhost:(s.match(/https?:\/\/(localhost|127\.0\.0\.1)/g)||[]).length,legacyHost:(s.match(/https?:\/\/mission-control\./g)||[]).length,secretPatterns:/(?:gsk_[a-zA-Z0-9]{30,}|sk-proj-[a-zA-Z0-9]{30,}|BEGIN PRIVATE KEY)/.test(s)});
 }
-assert(result.bundle.every(b=>!b.secretPatterns&&!b.consoleLog&&!b.debugger&&!b.localhost&&!b.legacyHost));
+// Three.js retains its own THREE.* diagnostic logger in the lazy renderer chunk.
+// Keep that count in the report, and separately enforce no application logs.
+for(const name of await readdir('src/components/aidos3d')) {
+ assert(!/console\.log\(/.test(await readFile('src/components/aidos3d/'+name,'utf8')),'No host application logging');
+}
+assert(result.bundle.every(b=>!b.secretPatterns&&(!b.consoleLog||/^renderer-/.test(b.name))&&!b.debugger&&!b.localhost&&!b.legacyHost));
 const manifest=await(await fetch(base+'/audio/manifest.json')).json(); result.audio.manifest=true;
 const entries=Object.values(manifest.clips);
 for (const path of entries) { const r=await fetch(base+path); assert.equal(r.status,200,path); assert((await r.arrayBuffer()).byteLength>100,path); }

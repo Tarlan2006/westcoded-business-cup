@@ -1,5 +1,9 @@
 # Deployment
 
+## Procedural 3D and audio reliability release
+
+The next main release replaces sprite-only host motion with procedural Three.js meshes and fixes recording priority, stale speech queues, repeated electronic cues, stop clicks and manifest retry. See [audit and measurements](releases/aidos-3d-audio-audit.md). The previously successful source is `2b233e7` (sprite motion release). Roll back by selecting that source's successful deployment in Cloudflare Worker `westcoded-business-cup`, then revert the new Git commit before another automatic main build. No secrets or bindings need modification. The Three.js renderer is a lazy chunk (~138 KB gzip); it does not download model assets or the retired voice-cloning model.
+
 ## AIdos motion release — 2026-11-17
 
 This release adds speech-driven mouth keyframes and stable mascot frames, updates installation branding, and removes obsolete public mascot/voice-reference assets. See [host audit](releases/aidos-motion-2026-11-17.md). Publish through the existing main → Cloudflare Builds connection for **https://aidos.nexcel.kz**; no secret changes are required.

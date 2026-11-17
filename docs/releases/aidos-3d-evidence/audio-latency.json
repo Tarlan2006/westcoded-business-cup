@@ -1,0 +1,26 @@
+{
+  "repeats": [
+    {
+      "iteration": 1,
+      "startMs": 46.89999997615814,
+      "starts": 1
+    },
+    {
+      "iteration": 2,
+      "startMs": 0.20000001788139343,
+      "starts": 1
+    },
+    {
+      "iteration": 3,
+      "startMs": 0.09999999403953552,
+      "starts": 1
+    }
+  ],
+  "replacement": {
+    "startMs": 0.30000001192092896,
+    "starts": 1
+  },
+  "manifestAttempts": 2,
+  "errors": [],
+  "passed": true
+}

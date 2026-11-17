@@ -1,0 +1,18 @@
+{
+  "base": "http://127.0.0.1:5199",
+  "checks": [
+    "video has no music",
+    "starts only after Sound gesture",
+    "independent music mute persists",
+    "parent dialog pauses",
+    "hidden tab pauses",
+    "Memory theme",
+    "Space Scale theme",
+    "Sketch Artist theme",
+    "microphone opening pauses music",
+    "Ask AIdos theme",
+    "reduced motion disables drift",
+    "master Sound disables music"
+  ],
+  "passed": true
+}

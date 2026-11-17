@@ -1,0 +1,45 @@
+{
+  "bounds": [
+    {
+      "pose": "wave",
+      "minX": 57,
+      "minY": 42,
+      "maxX": 232,
+      "maxY": 327,
+      "width": 240,
+      "height": 360
+    },
+    {
+      "pose": "point",
+      "minX": 57,
+      "minY": 42,
+      "maxX": 235,
+      "maxY": 327,
+      "width": 240,
+      "height": 360
+    },
+    {
+      "pose": "tablet",
+      "minX": 65,
+      "minY": 42,
+      "maxX": 174,
+      "maxY": 327,
+      "width": 240,
+      "height": 360
+    },
+    {
+      "pose": "jump",
+      "minX": 32,
+      "minY": 42,
+      "maxX": 206,
+      "maxY": 327,
+      "width": 240,
+      "height": 360
+    }
+  ],
+  "contexts": 1,
+  "reducedMotion": true,
+  "fallback": true,
+  "errors": [],
+  "passed": true
+}

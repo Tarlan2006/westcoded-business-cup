@@ -125,7 +125,7 @@ export async function unlock(): Promise<void> {
   silent.onended = () => silent.disconnect();
   silent.start();
   void loadManifest();
-  window.setTimeout(() => void loadHostVoice(), 1500);
+  void preload(["common_setup_greeting"]);
   await resume;
   updateMusic();
 }
@@ -155,7 +155,11 @@ function loadManifest(): Promise<Map<string, string>> {
     } catch {
       return new Map();
     }
-  })();
+  })().then(paths => {
+    // A temporary offline response must not disable recordings for this tab forever.
+    if (!paths.size) manifest = undefined;
+    return paths;
+  });
   return manifest;
 }
 
@@ -208,10 +212,22 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
     const source = graph.context.createBufferSource();
     source.buffer = buffer;
     source.playbackRate.value = rate;
-    source.connect(output);
+    const envelope = graph.context.createGain();
+    const start = graph.context.currentTime;
+    const duration = buffer.duration / rate;
+    envelope.gain.setValueAtTime(0, start);
+    envelope.gain.linearRampToValueAtTime(1, start + Math.min(.005, duration / 3));
+    envelope.gain.setValueAtTime(1, start + Math.max(.005, duration - .012));
+    envelope.gain.linearRampToValueAtTime(0, start + duration);
+    source.connect(envelope).connect(output);
+    let stopping = false;
     const stop = () => {
-      source.stop();
-      finish();
+      if (stopping || finished) return;
+      stopping = true;
+      const now = graph.context.currentTime;
+      envelope.gain.cancelScheduledValues(now);
+      envelope.gain.setTargetAtTime(0, now, .004);
+      source.stop(now + .02);
     };
     const timeout = window.setTimeout(stop, buffer.duration * 1000 / rate + 700);
     let finished = false;
@@ -222,6 +238,7 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
       window.clearTimeout(timeout);
       if (stopCurrentClip === stop) stopCurrentClip = undefined;
       source.disconnect();
+      envelope.disconnect();
       resolve();
     }
     stopCurrentClip = stop;
@@ -287,10 +304,13 @@ export function playSound(path: string): Promise<void> {
   });
 }
 
+let lastEffectAt = -Infinity;
 export function playSfx(id: SoundEffect): void {
+  if (id === "radio" || id === "tick" || id === "siren" || isSpeechActive() || Date.now() - lastEffectAt < 500) return;
+  lastEffectAt = Date.now();
   if (!graph) return;
   const output = graph;
-  void enqueue(async () => {
+  void (async () => {
     await ready(output);
     const { context, effects: bus } = output;
     const effect = effects[id];
@@ -309,12 +329,12 @@ export function playSfx(id: SoundEffect): void {
       oscillator.start(at);
       oscillator.stop(at + effect.length);
     });
-    await wait(effect.tones.length * effect.length * 1000);
-  }).catch(() => {});
+  })().catch(() => {});
 }
 
 export function stopSpeech(): void {
   playbackGeneration += 1;
+  queue = Promise.resolve(); // A cancelled download must not block the next prompt.
   stopCurrentClip?.();
   stopCurrentSpeech?.();
 }
@@ -389,128 +409,11 @@ function changeSpeech(delta: number) {
   updateMusic();
 }
 
-// Live host voice: Kyutai Pocket TTS (CC-BY-4.0) runs in the browser and clones the
-// approved mascot voice (content/voice/host-approved.mp3, "O3 +3") from a short
-// reference clip, so every line, scripted or AI-written, uses the same voice.
-// The reference already carries the +3 semitone pitch and the slower pace.
-// Temperature 0.3 (library default 0.7) keeps the same pitch and intonation but
-// halves the sudden jumps into a squeak (patches/pocket-tts-js+0.1.0.patch).
-const hostVoice = { reference: "/voice/host-reference-aidos.mp3", language: "english_2026-04", temperature: 0.3 };
-
-type PocketModule = typeof import("pocket-tts-js");
-let hostTts: InstanceType<PocketModule["PocketTTS"]> | undefined;
-let hostVoiceId: string | undefined;
-let hostReady: Promise<boolean> | undefined;
-let hostLoaded = false;
-let hostChain: AudioNode | undefined;
-
-// The model is a one-time ~146 MB download; skip it where data or memory is tight.
-function canLoadHostVoice() {
-  if (typeof Worker === "undefined" || typeof WebAssembly === "undefined") return false;
-  const device = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
-  return !device.connection?.saveData && (device.deviceMemory ?? 4) >= 2;
-}
-
-function loadHostVoice(): Promise<boolean> {
-  hostReady ??= (async () => {
-    if (!canLoadHostVoice()) return false;
-    try {
-      const { PocketTTS } = await import("pocket-tts-js");
-      const tts = new PocketTTS({ language: hostVoice.language, quantized: true, voiceCloning: true,
-        temperature: hostVoice.temperature });
-      await tts.load();
-      const response = await fetch(hostVoice.reference);
-      if (!response.ok) throw new Error("Host voice reference is missing");
-      const decoded = await audioGraph().context.decodeAudioData(await response.arrayBuffer());
-      hostVoiceId = await tts.cloneVoice(decoded.getChannelData(0), { inputSampleRate: decoded.sampleRate, name: "host" });
-      hostTts = tts;
-      return hostLoaded = true;
-    } catch {
-      return false;
-    }
-  })();
-  return hostReady;
-}
-
-function hostOutput(graph: AudioGraph): AudioNode {
-  if (hostChain) return hostChain;
-  const { context } = graph;
-  const highpass = new BiquadFilterNode(context, { type: "highpass", frequency: 120 });
-  const presence = new BiquadFilterNode(context, { type: "peaking", frequency: 3500, Q: 1, gain: 3 });
-  const compressor = new DynamicsCompressorNode(context, { threshold: -20, ratio: 3, attack: 0.005, release: 0.06 });
-  highpass.connect(presence).connect(compressor).connect(graph.speech);
-  return hostChain = highpass;
-}
-
-// The model can stop mid-wave (a rising "…blue?" often does), which clicks; fade the
-// edges of every line.
-function fadeEdges(samples: Float32Array, sampleRate: number) {
-  const fadeIn = Math.min(samples.length, Math.round(0.01 * sampleRate));
-  const fadeOut = Math.min(samples.length, Math.round(0.04 * sampleRate));
-  for (let index = 0; index < fadeIn; index++) samples[index] *= index / fadeIn;
-  for (let index = 0; index < fadeOut; index++) samples[samples.length - 1 - index] *= index / fadeOut;
-}
-
-// Pocket TTS keeps one generation at a time, so lines are synthesized in order.
-let hostQueue: Promise<unknown> = Promise.resolve();
-
-function synthesizeHost(text: string, context: AudioContext): Promise<AudioBuffer> {
-  const job = hostQueue.then(async () => {
-    const chunks: Float32Array[] = [];
-    await hostTts!.generate(text, { voice: hostVoiceId!, onChunk: (audio) => { chunks.push(audio.slice()); } });
-    const speech = new Float32Array(chunks.reduce((sum, chunk) => sum + chunk.length, 0));
-    if (!speech.length) throw new Error("Host voice produced no audio");
-    let offset = 0;
-    for (const chunk of chunks) {
-      speech.set(chunk, offset);
-      offset += chunk.length;
-    }
-    fadeEdges(speech, hostTts!.sampleRate);
-    const buffer = context.createBuffer(1, speech.length, hostTts!.sampleRate);
-    buffer.copyToChannel(speech as Float32Array<ArrayBuffer>, 0);
-    return buffer;
-  });
-  hostQueue = job.catch(() => {});
-  return job;
-}
-
-async function speakHost(text: string): Promise<void> {
-  const generation = playbackGeneration;
-  const output = audioGraph();
-  await ready(output);
-  const parts = sentences(text);
-  changeSpeech(1);
-  try {
-    let next = synthesizeHost(parts[0], output.context);
-    for (let index = 0; index < parts.length; index++) {
-      const buffer = await next;
-      if (generation !== playbackGeneration) return;
-      if (parts[index + 1]) {
-        next = synthesizeHost(parts[index + 1], output.context);
-        void next.catch(() => {});
-      }
-      await playBuffer(output, buffer, 1, hostOutput(output));
-    }
-  } finally {
-    changeSpeech(-1);
-  }
-}
-
-// True once the mascot's live voice is loaded; recorded clips are then skipped so
-// every line, scripted or AI-written, comes out in the same voice.
-export function hostVoiceReady(): boolean {
-  return hostLoaded;
-}
-
+// Fixed lines use recordings. Dynamic answers use the installed browser voice.
+// Never start a model download or unbounded CPU synthesis during a child's game.
 export function speakFallback(text: string): Promise<void> {
-  if (!text) return Promise.resolve();
-  if (hostLoaded) {
-    const generation = playbackGeneration;
-    return speakHost(text).catch(() => {
-      if (generation === playbackGeneration) return speakBrowser(text);
-    });
-  }
-  void loadHostVoice();
+  if (!text.trim()) return Promise.resolve();
+  stopSpeech();
   return speakBrowser(text);
 }
 
@@ -518,11 +421,11 @@ function speakBrowser(text: string): Promise<void> {
   if (!text || !("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") return Promise.resolve();
   // Starting speech before the first await also preserves a user gesture on iOS.
   const voice = pickVoice();
-  if (!voice) return Promise.resolve();
+
   const utterances = sentences(text).map((part) => {
     const utterance = new SpeechSynthesisUtterance(part);
     utterance.lang = browserVoice.lang;
-    utterance.voice = voice;
+    if (voice) utterance.voice = voice;
     utterance.rate = browserVoice.rate;
     utterance.pitch = browserVoice.pitch;
     utterance.volume = browserVoice.volume;

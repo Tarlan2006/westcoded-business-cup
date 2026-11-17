@@ -36,7 +36,7 @@ There are no accounts, cross-device sync or payment processing. Reload recovery 
 
 ## Stack and architecture
 
-Vite + React + TypeScript + Tailwind; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses pre-rendered Piper clips, optional browser-local Pocket TTS and installed browser voices.
+Vite + React + TypeScript + Tailwind + Three.js; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses pre-rendered Piper clips and installed browser voices for dynamic text.
 
 ```mermaid
 flowchart LR
@@ -95,7 +95,9 @@ Cloudflare Builds publishes `main` automatically to the `westcoded-business-cup`
 
 Games and quizzes share nine quiet music themes and matching animated decorations. **Music on/off** controls the background separately; **Sound off** mutes it too. Music pauses for microphone use, hidden tabs and parent dialogs, and stays off during videos. Reduced-motion settings disable decoration movement. Tracks are generated locally without audio downloads. See the [follow-up audit and staged plan](docs/AUDIT-2026-11-17.md) for checks and device-testing limits.
 
-Pocket TTS clones the approved `content/voice/host-voice.json` reference locally. Its model download is about 146 MB and is skipped on Data Saver or low-memory devices. Piper MP3s remain available while it loads; timed cues use recordings. The checked-in patch adjusts the voice temperature without replacing its identity.
+Available Piper recordings always play directly. Dynamic answers use the installed browser voice, which can sound different across devices. The former 146 MB runtime cloning model is disabled: it delayed prompts and competed with games for CPU. Archived voice references remain for offline authoring. Cancelled prompts cannot block the next recording, and routine taps/countdowns no longer beep.
+
+AIdos is a procedural Three.js character with articulated arms, head and speech-driven mouth, turquoise Kazakh clothing, gold oyu and taqiya. One shared WebGL renderer serves every placement. Reduced motion stops gestures; devices without WebGL retain the illustrated fallback.
 
 ```sh
 python -m pip install piper-tts==1.8.0

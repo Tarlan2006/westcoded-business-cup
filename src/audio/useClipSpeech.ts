@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import { hostVoiceReady, playQueue, speakFallback, stopSpeech } from "./engine";
+import { playQueue, speakFallback, stopSpeech } from "./engine";
 
 export function useClipSpeech() {
   const generation = useRef(0);
@@ -13,7 +13,7 @@ export function useClipSpeech() {
   const speak = useCallback(async (text: string, clipId?: string) => {
     stop();
     const current = generation.current;
-    if (clipId && !hostVoiceReady()) {
+    if (clipId) {
       try {
         await playQueue([clipId]);
         return;

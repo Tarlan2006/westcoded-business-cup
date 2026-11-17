@@ -5,7 +5,7 @@
 //   tablet videos and waiting (Video, breaks, "Start here" in the Hub)
 //   point  tasks and help (Mission, hints, "Try again", Ask AIdos)
 import { APP_NAME } from '../brand';
-import { useState, useSyncExternalStore, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from 'react';
 import { useSoundEnabled } from '../audio/sfx';
 import { getSpeechFrame, subscribeSpeechFrame } from '../audio/speechMotion';
 import './Mascot.css';
@@ -44,10 +44,23 @@ export function Mascot({ pose, size, eager = false, speaking, className = "" }: 
   const frame = useSyncExternalStore(subscribeSpeechFrame, getSpeechFrame, getSpeechFrame);
   const active = sound && speaking !== false && frame.active;
   const [readyPose, setReadyPose] = useState<MascotPose | null>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const live = useRef({ pose: String(pose), mouth: 0 });
+  live.current = { pose, mouth: active ? frame.mouth / 3 : 0 };
+  const [threeReady, setThreeReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    let unmount: (() => void) | undefined;
+    void import('./aidos3d/renderer').then(({ mountHost }) => {
+      if (!cancelled && canvas.current) unmount = mountHost(canvas.current, () => live.current, setThreeReady);
+    }).catch(() => setThreeReady(false));
+    return () => { cancelled = true; unmount?.(); };
+  }, []);
   const style = { '--aid-mouth': active ? frame.mouth / 3 : 0,
     ...(size ? { height: Math.min(size, 280), width: Math.round(Math.min(size, 280) * .75) } : {}) } as CSSProperties;
   return <span className={`aidos-mascot ${className}`.trim()} role="img" aria-label={APP_NAME}
-    data-pose={pose} data-speaking={active || undefined} data-sized={size ? true : undefined} style={style}>
+    data-pose={pose} data-speaking={active || undefined} data-3d={threeReady || undefined} data-sized={size ? true : undefined} style={style}>
+    <canvas ref={canvas} className="aid-canvas" aria-hidden="true" />
     <span className="aid-body" aria-hidden="true">
       <span className="aid-pose" style={{ aspectRatio: `${width}/${height}`, transform: `translateX(-${anchors[pose]}%)` }}>
         <img className="aid-sprite" src={`/mascot/aidos-${pose}.webp`} alt=""

@@ -4,8 +4,10 @@
 flowchart TD
  Client[React client: local profile and progress] --> Worker[Hono / Cloudflare Worker]
  Client --> Clips[Pre-rendered Piper clips]
- Client --> Host[Live mascot voice: Pocket TTS in the browser]
- Host --> Speech[Installed browser voice while it loads]
+ Client --> Speech[Installed browser voice for dynamic text]
+ Clips --> Motion[Speech analyser and 3D host mouth]
+ Speech --> Motion
+ Client --> Host[Shared Three.js renderer: articulated AIdos]
  Worker --> Guard[Origin allowlist + IP buckets + body limits]
  Guard --> Ask[Ask: input checks + short AIdos prompt]
  Ask --> Groq[Groq chat completion]

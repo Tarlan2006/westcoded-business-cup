@@ -30,7 +30,7 @@ await page.route('**/api/ask', route => route.fulfill({ json: { answer: 'Wheels 
 try {
   await page.goto(base);
   await page.getByRole('button', { name: 'CONTINUE', exact: true }).waitFor();
-  await page.locator('.aid-mouth[data-ready]').waitFor();
+  await page.locator('.aidos-mascot[data-3d]').waitFor();
   await page.screenshot({ path: `${out}/greeting-closed.png`, fullPage: true });
   await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
   await page.getByLabel('What should AIdos call your child? *', { exact: true }).waitFor();
@@ -65,7 +65,7 @@ try {
   assert(!requests.some(path => /mascot\/mypal-/.test(path)), 'No legacy mascot request');
   assert.equal(errors.length, 0, errors.join('\n'));
   await writeFile(`${out}/motion.json`, JSON.stringify({ base, samples, errors, passed: true }, null, 2));
-  console.log('PASS AIdos real PCM mouth motion, browser speech, stop, reduced motion, stable placement and current assets');
+  console.log('PASS AIdos 3D, real PCM mouth motion, browser speech, stop, reduced motion, stable placement and current assets');
 } catch (error) {
   const audio = await page.evaluate(() => window.hostAudioAudit);
   await writeFile(`${out}/failure.json`, JSON.stringify({ error: String(error), errors, requests, audio }, null, 2));

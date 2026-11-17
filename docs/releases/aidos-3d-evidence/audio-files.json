@@ -1,0 +1,1003 @@
+[
+  {
+    "id": "codename_comet",
+    "seconds": 0.509,
+    "leadMs": 0,
+    "peak": 0.645,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_dash",
+    "seconds": 0.482,
+    "leadMs": 10,
+    "peak": 0.599,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_echo",
+    "seconds": 0.436,
+    "leadMs": 0,
+    "peak": 0.7383,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_fox",
+    "seconds": 0.66,
+    "leadMs": 40,
+    "peak": 0.7411,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_nova",
+    "seconds": 0.531,
+    "leadMs": 0,
+    "peak": 0.4422,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_orbit",
+    "seconds": 0.489,
+    "leadMs": 0,
+    "peak": 0.5262,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_pixel",
+    "seconds": 0.472,
+    "leadMs": 0,
+    "peak": 0.7701,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_radar",
+    "seconds": 0.512,
+    "leadMs": 0,
+    "peak": 0.5222,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_raven",
+    "seconds": 0.532,
+    "leadMs": 0,
+    "peak": 0.4796,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_scout",
+    "seconds": 0.456,
+    "leadMs": 0,
+    "peak": 0.5772,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_sparrow",
+    "seconds": 0.517,
+    "leadMs": 10,
+    "peak": 0.654,
+    "clippedSamples": 0
+  },
+  {
+    "id": "codename_sunny",
+    "seconds": 0.433,
+    "leadMs": 10,
+    "peak": 0.5752,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_intro_01",
+    "seconds": 2.251,
+    "leadMs": 20,
+    "peak": 0.6684,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_intro_02",
+    "seconds": 2.432,
+    "leadMs": 10,
+    "peak": 0.7447,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_intro_03",
+    "seconds": 2.832,
+    "leadMs": 0,
+    "peak": 0.6264,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_outro_01",
+    "seconds": 2.704,
+    "leadMs": 0,
+    "peak": 0.7288,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_outro_02",
+    "seconds": 2.763,
+    "leadMs": 0,
+    "peak": 0.7171,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_outro_03",
+    "seconds": 2.68,
+    "leadMs": 0,
+    "peak": 0.6654,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_outro_04",
+    "seconds": 2.636,
+    "leadMs": 0,
+    "peak": 0.6897,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_01",
+    "seconds": 1.537,
+    "leadMs": 0,
+    "peak": 0.747,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_02",
+    "seconds": 2.083,
+    "leadMs": 0,
+    "peak": 0.6922,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_03",
+    "seconds": 1.733,
+    "leadMs": 0,
+    "peak": 0.5216,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_04",
+    "seconds": 1.445,
+    "leadMs": 0,
+    "peak": 0.7478,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_05",
+    "seconds": 1.378,
+    "leadMs": 10,
+    "peak": 0.6935,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_06",
+    "seconds": 1.92,
+    "leadMs": 0,
+    "peak": 0.5697,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_07",
+    "seconds": 1.201,
+    "leadMs": 0,
+    "peak": 0.7588,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_08",
+    "seconds": 1.84,
+    "leadMs": 0,
+    "peak": 0.6049,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_09",
+    "seconds": 1.499,
+    "leadMs": 10,
+    "peak": 0.5916,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_praise_10",
+    "seconds": 1.125,
+    "leadMs": 0,
+    "peak": 0.7559,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_01",
+    "seconds": 2.802,
+    "leadMs": 0,
+    "peak": 0.7314,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_02",
+    "seconds": 1.988,
+    "leadMs": 0,
+    "peak": 0.7505,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_03",
+    "seconds": 2.185,
+    "leadMs": 0,
+    "peak": 0.726,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_04",
+    "seconds": 2.375,
+    "leadMs": 0,
+    "peak": 0.7466,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_05",
+    "seconds": 2.063,
+    "leadMs": 0,
+    "peak": 0.754,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_06",
+    "seconds": 2.268,
+    "leadMs": 0,
+    "peak": 0.7399,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_07",
+    "seconds": 2.574,
+    "leadMs": 0,
+    "peak": 0.7435,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_recall_08",
+    "seconds": 2.198,
+    "leadMs": 0,
+    "peak": 0.7413,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_01",
+    "seconds": 2.936,
+    "leadMs": 0,
+    "peak": 0.6189,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_02",
+    "seconds": 1.543,
+    "leadMs": 0,
+    "peak": 0.5392,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_03",
+    "seconds": 2.448,
+    "leadMs": 20,
+    "peak": 0.6397,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_04",
+    "seconds": 1.553,
+    "leadMs": 0,
+    "peak": 0.7549,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_05",
+    "seconds": 2.12,
+    "leadMs": 0,
+    "peak": 0.6808,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_retry_06",
+    "seconds": 2.75,
+    "leadMs": 0,
+    "peak": 0.7231,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_setup_greeting",
+    "seconds": 2.279,
+    "leadMs": 20,
+    "peak": 0.6473,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_01",
+    "seconds": 2.527,
+    "leadMs": 10,
+    "peak": 0.5908,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_02",
+    "seconds": 2.523,
+    "leadMs": 0,
+    "peak": 0.5849,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_03",
+    "seconds": 2.058,
+    "leadMs": 0,
+    "peak": 0.7493,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_04",
+    "seconds": 1.582,
+    "leadMs": 0,
+    "peak": 0.7336,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_05",
+    "seconds": 1.635,
+    "leadMs": 0,
+    "peak": 0.7156,
+    "clippedSamples": 0
+  },
+  {
+    "id": "common_transition_06",
+    "seconds": 1.818,
+    "leadMs": 0,
+    "peak": 0.6832,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_ball_12",
+    "seconds": 3.05,
+    "leadMs": 20,
+    "peak": 0.7225,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_blanket_09",
+    "seconds": 3.535,
+    "leadMs": 10,
+    "peak": 0.7555,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_book_04",
+    "seconds": 2.792,
+    "leadMs": 20,
+    "peak": 0.7303,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_box_11",
+    "seconds": 3.651,
+    "leadMs": 10,
+    "peak": 0.6912,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_circle_06",
+    "seconds": 3.564,
+    "leadMs": 10,
+    "peak": 0.7658,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_colors_11",
+    "seconds": 3.607,
+    "leadMs": 10,
+    "peak": 0.7678,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_flat_05",
+    "seconds": 5.021,
+    "leadMs": 10,
+    "peak": 0.6896,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_fold_12",
+    "seconds": 4.733,
+    "leadMs": 10,
+    "peak": 0.7126,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_letter_06",
+    "seconds": 3.719,
+    "leadMs": 10,
+    "peak": 0.7562,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_pair_04",
+    "seconds": 2.709,
+    "leadMs": 10,
+    "peak": 0.7501,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_pattern_08",
+    "seconds": 3.988,
+    "leadMs": 10,
+    "peak": 0.7584,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_pillow_02",
+    "seconds": 3.061,
+    "leadMs": 30,
+    "peak": 0.6167,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_red_03",
+    "seconds": 4.476,
+    "leadMs": 0,
+    "peak": 0.7551,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_shapes_07",
+    "seconds": 4.952,
+    "leadMs": 20,
+    "peak": 0.6148,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_shirt_10",
+    "seconds": 3.224,
+    "leadMs": 30,
+    "peak": 0.7574,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_size_10",
+    "seconds": 3.612,
+    "leadMs": 10,
+    "peak": 0.6863,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_smooth_09",
+    "seconds": 3.51,
+    "leadMs": 20,
+    "peak": 0.752,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_sock_01",
+    "seconds": 2.933,
+    "leadMs": 20,
+    "peak": 0.7461,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_square_08",
+    "seconds": 3.404,
+    "leadMs": 10,
+    "peak": 0.6632,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_stripe_01",
+    "seconds": 4.244,
+    "leadMs": 10,
+    "peak": 0.7674,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_towel_03",
+    "seconds": 3.278,
+    "leadMs": 10,
+    "peak": 0.6769,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_toy_07",
+    "seconds": 2.797,
+    "leadMs": 20,
+    "peak": 0.6989,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_yellow_05",
+    "seconds": 3.514,
+    "leadMs": 10,
+    "peak": 0.6808,
+    "clippedSamples": 0
+  },
+  {
+    "id": "hunt_task_zipper_02",
+    "seconds": 4.069,
+    "leadMs": 10,
+    "peak": 0.7572,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_alert",
+    "seconds": 3.629,
+    "leadMs": 0,
+    "peak": 0.623,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_1",
+    "seconds": 2.976,
+    "leadMs": 10,
+    "peak": 0.752,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_2",
+    "seconds": 3.419,
+    "leadMs": 0,
+    "peak": 0.7546,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_3",
+    "seconds": 2.937,
+    "leadMs": 0,
+    "peak": 0.7527,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_4",
+    "seconds": 4.256,
+    "leadMs": 0,
+    "peak": 0.7531,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_5",
+    "seconds": 2.954,
+    "leadMs": 10,
+    "peak": 0.5858,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_freeze_6",
+    "seconds": 3.398,
+    "leadMs": 0,
+    "peak": 0.7495,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_1",
+    "seconds": 1.939,
+    "leadMs": 0,
+    "peak": 0.7035,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_2",
+    "seconds": 1.992,
+    "leadMs": 0,
+    "peak": 0.6344,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_3",
+    "seconds": 1.366,
+    "leadMs": 0,
+    "peak": 0.5662,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_4",
+    "seconds": 2.577,
+    "leadMs": 0,
+    "peak": 0.6822,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_5",
+    "seconds": 2.389,
+    "leadMs": 0,
+    "peak": 0.6367,
+    "clippedSamples": 0
+  },
+  {
+    "id": "lava_task_riddle_6",
+    "seconds": 2.103,
+    "leadMs": 0,
+    "peak": 0.5833,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_intro",
+    "seconds": 3.641,
+    "leadMs": 0,
+    "peak": 0.6906,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_recall",
+    "seconds": 2.845,
+    "leadMs": 0,
+    "peak": 0.7614,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_0",
+    "seconds": 2.918,
+    "leadMs": 10,
+    "peak": 0.7522,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_1",
+    "seconds": 3.124,
+    "leadMs": 10,
+    "peak": 0.6491,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_2",
+    "seconds": 3.435,
+    "leadMs": 30,
+    "peak": 0.7572,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_3",
+    "seconds": 3.328,
+    "leadMs": 30,
+    "peak": 0.726,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_4",
+    "seconds": 4.869,
+    "leadMs": 10,
+    "peak": 0.6351,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_5",
+    "seconds": 4.383,
+    "leadMs": 40,
+    "peak": 0.7543,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_6",
+    "seconds": 3.727,
+    "leadMs": 20,
+    "peak": 0.7587,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_7",
+    "seconds": 3.042,
+    "leadMs": 0,
+    "peak": 0.7276,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_hunt_task_8",
+    "seconds": 4.85,
+    "leadMs": 20,
+    "peak": 0.7045,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_countdown",
+    "seconds": 4.284,
+    "leadMs": 0,
+    "peak": 0.6167,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_freeze_line",
+    "seconds": 3.008,
+    "leadMs": 10,
+    "peak": 0.6884,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_intro",
+    "seconds": 2.919,
+    "leadMs": 0,
+    "peak": 0.7296,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_recall",
+    "seconds": 2.185,
+    "leadMs": 0,
+    "peak": 0.726,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_riddle_line_1",
+    "seconds": 1.939,
+    "leadMs": 0,
+    "peak": 0.7035,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_lava_riddle_line_2",
+    "seconds": 1.992,
+    "leadMs": 0,
+    "peak": 0.6344,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_outro",
+    "seconds": 2.704,
+    "leadMs": 0,
+    "peak": 0.7288,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_praise_found",
+    "seconds": 1.497,
+    "leadMs": 0,
+    "peak": 0.7106,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_praise_next",
+    "seconds": 2.7,
+    "leadMs": 0,
+    "peak": 0.72,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_praise_radio",
+    "seconds": 2.118,
+    "leadMs": 0,
+    "peak": 0.6521,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_intro",
+    "seconds": 3.727,
+    "leadMs": 0,
+    "peak": 0.7689,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_recall",
+    "seconds": 1.988,
+    "leadMs": 0,
+    "peak": 0.7505,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_0",
+    "seconds": 1.655,
+    "leadMs": 0,
+    "peak": 0.6403,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_1",
+    "seconds": 1.644,
+    "leadMs": 0,
+    "peak": 0.6688,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_2",
+    "seconds": 1.109,
+    "leadMs": 0,
+    "peak": 0.6322,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_3",
+    "seconds": 1.781,
+    "leadMs": 0,
+    "peak": 0.7476,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_4",
+    "seconds": 1.738,
+    "leadMs": 0,
+    "peak": 0.5745,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_roadtrip_task_5",
+    "seconds": 1.086,
+    "leadMs": 0,
+    "peak": 0.5068,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_time_up",
+    "seconds": 2.527,
+    "leadMs": 10,
+    "peak": 0.5908,
+    "clippedSamples": 0
+  },
+  {
+    "id": "local_try_again",
+    "seconds": 2.837,
+    "leadMs": 0,
+    "peak": 0.6451,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_animal-meow",
+    "seconds": 1.384,
+    "leadMs": 0,
+    "peak": 0.4286,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_animal-quack",
+    "seconds": 1.317,
+    "leadMs": 0,
+    "peak": 0.5288,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_animal-sounds-cat",
+    "seconds": 1.095,
+    "leadMs": 0,
+    "peak": 0.6809,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_animal-sounds-cow",
+    "seconds": 1.04,
+    "leadMs": 0,
+    "peak": 0.5616,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_animal-sounds-duck",
+    "seconds": 1.103,
+    "leadMs": 0,
+    "peak": 0.5524,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_color-apple",
+    "seconds": 1.503,
+    "leadMs": 0,
+    "peak": 0.6103,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_color-banana",
+    "seconds": 1.642,
+    "leadMs": 0,
+    "peak": 0.6184,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_count-fingers",
+    "seconds": 2.724,
+    "leadMs": 10,
+    "peak": 0.5624,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_count-stars",
+    "seconds": 2.101,
+    "leadMs": 0,
+    "peak": 0.6122,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_shape-round",
+    "seconds": 1.184,
+    "leadMs": 0,
+    "peak": 0.5258,
+    "clippedSamples": 0
+  },
+  {
+    "id": "quiz_shape-three",
+    "seconds": 1.498,
+    "leadMs": 0,
+    "peak": 0.4973,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_bike",
+    "seconds": 1.315,
+    "leadMs": 10,
+    "peak": 0.7119,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_blue_sign",
+    "seconds": 1.738,
+    "leadMs": 0,
+    "peak": 0.5745,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_brick",
+    "seconds": 1.651,
+    "leadMs": 0,
+    "peak": 0.5995,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_bridge",
+    "seconds": 1.086,
+    "leadMs": 0,
+    "peak": 0.5068,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_bus",
+    "seconds": 1.452,
+    "leadMs": 0,
+    "peak": 0.7433,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_cloud",
+    "seconds": 2.087,
+    "leadMs": 10,
+    "peak": 0.7268,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_flag",
+    "seconds": 2.009,
+    "leadMs": 0,
+    "peak": 0.7004,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_four_doors",
+    "seconds": 1.382,
+    "leadMs": 0,
+    "peak": 0.5573,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_green_car",
+    "seconds": 1.197,
+    "leadMs": 0,
+    "peak": 0.5169,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_red_car",
+    "seconds": 1.655,
+    "leadMs": 0,
+    "peak": 0.6403,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_round_sign",
+    "seconds": 1.828,
+    "leadMs": 0,
+    "peak": 0.6867,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_tall_tree",
+    "seconds": 1.781,
+    "leadMs": 0,
+    "peak": 0.7476,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_white_truck",
+    "seconds": 1.109,
+    "leadMs": 0,
+    "peak": 0.6322,
+    "clippedSamples": 0
+  },
+  {
+    "id": "roadtrip_task_yellow_sign",
+    "seconds": 1.644,
+    "leadMs": 0,
+    "peak": 0.6688,
+    "clippedSamples": 0
+  }
+]

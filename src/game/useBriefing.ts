@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { hostVoiceReady, playQueue, speakFallback, stopSpeech } from "../audio/engine";
+import { playQueue, speakFallback, stopSpeech } from "../audio/engine";
 import { lineFor } from "./content";
 
-let playback: Promise<void> = Promise.resolve();
 
 export async function within<T>(promise: Promise<T>, milliseconds: number, fallback: T): Promise<T> {
   let timer = 0;
@@ -16,22 +15,21 @@ export async function within<T>(promise: Promise<T>, milliseconds: number, fallb
   }
 }
 
-// Lines use the mascot's live voice once it is loaded; `preferClips` keeps recordings
-// for timed cues, which must not wait for synthesis.
-export function useBriefing(ids: string[], paused: boolean, preferClips = false) {
+// Every available recording starts directly; cancelled briefings cannot block new ones.
+export function useBriefing(ids: string[], paused: boolean, _preferClips = false) {
   const [spoken, setSpoken] = useState({ key: "", caption: "", speaking: false });
   const key = ids.join(" ");
 
   useEffect(() => {
     if (paused || !key) return;
     let active = true;
-    playback = playback.catch(() => {}).then(async () => {
+    void (async () => {
       for (const id of key.split(" ")) {
         if (!active) return;
         const line = lineFor(id);
         setSpoken({ key, caption: line.text, speaking: true });
         try {
-          if (line.file && (preferClips || !hostVoiceReady())) {
+          if (line.file) {
             try {
               await playQueue([id]);
               continue;
@@ -45,12 +43,12 @@ export function useBriefing(ids: string[], paused: boolean, preferClips = false)
         }
       }
       if (active) setSpoken((previous) => ({ ...previous, speaking: false }));
-    });
+    })();
     return () => {
       active = false;
       stopSpeech();
     };
-  }, [key, paused, preferClips]);
+  }, [key, paused]);
 
   const fallback = ids.length ? lineFor(ids.at(-1)!).text : "";
   return {

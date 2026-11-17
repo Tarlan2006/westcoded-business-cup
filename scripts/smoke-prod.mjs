@@ -19,6 +19,7 @@ async function shot(page, name, size) {
     await Promise.all([...document.querySelectorAll('.aidos-mascot img')].filter(img => img.getClientRects().length && !img.closest('[hidden],[inert]')).map(img => { img.loading = 'eager'; return img.decode(); }));
   });
   await page.waitForTimeout(100);
+  await page.waitForFunction(() => [...document.querySelectorAll('.aidos-mascot')].filter(el => el.getClientRects().length && !el.closest('[hidden],[inert]')).every(el => el.dataset['3d'] === 'true'));
   await page.screenshot({ path: `${output}/${name}-${size}.png`, fullPage: true });
   const layout = await page.evaluate(() => {
     const visible = el => el.getClientRects().length && !el.closest('[hidden],[inert]');
@@ -28,7 +29,7 @@ async function shot(page, name, size) {
       mascots: [...document.querySelectorAll('.aidos-mascot')].filter(visible).map(el => {
         const box = el.getBoundingClientRect();
         const art = el.querySelector('.aid-pose').getBoundingClientRect();
-        return { pose: el.dataset.pose, loaded: [...el.querySelectorAll('img')].every(img => img.naturalWidth && /\/mascot\/aidos-/.test(img.currentSrc)), contained: art.left >= box.left - 3 && art.right <= box.right + 3, width: box.width, height: box.height };
+        return { pose: el.dataset.pose, threeD: el.dataset['3d'] === 'true', loaded: [...el.querySelectorAll('img')].every(img => img.naturalWidth && /\/mascot\/aidos-/.test(img.currentSrc)), contained: art.left >= box.left - 3 && art.right <= box.right + 3, width: box.width, height: box.height };
       }),
       headings: [...document.querySelectorAll('h1')].filter(visible).map(el => el.textContent),
       smallTargets: [...document.querySelectorAll('button,a,input,select')].filter(visible).filter(el => {
