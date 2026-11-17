@@ -54,7 +54,9 @@ export function quickFaqAnswer(question: string): AskResponse | undefined {
   const filler = new Set(['why','how','what','is','are','do','does','the','a','an','we','you','can','tell','me','about','please','explain']);
   const key = (text: string) => [...new Set(text.toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(w=>w&&!filler.has(w)))].sort().join(' ');
   const questionKey = key(question);
-  if (!questionKey) return undefined;
+  // Broad single words such as "water" are useful fallback topics, not exact
+  // questions: "What is water?" must not get the ice/freezing explanation.
+  if (questionKey.split(' ').length < 2) return undefined;
   const entry = faq.find(item=>item.keywords.some(keyword=>key(keyword)===questionKey));
   return entry ? { answer: entry.answer, source: 'faq' } : undefined;
 }
