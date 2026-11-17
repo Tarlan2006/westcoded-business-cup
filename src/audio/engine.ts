@@ -77,7 +77,7 @@ export async function unlock(): Promise<void> {
 function loadManifest(): Promise<Map<string, string>> {
   manifest ??= (async () => {
     try {
-      const response = await fetch("/audio/manifest.json", { signal: AbortSignal.timeout(2500) });
+      const response = await fetch("/audio/manifest.json?voice=" + AIDOS_VOICE, { signal: AbortSignal.timeout(2500) });
       if (!response.ok) return new Map();
       const data: unknown = await response.json();
       if (!data || typeof data !== "object") return new Map();

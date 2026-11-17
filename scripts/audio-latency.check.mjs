@@ -53,7 +53,7 @@ try {
   assert(gamePlayback.every(r=>r.starts===1&&r.startMs<1000),JSON.stringify(gamePlayback));
   assert(!requests.some(url=>url.endsWith('/api/voice')),'Fixed game/FAQ lines must use prepared voice assets');
   const retry=await browser.newPage();let manifestAttempts=0;
-  await retry.route('**/audio/manifest.json',route=>++manifestAttempts===1?route.fulfill({status:503,body:''}):route.continue());
+  await retry.route('**/audio/manifest.json*',route=>++manifestAttempts===1?route.fulfill({status:503,body:''}):route.continue());
   await retry.goto(base+'/privacy');
   await retry.evaluate(async()=>{window.engine=await import('/src/audio/engine.ts');const b=document.createElement('button');b.id='retry-unlock';b.textContent='Unlock';b.onclick=()=>window.engine.unlock();document.body.append(b)});
   await retry.locator('#retry-unlock').click();await retry.waitForTimeout(150);

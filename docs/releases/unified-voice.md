@@ -18,7 +18,9 @@ Production: https://aidos.nexcel.kz. Release via Cloudflare Builds from main; se
 - Evidence is in `unified-voice-evidence/`. Automated PCM/ASR checks are not a subjective listening review on every physical device.
 
 ## Live-service limitation
-The fixed catalogue was successfully generated through production. Subsequent live POST synthesis probes returned 503 `provider_limit`: Cloudflare Workers AI is refusing further generation because of a provider limit. The owner was asked to review the account allowance/billing; no secrets or billing settings were changed. Fixed game, quiz and FAQ audio remains available from static assets. New arbitrary Ask speech cannot be certified until the provider allows requests again; its text remains available. Never claim zero latency for uncached network synthesis.
+The fixed catalogue was successfully generated through production. Subsequent live POST synthesis probes returned 503 `provider_daily_limit`: Cloudflare Workers AI is refusing further generation because its daily allowance is exhausted. The owner was asked to review the account allowance/billing; no secrets or billing settings were changed. Fixed game, quiz and FAQ audio remains available from static assets. New arbitrary Ask speech cannot be certified until the provider allows requests again; its text remains available. Never claim zero latency for uncached network synthesis.
 
 ## Rollback
 See the current section of `docs/DEPLOY.md`. The foundation commit `220816c` preserves the supplied image and server route but has the earlier client voice implementation. Prefer a corrective forward release; do not reset shared main.
+
+Production verification after e065bbf: exact PNG, greeting MP3 and voice-index hashes match local files; real Ask FAQ plus voice started in 424 ms without a TTS call. The arbitrary synthesis probe still returned the daily-limit code. Manifest fetches now also carry the voice version to bypass older browser caches.
