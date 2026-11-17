@@ -46,3 +46,15 @@ export function answerFromFaq(question: string): AskResponse {
   if (refuseQuestion(question)) return { answer: askRefusal, source: "refusal" };
   return { answer: bestMatch(cleanQuestion(question))?.answer ?? generalAnswer, source: "faq" };
 }
+
+// Only complete, unambiguous topic phrases bypass the model. Extra meaningful
+// words (e.g. "red sky") must not receive the generic blue-sky explanation.
+export function quickFaqAnswer(question: string): AskResponse | undefined {
+  if (refuseQuestion(question)) return undefined;
+  const filler = new Set(['why','how','what','is','are','do','does','the','a','an','we','you','can','tell','me','about','please','explain']);
+  const key = (text: string) => [...new Set(text.toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(w=>w&&!filler.has(w)))].sort().join(' ');
+  const questionKey = key(question);
+  if (!questionKey) return undefined;
+  const entry = faq.find(item=>item.keywords.some(keyword=>key(keyword)===questionKey));
+  return entry ? { answer: entry.answer, source: 'faq' } : undefined;
+}

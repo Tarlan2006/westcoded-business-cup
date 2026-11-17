@@ -1,0 +1,1531 @@
+{
+  "base": "https://aidos.nexcel.kz",
+  "mockAPI": true,
+  "fontScale": 1,
+  "youtube": "embed URL and failure UI only; playback is not simulated as verified",
+  "screens": [
+    {
+      "name": "greeting",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 173,
+          "height": 230
+        }
+      ],
+      "headings": [
+        "Hey pal! Ready for a screen-free adventure?"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "setup",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Tell AIdos about your child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "video",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
+      "headings": [
+        "Video library"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "quiz",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 208,
+          "height": 208
+        }
+      ],
+      "headings": [
+        "Quiz"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "complete",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 113,
+          "height": 150
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        }
+      ],
+      "headings": [
+        "Way to go, Agent AuditPal!"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "hub",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "garage",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "parents-dialog",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "memory",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Memory"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "tictactoe",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Stars vs. Clouds"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "space",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 208.56944274902344,
+          "height": 208.5694580078125
+        }
+      ],
+      "headings": [
+        "How bigis space?"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "space-journey",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Case file: The Wall-Climber"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch-canvas",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "The Wall-Climber"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch-reveal",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Meet Gecko Hero!"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "plans",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 98,
+          "height": 130
+        }
+      ],
+      "headings": [
+        "AIdos Plus"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-setup",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Choose your game"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 208,
+          "height": 208
+        }
+      ],
+      "headings": [
+        "Scavenger Hunt"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-paused",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 208,
+          "height": 208
+        }
+      ],
+      "headings": [
+        "Scavenger Hunt"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-result",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Loading activity…"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 164.578125,
+          "height": 219.4375
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask-answer",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask-mic-denied",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 164.578125,
+          "height": 219.4375
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "session-complete",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 90,
+          "height": 120
+        }
+      ],
+      "headings": [
+        "Session complete"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "setup-again",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Tell AIdos about your child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "hub-science-3-5",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Quiz"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "balloons",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Balloon Count"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "toddler-video",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
+      "headings": [
+        "A little world of wonder ✦"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "privacy",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Privacy"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "404",
+      "size": "390x844",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Let's find our way back!"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "greeting",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 173,
+          "height": 230
+        }
+      ],
+      "headings": [
+        "Hey pal! Ready for a screen-free adventure?"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "setup",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Tell AIdos about your child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "video",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 87,
+          "height": 116
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
+      "headings": [
+        "Video library"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "quiz",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 240,
+          "height": 240
+        }
+      ],
+      "headings": [
+        "Quiz"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "complete",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 113,
+          "height": 150
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        }
+      ],
+      "headings": [
+        "Way to go, Agent AuditPal!"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "hub",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "garage",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "parents-dialog",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 38.390625,
+          "height": 51.1875
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "memory",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Memory"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "tictactoe",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Stars vs. Clouds"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "space",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 330.03814697265625,
+          "height": 330.0382080078125
+        }
+      ],
+      "headings": [
+        "How bigis space?"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "space-journey",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "Case file: The Wall-Climber"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch-canvas",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
+      "headings": [
+        "The Wall-Climber"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "sketch-reveal",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Meet Gecko Hero!"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "plans",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 98,
+          "height": 130
+        }
+      ],
+      "headings": [
+        "AIdos Plus"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-setup",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Choose your game"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 240,
+          "height": 240
+        }
+      ],
+      "headings": [
+        "Scavenger Hunt"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-paused",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 240,
+          "height": 240
+        }
+      ],
+      "headings": [
+        "Scavenger Hunt"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "mission-result",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Loading activity…"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 172.5,
+          "height": 230
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask-answer",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "ask-mic-denied",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 172.5,
+          "height": 230
+        }
+      ],
+      "headings": [
+        "Ask AIdos"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "session-complete",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 90,
+          "height": 120
+        }
+      ],
+      "headings": [
+        "Session complete"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "setup-again",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
+      "headings": [
+        "Tell AIdos about your child"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "hub-science-3-5",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 63,
+          "height": 84
+        }
+      ],
+      "headings": [
+        "Quiz"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "balloons",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 220,
+          "height": 220
+        }
+      ],
+      "headings": [
+        "Balloon Count"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "toddler-video",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "threeD": true,
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
+      "headings": [
+        "A little world of wonder ✦"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "privacy",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Privacy"
+      ],
+      "smallTargets": []
+    },
+    {
+      "name": "404",
+      "size": "1280x900",
+      "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
+      "headings": [
+        "Let's find our way back!"
+      ],
+      "smallTargets": []
+    }
+  ],
+  "chains": [
+    {
+      "size": "390x844",
+      "title": "Dino Dig",
+      "animation": "chains-rattle"
+    },
+    {
+      "size": "390x844",
+      "title": "Music Band",
+      "animation": "chains-rattle"
+    },
+    {
+      "size": "390x844",
+      "title": "Story Quest",
+      "animation": "chains-rattle"
+    },
+    {
+      "size": "1280x900",
+      "title": "Dino Dig",
+      "animation": "chains-rattle"
+    },
+    {
+      "size": "1280x900",
+      "title": "Music Band",
+      "animation": "chains-rattle"
+    },
+    {
+      "size": "1280x900",
+      "title": "Story Quest",
+      "animation": "chains-rattle"
+    }
+  ],
+  "errors": [],
+  "console": [
+    {
+      "size": "390x844",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "size": "390x844",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "size": "390x844",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    },
+    {
+      "size": "1280x900",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+    },
+    {
+      "size": "1280x900",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED"
+    },
+    {
+      "size": "1280x900",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 ()"
+    }
+  ],
+  "network": [
+    {
+      "path": "/api/turn",
+      "privateData": false,
+      "keys": [
+        "mode",
+        "ageBand",
+        "round",
+        "elapsedSec",
+        "taskLineIds",
+        "childSaid",
+        "candidatePraiseIds",
+        "candidateNextTaskIds",
+        "loreNote"
+      ]
+    },
+    {
+      "path": "/api/ask",
+      "privateData": false,
+      "keys": [
+        "question"
+      ]
+    },
+    {
+      "path": "/api/ask",
+      "privateData": false,
+      "keys": [
+        "question"
+      ]
+    },
+    {
+      "path": "/api/turn",
+      "privateData": false,
+      "keys": [
+        "mode",
+        "ageBand",
+        "round",
+        "elapsedSec",
+        "taskLineIds",
+        "childSaid",
+        "candidatePraiseIds",
+        "candidateNextTaskIds",
+        "loreNote"
+      ]
+    },
+    {
+      "path": "/api/ask",
+      "privateData": false,
+      "keys": [
+        "question"
+      ]
+    },
+    {
+      "path": "/api/ask",
+      "privateData": false,
+      "keys": [
+        "question"
+      ]
+    }
+  ]
+}

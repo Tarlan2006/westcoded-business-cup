@@ -10,6 +10,7 @@ The user approved a procedural 3D interpretation with an approximate face. The a
 - MP3 playback has short gain ramps, including a 20 ms stop fade, to avoid discontinuities when users skip speech.
 - A failed manifest request was cached as an empty map for the whole tab. It now retries after a temporary network failure.
 - Browser speech no longer silently gives up merely because the voice list has not populated yet; the browser can choose its default English voice.
+- The live audit measured a 4,022 ms model response for "Why is the sky blue?", despite an existing prepared FAQ. A follow-up Worker fix returns exact recognized topic phrases immediately after safety checks. Extra meaningful words ("red sky") and requests with conversation history still use the model; regression tests cover both. The API response shape is unchanged.
 
 ## Measurements and checks
 

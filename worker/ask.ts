@@ -1,7 +1,7 @@
 import { unsafe, safeOutput, retryReply, deadline } from "./safety";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
-import { answerFromFaq, askRefusal, cleanQuestion, refuseQuestion } from "../shared/ask-faq";
+import { answerFromFaq, askRefusal, cleanQuestion, refuseQuestion, quickFaqAnswer } from "../shared/ask-faq";
 import type { AskResponse } from "../shared/types";
 import { readTopics, topicLabels } from "../shared/topics";
 
@@ -158,8 +158,11 @@ ask.post("/api/ask", bodyLimit({ maxSize: 8192, onError: (c) => {
   }
   if (body.question.length > 300 || unsafe(body.question) || refuseQuestion(body.question)) return c.json({ answer: askRefusal, source: "refusal" } satisfies AskResponse);
   const question = cleanQuestion(body.question);
+  const history = readHistory(body.history);
+  const quick = !history.length && quickFaqAnswer(question);
+  if (quick) return c.json(quick);
   if ((!c.env.GROQ_API_KEY?.trim() && !c.env.AI) || !canCallModel(c.req.header("CF-Connecting-IP") ?? "local")) {
     return c.json(answerFromFaq(question));
   }
-  return c.json(await modelAnswer(question, c.env, topicLabels(readTopics(body.topics)), readHistory(body.history), body.ageBand === "6-8" ? "6-8" : "3-5"));
+  return c.json(await modelAnswer(question, c.env, topicLabels(readTopics(body.topics)), history, body.ageBand === "6-8" ? "6-8" : "3-5"));
 });
