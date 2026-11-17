@@ -12,7 +12,7 @@ export const voice=new Hono<{Bindings:{AI:Ai}}>();
 
 export async function synthesize(ai: Ai,text: string):Promise<ArrayBuffer> {
   const stream=await deadline(ai.run(voiceModel as Parameters<Ai['run']>[0],{
-    text,speaker:voiceSpeaker,encoding:'mp3',bit_rate:64000,
+    text,speaker:voiceSpeaker,encoding:'mp3',bit_rate:48000,
   } as never),6000) as unknown as ReadableStream;
   if(!stream || typeof stream.getReader!=='function')throw new Error('voice_unavailable');
   const bytes=await deadline(new Response(stream).arrayBuffer(),6000);
@@ -24,6 +24,7 @@ function failure(error: unknown) {
   const message=error instanceof Error ? error.message : '';
   if(/^voice_(unavailable|size)$/.test(message))return message;
   if(/timeout/i.test(message))return 'timeout';
+  if(/bit.?rate|sample.?rate|encoding/i.test(message))return 'audio_format';
   if(/agree|terms|license/i.test(message))return 'model_terms';
   if(/unauthorized|permission|not authorized/i.test(message))return 'model_access';
   const code=message.match(/\b(1\d{3,4})\b/)?.[1];
