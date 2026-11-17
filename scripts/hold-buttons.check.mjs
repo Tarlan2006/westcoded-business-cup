@@ -43,7 +43,7 @@ try {
     const settings = page.getByRole('dialog', { name: 'Session settings' });
     await settings.getByRole('button', { name: 'Keep playing', exact: true }).click();
     assert.equal(await page.locator('.hold-tip').count(), 0);
-    await page.locator('.activity-grid').getByRole('button', { name: /Ask MyPal/ }).click();
+    await page.locator('.activity-grid').getByRole('button', { name: /Ask AIdos/ }).click();
     const talk = page.locator('button.talk-button');
     await page.getByText('Press and hold to talk', { exact: true }).waitFor();
     await talk.tap();

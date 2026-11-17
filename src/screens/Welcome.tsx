@@ -15,7 +15,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
   const greeting = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    // A short welcome with MyPal every time the site opens (about two and a half seconds).
+    // A short welcome with AIdos every time the site opens (about two and a half seconds).
     const times = repeat ? [700, 1500, 2300] : [800, 1700, 2600];
     const timers = times.map((time, index) => window.setTimeout(() => setStage(index + 1), time));
     return () => timers.forEach((timer) => window.clearTimeout(timer));

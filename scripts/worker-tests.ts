@@ -29,7 +29,7 @@ try {
  const setupResponse=await app.request("/api/setup",{method:"POST",headers:{"Content-Type":"application/json","CF-Connecting-IP":"parent-setup"},body:JSON.stringify({text:marker,parentContext:marker,notes:marker})},env);
  assert.equal(setupResponse.status,200); assert(!JSON.stringify(await setupResponse.json()).includes(marker)); assert.equal(forwarded,"");
  await request("How do wheels work?",{parentContext:marker,notes:marker,parent:{context:marker},history:[{question:"How do wheels work?",answer:"They turn.",parentNotes:marker}]});
- assert(forwarded.includes("You are MyPal, a friendly game host for kids.")); assert(forwarded.includes("Address the child as pal."));
+ assert(forwarded.includes("You are AIdos, a friendly game host for kids.")); assert(forwarded.includes("Address the child as pal."));
  assert(!forwarded.includes(marker)); assert(forwarded.includes("How do wheels work?"));
 
  globalThis.fetch = async () => { calls++; return Response.json({choices:[{message:{content:"A wheel turns around its middle. It helps things move."}}]}); };
@@ -45,6 +45,9 @@ try {
  await assert.rejects(deadline(new Promise(()=>{}),5),/upstream_timeout/);
  for(const text of ["Call 555 123 4567", "Visit https://example.com", "My name is Bob", "123 Main Street", "kill someone", "x".repeat(281)]) assert.equal(safeOutput(text),safeReply);
  const foreign=await app.request("/api/ask",{method:"POST",headers:{Origin:"https://evil.example"}},env); assert.equal(foreign.status,403);
+ const aidosOrigin = "https://aidos.nexcel.kz";
+ const aidosPreflight = await app.request("/api/ask", {method:"OPTIONS", headers:{Origin:aidosOrigin}}, env);
+ assert.equal(aidosPreflight.status, 204); assert.equal(aidosPreflight.headers.get("Access-Control-Allow-Origin"), aidosOrigin);
  const preflight=await app.request("/api/ask",{method:"OPTIONS",headers:{Origin:"http://localhost:5173"}}, {...env,ALLOWED_ORIGINS:"http://localhost:5173"}); assert.equal(preflight.status,204);
  for(let i=0;i<31;i++) { const res=await app.request("/api/ask",{method:"POST",headers:{"Content-Type":"application/json","CF-Connecting-IP":"limited"},body:JSON.stringify({question:""})},env); assert.equal(res.status,i===30?429:200); }
  const limiter=new IpLimiter(); for(let i=0;i<30;i++) assert(limiter.take("a",0)); assert(!limiter.take("a",0)); assert(limiter.take("a",2000)); assert(limiter.take("b",0));

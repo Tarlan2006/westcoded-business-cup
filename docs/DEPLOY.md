@@ -1,5 +1,21 @@
 # Deployment
 
+## Current target — AIdos, 2026-11-17
+
+The production site is **https://aidos.nexcel.kz**, served by Worker **westcoded-business-cup** in the Cloudflare account that owns **nexcel.kz**. The old `mypal.tarlan-b06.workers.dev` address is retired/unavailable; its 404 is not a failure of the new custom domain. Records below this section describe historical deployments.
+
+Cloudflare Builds is connected to `Tarlan2006/westcoded-business-cup`, branch `main`: **pushing main automatically deploys**. The dashboard confirmed commit `95aa6b5` at 100% on version prefix `a66cffb8` before this branding release. This also supersedes the earlier audit's assumption that its push would not publish.
+
+The Wrangler name now matches the real Worker. `keep_vars: true` preserves dashboard variables; application secrets must not be read, set or deleted during deployment. `ALLOWED_ORIGINS` explicitly includes `https://aidos.nexcel.kz`, both historical workers.dev origins and localhost. Do not deploy this project into the old CLI account or create another Worker merely because the old `mypal` name is missing.
+
+Release content: AIdos name in UI, accessibility labels, metadata and host prompts; four Kazakh-clothing mascot poses with taqiya and gold oyu; seven regenerated Piper clips; the previously audited nine music themes and animated backgrounds. Existing localStorage keys are retained to preserve preferences at the same origin. The new domain cannot automatically read profiles from an old origin.
+
+To publish: pull/rebase main, run checks, commit and push; wait for Cloudflare Builds to show the source commit Ready at 100%. Then verify the live HTML/assets, health, CORS, music controls and screenshots. Before any future release, record its currently active version; do not blindly use a historical rollback target.
+
+To roll back this release: open Workers & Pages → westcoded-business-cup → Deployments in the same account, select the previous successful version (pre-release prefix `a66cffb8`, source `95aa6b5`), and use Rollback. Confirm the active deployment and repeat the live checks. Revert the offending Git commit before another push so the automatic build does not republish it. Do not reset main or change secrets. The fallback version has the old name and allowlist; check CORS again after any rollback.
+
+## Historical records
+
 Production runs on the `mypal` Worker at [MyPal](https://mypal.tarlan-b06.workers.dev). Cloudflare version `dfc6fed0-ec8c-48a7-9b34-c72e71086fcd` was deployed from `a34b06b`. The deployment includes the designer screens, games, and refreshed voice clips.
 
 Verified after rename: Chrome title/Splash/meta, all seven MyPal audio hashes and decoding, Ask HTTP 200, own/dev Origin HTTP 200, foreign Origin HTTP 403. Application secrets were not read or changed. Browser profiles are origin-scoped: the new URL starts with its own localStorage; records from the old URL are not automatically transferred.

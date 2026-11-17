@@ -1,5 +1,5 @@
 // Steel chains and a padlock wrapped over anything that is not available yet
-// (MyPal Plus games). Purely decorative: the button underneath carries the label.
+// (AIdos Plus games). Purely decorative: the button underneath carries the label.
 const W = 360;
 const H = 130;
 const STEP = 13;

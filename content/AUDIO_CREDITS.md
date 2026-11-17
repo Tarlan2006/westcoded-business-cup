@@ -10,7 +10,7 @@ The reference recordings in `content/voice` were designed with [OmniVoice](https
 
 ## Animal sounds
 
-The real animal sounds in `public/audio/animals` come from Wikimedia Commons. MyPal trims them, fades their edges, normalizes their loudness, and encodes them as MP3. Each adapted file keeps its source's license.
+The real animal sounds in `public/audio/animals` come from Wikimedia Commons. AIdos trims them, fades their edges, normalizes their loudness, and encodes them as MP3. Each adapted file keeps its source's license.
 
 - `animal_cow.mp3`: [Single Cow Moo.ogg](https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg) by MichaeltheFox8621, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - `animal_cat.mp3`: [Meow of a Siamese cat - freemaster2.wav](https://commons.wikimedia.org/wiki/File:Meow_of_a_Siamese_cat_-_freemaster2.wav) by freemaster2, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)

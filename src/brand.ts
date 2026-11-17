@@ -1,1 +1,1 @@
-export const APP_NAME = 'MyPal';
+export const APP_NAME = 'AIdos';

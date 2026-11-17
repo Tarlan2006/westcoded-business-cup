@@ -176,7 +176,7 @@ try {
     assert.equal(await page.locator("iframe.video-player").count(), 1);
     await button(page, "Next video").waitFor();
     assert(await button(page, "Next video").isDisabled());
-    assert(await button(page, /Play with MyPal/).isDisabled());
+    assert(await button(page, /Play with AIdos/).isDisabled());
     assert.equal(await complete(page).count(), 0);
     if (width === 390) {
       await advance(page, 10_000);
@@ -238,7 +238,7 @@ try {
   await ask.page.getByLabel("Custom minutes").fill("5");
   await start(ask.page);
   await home(ask.page);
-  await ask.page.locator(".activity-grid").getByRole("button", { name: /^Ask MyPal/ }).click();
+  await ask.page.locator(".activity-grid").getByRole("button", { name: /^Ask AIdos/ }).click();
   let releaseAnswer;
   const answerGate = new Promise((resolve) => { releaseAnswer = resolve; });
   await ask.page.route("**/api/ask", async (route) => {

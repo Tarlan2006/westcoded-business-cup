@@ -132,9 +132,9 @@ export default function App() {
   useEffect(() => {
     const section = privacy ? "Privacy" : session?.complete ? "Session complete" : welcoming ? "" : !session ? "Parent Setup" : breadcrumb(current.screen);
     document.title = section ? section + " · " + APP_NAME : APP_NAME;
-    const description = privacy ? "How MyPal handles local child settings, optional voice input and questions."
-      : section ? section + " with MyPal: playful adventures for children and their grown-ups."
-      : "MyPal: playful adventures, learning games and friendly voice guidance with MyPal for children and their grown-ups.";
+    const description = privacy ? `How ${APP_NAME} handles local child settings, optional voice input and questions.`
+      : section ? `${section} with ${APP_NAME}: playful adventures for children and their grown-ups.`
+      : `${APP_NAME}: playful adventures, learning games and friendly voice guidance for children and their grown-ups.`;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
   }, [privacy, session?.complete, !!session, welcoming, current.screen.name]);
 

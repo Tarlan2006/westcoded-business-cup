@@ -4,7 +4,7 @@ import { APP_NAME } from "../brand";
 import { Mascot } from "./Mascot";
 import "./AnimalSounds.css";
 
-// After a toddler video, MyPal names each animal and says its sound, then the real
+// After a toddler video, AIdos names each animal and says its sound, then the real
 // animal is heard a moment later. Nothing needs a tap; it ends on its own.
 // Recordings: content/AUDIO_CREDITS.md ("Animal sounds").
 const animals = [

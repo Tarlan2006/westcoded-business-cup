@@ -1,4 +1,4 @@
-// MyPal Plus: the games behind a lock and the subscription plans they lead to.
+// AIdos Plus: the games behind a lock and the subscription plans they lead to.
 // Prices and features live here so they are easy to change in one place.
 // There is no checkout yet; choosing a plan only tells the grown-up it is coming.
 
@@ -8,10 +8,11 @@ export const lockedGames = [
   { id: "story-quest", icon: "📖", title: "Story Quest", description: "Choose what happens next in a spoken adventure." },
 ] as const;
 
+import { APP_NAME } from '../brand';
 const plusFeatures = [
   "Unlock Dino Dig, Music Band, and Story Quest",
   "New missions and quizzes every week",
-  "Unlimited Ask MyPal questions",
+  `Unlimited Ask ${APP_NAME} questions`,
   "Up to 4 child profiles",
   "Weekly progress note for grown-ups",
   "Cancel anytime",

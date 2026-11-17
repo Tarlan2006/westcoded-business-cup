@@ -13,7 +13,7 @@ await page.addInitScript(()=>{
 });
 try {
  await page.goto(base);await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
- await page.getByLabel('What should MyPal call your child? *',{exact:true}).fill('Pal');await page.getByRole('button',{name:'6–8 yrs',exact:true}).click();await page.getByRole('button',{name:/START.*FOR/}).click();
+ await page.getByLabel('What should AIdos call your child? *',{exact:true}).fill('Pal');await page.getByRole('button',{name:'6–8 yrs',exact:true}).click();await page.getByRole('button',{name:/START.*FOR/}).click();
  assert.equal(await page.locator('.amb-controls').count(),0,'No competing soundtrack in video');checks.push('video has no music');
  await page.getByRole('button',{name:'Home, back to activities',exact:true}).click();await page.getByRole('region',{name:'Start here',exact:true}).waitFor();
  assert.equal(await page.locator('.prototype').getAttribute('data-ambience'),'calm');assert(await page.locator('.amb-music-button').isDisabled());
@@ -23,11 +23,11 @@ try {
  await page.getByRole('button',{name:'Parents, press and hold',exact:true}).press('Enter',{delay:1600});await page.getByRole('dialog').waitFor();await page.waitForFunction(()=>window.auditMusicGain===0);checks.push('parent dialog pauses');await page.getByRole('button',{name:'Keep playing',exact:true}).click();await page.waitForFunction(()=>window.auditMusicGain>0);
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForFunction(()=>window.auditMusicGain===0);checks.push('hidden tab pauses');
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForFunction(()=>window.auditMusicGain>0);
- for(const [title,theme]of [['Memory','patterns'],['Space Scale','cosmic'],['Sketch Artist','studio'],['Ask MyPal','curious']]){
+ for(const [title,theme]of [['Memory','patterns'],['Space Scale','cosmic'],['Sketch Artist','studio'],['Ask AIdos','curious']]){
   await page.locator('.activity-grid').getByRole('button',{name:new RegExp(title)}).click();await page.waitForFunction(t=>document.querySelector('.prototype')?.dataset.ambience===t,theme);
   await page.waitForTimeout(300);assert.equal(await page.locator('.amb-mark').count(),4);
   if(theme==='cosmic')await page.screenshot({path:output+'/cosmic-mobile.png',fullPage:true});
-  if(title==='Ask MyPal'){
+  if(title==='Ask AIdos'){
     await page.getByPlaceholder('Type your question').waitFor();
     await page.evaluate(()=>{navigator.mediaDevices.getUserMedia=()=>new Promise((_,reject)=>setTimeout(()=>reject(new DOMException('Denied','NotAllowedError')),1000));});
     await page.locator('button.talk-button').focus();await page.keyboard.down('Space');await page.waitForFunction(()=>window.auditMusicGain===0);checks.push('microphone opening pauses music');await page.keyboard.up('Space');await page.waitForTimeout(1200);

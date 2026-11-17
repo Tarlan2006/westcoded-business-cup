@@ -7,7 +7,7 @@ flowchart TD
  Client --> Host[Live mascot voice: Pocket TTS in the browser]
  Host --> Speech[Installed browser voice while it loads]
  Worker --> Guard[Origin allowlist + IP buckets + body limits]
- Guard --> Ask[Ask: input checks + short MyPal prompt]
+ Guard --> Ask[Ask: input checks + short AIdos prompt]
  Ask --> Groq[Groq chat completion]
  Ask --> AI[Workers AI language model fallback]
  Groq --> Filter[Output safety filter]

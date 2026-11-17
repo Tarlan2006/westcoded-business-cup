@@ -38,7 +38,7 @@ app.use("*", async (c, next) => {
 app.use("/api/*", async (c,next) => {
  c.header("Cache-Control","no-store"); c.header("Vary","Origin");
  const origin=c.req.header("Origin");
- const allowed=(c.env.ALLOWED_ORIGINS ?? "https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173").split(",").map(s=>s.trim());
+ const allowed=(c.env.ALLOWED_ORIGINS ?? "https://aidos.nexcel.kz,https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173").split(",").map(s=>s.trim());
  if(origin && !allowed.includes(origin)) return c.json({error:"Let's return to the game."},403);
  if(origin) c.header("Access-Control-Allow-Origin",origin);
  if(c.req.method === "OPTIONS") { c.header("Access-Control-Allow-Methods","GET, POST, OPTIONS"); c.header("Access-Control-Allow-Headers","Content-Type"); return c.body(null,204); }
@@ -88,14 +88,14 @@ app.get("*", async c => {
   if (privacy) url.pathname = "/";
   const response = await c.env.ASSETS.fetch(new Request(url, c.req.raw));
   if (!privacy || response.status !== 200) return response;
-  const title = "Privacy · MyPal";
-  const description = "How MyPal handles local child settings, optional voice input and questions.";
+  const title = "Privacy · AIdos";
+  const description = "How AIdos handles local child settings, optional voice input and questions.";
   return new HTMLRewriter()
     .on("title", { element: el => { el.setInnerContent(title); } })
     .on('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]', { element: el => { el.setAttribute("content", description); } })
     .on('meta[property="og:title"],meta[name="twitter:title"]', { element: el => { el.setAttribute("content", title); } })
-    .on('link[rel="canonical"]', { element: el => { el.setAttribute("href", "https://mypal.tarlan-b06.workers.dev/privacy"); } })
-    .on('meta[property="og:url"]', { element: el => { el.setAttribute("content", "https://mypal.tarlan-b06.workers.dev/privacy"); } })
+    .on('link[rel="canonical"]', { element: el => { el.setAttribute("href", "https://aidos.nexcel.kz/privacy"); } })
+    .on('meta[property="og:url"]', { element: el => { el.setAttribute("content", "https://aidos.nexcel.kz/privacy"); } })
     .transform(response);
 });
 

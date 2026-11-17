@@ -21,12 +21,12 @@ export function HubTile({ icon, title, children, onClick, tone }: {
   </button>;
 }
 
-/** Tile icon: Ask MyPal shows MyPal himself, every other activity its emoji. */
+/** Tile icon: Ask AIdos shows AIdos himself, every other activity its emoji. */
 export function ActivityIcon({ item }: { item: ActivitySuggestion }) {
   return item.activity === "ask" ? <Mascot pose="point" className="tile-mascot" /> : item.icon;
 }
 
-/** A MyPal Plus game, wrapped in chains. A tap rattles them, then opens the plans. */
+/** A AIdos Plus game, wrapped in chains. A tap rattles them, then opens the plans. */
 export function LockedTile({ icon, title, children, onClick }: { icon: string; title: string; children: ReactNode; onClick: () => void }) {
   const [rattling, setRattling] = useState(false);
   const timer = useRef(0);

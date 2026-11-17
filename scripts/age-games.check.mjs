@@ -8,7 +8,7 @@ try {
     await page.addInitScript(() => localStorage.setItem('mission-control.sound', 'off'));
     await page.goto(process.env.VIDEO_URL ?? 'http://127.0.0.1:5178');
     await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
-    await page.getByLabel('What should MyPal call your child? *', { exact: true }).fill('Pal');
+    await page.getByLabel('What should AIdos call your child? *', { exact: true }).fill('Pal');
     await page.getByRole('button', { name: age, exact: true }).click();
     await page.getByRole('button', { name: /^START SESSION FOR/ }).click();
     await page.getByRole('button', { name: 'Home, back to activities', exact: true }).click();
@@ -19,7 +19,7 @@ try {
     if (older) assert.doesNotMatch(await page.getByRole('main').innerText(), /Balloon Count/);
     // Open the existing video -> three-question quiz -> Complete path.
     await page.locator('.activity-grid').getByRole('button', { name: /Video library/ }).click();
-    await page.getByRole('button', { name: /Play with MyPal Now/ }).click();
+    await page.getByRole('button', { name: /Play with AIdos Now/ }).click();
     for (let index = 0; index < 3; index++) {
       await page.locator('[aria-label="Quick replies"]').getByRole('button').first().click();
       await page.getByRole('button', { name: index === 2 ? 'Finish quiz' : 'Next question', exact: true }).click();

@@ -18,7 +18,7 @@ try {
     ` }));
     await page.goto(process.env.VIDEO_URL ?? 'http://127.0.0.1:5178');
     await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
-    await page.getByLabel("What should MyPal call your child?", { exact: true }).fill('Pal');
+    await page.getByLabel("What should AIdos call your child?", { exact: true }).fill('Pal');
     await page.getByRole('button', { name: '1–2 yrs', exact: true }).click();
     await page.getByRole('button', { name: /START/ }).click();
     await page.getByRole('button', { name: 'Open video: I See Something Blue', exact: true }).click();

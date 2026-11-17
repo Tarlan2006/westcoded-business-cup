@@ -1,0 +1,37 @@
+[
+  {
+    "id": "common_praise_02",
+    "text": "AIdos copies. Great work!",
+    "transcript": "I do copies, great work."
+  },
+  {
+    "id": "common_transition_06",
+    "text": "Back to AIdos for the next clue.",
+    "transcript": "back to ideas for the next clue."
+  },
+  {
+    "id": "common_recall_01",
+    "text": "Last time you tracked down objects for AIdos.",
+    "transcript": "Last time, you tracked down objects for IDAs."
+  },
+  {
+    "id": "common_recall_08",
+    "text": "Last time you helped AIdos crack a clue.",
+    "transcript": "Last time you helped I'd as crack a clue."
+  },
+  {
+    "id": "common_intro_02",
+    "text": "AIdos here. Let's explore together.",
+    "transcript": "eye does here. Let's explore together."
+  },
+  {
+    "id": "local_hunt_recall",
+    "text": "Last time you tracked down objects for AIdos.",
+    "transcript": "Last time you tracked down objects for our ideas."
+  },
+  {
+    "id": "local_praise_radio",
+    "text": "AIdos copies. Great work!",
+    "transcript": "I do's copies. Great work."
+  }
+]

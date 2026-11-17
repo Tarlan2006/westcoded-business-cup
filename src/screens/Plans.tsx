@@ -4,7 +4,7 @@ import { Mascot } from "../components/Mascot";
 import { lockedGames, plans, type PlanId } from "../game/premium";
 import { LearnPage } from "./Home";
 
-/** Shown after tapping a locked game: what MyPal Plus includes and its two plans. */
+/** Shown after tapping a locked game: what AIdos Plus includes and its two plans. */
 export function Plans({ onBack }: { onBack: () => void }) {
   const [chosen, setChosen] = useState<PlanId | null>(null);
   const picked = plans.find((plan) => plan.id === chosen);

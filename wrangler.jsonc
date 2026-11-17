@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "mypal",
+  "name": "westcoded-business-cup",
+  "keep_vars": true,
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-14",
   "compatibility_flags": [
@@ -19,6 +20,6 @@
     "enabled": true
   },
   "vars": {
-    "ALLOWED_ORIGINS": "https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173"
+    "ALLOWED_ORIGINS": "https://aidos.nexcel.kz,https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173"
   }
 }

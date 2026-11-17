@@ -46,8 +46,8 @@ async function fresh(width, height, captures = false) {
   if (captures) await shot(page, "greeting");
   await button(page, "Sound").click();
   await button(page, "CONTINUE").click();
-  await page.getByRole("heading", { name: "Tell MyPal About Your Child", exact: true }).waitFor();
-  await page.getByLabel("What should MyPal call your child?", { exact: true }).fill("CometQA");
+  await page.getByRole("heading", { name: "Tell AIdos About Your Child", exact: true }).waitFor();
+  await page.getByLabel("What should AIdos call your child?", { exact: true }).fill("CometQA");
   await page.getByLabel(/Child's Interests/).fill("PRIVATE_CONTEXT_EXAMPLE");
   if (captures) await shot(page, "profile-setup");
   return { context, page, sent, errors };
@@ -66,7 +66,7 @@ async function educational(width, height) {
   assert.match(src, /^https:\/\/www\.youtube-nocookie\.com\/embed\//);
   assert(!src.includes("autoplay"));
   assert((await player.boundingBox()).height >= 200);
-  await button(page, "Play with MyPal Now!").click();
+  await button(page, "Play with AIdos Now!").click();
   await page.getByRole("heading", { name: "Quiz", exact: true }).waitFor();
   assert.match(await page.locator("#sessionClockDisplay").innerText(), /^59:|^60:/);
   for (let i = 0; i < 3; i++) {
@@ -85,7 +85,7 @@ async function educational(width, height) {
   assert.equal((await storage(page)).xp, 35);
   await button(page, "More games").click();
   await hub(page).waitFor();
-  assert.equal(await page.getByRole("button", { name: /^Ask MyPal/ }).count(), 0);
+  assert.equal(await page.getByRole("button", { name: /^Ask AIdos/ }).count(), 0);
   await page.reload();
   await hub(page).waitFor();
   assert.equal(await page.locator("#screen-greeting").count(), 0);
@@ -108,7 +108,7 @@ async function active(width, height) {
   await button(page, /START FOR/).click();
   await page.locator("#screen-mission").waitFor();
   await shot(page, "mission");
-  await button(page, "Tickle MyPal").click();
+  await button(page, "Tickle AIdos").click();
   await page.getByText("Hee-hee-hee! That tickles! 😂", { exact: true }).waitFor();
   for (let round = 1; round <= 3; round++) {
     await page.locator(`#starProgressContainer[aria-label="Round ${round}"]`).waitFor();
@@ -125,7 +125,7 @@ async function active(width, height) {
   await page.locator("#screen-profile-setup").waitFor();
   await button(page, "Back").click();
   await hub(page).waitFor();
-  for (const name of ["Ask MyPal", "Space Scale", "Sketch Artist", "Tic-tac-toe", "Memory", "Balloon Count"]) {
+  for (const name of ["Ask AIdos", "Space Scale", "Sketch Artist", "Tic-tac-toe", "Memory", "Balloon Count"]) {
     assert(await page.locator(".activity-grid").getByRole("button", { name: new RegExp(`^${name}`) }).isVisible());
   }
   await page.locator(".activity-grid").getByRole("button", { name: /^Balloon Count/ }).click();
@@ -145,7 +145,7 @@ async function toddler(width, height) {
   await button(page, /START FOR/).click();
   await button(page, "Next Video in Catalog").click();
   assert.match(await page.locator("#screen-video header").innerText(), /Episode 2 of 2/);
-  await button(page, "Play with MyPal Now!").click();
+  await button(page, "Play with AIdos Now!").click();
   for (const word of ["CLAP!", "PEEK-A-BOO", "MOOO!"]) {
     await page.locator("#actionDemoBadge").getByText(word, { exact: true }).waitFor();
     await button(page, "I DID IT!").click();
@@ -178,7 +178,7 @@ async function educationalTimeout(age, firstRoundSeconds) {
   await button(page, `${age} yrs`).click();
   await button(page, /START FOR/).click();
   await page.clock.install();
-  await button(page, "Play with MyPal Now!").click();
+  await button(page, "Play with AIdos Now!").click();
   await page.getByRole("heading", { name: "Quiz", exact: true }).waitFor();
   assert.equal(await page.locator("#roundSecondsBadge").innerText(), `${firstRoundSeconds}s`);
   for (let round = 1; round <= 3; round++) {

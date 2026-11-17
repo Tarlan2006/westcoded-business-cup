@@ -1,16 +1,16 @@
-# MyPal
+# AIdos
 
 **A voice-led play companion for little explorers.** Built by **westcoded** for **Business Cup 2.0**.
 
-[Try MyPal — no login](https://mypal.tarlan-b06.workers.dev) · [Audit and evidence](AUDIT.md) · [Screenshots](docs/screens) · [Privacy](docs/PRIVACY.md)
+[Try AIdos — no login](https://aidos.nexcel.kz) · [Audit and evidence](AUDIT.md) · [Screenshots](docs/screens) · [Privacy](docs/PRIVACY.md)
 
 ## Who it helps
 
-Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. MyPal offers voice-led movement missions for a screen-free break, plus optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. MyPal is not childcare or a safety monitor.
+Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. AIdos offers voice-led movement missions for a screen-free break, plus optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. AIdos is not childcare or a safety monitor.
 
 ## How it works
 
-1. Meet MyPal, then enter a nickname and age. Notes are optional and stay on the device.
+1. Meet AIdos, then enter a nickname and age. Notes are optional and stay on the device.
 2. Choose a session length: 10, 20, 30, 60 minutes or a custom limit.
 3. Watch and learn, or move and play. Spoken prompts also have text/button alternatives.
 4. Earn XP and spaceship parts, then pick another age-appropriate activity.
@@ -20,7 +20,7 @@ Working parents in the United States need a short, predictable break while child
 | --- | --- |
 | 1–2 | Toddler video library, animal sounds and the Animal Sounds quiz |
 | 3–5 | Video + quiz, Memory, Balloon Count, movement missions |
-| 6–8 | Video + quiz, Memory, Space Scale, Sketch Artist, Tic-tac-toe, Ask MyPal, movement missions |
+| 6–8 | Video + quiz, Memory, Space Scale, Sketch Artist, Tic-tac-toe, Ask AIdos, movement missions |
 
 Movement modes include Scavenger Hunt, Floor is Lava and Roadtrip Spy for passengers. YouTube loads on request and can display ads or related videos. The toddler library can autoplay muted videos. Sketch drawings stay on the device; the PNG export is optional.
 
@@ -30,7 +30,7 @@ A single host connects spoken movement tasks, learning games, local rewards and 
 
 ## Business model and current limits
 
-The prototype shows **MyPal Plus: $18/month or $144/year**. These are proposed prices, not an active subscription service. The locked Dino Dig, Music Band and Story Quest cards open the plans screen; checkout, these premium games, weekly content and progress emails are not implemented. Monetisation, parental consent and provider retention need validation before launch.
+The prototype shows **AIdos Plus: $18/month or $144/year**. These are proposed prices, not an active subscription service. The locked Dino Dig, Music Band and Story Quest cards open the plans screen; checkout, these premium games, weekly content and progress emails are not implemented. Monetisation, parental consent and provider retention need validation before launch.
 
 There are no accounts, cross-device sync or payment processing. Reload recovery uses this browser's localStorage. Network-free recovery works while the page is loaded; there is no offline service worker guaranteeing a fresh launch. An external uptime monitor is **not configured**; `/api/health` provides a health endpoint.
 
@@ -89,7 +89,7 @@ npm run smoke
 
 ## Deploy
 
-After reviewing the audit, run the checks above, then `npx wrangler login` and `npx wrangler deploy --keep-vars`. Preserve the MyPal production origin in `ALLOWED_ORIGINS`. Do not overwrite dashboard model secrets. Record the source commit and Cloudflare version; [DEPLOY.md](docs/DEPLOY.md) covers rollback. The current audit changes have **not been deployed**.
+Cloudflare Builds publishes `main` automatically to the `westcoded-business-cup` Worker at **https://aidos.nexcel.kz**. Run the checks above before pushing, then verify the completed build and live site. `keep_vars: true` preserves dashboard variables; never overwrite model secrets. The production origin belongs in `ALLOWED_ORIGINS`. [DEPLOY.md](docs/DEPLOY.md) records the current target, release process and rollback instructions.
 
 ## Voice clips
 

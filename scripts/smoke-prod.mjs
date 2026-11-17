@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 const { chromium } = process.env.VIDEO_PLAYWRIGHT
   ? await import(pathToFileURL(process.env.VIDEO_PLAYWRIGHT).href)
   : await import('playwright');
-const base = process.env.SMOKE_URL ?? 'https://mypal.tarlan-b06.workers.dev';
+const base = process.env.SMOKE_URL ?? 'https://aidos.nexcel.kz';
 const output = process.env.SMOKE_OUTPUT ?? 'docs/screens';
 const mock = process.env.SMOKE_MOCK_API === '1';
 const sizes = (process.env.SMOKE_SIZES ?? '390x844,768x1024,1280x900,844x390').split(',').map(s => s.split('x').map(Number));
@@ -41,7 +41,7 @@ async function home(page) {
 async function tile(page, title) { await page.locator('.activity-grid').getByRole('button', { name: new RegExp(title) }).click(); }
 async function hold(button) { await button.focus(); await button.press('Enter', { delay: 1600 }); }
 async function setup(page, age, name = 'AuditPal') {
-  await page.getByLabel('What should MyPal call your child? *', { exact: true }).fill(name);
+  await page.getByLabel('What should AIdos call your child? *', { exact: true }).fill(name);
   await page.getByRole('button', { name: age, exact: true }).click();
   await page.getByLabel("Child's interests (Optional)", { exact: true }).fill(privateMarker);
   await page.getByRole('button', { name: /START.*FOR/ }).click();
@@ -75,14 +75,14 @@ try {
     await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
     const start = page.getByRole('button', { name: /START.*FOR/ });
     await start.waitFor(); assert(await start.isDisabled());
-    await page.getByLabel('What should MyPal call your child? *', { exact: true }).fill('   '); assert(await start.isDisabled());
+    await page.getByLabel('What should AIdos call your child? *', { exact: true }).fill('   '); assert(await start.isDisabled());
     await shot(page, 'setup', size);
     await setup(page, '6–8 yrs');
     await page.getByRole('main', { name: 'Video library' }).waitFor();
     await shot(page, 'video', size);
     await page.getByRole('button', { name: /Open video:/ }).click();
     assert((await page.locator('iframe').getAttribute('src')).includes('youtube-nocookie.com'));
-    await page.getByRole('button', { name: /Play with MyPal Now/ }).click();
+    await page.getByRole('button', { name: /Play with AIdos Now/ }).click();
     for (let i = 0; i < 3; i++) {
       if (!i) await shot(page, 'quiz', size);
       await page.locator('[aria-label="Quick replies"]').getByRole('button').first().click();
@@ -124,12 +124,12 @@ try {
       assert.equal(await locked.getAttribute('data-rattling'), 'true');
       const animation = await locked.locator('.chains').evaluate(el => getComputedStyle(el).animationName);
       assert(animation.includes('chains-rattle')); report.chains.push({ size, title, animation });
-      await page.getByRole('heading', { name: 'MyPal Plus', exact: true }).waitFor();
+      await page.getByRole('heading', { name: 'AIdos Plus', exact: true }).waitFor();
       if (title === 'Dino Dig') await shot(page, 'plans', size);
       await home(page);
     }
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await tile(page, 'Dino Dig'); await page.getByRole('heading', { name: 'MyPal Plus', exact: true }).waitFor(); await home(page);
+    await tile(page, 'Dino Dig'); await page.getByRole('heading', { name: 'AIdos Plus', exact: true }).waitFor(); await home(page);
     await tile(page, 'Scavenger Hunt'); await shot(page, 'mission-setup', size);
     await page.getByRole('button', { name: 'Start game', exact: true }).click();
     await page.getByRole('button', { name: /I DID IT/ }).waitFor();
@@ -141,7 +141,7 @@ try {
     await shot(page, 'mission-paused', size);
     await page.getByRole('button', { name: 'End mission', exact: true }).click();
     await page.getByRole('heading', { level: 1 }).first().waitFor(); await shot(page, 'mission-result', size); await home(page);
-    await tile(page, 'Ask MyPal'); await page.getByPlaceholder('Type your question').waitFor(); await shot(page, 'ask', size);
+    await tile(page, 'Ask AIdos'); await page.getByPlaceholder('Type your question').waitFor(); await shot(page, 'ask', size);
     await page.getByPlaceholder('Type your question').fill('Why is the sky blue?'); await page.getByRole('button', { name: 'Ask', exact: true }).click();
     await page.getByRole('button', { name: 'Ask another', exact: true }).waitFor(); await shot(page, 'ask-answer', size);
     await page.getByRole('button', { name: 'Ask another', exact: true }).click();

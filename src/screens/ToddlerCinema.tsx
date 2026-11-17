@@ -26,7 +26,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
   // Muted autoplay works before a browser has granted permission for sound.
   const [muted, setMuted] = useState(true);
   const [stopped, setStopped] = useState(false);
-  // After each video MyPal and real animals say cow, cat and dog sounds, then the playlist goes on.
+  // After each video AIdos and real animals say cow, cat and dog sounds, then the playlist goes on.
   const [animalTime, setAnimalTime] = useState(false);
   const [status, setStatus] = useState<VideoStatus>("loading");
   const [attempt, setAttempt] = useState(0);

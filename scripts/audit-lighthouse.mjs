@@ -27,7 +27,7 @@ try {
   await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
   await page.getByRole('button', { name: /START.*FOR/ }).waitFor();
   await capture('setup');
-  await page.getByLabel('What should MyPal call your child? *', {exact:true}).fill('AuditPal');
+  await page.getByLabel('What should AIdos call your child? *', {exact:true}).fill('AuditPal');
   await page.getByRole('button', {name:'6–8 yrs',exact:true}).click();
   await page.getByRole('button', {name:/START.*FOR/}).click();
   await page.getByRole('main',{name:'Video library'}).waitFor();
@@ -35,7 +35,7 @@ try {
   await page.getByRole('button',{name:'Home, back to activities',exact:true}).click();
   await page.getByRole('region',{name:'Start here',exact:true}).waitFor();
   await capture('hub');
-  await page.locator('.activity-grid').getByRole('button',{name:/Ask MyPal/}).click();
+  await page.locator('.activity-grid').getByRole('button',{name:/Ask AIdos/}).click();
   await page.getByPlaceholder('Type your question').waitFor();
   await capture('ask');
   await page.getByRole('button',{name:'Home, back to activities',exact:true}).click();
