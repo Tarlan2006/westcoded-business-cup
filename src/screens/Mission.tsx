@@ -1,3 +1,4 @@
+import { useMusicPause } from "../audio/useMusicPause";
 import { HoldButton } from "../components/HoldButton";
 import { APP_NAME } from "../brand";
 import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
@@ -5,7 +6,7 @@ import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 import { SessionActivity } from "../components/SessionControls";
 import { useSoundEnabled } from "../audio/sfx";
-import { isSpeechActive, playSfx, preload, setMusic, stopSpeech } from "../audio/engine";
+import { isSpeechActive, playSfx, preload, stopSpeech } from "../audio/engine";
 import { turn } from "../lib/api";
 import {
   countdownLine, lineFor, MODES, modeIntro, outroLine, praiseFor, recallLine, timeUpLine, tryAgainLine,
@@ -173,10 +174,7 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
     if (tickedAt.current !== mark) { tickedAt.current = mark; playSfx("tick"); }
   }, [sound, running, voice.status, remainingSeconds, state.round]);
 
-  useEffect(() => {
-    setMusic(sound && !paused && !finished && voice.status === "idle", { duck: true });
-    return () => setMusic(false);
-  }, [sound, paused, finished, voice.status]);
+  useMusicPause(paused || finished);
 
   function togglePause() {
     voice.release(true);

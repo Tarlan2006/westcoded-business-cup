@@ -13,7 +13,7 @@ const report = { base, mockAPI: mock, fontScale: Number(process.env.SMOKE_FONT_S
 await mkdir(output, { recursive: true });
 const privateMarker = 'PRIVATE_PARENT_NOTE_7D31';
 async function shot(page, name, size) {
-  await page.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some(el => el.getClientRects().length && /Getting things ready|Opening Balloon Count/.test(el.textContent)));
+  await page.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some(el => el.getClientRects().length && /Getting things ready|Opening Balloon Count|Opening Space Scale/.test(el.textContent)));
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(100);
   await page.screenshot({ path: `${output}/${name}-${size}.png`, fullPage: true });
@@ -101,6 +101,9 @@ try {
     await page.getByRole('button', { name: 'Keep playing', exact: true }).click();
     for (const [title, name] of [['Memory', 'memory'], ['Tic-tac-toe', 'tictactoe'], ['Space Scale', 'space'], ['Sketch Artist', 'sketch']]) {
       await tile(page, title); await page.getByRole('heading', { level: 1 }).first().waitFor();
+      // Nested lazy modules can briefly replace the previous screen's heading.
+      if (name === 'space') await page.getByRole('button', { name: /Start exploring/ }).waitFor();
+      if (name === 'sketch') await page.getByRole('button', { name: /Start the case/ }).waitFor();
       await shot(page, name, size);
       if (name === 'memory') { await page.getByRole('button', { name: 'Hidden card 1', exact: true }).click(); }
       if (name === 'tictactoe') { await page.getByRole('button', { name: 'Row 1, column 1, empty', exact: true }).click(); }

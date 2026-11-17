@@ -1,13 +1,42 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from 'react';
+import { ambienceThemes, type AmbienceTheme } from '../audio/ambienceThemes';
+import { setMusic, unlock } from '../audio/engine';
+import { useSoundEnabled } from '../audio/sfx';
+import { useMusicPause } from '../audio/useMusicPause';
+import './ambience.css';
 
-export function PrototypeFrame({ children }: { children: ReactNode }) {
-  return <div className="prototype min-h-svh">
-    <div aria-hidden="true" className="fixed inset-0 pointer-events-none overflow-hidden opacity-35 z-0">
-      <div className="absolute top-12 left-10 w-3 h-3 bg-white rotate-45 rounded-xs" />
-      <div className="absolute top-28 right-16 w-4 h-4 bg-[#FFD13B] rotate-45 rounded-xs" />
-      <div className="absolute bottom-24 left-1/4 w-3 h-3 bg-[#38BDF8] rotate-45 rounded-xs" />
-      <div className="absolute top-1/2 right-10 w-2.5 h-2.5 bg-[#FF7849] rotate-45 rounded-xs" />
+export function PrototypeFrame({ children, theme = 'calm', music = false, paused = false }: {
+  children: ReactNode; theme?: AmbienceTheme; music?: boolean; paused?: boolean;
+}) {
+  const sound = useSoundEnabled();
+  const [enabled, setEnabled] = useState(() => {
+    try { return localStorage.getItem('mypal.music') !== 'off'; } catch { return true; }
+  });
+  const [hidden, setHidden] = useState(() => document.hidden);
+  useEffect(() => {
+    const update = () => setHidden(document.hidden);
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+  useMusicPause(hidden || paused);
+  useEffect(() => {
+    setMusic(music && enabled && sound && !paused && !hidden, { theme, duck: true });
+    return () => setMusic(false);
+  }, [music, enabled, sound, theme, paused, hidden]);
+  function toggle() {
+    const next = !enabled;
+    setEnabled(next);
+    try { localStorage.setItem('mypal.music', next ? 'on' : 'off'); } catch { /* Tab-local preference still works. */ }
+    if (next && sound) void unlock().catch(() => {});
+  }
+  return <div className="prototype min-h-svh" data-ambience={theme} data-ambience-paused={hidden || paused || undefined}>
+    <div className="amb-scene" aria-hidden="true">
+      {ambienceThemes[theme].marks.map((mark, i) => <span className={`amb-mark amb-mark-${i}`} key={`${theme}-${i}`}>{mark}</span>)}
     </div>
+    {music && <div className="amb-controls"><button type="button" className="amb-music-button" aria-pressed={enabled && sound}
+      disabled={!sound} title={sound ? 'Background music' : 'Turn Sound on to enable background music'} onClick={toggle}>
+      <span aria-hidden="true">♫</span> Music {enabled && sound ? 'on' : 'off'}
+    </button></div>}
     {children}
   </div>;
 }

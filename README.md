@@ -93,6 +93,8 @@ After reviewing the audit, run the checks above, then `npx wrangler login` and `
 
 ## Voice clips
 
+Games and quizzes share nine quiet music themes and matching animated decorations. **Music on/off** controls the background separately; **Sound off** mutes it too. Music pauses for microphone use, hidden tabs and parent dialogs, and stays off during videos. Reduced-motion settings disable decoration movement. Tracks are generated locally without audio downloads. See the [follow-up audit and staged plan](docs/AUDIT-2026-11-17.md) for checks and device-testing limits.
+
 Pocket TTS clones the approved `content/voice/host-voice.json` reference locally. Its model download is about 146 MB and is skipped on Data Saver or low-memory devices. Piper MP3s remain available while it loads; timed cues use recordings. The checked-in patch adjusts the voice temperature without replacing its identity.
 
 ```sh

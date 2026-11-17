@@ -1,3 +1,4 @@
+import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
 type SoundEffect = "siren" | "tick" | "radio" | "fanfare" | "whoosh";
 
 const effects: Record<SoundEffect, { tones: number[]; length: number; wave: OscillatorType }> = {
@@ -22,7 +23,10 @@ const clips = new Map<string, Promise<AudioBuffer>>();
 let queue = Promise.resolve();
 let music: AudioBufferSourceNode | undefined;
 let musicBuffer: AudioBuffer | undefined;
+let musicGain: GainNode | undefined;
 let musicEnabled = false;
+let musicTheme: AmbienceTheme = "calm";
+const musicPauses = new Set<symbol>();
 let duckEnabled = true;
 let speechDepth = 0;
 let playbackGeneration = 0;
@@ -306,13 +310,13 @@ export function isSpeechActive(): boolean {
 }
 
 function createMusic(context: AudioContext) {
-  const buffer = context.createBuffer(1, context.sampleRate * 8, context.sampleRate);
+  const { notes, beat } = ambienceThemes[musicTheme];
+  const buffer = context.createBuffer(1, Math.round(context.sampleRate * beat * notes.length), context.sampleRate);
   const samples = buffer.getChannelData(0);
-  const notes = [110, 164.81, 130.81, 146.83];
   for (let index = 0; index < samples.length; index++) {
     const time = index / context.sampleRate;
-    const note = notes[Math.floor(time / 2)];
-    const fade = Math.sin(Math.PI * (time % 2) / 2) ** 2;
+    const note = notes[Math.min(notes.length - 1, Math.floor(time / beat))];
+    const fade = Math.sin(Math.PI * (time % beat) / beat) ** 2;
     samples[index] = fade * (Math.sin(2 * Math.PI * note * time) +
       0.35 * Math.sin(4 * Math.PI * note * time)) / 1.35;
   }
@@ -323,25 +327,45 @@ function updateMusic() {
   if (!graph) return;
   const { context, ambience } = graph;
   ambience.gain.setTargetAtTime(
-    musicEnabled ? speechDepth > 0 && duckEnabled ? 0.009 : 0.045 : 0,
+    musicEnabled && !musicPauses.size ? speechDepth > 0 && duckEnabled ? 0.004 : 0.028 : 0,
     context.currentTime, 0.07,
   );
-  if (!musicEnabled || music || context.state !== "running") return;
+  if (!musicEnabled || musicPauses.size || music || context.state !== "running") return;
   music = context.createBufferSource();
   music.buffer = musicBuffer ??= createMusic(context);
   music.loop = true;
-  music.connect(ambience);
+  musicGain = context.createGain();
+  musicGain.gain.setValueAtTime(0, context.currentTime);
+  musicGain.gain.linearRampToValueAtTime(1, context.currentTime + 0.18);
+  music.connect(musicGain).connect(ambience);
   music.start();
 }
 
-export function setMusic(on: boolean, opts?: { duck?: boolean }): void {
+export function setMusic(on: boolean, opts?: { duck?: boolean; theme?: AmbienceTheme }): void {
+  const changed = opts?.theme !== undefined && opts.theme !== musicTheme;
+  if (changed) { musicTheme = opts!.theme!; musicBuffer = undefined; }
   musicEnabled = on;
   duckEnabled = opts?.duck ?? true;
-  if (!on && music && graph) {
+  if ((!on || changed) && music && graph) {
     const previous = music;
     music = undefined;
-    previous.onended = () => previous.disconnect();
+    const previousGain = musicGain;
+    musicGain = undefined;
+    previousGain?.gain.cancelScheduledValues(graph.context.currentTime);
+    previousGain?.gain.setValueAtTime(previousGain.gain.value, graph.context.currentTime);
+    previousGain?.gain.linearRampToValueAtTime(0, graph.context.currentTime + 0.18);
+    previous.onended = () => { previous.disconnect(); previousGain?.disconnect(); };
     previous.stop(graph.context.currentTime + 0.18);
+  }
+  updateMusic();
+}
+
+export function pauseMusic(owner: symbol, paused: boolean): void {
+  if (paused) musicPauses.add(owner); else musicPauses.delete(owner);
+  if (musicPauses.size && graph) {
+    graph.ambience.gain.cancelScheduledValues(graph.context.currentTime);
+    graph.ambience.gain.setValueAtTime(0, graph.context.currentTime);
+    if (music) { music.onended = () => {}; music.stop(); music.disconnect(); musicGain?.disconnect(); musicGain = undefined; music = undefined; }
   }
   updateMusic();
 }

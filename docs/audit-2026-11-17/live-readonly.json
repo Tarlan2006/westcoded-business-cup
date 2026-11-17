@@ -1,0 +1,26 @@
+[
+  {
+    "path": "/",
+    "status": 404,
+    "contentType": "text/html; charset=UTF-8",
+    "nosniff": null
+  },
+  {
+    "path": "/privacy",
+    "status": 404,
+    "contentType": "text/html; charset=UTF-8",
+    "nosniff": null
+  },
+  {
+    "path": "/api/health",
+    "status": 404,
+    "contentType": "text/html; charset=UTF-8",
+    "nosniff": null
+  },
+  {
+    "path": "/.env",
+    "status": 404,
+    "contentType": "text/html; charset=UTF-8",
+    "nosniff": null
+  }
+]

@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import { pathToFileURL } from 'node:url';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 const root = process.env.LIGHTHOUSE_ROOT;
 if (!root) throw new Error('Set LIGHTHOUSE_ROOT to the directory containing the installed lighthouse package');
 const { snapshot } = await import(pathToFileURL(`${root}/lighthouse/core/index.js`));
@@ -10,13 +10,15 @@ const context = await browser.newContext({ viewport: { width: 390, height: 844 }
 await context.addInitScript(() => localStorage.setItem('mission-control.sound', 'off'));
 const page = await context.newPage();
 const pup = await puppeteer.connect({ browserURL: 'http://127.0.0.1:9225' });
+const output = process.env.AUDIT_OUTPUT ?? 'docs/audit';
+await mkdir(output, { recursive: true });
 const base = process.env.SMOKE_URL ?? 'http://127.0.0.1:5183';
 const scores = [];
 async function capture(name) {
   await page.waitForTimeout(500);
   const pp = (await pup.pages()).find(p => p.url().startsWith(base));
   const result = await snapshot(pp, { flags: { onlyCategories: ['accessibility', 'best-practices', 'seo'], logLevel: 'error' } });
-  await writeFile(`docs/audit/after-${name}-snapshot.json`, JSON.stringify(result.lhr));
+  await writeFile(`${output}/after-${name}-snapshot.json`, JSON.stringify(result.lhr));
   scores.push({ screen: name, scores: Object.fromEntries(Object.entries(result.lhr.categories).map(([k,v]) => [k, v.score === null ? null : Math.round(v.score*100)])), failures: Object.values(result.lhr.audits).filter(a=>a.score !== null && a.score < 1).map(a=>({id:a.id,title:a.title,items:a.details?.items})) });
   console.log(name, scores.at(-1).scores);
 }
@@ -43,6 +45,6 @@ try {
   await page.getByRole('button',{name:/Save my picture/}).waitFor();
   await capture('sketch-reveal');
 } finally {
-  await writeFile('docs/audit/state-accessibility.json',JSON.stringify(scores,null,2));
+  await writeFile(`${output}/state-accessibility.json`,JSON.stringify(scores,null,2));
   await pup.disconnect(); await browser.close();
 }

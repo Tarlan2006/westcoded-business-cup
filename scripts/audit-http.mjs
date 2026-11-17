@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { gzipSync } from 'node:zlib';
+const output = process.env.AUDIT_OUTPUT ?? 'docs/audit';
+await mkdir(output, { recursive: true });
 const base = process.env.SMOKE_URL ?? 'http://127.0.0.1:5184';
 assert(['127.0.0.1', 'localhost'].includes(new URL(base).hostname), 'Rate-limit audit runs locally only');
 const result = { base, http: [], bundle: [], audio: {} };
@@ -27,5 +29,5 @@ const manifest=await(await fetch(base+'/audio/manifest.json')).json(); result.au
 const entries=Object.values(manifest.clips);
 for (const path of entries) { const r=await fetch(base+path); assert.equal(r.status,200,path); assert((await r.arrayBuffer()).byteLength>100,path); }
 result.audio.manifestEntries=entries.length;
-await writeFile('docs/audit/after-http-bundle.json',JSON.stringify(result,null,2));
+await writeFile(`${output}/after-http-bundle.json`,JSON.stringify(result,null,2));
 console.log('PASS headers, private paths, CORS, bounded local rate limit and client bundle checks');

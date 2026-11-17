@@ -1,0 +1,18 @@
+/* Decoration uses the existing palette, never captures a pointer or carries instructions. */
+.prototype { position: relative; isolation: isolate; }
+.amb-scene { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 2; }
+.amb-mark { position: absolute; color: var(--sky-voice, #38bdf8); font: 500 clamp(20px, 3vw, 40px)/1 Fredoka, sans-serif; opacity: .12; animation: amb-drift 22s ease-in-out infinite alternate; }
+.amb-mark-0 { left: 0; top: 16%; }
+.amb-mark-1 { right: 0; top: 34%; color: var(--gold-star, #ffd13b); animation-delay: -8s; }
+.amb-mark-2 { left: 0; bottom: 12%; animation-delay: -14s; }
+.amb-mark-3 { right: 0; bottom: 30%; color: var(--mint-action, #2ce69b); animation-delay: -4s; }
+[data-ambience="cosmic"] .amb-mark-1 { border: 1px solid currentColor; border-radius: 50%; padding: 4px; }
+[data-ambience="studio"] .amb-mark { transform: rotate(-12deg); }
+.amb-controls { position: relative; z-index: 1; display: flex; justify-content: flex-end; width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding-top: max(8px, env(safe-area-inset-top)); }
+.amb-music-button { min-width: 100px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--border, #5946e3); border-radius: 12px; background: var(--bg-card-dark, #1e1666); color: #fff; font: 800 14px Nunito, sans-serif; cursor: pointer; }
+.amb-music-button:focus-visible { outline: 3px solid var(--gold-star, #ffd13b); outline-offset: 3px; }
+.amb-music-button:disabled { opacity: .65; cursor: default; }
+.amb-music-button:active:not(:disabled) { transform: translateY(1px); }
+[data-ambience-paused] .amb-mark { animation-play-state: paused; }
+@keyframes amb-drift { from { translate: 0 0; rotate: -4deg; } to { translate: 8px -16px; rotate: 6deg; } }
+@media (prefers-reduced-motion: reduce) { .amb-mark { animation: none; } }

@@ -141,3 +141,7 @@ No design-original files or Cloudflare secrets were changed. README now describe
 The last pull brought `06506e2`, replacing the 3–5 video with a dinosaur video. It merged without conflicts. Build, typecheck, lint and content checks were rerun; its long title was checked on all four viewports with no overflow ([evidence](docs/screens/new-main-video.json)). The full 120-state/12-chain smoke plus the 30-state/3-chain enlarged-text run passed before this isolated data replacement; the changed video received the targeted repeat. Final bundle/HTTP and navigation Lighthouse reports were refreshed after it. There are 154 screenshot artifacts (120 normal, 30 enlarged text, four new-video checks).
 
 No release or Cloudflare secret change was performed. Commits are local; this audit does not claim a push or deployment. The conflict-recovery autostash remains as a safety copy.
+
+## Follow-up
+
+The [2026-11-17 follow-up](docs/AUDIT-2026-11-17.md) records the next main synchronisation, thematic ambience, repeated tests and current release status. Its read-only production check found Cloudflare 404s on both documented public hostnames; the earlier production observations above are historical.

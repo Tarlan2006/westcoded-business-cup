@@ -1,3 +1,4 @@
+import { themeForActivity } from "./audio/ambienceThemes";
 import { videosFor } from "./game/videos";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Activity, AgeBand, Mode, Profile } from "../shared/types";
@@ -223,7 +224,10 @@ export default function App() {
     <Welcome repeat={repeatVisit} onContinue={continueWelcome} onToggleSound={toggleSound} />
   </PrototypeFrame></SoundEnabled>;
 
-  return <SoundEnabled value={sound}><PrototypeFrame><ActivityXp value={profile?.xp}>
+  return <SoundEnabled value={sound}><PrototypeFrame
+    theme={themeForActivity(current.screen.name === 'mission' ? current.screen.session.mode : current.screen.name === 'setup' ? current.screen.mode : current.screen.name)}
+    music={sessionActive && !privacy && !['video', 'privacy', 'parent', 'plans'].includes(current.screen.name)}
+    paused={parentsOpen || !!pendingNavigation || finishing}><ActivityXp value={profile?.xp}>
     <SessionClockProvider endsAt={sessionActivity?.endsAt}>
     <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen),
       name: profile ? profile.preferences?.nickname ?? codenameFor(profile.codenameId) : undefined }}>

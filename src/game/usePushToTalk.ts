@@ -1,3 +1,4 @@
+import { useMusicPause } from "../audio/useMusicPause";
 import { useEffect, useRef, useState } from "react";
 import { transcribe } from "../lib/api";
 import { startRecording, stopRecording } from "../voice/recorder";
@@ -20,6 +21,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
   onUnavailable?: (problem: VoiceProblem) => void, options: PushToTalkOptions = {}) {
   const { maxRecordMs = 8000, transcribeTimeoutMs } = options;
   const [status, setStatus] = useState<Status>("idle");
+  useMusicPause(status !== "idle");
   const [message, setMessage] = useState("");
   const current = useRef<Recording | null>(null);
   const onSubmit = useRef(submit);
