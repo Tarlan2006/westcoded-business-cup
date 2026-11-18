@@ -4,6 +4,14 @@
 
 [Try AIdos — no login](https://aidos.nexcel.kz) · [Audit and evidence](AUDIT.md) · [Screenshots](docs/screens) · [Privacy](docs/PRIVACY.md)
 
+## Languages
+
+Kazakh (`kk`) is the default. Choose **KZ | EN** on the greeting screen, in parent setup or in the Parents dialog. The choice takes effect immediately. The app saves it in `mypal.lang` and in the selected local profile. Language changes preserve progress and the session clock.
+
+UI text lives in `src/i18n/en.ts` and `src/i18n/kk.ts`. The matching `content-en.json` and `content-kk.json` files hold mission lines, quiz choices, FAQ answers and video titles. `MessageKey` is derived from the English dictionary. Use `useT()` in components and `{brand}` for the shared name from `src/brand.ts`. Each language loads on demand. [Bilingual review table](docs/site-texts-kk.md) · [Offline Kazakh screen gallery](docs/site-kk.html).
+
+To add a language, copy both dictionary files for the new locale, preserving keys and placeholders. Extend the locale types, loader, selector, persistence and metadata in `src/i18n`, the document and manifest setup in `src/App.tsx`, and the locale formatting rules. Add matching Worker replies, FAQ, suggested questions, quiz speech matching and a voice pack with the right STT/TTS language. Add the locale to the dictionary and browser checks. Run `npm run check:i18n`, `node scripts/i18n-worker.mjs` and `node scripts/i18n-e2e.mjs` before release. The browser check expects the built site and Worker together at `http://localhost:5173`, or a local address in `I18N_URL`.
+
 ## Who it helps
 
 Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. AIdos offers voice-led movement missions for a screen-free break, plus optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. AIdos is not childcare or a safety monitor.
@@ -26,7 +34,7 @@ Movement modes include Scavenger Hunt, Floor is Lava and Roadtrip Spy for passen
 
 ## What makes it different
 
-A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. All speech uses one pinned server voice, with prepared recordings for fixed text.
+A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. Fixed lines have local recordings in both languages.
 
 ## Business model and current limits
 
@@ -36,7 +44,7 @@ There are no accounts, cross-device sync or payment processing. Reload recovery 
 
 ## Stack and architecture
 
-Vite + React + TypeScript + Tailwind; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Voice uses prepared Aura-2 Luna recordings and the same pinned speaker through Workers AI for new text.
+Vite + React + TypeScript + Tailwind; Hono on Cloudflare Workers; Groq for guarded replies/mission selection; Whisper through Workers AI for optional speech recognition. Kazakh uses local Piper recordings. English uses Aura-2 Luna recordings and Workers AI for new speech.
 
 ```mermaid
 flowchart LR
@@ -44,10 +52,10 @@ flowchart LR
   API --> Groq[Groq]
   API --> Whisper[Workers AI / Whisper]
   API --> FAQ[Prepared fallback]
-  UI --> Clips[Prepared Aura-2 Luna voice]
+  UI --> Clips[Kazakh and English recordings]
 ```
 
-[Detailed architecture](docs/ARCHITECTURE.md). Parent notes and nicknames stay local. Ask sends only the question. Optional STT sends audio; missions send structured game words/IDs. No camera or geolocation. This is a data-minimisation/COPPA-oriented approach, not compliance certification.
+[Detailed architecture](docs/ARCHITECTURE.md). Parent notes and nicknames stay local. Ask sends the question and selected language. Optional STT sends audio; missions send structured game words/IDs. No camera or geolocation. This is a data-minimisation/COPPA-oriented approach, not compliance certification.
 
 ## Run locally
 
@@ -95,18 +103,18 @@ Cloudflare Builds publishes `main` automatically to the `westcoded-business-cup`
 
 Games and quizzes share nine quiet music themes and matching animated decorations. **Music on/off** controls the background separately; **Sound off** mutes it too. Music pauses for microphone use, hidden tabs and parent dialogs, and stays off during videos. Reduced-motion settings disable decoration movement. Tracks are generated locally without audio downloads. See the [follow-up audit and staged plan](docs/AUDIT-2026-11-17.md) for checks and device-testing limits.
 
-All 238 prepared lines and new answers use `aidos-luna-v1` (Cloudflare Aura-2, speaker Luna). The app never switches to a device voice. Known text plays from local assets; decoded repeats stay in a bounded memory cache. New text requires a network synthesis call, so zero latency cannot be guaranteed. If synthesis is unavailable, captions remain and the child can retry with Hear it. Parent notes and nicknames are not submitted to speech synthesis.
+The English pack contains 238 line IDs recorded with Cloudflare Aura-2 Luna. The Kazakh pack contains 243 IDs recorded with Piper iseke. Identical lines share a recording. Each pack has its own manifest and text index in `public/audio/en/` or `public/audio/kk/`. Known lines play locally. New English replies can use the pinned cloud voice. For missing Kazakh recordings, the app uses an available Kazakh device voice and keeps the caption visible when speech is unavailable. Parent notes and nicknames stay local.
 
 The mascot is the exact user-approved PNG in `public/mascot/aidos-reference.png`, without a procedural reinterpretation of the face or clothing. The earlier Three.js model is no longer loaded by the app.
 
-To rebuild the current voice catalogue, run `node scripts/voice-catalog.mjs`, then `node scripts/generate-unified-voice.mjs` against the deployed voice service. Generation resumes from its ignored cache. The older Piper commands below are historical authoring tools and cannot overwrite a pinned production voice.
+To rebuild the Kazakh pack, install Piper and FFmpeg support and download the voice weights with the matching JSON configuration next to them. Set `PYTHON` to your environment's Python if needed. Keep the weights outside Git.
 
 ```sh
-python -m pip install piper-tts==1.8.0
-python -m piper.download_voices --data-dir scripts/.cache/models en_US-hifi_tts_92-medium
-npm run gen-audio -- --dry-run
-npm run gen-audio
+python -m pip install piper-tts==1.8.0 imageio-ffmpeg
+python -m piper.download_voices --data-dir scripts/.cache/models kk_KZ-iseke-x_low
+npm run gen-audio -- --lang kk --model scripts/.cache/models/kk_KZ-iseke-x_low.onnx
+npm run gen-audio -- --lang en
 npm run check-content -- --require-audio
 ```
 
-Python and FFmpeg with `libmp3lame` are required for generation. `PYTHON` and `FFMPEG` can select executables; `--only` filters clip IDs. On Windows use a Latin-character tool path if Piper cannot open the workspace path. Keep weights outside Git. [Voice credits](content/AUDIO_CREDITS.md).
+The English command indexes the existing Luna recordings. Pass `--english-source /path/to/audio` to use another copy of the source catalogue's recordings. To select a system FFmpeg build with MP3 support, set `FFMPEG`. [Voice credits](content/AUDIO_CREDITS.md).

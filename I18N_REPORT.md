@@ -223,3 +223,129 @@
 Сборка успешна, typecheck и lint для клиента и Worker завершились без замечаний. Vite предупреждает о размере существующего 3D-модуля (631,57 кБ до gzip). Основной входной JS: 92,79 → 69,99 кБ gzip. Отдельный модуль App: 13,87 кБ gzip. Словари EN и KK: 20,40 и 23,53 кБ gzip, всего 43,93 кБ, подгружаются по языку. Сравнение входного файла не является замером полной сетевой загрузки страницы.
 
 E2E запускается с подставным микрофоном и событиями YouTube. Реальный YouTube oEmbed вернул HTTP 200 для всех пяти ID. Проигрывание внешнего потока на устройствах и живая детская диктовка остаются непроверенными. Отдельный исторический компонент ToddlerMission переведён. Текущий путь из младшего видеокаталога открывает квиз звуков животных. Отдельного снимка недоступного из меню компонента нет.
+
+## Этап 8. Материалы для вычитки и публичные адреса
+
+| Материал | Что проверено |
+| --- | --- |
+| [Таблица перевода](docs/site-texts-kk.md) | 1 103 пары строк. Присутствуют все 1 064 ключа, дополнительные статические подписи, ответы Worker, варианты вопросов и названия каналов. Есть указатель на все 48 заданий. |
+| [Автономная галерея](docs/site-kk.html) | 46 подписанных экранов и состояний с мобильным и настольным изображением. Chromium без сети открыл оба размера, декодировал все изображения и нашёл все цели оглавления. |
+| [Казахские снимки](docs/screens/kk/) и [английские снимки](docs/screens/en/) | 92 PNG для каждого языка. Снимки и измерения сборки сделаны с уже находившейся в рабочей папке версией маскота. Исходные пользовательские правки маскота, его файлов, проверок и строки README не входят в коммиты перевода. |
+| Публичные адреса | В локально собранном ответе для главной и /privacy проверены canonical, og:url, og:image, казахские заголовки, описание, kk_KZ и en_US. Изображение 1 200×630 доступно. Манифесты, robots, sitemap и CORS указывают на https://aidos.nexcel.kz. |
+| Превью в мессенджерах | Проверены отдаваемые без JavaScript теги Open Graph, по которым Telegram и WhatsApp строят карточки. Проверка отправкой сообщения и сброс кэша мессенджеров не выполнялись. |
+| [README](README.md#languages) | Раздел Languages описывает переключатель, профиль, словари, добавление языка, голосовые пакеты и команды проверки. README и DEPLOY на английском. |
+
+### Объём аудио
+
+| Файлы | Байт |
+| --- | ---: |
+| Казахские MP3, 223 уникальные записи | 2 517 212 |
+| Английские MP3, 218 уникальных записей | 2 471 488 |
+| Все медиафайлы, включая звуки животных и историческую эталонную запись | 5 160 839 |
+| Те же файлы вместе со всеми индексами из public/audio | 5 273 451 |
+
+Объём указан в байтах. Оба языка вместе с индексами и эталонной записью укладываются в лимит 6 000 000 байт. Источник весов и конфигурации казахского голоса — [карточка Piper iseke](https://huggingface.co/rhasspy/piper-voices/blob/main/kk/kk_KZ/iseke/x_low/MODEL_CARD). Английские видео оставлены по исходным ID, список приведён в этапе 3.
+
+### Нужна проверка носителем перед публикацией
+
+- Прослушать приветствие, подсказку для удержания кнопки, ошибки и победу, затем выборочно задания, вопросы и ответы. Проверить ударения, темп, интонацию обращения «дос» и произношение имени AIdos. Автопроверка декодирования и результат Whisper не оценивают эти свойства.
+- Вычитать звукоподражания в младшем квизе и подписи к длине, масштабу и расстояниям в игре о космосе. Оценить понятность формулировок для возрастных групп.
+- Записать короткие ответы детским голосом на реальном телефоне. Синтетическое приветствие распознано с ошибками; в Ask доступна правка перед отправкой.
+
+### Сохранённые имена в репозитории
+
+Ниже перечислены отслеживаемые пути, в которых поиск без учёта регистра нашёл MyPal, Bleep, mission-control или Mission Control. Для сохранения профилей и прогресса используются прежние ключи localStorage. В конфигурации Worker оставлены старые разрешённые origins, а в исходниках встречаются внутренние имена и комментарии. Снимки прошлых аудитов, прототипы, журналы и старые проверочные сценарии сохранены.
+
+#### Ключи, классы и клиентский код
+
+- `public/404.html`
+- `src/App.tsx`
+- `src/components/MissionStage.tsx`
+- `src/components/PrototypeFrame.tsx`
+- `src/components/useHold.ts`
+- `src/i18n/index.ts`
+- `src/index.css`
+- `src/state/progress.ts`
+- `src/state/useSessionTimer.ts`
+
+#### Настройки, сервер и интеграция
+
+- `package-lock.json`
+- `package.json`
+- `worker/index.ts`
+- `wrangler.jsonc`
+
+#### Проверочные сценарии
+
+- `scripts/age-games.check.mjs`
+- `scripts/aidos-3d.check.mjs`
+- `scripts/ambience-browser.check.mjs`
+- `scripts/audio-latency.check.mjs`
+- `scripts/audit-http.mjs`
+- `scripts/audit-lighthouse.mjs`
+- `scripts/greeting.check.mjs`
+- `scripts/hold-buttons.check.mjs`
+- `scripts/i18n-e2e.mjs`
+- `scripts/session-limit.check.mjs`
+- `scripts/smoke-prod.mjs`
+- `scripts/unified-voice.check.mjs`
+- `scripts/worker-tests.ts`
+- `src/games/sketch/integration.check.mjs`
+- `src/screens/flow.check.mjs`
+- `src/screens/navigation.check.mjs`
+
+#### История, прототипы и документация
+
+- `AUDIT.md`
+- `Claude outputs/CODEX_PROMPTS.md`
+- `Claude outputs/DESIGN_BRIEF.md`
+- `Claude outputs/PLAN.md`
+- `Claude outputs/PROMPT_AUDIT_FINAL.md`
+- `Claude outputs/PROMPT_BALLOONS.md`
+- `Claude outputs/PROMPT_FLOW_FIX.md`
+- `Claude outputs/PROMPT_FULL_RECONSTRUCTION.md`
+- `Claude outputs/PROMPT_LEARN_TRACK.md`
+- `Claude outputs/PROMPT_LIGHT_REDESIGN.md`
+- `Claude outputs/PROMPT_MEMORY_RESTYLE.md`
+- `Claude outputs/PROMPT_PORT_DESIGNER_HTML.md`
+- `Claude outputs/PROMPT_REDESIGN_LIGHT.md`
+- `Claude outputs/PROMPT_REMOVE_BLEEP.md`
+- `Claude outputs/PROMPT_RENAME_MYPAL.md`
+- `Claude outputs/PROMPT_SKETCH_GAME.md`
+- `Claude outputs/PROMPT_START_SCREEN.md`
+- `Claude outputs/PROMPT_TICTACTOE_CUTE.md`
+- `Claude outputs/PROMPT_VOICE_BANK.md`
+- `Claude outputs/PROMPT_WHITE_THEME.md`
+- `Claude outputs/PROMPT_WORKER_HARDENING_DOCS.md`
+- `Claude outputs/balloon_count_design_reference.html`
+- `Claude outputs/mypal_white_design_reference.html`
+- `README.md`
+- `content/AUDIO_CREDITS.md`
+- `design/FLOW.md`
+- `design/RECONSTRUCTION_NOTES.md`
+- `docs/AUDIT-2026-11-17.md`
+- `docs/CODEX_PROMPTS.md`
+- `docs/DEPLOY.md`
+- `docs/MYPAL_HOST_HANDOFF.md`
+- `docs/PLAN.md`
+- `docs/audit-2026-11-17/after-http-bundle.json`
+- `docs/audit-2026-11-17/ambience-browser.json`
+- `docs/audit-2026-11-17/screens-large/smoke-report.json`
+- `docs/audit-2026-11-17/screens/smoke-report.json`
+- `docs/audit/after-home.report.html`
+- `docs/audit/after-home.report.json`
+- `docs/audit/after-http-bundle.json`
+- `docs/audit/after-privacy.report.html`
+- `docs/audit/after-privacy.report.json`
+- `docs/audit/before-home.report.html`
+- `docs/audit/before-home.report.json`
+- `docs/audit/before-privacy.report.html`
+- `docs/audit/before-privacy.report.json`
+- `docs/audit/seo-after-local.json`
+- `docs/audit/seo-after-local.md`
+- `docs/audit/seo-before.json`
+- `docs/audit/seo-before.md`
+- `docs/design/mission_control_prototype.html`
+- `docs/releases/aidos-3d-evidence/after-http-bundle.json`
+
+Образцы для прослушивания: [Приветствие](public/audio/kk/788246c58f8e1eafdf12.mp3) · [Удержание](public/audio/kk/3a4a3436a037fef36f22.mp3) · [Повтор](public/audio/kk/4c5b2d95fb88a26ae21a.mp3) · [Ошибка](public/audio/kk/f8706cee84cd0cc2ef39.mp3) · [Победа](public/audio/kk/f8a7d449b51931895335.mp3).
