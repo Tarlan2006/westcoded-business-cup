@@ -35,6 +35,7 @@ let duckEnabled = true;
 let speechDepth = 0;
 let playbackGeneration = 0;
 let stopCurrentClip: (() => void) | undefined;
+let finishDeviceSpeech: (() => void) | undefined;
 
 function audioGraph(): AudioGraph {
   if (graph) return graph;
@@ -283,6 +284,7 @@ export function playSfx(id: SoundEffect): void {
 
 export function stopSpeech(): void {
   playbackGeneration += 1;
+  finishDeviceSpeech?.();
   if (typeof window !== "undefined") window.speechSynthesis?.cancel();
   queue = Promise.resolve(); // A cancelled download must not block the next prompt.
   stopCurrentClip?.();
@@ -411,9 +413,25 @@ function deviceSpeech(text: string): Promise<void> {
     const words = new SpeechSynthesisUtterance(text);
     words.voice = voice;
     words.lang = lang === "kk" ? "kk-KZ" : "en-US";
-    const timeout = window.setTimeout(() => { synth.cancel(); resolve(); }, 20000);
-    words.onend = words.onerror = () => { clearTimeout(timeout); resolve(); };
-    synth.speak(words);
+    let started = false;
+    let finished = false;
+    function finish() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      if (started) changeVoicePlayback('browser', -1);
+      if (finishDeviceSpeech === finish) finishDeviceSpeech = undefined;
+      resolve();
+    }
+    const timeout = window.setTimeout(() => { finish(); synth.cancel(); }, 20000);
+    finishDeviceSpeech = finish;
+    words.onstart = () => {
+      if (finished || started) return;
+      started = true;
+      changeVoicePlayback('browser', 1);
+    };
+    words.onend = words.onerror = finish;
+    try { synth.speak(words); } catch { finish(); }
   });
 }
 subscribe(() => {

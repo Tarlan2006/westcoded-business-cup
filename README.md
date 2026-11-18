@@ -105,7 +105,7 @@ Games and quizzes share nine quiet music themes and matching animated decoration
 
 The English pack contains 238 line IDs recorded with Cloudflare Aura-2 Luna. The Kazakh pack contains 243 IDs recorded with Piper iseke. Identical lines share a recording. Each pack has its own manifest and text index in `public/audio/en/` or `public/audio/kk/`. Known lines play locally. New English replies can use the pinned cloud voice. For missing Kazakh recordings, the app uses an available Kazakh device voice and keeps the caption visible when speech is unavailable. Parent notes and nicknames stay local.
 
-The mascot is the exact user-approved PNG in `public/mascot/aidos-reference.png`, without a procedural reinterpretation of the face or clothing. The earlier Three.js model is no longer loaded by the app.
+AIdos blinks, waves and speaks using nine transparent frames in `public/mascot/frames/guide.webp`. Recorded speech drives the mouth from the voice level. Device speech uses a syllable rhythm during playback. Reduced-motion mode shows still poses.
 
 To rebuild the Kazakh pack, install Piper and FFmpeg support and download the voice weights with the matching JSON configuration next to them. Set `PYTHON` to your environment's Python if needed. Keep the weights outside Git.
 
