@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { chromium } from "playwright";
+import { checkRenderedFonts } from "./font-rendering.mjs";
 import en from "../src/i18n/en.ts";
 import kk from "../src/i18n/kk.ts";
 
 const base = process.env.I18N_URL || "http://localhost:5173";
-const output = "docs/screens";
+const output = process.env.I18N_SCREENS || "docs/screens";
 const sizes = [[360,740],[390,844],[768,1024],[1280,800]];
 const browser = await chromium.launch({ headless: true, args:["--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"], executablePath: process.env.CHROME_PATH || undefined });
 const findings = new Set();
@@ -15,6 +16,9 @@ async function journey(lang) {
   const label = (key) => dict[key].replaceAll("{brand}", "AIdos");
   const context = await browser.newContext({ viewport: { width:390, height:844 }, reducedMotion:"reduce" });
   const page = await context.newPage();
+  const cdp = await context.newCDPSession(page);
+  await cdp.send("DOM.enable");
+  await cdp.send("CSS.enable");
   page.setDefaultTimeout(12000);
   const btn = key => page.getByRole("button", { name: label(key), exact: true });
   const tile = key => page.locator(".activity-grid").getByRole("button").filter({hasText:label(key)}).first().click();
@@ -23,10 +27,14 @@ async function journey(lang) {
   page.on("pageerror", e => findings.add(lang + " page error: " + e.message));
   page.on("console", m => { if (m.type() === "error" && !m.text().includes("404 (Not Found)")) findings.add(lang + " console: " + m.text()); });
   page.on("response", r => { if (r.url().startsWith(base) && r.status() >= 400 && !r.url().endsWith("/i18n-missing-page")) findings.add(r.status() + " " + r.url()); });
-  page.on("request", r => { if (r.url().endsWith("/api/ask")) {
-    const body = r.postDataJSON();
-    if (Object.keys(body).sort().join() !== "lang,question" || body.lang !== lang) findings.add("Ask request fields or language");
-  } });
+  page.on("request", r => {
+    if (r.resourceType() === "font" && new URL(r.url()).origin !== new URL(base).origin)
+      findings.add("External font request: " + r.url());
+    if (r.url().endsWith("/api/ask")) {
+      const body = r.postDataJSON();
+      if (Object.keys(body).sort().join() !== "lang,question" || body.lang !== lang) findings.add("Ask request fields or language");
+    }
+  });
   // Third-party video streams are outside the local build. Retain the real iframe URL.
   await context.route(/https:\/\/[^/]*(?:youtube|ytimg|googlevideo)[^/]*\//, route => route.fulfill({contentType:"text/html",body:""}));
   async function shot(name) {
@@ -34,6 +42,10 @@ async function journey(lang) {
     for (const [width,height] of sizes) {
       await page.setViewportSize({width,height});
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+      if (width === 390 || width === 1280) {
+        try { await checkRenderedFonts(page, cdp); }
+        catch (error) { throw Error(lang + " " + name + " " + width + ": " + error.message, { cause: error }); }
+      }
       const info = await page.evaluate(() => {
         const visible = e => e.getClientRects().length && !e.closest("[hidden],[aria-hidden=true]");
         const labels = [...document.querySelectorAll("button,input,textarea,main,nav,[role=group],img")].filter(visible)
@@ -47,7 +59,10 @@ async function journey(lang) {
             const node = walker.currentNode;
             if(!node.textContent.trim() || node.parentElement.closest("svg,.sr-only,[aria-hidden=true]")) continue;
             const range = document.createRange(); range.selectNodeContents(node);
-            if ([...range.getClientRects()].some(rect => rect.width > 0 && (rect.left < bounds.left-2 || rect.right > bounds.right+2))) cut.push(node.textContent.trim());
+            const checkHeight = button.matches(".need-chip,.profile-submit");
+            if ([...range.getClientRects()].some(rect => rect.width > 0 &&
+              (rect.left < bounds.left-2 || rect.right > bounds.right+2 ||
+               (checkHeight && (rect.top < bounds.top-2 || rect.bottom > bounds.bottom+2))))) cut.push(node.textContent.trim());
           }
         }
         return { text: [document.body.innerText,...labels].join(" "), empty, cut, width: document.documentElement.scrollWidth };

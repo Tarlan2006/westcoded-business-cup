@@ -54,15 +54,15 @@
   background-image: var(--sp-stars);
   color: var(--sp-ink);
   color-scheme: dark;
-  font: 700 1rem/1.4 var(--font-body, Nunito, system-ui, sans-serif);
+  font: 700 1rem/1.4 var(--font-body);
 }
 .sp-game *, .sp-game *::before, .sp-game *::after { box-sizing: border-box; }
 .sp-game h1, .sp-game h2, .sp-game p { margin: 0; }
 .sp-game h1, .sp-game h2, .sp-title {
-  font-family: var(--font-heading, ui-rounded, "Trebuchet MS", system-ui, sans-serif);
+  font-family: var(--font-heading);
   font-weight: 600;
 }
-.sp-game button { font-family: inherit; cursor: pointer; }
+.sp-game button { font-family: var(--font-heading); cursor: pointer; }
 .sp-game button:is(:disabled, [aria-disabled="true"]) { cursor: default; }
 .sp-game :focus-visible { outline: 3px solid var(--sp-accent); outline-offset: 2px; }
 .sp-game h2[tabindex="-1"]:focus { outline: none; }
@@ -353,7 +353,7 @@
   padding: 12px;
   color: var(--text, #231f43);
   background: var(--mint, #e1f8ec);
-  font: 700 1rem/1.4 system-ui, sans-serif;
+  font: 700 1rem/1.4 var(--font-body);
   text-align: center;
 }
 .sp-preview-message button { margin-left: 8px; }

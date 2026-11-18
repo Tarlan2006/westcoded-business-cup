@@ -13,7 +13,7 @@
 }
 
 .prototype {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-body);
   background: radial-gradient(circle at 20% 10%, #24187A 0%, #0F0A3C 65%, #090626 100%);
   color: #FFFFFF;
   user-select: none;
@@ -21,7 +21,7 @@
 }
 
 .prototype-screen :is(h1, h2, h3), .font-display {
-  font-family: 'Fredoka', 'Nunito', sans-serif;
+  font-family: var(--font-heading);
 }
 
 /* Tactile 3D Game Buttons (Duolingo / Kids App Style) */
@@ -181,7 +181,7 @@
   background: rgb(28 20 92 / .9);
 }
 .prototype .prototype-activity-header .quiet-button { border-radius: .75rem; background: #2a1f8a; border-color: #5946e3; }
-.prototype-agent-name { font: 600 .875rem/1.2 Fredoka, Nunito, sans-serif; overflow-wrap: anywhere; }
+.prototype-agent-name { font: 600 .875rem/1.2 var(--font-heading); overflow-wrap: anywhere; }
 .prototype .prototype-activity-header .activity-header-actions { min-width: 0; }
 .prototype .hub-tile { box-shadow: 0 10px 0 rgba(8, 5, 36, .55), 0 16px 32px rgba(0, 0, 0, .35); }
 .prototype .hub-tile .activity-icon { font-size: 1.8rem; }
