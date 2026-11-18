@@ -1,6 +1,8 @@
 import content from "./content-en.json" with { type: "json" };
 export default {
   ...content,
+  "quiz.editAnswer": "Edit your answer",
+  "quiz.submitAnswer": "Submit answer",
   "meta.title": "{brand}",
   "app.grownUpsParentSettings": "Grown-ups › Parent settings",
   "app.grownUpsPrivacy": "Grown-ups › Privacy",

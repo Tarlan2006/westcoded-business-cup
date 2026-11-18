@@ -1,4 +1,5 @@
-import { IpLimiter, retryReply } from "./safety";
+import { responses } from "../shared/language";
+import { IpLimiter } from "./safety";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 
@@ -56,13 +57,15 @@ app.post("/api/stt", bodyLimit({
   maxSize: maxWavBytes,
   onError: (c) => c.json({ error: "Please use a shorter recording." }, 413),
 }), async (c) => {
+  const lang = c.req.query("lang") === "kk" ? "kk" : "en";
+  const retryReply = responses[lang].retry;
   if (c.req.header("Content-Type")?.split(";")[0].trim().toLowerCase() !== "audio/wav") {
     return c.json({ text: "", message: retryReply });
   }
   const wav = await c.req.arrayBuffer();
   if (!validWav(wav)) return c.json({ text: "", message: retryReply });
   try {
-    const text = await recognizeSpeech(c.env.AI, wav);
+    const text = await recognizeSpeech(c.env.AI, wav, lang);
     return c.json(text ? {text} : {text:"",message:retryReply});
   } catch {
     return c.json({text:"",message:retryReply});

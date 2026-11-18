@@ -1,3 +1,5 @@
+import kazakh from "./faq-kk.json" with { type: "json" };
+import { responses, type Language } from "./language";
 import faq from "../content/faq.json" with { type: "json" };
 import type { AskResponse } from "./types";
 
@@ -16,7 +18,8 @@ const instructionOverride = /\b(?:ignore|forget|disregard|override|bypass)\s+(?:
 
 export function refuseQuestion(question: string) {
   const normalized = question.normalize("NFKC").replace(/['’]/g, "").replace(/[^\p{L}\p{N}@.+ -]/gu, " ").replace(/\s+/g, " ");
-  return restricted.test(normalized) || instructionOverride.test(normalized) || personal.test(question) || personal.test(normalized);
+  const sensitive = /(?:нұсқау|ереже|инструкци|правил|жүйелік.{0,10}промпт).{0,45}(?:ұмыт|елеме|орындама|бұз|айт|көрсет|забуд|игнорируй)|(?:игнорируй|забудь|обойди|раскрой|отмени).{0,50}(?:инструкци|правил|промпт)|(?:қару|жарылғыш|бомб|оружи|наркотик|есірткі|өзімді өлтір|мекенжайым|телефон нөмірім|менің атым|мой адрес)/iu;
+  return sensitive.test(normalized) || restricted.test(normalized) || instructionOverride.test(normalized) || personal.test(question) || personal.test(normalized);
 }
 
 function bestMatch(question: string) {
@@ -38,12 +41,19 @@ function bestMatch(question: string) {
   return best;
 }
 
-export function quizTopic(question: string) {
+function kazakhIndex(question: string) {
+  const words = question.toLocaleLowerCase("kk").match(/[\p{L}]+/gu) ?? [];
+  return kazakh.findIndex(row => row.stems.some(phrase => phrase.split(" ").every(stem => words.some(word => word.startsWith(stem)))));
+}
+
+export function quizTopic(question: string, lang: Language = "en") {
+  if (lang === "kk") return faq[kazakhIndex(question)]?.topic ?? "sky and space";
   return bestMatch(question)?.topic ?? "sky and space";
 }
 
-export function answerFromFaq(question: string): AskResponse {
-  if (refuseQuestion(question)) return { answer: askRefusal, source: "refusal" };
+export function answerFromFaq(question: string, lang: Language = "en"): AskResponse {
+  if (refuseQuestion(question)) return { answer: responses[lang].refusal, source: "refusal" };
+  if (lang === "kk") return { answer: kazakh[kazakhIndex(question)]?.answer ?? responses.kk.general, source: "faq" };
   return { answer: bestMatch(cleanQuestion(question))?.answer ?? generalAnswer, source: "faq" };
 }
 

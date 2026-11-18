@@ -1,4 +1,4 @@
-import { t } from "../i18n/index";
+import { t, getLanguage, useLanguage } from "../i18n/index";
 import { HoldButton } from "../components/HoldButton";
 import { useContext, useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
@@ -15,11 +15,12 @@ import { SessionActivity } from "../components/SessionControls";
 
 
 async function askServer(question: string, controller: AbortController): Promise<AskResponse> {
+  const lang = getLanguage();
   try {
     const response = await fetch("/api/ask", {
       method: "POST", cache: "no-store", signal: controller.signal,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question } satisfies AskRequest),
+      body: JSON.stringify({ question, lang } satisfies AskRequest),
     });
     if (response.ok) {
       const result: Partial<AskResponse> | null = await response.json();
@@ -31,12 +32,13 @@ async function askServer(question: string, controller: AbortController): Promise
   } catch {
     // Use the built-in answers offline and when the Worker is unavailable.
   }
-  return answerFromFaq(question);
+  return answerFromFaq(question, lang);
 }
 
 export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   topics?: TopicId[]; onBack: () => void; onAnswer: () => void; onQuiz: (topic: string) => void;
 }) {
+  const lang = useLanguage();
   const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState("");
   const [result, setResult] = useState<AskResponse>();
@@ -54,7 +56,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
     input.current?.focus();
   }
 
-  const voice = usePushToTalk(!busy && !result, (text) => { void submit(text, true); }, hint, { transcribeTimeoutMs: 8000 });
+  const voice = usePushToTalk(!busy && !result, (text) => { setQuestion(text); input.current?.focus(); }, hint, { transcribeTimeoutMs: 8000 });
   const recording = voice.status === "opening" || voice.status === "recording";
 
   useEffect(() => {
@@ -62,12 +64,14 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   }, [busy, finishing, session, voice.status]);
 
   useEffect(() => {
+    setResult(undefined);
+    setBusy(false);
     return () => {
       request.current?.abort();
       request.current = null;
       stopSpeech();
     };
-  }, []);
+  }, [lang]);
 
   async function submit(value: string, fromVoice = false) {
     const text = cleanQuestion(value);
@@ -85,7 +89,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
       if (request.current !== controller) return;
       setAsked(text);
       setResult(response);
-      setTopic(quizTopic(text));
+      setTopic(quizTopic(text, lang));
       if (response.source !== "refusal") onAnswer();
       if (sound) void speakFallback(response.answer);
     } finally {
@@ -155,7 +159,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           </button>
           {voiceHint && <p role="status">{voiceHint}</p>}
           <div className="answer-list ask-suggestions" aria-label={t("ask.tryAsking")}>
-            {suggestedQuestions(topics).map((idea) => <button key={idea} type="button" className="quiet-button"
+            {suggestedQuestions(topics, 3, lang).map((idea) => <button key={idea} type="button" className="quiet-button"
               disabled={busy || finishing} onClick={() => { void submit(idea); }}>{idea}</button>)}
           </div>
         </form>

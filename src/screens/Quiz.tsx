@@ -1,3 +1,6 @@
+import { HoldButton } from "../components/HoldButton";
+import { usePushToTalk } from "../game/usePushToTalk";
+import { matchQuizSpeech } from "../../shared/quiz-speech";
 import { contentText, t, useLanguage } from "../i18n/index";
 import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
@@ -59,7 +62,21 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     stop();
   }
 
+  const [heard, setHeard] = useState("");
+  function trySpoken(text: string) {
+    const index = matchQuizSpeech(text, current.choices.map((_, i) => contentText("quiz." + current.id + ".option" + i)), lang);
+    if (index >= 0) { choose(current.choices[index]); setHeard(""); } else setHeard(text);
+  }
+  const voice = usePushToTalk(!!current && answer === undefined && !session?.finishing, trySpoken, () => setHeard(" "));
+  const voiceControl = answer === undefined && <>
+    <HoldButton talk hintKey="quiz-talk" className="quiet-button" onBegin={voice.start} onRelease={() => voice.release()} onCancel={voice.cancelHold} disabled={session?.finishing || voice.status === "decoding"}>
+      {voice.status === "recording" ? t("holdButton.letGoToSend") : t("ask.holdToTalk")}
+    </HoldButton>
+    {heard && <label>{t("quiz.editAnswer")} <input value={heard} onChange={event => setHeard(event.target.value)} onKeyDown={event => { if (event.key === "Enter") trySpoken(heard); }} /><button type="button" onClick={() => trySpoken(heard)}>{t("quiz.submitAnswer")}</button></label>}
+  </>;
+
   function next() {
+    setHeard("");
     if (completed.current) return;
     if (index === quiz.length - 1 || (session && !session.canStartActivity())) {
       completed.current = true;
@@ -84,7 +101,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
       feedback={answer !== undefined}
       replies={current.choices.map((choice, i) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
         data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{contentText("quiz." + current.id + ".option" + i)}</button>)}
-      controls={<>
+      controls={<>{voiceControl}
         <button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E]`} disabled={answer === undefined} onClick={next}>
           {nextLabel}
         </button>
@@ -102,6 +119,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         {sound && <button type="button" className="quiet-button" disabled={session?.finishing} onClick={() => {
           void speak(contentText("quiz." + current.id + ".question"), clipId);
         }}>{t("sketchGame.hearIt")}</button>}
+        {voiceControl}
         <div className="answer-list">
           {current.choices.map((choice, i) => (
             <button className="secondary-button" key={choice} type="button" disabled={answer !== undefined}

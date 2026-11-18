@@ -3,6 +3,7 @@ export type AgeBand = "1-2" | "3-5" | "6-8";
 export type Activity = Mode | "video" | "toddler" | "quiz" | "ask" | "memory" | "tic-tac-toe" | "sketch" | "space" | "balloons";
 
 export interface AskRequest {
+  lang?: "kk" | "en";
   question: string;
   ageBand?: AgeBand;
   topics?: string[];       // ids from shared/topics.ts, the child's favorite topics

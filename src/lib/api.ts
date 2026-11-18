@@ -1,3 +1,4 @@
+import { getLanguage } from "../i18n";
 import type { TurnRequest, TurnResponse } from "../../shared/types";
 import { fallbackTurn, isTurnSelection, maxTranscriptLength } from "../../worker/turn-contract";
 
@@ -15,7 +16,7 @@ async function post(path: string, body: BodyInit, contentType: string, timeout: 
 
 export async function transcribe(wav: Blob, timeoutMs = 6000): Promise<string> {
   try {
-    const result = await post("/api/stt", wav, "audio/wav", timeoutMs) as { text?: unknown } | null;
+    const result = await post("/api/stt?lang=" + getLanguage(), wav, "audio/wav", timeoutMs) as { text?: unknown } | null;
     return typeof result?.text === "string" ? result.text.trim().slice(0, maxTranscriptLength) : "";
   } catch {
     return "";

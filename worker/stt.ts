@@ -39,10 +39,10 @@ export function validWav(wav: ArrayBuffer) {
   return false;
 }
 
-export async function recognizeSpeech(ai: Ai, wav: ArrayBuffer): Promise<string> {
+export async function recognizeSpeech(ai: Ai, wav: ArrayBuffer, lang: "en" | "kk" = "en"): Promise<string> {
   const audio = Buffer.from(wav).toString("base64");
   const { text } = await deadline(ai.run("@cf/openai/whisper-large-v3-turbo", {
-    audio, task: "transcribe", language: "en", vad_filter: true,
+    audio, task: "transcribe", language: lang, vad_filter: true,
   }));
   if (typeof text !== "string") throw new Error("Invalid speech recognition response");
   return unsafe(text) ? "" : text.trim().slice(0, maxTranscriptLength);
