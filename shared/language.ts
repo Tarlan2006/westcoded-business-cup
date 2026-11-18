@@ -11,3 +11,10 @@ export const responses = {
     "general": "Қызық сұрақ! Үлкендерден сұрап, бірге білейік."
   }
 } as const;
+
+/** Available before reading a request body, including for size/rate errors. */
+export function requestLanguage(request: Request): Language {
+  const explicit = new URL(request.url).searchParams.get("lang");
+  if (explicit === "en" || explicit === "kk") return explicit;
+  return /^kk(?:[-,;]|$)/i.test(request.headers.get("Accept-Language") ?? "") ? "kk" : "en";
+}

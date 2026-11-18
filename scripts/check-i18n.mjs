@@ -11,12 +11,20 @@ for (const key of new Set([...Object.keys(en), ...Object.keys(kk)])) {
   const tokens = s => [...(s ?? "").matchAll(/\{\w+\}/g)].map(m => m[0]).sort().join();
   if (tokens(en[key]) !== tokens(kk[key])) problems.push(key + ": placeholders differ");
 }
-for (const file of fs.readdirSync("src", {recursive:true}).filter(f => f.endsWith(".tsx") && !f.endsWith("preview.tsx"))) {
+for (const file of fs.readdirSync("src", {recursive:true}).filter(f => f.endsWith(".tsx"))) {
   const path = "src/" + file;
   const source = ts.createSourceFile(path, fs.readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  function rendered(expr) {
+    if (!expr) return "";
+    if (ts.isStringLiteralLike(expr)) return expr.text;
+    if (ts.isConditionalExpression(expr)) return rendered(expr.whenTrue) + " " + rendered(expr.whenFalse);
+    if (ts.isTemplateExpression(expr)) return expr.head.text + expr.templateSpans.map(span => rendered(span.expression) + span.literal.text).join("");
+    if (ts.isBinaryExpression(expr) && expr.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken) return rendered(expr.right);
+    return "";
+  }
   function check(node) {
-    const text = ts.isJsxText(node) ? node.text : ts.isJsxAttribute(node) && /^(aria-label|alt|title|placeholder|label|detail|description)$/.test(node.name.getText(source)) && node.initializer && ts.isStringLiteral(node.initializer) ? node.initializer.text : "";
-    if (/[A-Za-z]/.test(text.replace(/&nbsp;|\bXP\b/g, "")) && !allowed.has(text.trim())) problems.push(path + ":" + (source.getLineAndCharacterOfPosition(node.getStart()).line + 1) + " " + text.trim());
+    const text = ts.isJsxText(node) ? node.text : ts.isJsxExpression(node) && !ts.isJsxAttribute(node.parent) ? rendered(node.expression) : ts.isJsxAttribute(node) && /^(aria-label|alt|title|placeholder|label|detail|description)$/.test(node.name.getText(source)) && node.initializer ? ts.isStringLiteral(node.initializer) ? node.initializer.text : ts.isJsxExpression(node.initializer) ? rendered(node.initializer.expression) : "" : "";
+    if (/[A-Za-z]/.test(text.replace(/&nbsp;|\b(?:XP|KZ|EN)\b/g, "")) && !allowed.has(text.trim())) problems.push(path + ":" + (source.getLineAndCharacterOfPosition(node.getStart()).line + 1) + " " + text.trim());
     ts.forEachChild(node, check);
   }
   check(source);

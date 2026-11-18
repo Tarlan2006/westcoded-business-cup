@@ -138,6 +138,8 @@ export default function App() {
     for (const [property, value] of Object.entries({ "og:title": document.title, "og:description": description, "og:locale": lang === "kk" ? "kk_KZ" : "en_US", "og:locale:alternate": lang === "kk" ? "en_US" : "kk_KZ" })) {
       document.querySelector(`meta[property="${property}"]`)?.setAttribute("content", value);
     }
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", document.title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
     document.querySelector('link[rel="manifest"]')?.setAttribute("href", lang === "en" ? "/manifest.en.webmanifest" : "/manifest.webmanifest");
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
   }, [lang, privacy, session?.complete, !!session, welcoming, current.screen.name]);
@@ -220,7 +222,7 @@ export default function App() {
     (item.screen.name === "parent" || item.screen.name === "home" && !session) && history.slice(index + 1).every((next) => next.screen.name === "privacy"));
 
   if (session?.complete && !privacy) return <PrototypeFrame>
-    <SessionComplete name={profile?.preferences?.nickname ?? (profile ? codenameFor(profile.codenameId) : "pal")}
+    <SessionComplete name={profile?.preferences?.nickname ?? (profile ? codenameFor(profile.codenameId) : t("app.pal"))}
       xp={profile?.xp ?? 0} streak={profile?.streak ?? 0} onBack={backToStart} />
   </PrototypeFrame>;
 

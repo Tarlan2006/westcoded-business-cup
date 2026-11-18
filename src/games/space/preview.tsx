@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { useState } from "react";
 // The development entry point mounts React. The game itself depends only on React.
 import { createRoot } from "react-dom/client";
@@ -42,7 +43,7 @@ function Preview() {
       {away && <button type="button" className="sp-button sp-button-soft" onClick={() => {
         setAway(false);
         setMessage("");
-      }}>Return to preview</button>}
+      }}>{t("preview.back")}</button>}
     </div>}
     {!away && <Game speak={query.get("text") === "1" ? undefined : speakLocally} onBack={() => {
       window.speechSynthesis?.cancel();

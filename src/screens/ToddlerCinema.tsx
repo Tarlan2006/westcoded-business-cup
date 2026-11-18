@@ -148,7 +148,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
         if (waiting) { setPending(null); setStopped(true); }
       }}><span className="toddler-toggle" aria-hidden="true" /> {t("toddlerCinema.autoplayNext")}</button></div>
       <div className="toddler-episodes">{videos.map((video, position) => <button type="button" key={video.id} disabled={waiting || position === index}
-        className="toddler-card" aria-label={`${position === index ? "Now showing" : "Play next"}: ${video.title}`} aria-current={position === index ? "true" : undefined}
+        className="toddler-card" aria-label={`${t(position === index ? "toddlerCinema.nowShowing" : "cinema.playNext")}: ${video.title}`} aria-current={position === index ? "true" : undefined}
         onClick={() => queue(position)}>
         <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy" /><span>{position === index ? t("toddlerCinema.nowShowingAlt") : `0${position + 1}`}</span></div>
         <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{position === index ? t("toddlerCinema.enjoyThisLittleMoment") : t("toddlerCinema.startsAfterA10SecondBreak")}</span>

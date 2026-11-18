@@ -159,8 +159,8 @@ function makeSketchCanvas() { return forwardRef<SketchCanvasHandle>(function Ske
           <span className="sk-swatch" style={{ backgroundColor: value }}>{!eraser && color === value ? "✓" : ""}</span>
         </button>)}
         {widths.map((value, i) => <button type="button" key={value} className="sk-tool"
-          aria-label={t("sketchCanvas.brush", { value1: ["Thin", "Medium", "Thick"][i] })} aria-pressed={width === value}
-          title={t("sketchCanvas.brush", { value1: ["Thin", "Medium", "Thick"][i] })} onClick={() => setWidth(value)}>
+          aria-label={t("sketchCanvas.brush", { value1: t((["brush.thin", "brush.medium", "brush.thick"] as const)[i]) })} aria-pressed={width === value}
+          title={t("sketchCanvas.brush", { value1: t((["brush.thin", "brush.medium", "brush.thick"] as const)[i]) })} onClick={() => setWidth(value)}>
           <span className="sk-brush-dot" style={{ width: value, height: value }} />
         </button>)}
         <button type="button" className="sk-tool" aria-pressed={eraser} aria-label={t("sketchCanvas.eraser")} title={t("sketchCanvas.eraser")} onClick={() => setEraser(!eraser)}>

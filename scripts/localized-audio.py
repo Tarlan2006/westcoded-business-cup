@@ -13,7 +13,9 @@ AUDIO = ROOT / "public/audio"
 def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 def save(path, data):
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    staged = path.with_suffix(".json.tmp")
+    staged.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    staged.replace(path)
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--lang", required=True, choices=["kk", "en"])
@@ -53,8 +55,10 @@ def main():
                     texts[normalized] = "/audio/" + locale + "/" + filename
                     clips[row["id"]] = texts[normalized]
                     continue
+                intermediate = Path(tmp) / "encoded.mp3"
                 subprocess.run([ffmpeg, "-v", "error", "-y", "-i", str(source), "-ac", "1",
-                                "-ar", "16000", "-b:a", "24k", "-map_metadata", "-1", str(target)], check=True)
+                                "-ar", "16000", "-b:a", "24k", "-map_metadata", "-1", str(intermediate)], check=True)
+                target.write_bytes(intermediate.read_bytes())
                 texts[normalized] = "/audio/" + locale + "/" + filename
             clips[row["id"]] = texts[normalized]
     metadata = {"lang": locale, "voice": "kk-iseke-v1" if locale == "kk" else "aidos-luna-v1"}

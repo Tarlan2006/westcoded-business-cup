@@ -1,4 +1,4 @@
-import { t } from "../i18n/index";
+import { t, getLanguage } from "../i18n/index";
 import { useId, type ButtonHTMLAttributes } from "react";
 import { useHold, type HoldOptions } from "./useHold";
 import "./hold.css";
@@ -13,7 +13,7 @@ export function HoldButton({ children, className = "", talk, duration, hintKey, 
       className={`${className} hold-control${hold.holding ? " hold-pressed" : ""}${hold.shake ? " hold-shake" : ""}`}>
       {children}
       {hold.holding && <span className="hold-status">{talk && hold.progress === 1 ? t("holdButton.letGoToSend") : t("holdButton.keepHolding")}
-        {!talk && t("holdButton.s", { value1: hold.remaining.toFixed(1) })}</span>}
+        {!talk && t("holdButton.s", { value1: hold.remaining.toLocaleString(getLanguage(), { minimumFractionDigits: 1, maximumFractionDigits: 1 }) })}</span>}
       {hold.holding && <span className="hold-track" aria-hidden="true"><span style={{ width: `${hold.progress * 100}%` }} /></span>}
     </button>
   </span>;

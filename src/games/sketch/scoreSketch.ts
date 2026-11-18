@@ -1,4 +1,4 @@
-import { t } from "../../i18n/index";
+import { t } from "../../i18n/index.ts";
 /** DOM-free pixels; transparent pixels are composited onto white. */
 export interface ImageDataLike {
   width: number;

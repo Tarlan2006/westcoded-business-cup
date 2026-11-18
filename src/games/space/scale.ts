@@ -1,4 +1,4 @@
-import { t, contentText, getLanguage, subscribe } from "../../i18n/index";
+import { t, contentText, getLanguage, subscribe } from "../../i18n/index.ts";
 import bank from "./objects.json" with { type: "json" };
 
 export interface SpaceObject {
@@ -15,7 +15,7 @@ export interface SpaceObject {
 function spaceObjects(): readonly SpaceObject[] {
   return [...bank].sort((a, b) => a.diameterKm - b.diameterKm).map(obj => {
     const text = (field: string) => contentText("space." + obj.id + "." + field);
-    return { ...obj, name: text("name"), label: text("label"), measure: text("measure"), fact: text("fact") };
+    return { ...obj, name: text("name"), label: text("label"), fact: text("fact") };
   });
 }
 export let objects = spaceObjects();

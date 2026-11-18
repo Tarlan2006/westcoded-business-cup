@@ -19,7 +19,7 @@ async function askServer(question: string, controller: AbortController): Promise
   try {
     const response = await fetch("/api/ask", {
       method: "POST", cache: "no-store", signal: controller.signal,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Accept-Language": lang },
       body: JSON.stringify({ question, lang } satisfies AskRequest),
     });
     if (response.ok) {

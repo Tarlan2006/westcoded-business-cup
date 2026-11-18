@@ -8,6 +8,7 @@
     "types": ["vite/client", "node"],
     "strict": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
   "include": ["src", "shared", "vite.config.ts"]

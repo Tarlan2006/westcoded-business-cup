@@ -54,7 +54,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
   return <main className="prototype-screen prototype-hub relative w-full max-w-4xl mx-auto px-4 py-4 z-10" aria-label={t("app.activities")}>
     <PrototypeHeader name={name} label={`${profile.xp} XP`} detail={t("home.dayStreak", { value1: rankName(profile.rank), value2: profile.streak })}
       onParents={onParent}>
-      <button type="button" className="prototype-parent-button" aria-pressed={sound} onClick={onToggleSound}>{t("home.sound")} {sound ? "on" : "off"}</button>
+      <button type="button" className="prototype-parent-button" aria-pressed={sound} onClick={onToggleSound}>{t("home.sound")} {t(sound ? "control.on" : "control.off")}</button>
       <button type="button" className="prototype-parent-button" onClick={() => setGarage(true)}>{t("home.garage")}</button>
     </PrototypeHeader>
     <div className="learn-page">
@@ -76,7 +76,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
         </div>
       </section>)}
       <section className="activity-section" aria-labelledby="group-plus">
-        <h2 id="group-plus" className="font-display text-2xl font-bold">{t("home.unlockMore")} <span className="plus-badge">{t("home.plus", { value1: APP_NAME.toUpperCase() })}</span></h2>
+        <h2 id="group-plus" className="font-display text-2xl font-bold">{t("home.unlockMore")} <span className="plus-badge">{t("home.plus", { value1: document.documentElement.lang === "kk" ? APP_NAME : APP_NAME.toUpperCase() })}</span></h2>
         <div className="locked-hint">
           <Mascot pose="point" size={84} />
           <p className="hub-greeting-bubble">{t("home.theseGamesAreStillLockedUpAsk")}</p>

@@ -1,6 +1,7 @@
 // Node 24 needs the explicit .ts extension; the app uses Bundler resolution.
-// @ts-expect-error -- this check is executed directly by Node, never bundled by Vite.
-import { scoreSketch, drawingStats, sketchResult } from "./scoreSketch.ts";
+import { changeLanguage } from "../../i18n/index.ts";
+await changeLanguage("en", false);
+const { scoreSketch, drawingStats, sketchResult } = await import("./scoreSketch.ts");
 import type { ImageDataLike } from "./scoreSketch";
 
 function check(condition: boolean, message: string) {

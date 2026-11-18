@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { APP_NAME } from "../brand";
+import { APP_NAME } from "../brand.ts";
 import type en from "./en";
 
 export type Language = "en" | "kk";
@@ -28,11 +28,11 @@ export function contentText(key: string) {
 export function useT() { useLanguage(); return t; }
 export async function changeLanguage(next: Language, persist = true) {
   const ticket = ++request;
-  const dictionary = cache[next] ??= (next === "kk" ? await import("./kk") : await import("./en")).default;
+  const dictionary = cache[next] ??= (next === "kk" ? await import("./kk.ts") : await import("./en.ts")).default;
   if (ticket !== request) return;
   messages = dictionary;
   lang = next;
-  document.documentElement.lang = next;
+  if (typeof document !== "undefined") document.documentElement.lang = next;
   if (persist) {
     try { localStorage.setItem("mypal.lang", next); } catch { /* tab only */ }
   }
@@ -40,6 +40,12 @@ export async function changeLanguage(next: Language, persist = true) {
 }
 export async function initializeLanguage() {
   let saved: string | null = null;
-  try { saved = localStorage.getItem("mypal.lang"); } catch { /* start in Kazakh */ }
+  try {
+    saved = localStorage.getItem("mypal.lang");
+    if (saved !== "kk" && saved !== "en") {
+      const progress = JSON.parse(localStorage.getItem("mission-control.progress") || "{}");
+      saved = progress.profiles?.find((p: {id: string}) => p.id === progress.selectedId)?.lang ?? null;
+    }
+  } catch { /* start in Kazakh */ }
   await changeLanguage(saved === "en" ? "en" : "kk", false);
 }

@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { useState } from "react";
 // Only this dev harness imports React DOM; the game itself depends on React alone.
 import { createRoot } from "react-dom/client";
@@ -38,8 +39,8 @@ function Preview() {
   // ?text=1 exercises the exact same game without the optional speak prop.
   const textOnly = new URLSearchParams(window.location.search).get("text") === "1";
   return <main className="sk-preview-page">
-    <div className="sk-preview-banner">SKETCH ARTIST · ISOLATED PLAYROOM</div>
-    {message && <div className="sk-preview-message" role="status">{message}{away && <div><button type="button" className="sk-button" onClick={() => { setAway(false); setMessage(""); }}>Return to preview</button></div>}</div>}
+    <div className="sk-preview-banner">{t("preview.art")}</div>
+    {message && <div className="sk-preview-message" role="status">{message}{away && <div><button type="button" className="sk-button" onClick={() => { setAway(false); setMessage(""); }}>{t("preview.back")}</button></div>}</div>}
     {!away && <SketchGame speak={textOnly ? undefined : previewSpeak}
       onBack={() => { stopSpeech(); setMessage("Back pressed — the host would show the previous screen."); setAway(true); }}
       onComplete={(points) => { stopSpeech(); setMessage(`Case complete! onComplete(${points}) · ${points} XP. Nothing was sent or saved.`); }} />}

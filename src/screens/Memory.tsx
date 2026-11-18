@@ -75,7 +75,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
             {deck.map((icon, index) => {
               const found = matched.includes(index);
               const visible = found || shown.includes(index);
-              const label = visible ? t("memory.card", { value1: memoryIcons[icon], value2: index + 1, value3: found ? ", matched" : "" }) : t("memory.hiddenCard", { value1: index + 1 });
+              const label = visible ? t("memory.card", { value1: memoryIcons[icon], value2: index + 1, value3: found ? t("memory.matched") : "" }) : t("memory.hiddenCard", { value1: index + 1 });
               return <button key={index} type="button" aria-label={label} className="memory-card"
                 data-face-up={visible} data-matched={found || undefined} data-miss={visible && !found && missed || undefined}
                 aria-disabled={visible || shown.length >= 2}

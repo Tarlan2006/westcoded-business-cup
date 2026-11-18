@@ -36,7 +36,7 @@ export function PrototypeFrame({ children, theme = 'calm', music = false, paused
     </div>
     {music && <div className="amb-controls"><button type="button" className="amb-music-button" aria-pressed={enabled && sound}
       disabled={!sound} title={sound ? t("prototypeFrame.backgroundMusic") : t("prototypeFrame.turnSoundOnToEnableBackgroundMusic")} onClick={toggle}>
-      <span aria-hidden="true">♫</span> {t("prototypeFrame.music")} {enabled && sound ? 'on' : 'off'}
+      <span aria-hidden="true">♫</span> {t("prototypeFrame.music")} {t(enabled && sound ? "control.on" : "control.off")}
     </button></div>}
     {children}
   </div>;

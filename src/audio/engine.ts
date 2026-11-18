@@ -368,14 +368,15 @@ function loadVoiceIndex() {
   return voiceIndex;
 }
 async function voiceBuffer(text: string, context: AudioContext) {
+  const language = getLanguage();
   let result=spokenBuffers.get(text);
   if(!result){
     result=(async()=>{
       const index=await loadVoiceIndex();
       let response: Response | undefined;
-      if(index[text]) response=await fetch(index[text]+'?voice='+AIDOS_VOICE,{signal:AbortSignal.timeout(3000)}).catch(()=>undefined);
+      if(index[text]) response=await fetch(index[text]+'?voice='+voiceVersion(),{signal:AbortSignal.timeout(3000)}).catch(()=>undefined);
       if(!response?.ok){
-        if (getLanguage() !== 'en') throw new Error('no_recording');
+        if (language !== 'en' || language !== getLanguage()) throw new Error('no_recording');
         response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text}),signal:AbortSignal.timeout(7500)});
         if(response.headers.get('X-AIdos-Voice')!==AIDOS_VOICE)throw new Error('voice_version');
       }

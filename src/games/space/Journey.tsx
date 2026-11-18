@@ -179,7 +179,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
   const object = objects[active];
   const previous = objects[active - 1];
   const comparison = previous ? compareSizes(object, previous) : t("journey.startHereThenSeeWhatIsBigger");
-  const dimension = { height: "tall", length: "long", "height above sea level": t("journey.aboveSeaLevel"), diameter: "wide" }[object.measure];
+  const dimension = { height: t("dimension.tall"), length: t("dimension.long"), "height above sea level": t("journey.aboveSeaLevel"), diameter: t("dimension.wide") }[object.measure];
   const comparisonText = previous?.measure === "diameter" && object.measure === "diameter"
     ? comparison.replace(t("journey.timesAsBigAs"), t("journey.timesAsWideAs")) : comparison;
 

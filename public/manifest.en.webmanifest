@@ -1,7 +1,7 @@
 {
   "name": "AIdos",
   "short_name": "AIdos",
-  "start_url": "/",
+  "start_url": "https://aidos.nexcel.kz/",
   "display": "standalone",
   "icons": [
     {

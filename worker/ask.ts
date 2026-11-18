@@ -1,9 +1,9 @@
-import { responses, type Language } from "../shared/language";
+import { requestLanguage, responses, type Language } from "../shared/language";
 import { APP_NAME } from "../src/brand";
 import { unsafe, safeOutput, deadline } from "./safety";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
-import { answerFromFaq, askRefusal, cleanQuestion, refuseQuestion, quickFaqAnswer } from "../shared/ask-faq";
+import { answerFromFaq, cleanQuestion, refuseQuestion, quickFaqAnswer } from "../shared/ask-faq";
 import type { AskResponse } from "../shared/types";
 import { readTopics, topicLabels } from "../shared/topics";
 
@@ -154,21 +154,22 @@ function interestsNote(favorites: string[]) {
 
 ask.post("/api/ask", bodyLimit({ maxSize: 8192, onError: (c) => {
   c.header("Cache-Control", "no-store");
-  return c.json({ answer: askRefusal, source: "refusal" } satisfies AskResponse, 413);
+  return c.json({ answer: responses[requestLanguage(c.req.raw)].refusal, source: "refusal" } satisfies AskResponse, 413);
 } }), async (c) => {
   c.header("Cache-Control", "no-store");
   const body = await c.req.json<{ question?: unknown; lang?: unknown; ageBand?: unknown; topics?: unknown; history?: unknown }>().catch(() => null);
-  const lang = body?.lang === "kk" ? "kk" : "en";
+  const lang = body?.lang === "kk" || body?.lang === "en" ? body.lang : requestLanguage(c.req.raw);
   if (typeof body?.question !== "string" || !/[\p{L}]{2}/u.test(body.question)) {
     return c.json({ answer: responses[lang].retry, source: "refusal" } satisfies AskResponse);
   }
   if (body.question.length > 300 || unsafe(body.question) || refuseQuestion(body.question)) return c.json({ answer: responses[lang].refusal, source: "refusal" } satisfies AskResponse);
   const question = cleanQuestion(body.question);
-  const history = readHistory(body.history);
+  const legacyClient = body.lang === undefined;
+  const history = legacyClient ? readHistory(body.history) : [];
   const quick = lang === "en" && !history.length && quickFaqAnswer(question);
   if (quick) return c.json(quick);
   if ((!c.env.GROQ_API_KEY?.trim() && !c.env.AI) || !canCallModel(c.req.header("CF-Connecting-IP") ?? "local")) {
     return c.json(answerFromFaq(question, lang));
   }
-  return c.json(await modelAnswer(question, c.env, topicLabels(readTopics(body.topics)), history, body.ageBand === "6-8" ? "6-8" : "3-5", lang));
+  return c.json(await modelAnswer(question, c.env, legacyClient ? topicLabels(readTopics(body.topics)) : [], history, legacyClient && body.ageBand === "6-8" ? "6-8" : "3-5", lang));
 });

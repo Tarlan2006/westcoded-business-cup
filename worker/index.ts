@@ -1,4 +1,5 @@
-import { responses } from "../shared/language";
+import { APP_NAME } from "../src/brand";
+import { requestLanguage, responses } from "../shared/language";
 import { IpLimiter } from "./safety";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
@@ -41,11 +42,11 @@ app.use("/api/*", async (c,next) => {
  c.header("Cache-Control","no-store"); c.header("Vary","Origin");
  const origin=c.req.header("Origin");
  const allowed=(c.env.ALLOWED_ORIGINS ?? "https://aidos.nexcel.kz,https://mypal.tarlan-b06.workers.dev,https://mission-control.tarlan-b06.workers.dev,http://localhost:5173").split(",").map(s=>s.trim());
- if(origin && !allowed.includes(origin)) return c.json({error:"Let's return to the game."},403);
+ if(origin && !allowed.includes(origin)) return c.json({error:requestLanguage(c.req.raw) === "kk" ? "Ойынға оралайық." : "Let's return to the game."},403);
  if(origin) c.header("Access-Control-Allow-Origin",origin);
  if(c.req.method === "OPTIONS") { c.header("Access-Control-Allow-Methods","GET, POST, OPTIONS"); c.header("Access-Control-Allow-Headers","Content-Type"); return c.body(null,204); }
  if(c.req.method === "POST" && !limiter.take(c.req.header("CF-Connecting-IP") ?? "local")) {
-  c.header("Retry-After","60"); const message="Let's take a little break and try again soon!";
+  c.header("Retry-After","60"); const message=requestLanguage(c.req.raw) === "kk" ? "Сәл демалып, қайта көрейік!" : "Let's take a little break and try again soon!";
   return c.json(c.req.path === "/api/ask" ? {answer:message,source:"refusal"} : c.req.path === "/api/stt" ? {text:"",message} : {error:message},429);
  }
  await next();
@@ -55,7 +56,7 @@ app.get("/api/health", (c) => c.json({ ok: true, time: new Date().toISOString() 
 
 app.post("/api/stt", bodyLimit({
   maxSize: maxWavBytes,
-  onError: (c) => c.json({ error: "Please use a shorter recording." }, 413),
+  onError: (c) => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Қысқаша айтып көр." : "Please use a shorter recording." }, 413),
 }), async (c) => {
   const lang = c.req.query("lang") === "kk" ? "kk" : "en";
   const retryReply = responses[lang].retry;
@@ -81,9 +82,9 @@ app.post("/api/turn", bodyLimit({
   return c.json(await chooseTurn(request, c.env.GROQ_API_KEY, c.env.LLM_MODEL));
 });
 
-app.onError((_error, c) => c.json({ error: "Request could not be processed" }, 500));
+app.onError((_error, c) => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Сұрауды өңдеу мүмкін болмады." : "Request could not be processed" }, 500));
 
-app.all("/api/*", c => c.json({ error: "Let's return to the game." }, 404));
+app.all("/api/*", c => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Ойынға оралайық." : "Let's return to the game." }, 404));
 app.get("*", async c => {
   const url = new URL(c.req.url);
   if (/(^|\/)\.(env|git)(\/|$|\.)|\.map$/.test(url.pathname)) return c.text("Not found", 404);
@@ -92,8 +93,8 @@ app.get("*", async c => {
   if (privacy) url.pathname = "/";
   const response = await c.env.ASSETS.fetch(new Request(url, c.req.raw));
   if (!privacy || response.status !== 200) return response;
-  const title = "Privacy · AIdos";
-  const description = "How AIdos handles local child settings, optional voice input and questions.";
+  const title = "Құпиялық · " + APP_NAME;
+  const description = APP_NAME + " баланың баптауларын қалай сақтайды? Дауыс пен сұрақтар қалай өңделеді?";
   return new HTMLRewriter()
     .on("title", { element: el => { el.setInnerContent(title); } })
     .on('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]', { element: el => { el.setAttribute("content", description); } })

@@ -1,5 +1,4 @@
 import { t } from "../i18n/index";
-import { APP_NAME } from "../brand";
 import { useContext, useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
@@ -71,7 +70,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
       <span aria-hidden="true">⏭️</span> {t("videoCatalog.nextVideo")}</button>
     <button type="button" disabled={finishing} onClick={() => onPlay(selected?.id)}
       className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
-      <Mascot pose="point" size={48} /> {t("videoCatalog.playWith")} {APP_NAME} {t("videoCatalog.now")}</button>
+      <Mascot pose="point" size={48} /> {t("video.playNow")}</button>
   </div>;
 
   return <main id="screen-video" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-4 flex flex-col justify-between z-10 space-y-4" aria-label={t("activitySuggestions.videoLibrary")}>

@@ -536,3 +536,7 @@ html[lang="kk"] :is(.font-display, h1, h2, h3) { font-family: Nunito, sans-serif
 html[lang="kk"] :is(.need-chip,.prof-age-btn,.flow-breadcrumb,.flow-hold-button > span) { white-space: normal; }
 html[lang="kk"] :is(.prototype-parent-button,.need-chip,.hub-greeting-bubble,.speech-bubble-duo,.profile-submit) { max-width: 100%; overflow-wrap: anywhere; }
 html[lang="kk"] .profile-setup-heading { flex-wrap: wrap; }
+
+@media (max-width: 420px) {
+  html[lang="kk"] .mission-controls .btn-game { min-width: 0; flex-wrap: wrap; font-size: 1rem; gap: .35rem; }
+}

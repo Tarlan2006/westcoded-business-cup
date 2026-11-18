@@ -1,3 +1,4 @@
+import { useLanguage } from "../i18n";
 import { useEffect, useState } from "react";
 import { playQueue, speakFallback, stopSpeech } from "../audio/engine";
 import { lineFor } from "./content";
@@ -18,6 +19,7 @@ export async function within<T>(promise: Promise<T>, milliseconds: number, fallb
 // Every available recording starts directly; cancelled briefings cannot block new ones.
 export function useBriefing(ids: string[], paused: boolean, _preferClips = false) {
   const [spoken, setSpoken] = useState({ key: "", caption: "", speaking: false });
+  const lang = useLanguage();
   const key = ids.join(" ");
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function useBriefing(ids: string[], paused: boolean, _preferClips = false
       active = false;
       stopSpeech();
     };
-  }, [key, paused]);
+  }, [key, paused, lang]);
 
   const fallback = ids.length ? lineFor(ids.at(-1)!).text : "";
   return {

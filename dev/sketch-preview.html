@@ -11,6 +11,10 @@
   </head>
   <body>
     <div id="sk-preview-root"></div>
-    <script type="module" src="/src/games/sketch/preview.tsx"></script>
+    <script type="module">
+      import { initializeLanguage } from "/src/i18n/index.ts";
+      await initializeLanguage();
+      await import("/src/games/sketch/preview.tsx");
+    </script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 // Node 24 needs the explicit extension; production uses Vite Bundler resolution.
-// @ts-expect-error -- check only; no tsconfig/package changes are necessary.
 import { answerOptions, layoutBalloons, pointsFor, quadrant, roundSpec } from "./model.ts";
 import type { AgeGroup, Balloon } from "./model";
 

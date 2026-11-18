@@ -89,7 +89,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
       <p className="caption font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug" aria-live="polite">{giggling ? t("missionStage.heeHeeHeeThatTickles") : prompt}</p>
       {replies && <div className="flex flex-wrap items-center justify-center gap-2.5" aria-label={t("missionStage.quickReplies")}>{replies}</div>}
     </div>
-    <div className="w-full grid grid-cols-2 gap-3 sm:gap-4 pt-1">{controls}</div>
+    <div className="mission-controls w-full grid grid-cols-2 gap-3 sm:gap-4 pt-1">{controls}</div>
     {status && <p className="text-sm text-indigo-200" role="status">{status}</p>}
   </main>;
 }

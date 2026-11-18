@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 // Node runs this file directly and requires the extension.
-// @ts-expect-error -- the Vite project's TypeScript settings omit allowImportingTsExtensions.
-import { cameraScale, compareSizes, formatSize, objects, screenSize, sizeRatio, stopCount } from "./scale.ts";
+import { changeLanguage } from "../../i18n/index.ts";
+await changeLanguage("en", false);
+const { cameraScale, compareSizes, formatSize, objects, screenSize, sizeRatio, stopCount } = await import("./scale.ts");
 
 assert.equal(new Set(objects.map(({ id }) => id)).size, objects.length);
 assert(objects.every((object, index) => object.diameterKm > (objects[index - 1]?.diameterKm ?? 0)));

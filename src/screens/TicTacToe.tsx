@@ -135,7 +135,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
         <div className="ttt-board" role="group" aria-label={t("ticTacToe.ticTacToeBoard")}>
           {board.map((cell, index) => (
             <button key={index} type="button" className="ttt-cell" aria-disabled={!canPlay || Boolean(cell)}
-              aria-label={t("ticTacToe.rowColumn", { value1: Math.floor(index / 3) + 1, value2: index % 3 + 1, value3: cell === "X" ? "star" : cell === "O" ? "cloud" : "empty" })}
+              aria-label={t("ticTacToe.rowColumn", { value1: Math.floor(index / 3) + 1, value2: index % 3 + 1, value3: t(cell === "X" ? "board.star" : cell === "O" ? "board.cloud" : "board.empty") })}
               data-winning={winningLine?.includes(index) || undefined}
               onClick={() => dispatch({ mark: "X", index, board })}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
           ))}
