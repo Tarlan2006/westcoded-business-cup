@@ -1,3 +1,4 @@
+import { InlineSymbol, withSymbols } from "../../components/InlineSymbol";
 import { t } from "../../i18n/index";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type JSX } from "react";
 import { GameButton } from "../../components/GameUI";
@@ -117,7 +118,7 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
     <div className="bl-shell">
       <header className="bl-header">
         <nav className="bl-navigation" aria-label={t("balloonsGame.gameNavigation")}>
-          <button className="bl-back" type="button" onClick={back}>{t("activityHeader.backAlt")}</button>
+          <button className="bl-back" type="button" onClick={back}>{withSymbols(t("activityHeader.backAlt"))}</button>
           <button className="bl-home" type="button" onClick={back} aria-label={t("balloonsGame.home")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8M6 9v12h5v-6h3v6h4V9" /></svg></button>
         </nav>
         <span className="bl-xp" aria-label={t("balloonsGame.experiencePoints", { value1: stage === "final" ? points : correct * 4 })}>{stage === "final" ? points : correct * 4} XP</span>
@@ -152,9 +153,9 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
               <div className="bl-answers" aria-label={t("balloonsGame.chooseANumber")}>
                 {options.map((value) => <button type="button" className="bl-answer" key={value} aria-label={String(value)}
                   aria-disabled={stage !== "answer"} data-result={stage === "result" ? value === round.count ? "correct" : value === picked ? "wrong" : "muted" : undefined}
-                  onClick={() => choose(value)}>{value}{stage === "result" && value === round.count && <span className="bl-check" aria-label={t("balloonsGame.correctAnswer")}>✓</span>}</button>)}
+                  onClick={() => choose(value)}>{value}{stage === "result" && value === round.count && <span className="bl-check" aria-label={t("balloonsGame.correctAnswer")}><InlineSymbol mark="✓" /></span>}</button>)}
               </div>
-              {stage === "result" && success && <div className="bl-confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ "--bl-n": i } as CSSProperties}>★</i>)}</div>}
+              {stage === "result" && success && <div className="bl-confetti" aria-hidden="true">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ "--bl-n": i } as CSSProperties}><InlineSymbol mark="★" /></i>)}</div>}
             </div>}
           </div>
           <div className="bl-primary-slot">{looking ? <GameButton className="bl-primary" disabled={stage === "fading" || exited} onClick={counted}>{t("balloonsGame.iCounted")}</GameButton>

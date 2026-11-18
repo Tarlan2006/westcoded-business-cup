@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { APP_NAME } from "../brand";
 import { useEffect, useId, useRef, useState } from "react";
@@ -66,7 +67,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
           </div>
           <div className="memory-progress">
             <span className="memory-stars" aria-hidden="true">{Array.from({ length: pairs }, (_, index) =>
-              <span key={index} data-earned={index < foundPairs}>★</span>)}</span>
+              <span key={index} data-earned={index < foundPairs}><InlineSymbol mark="★" /></span>)}</span>
             <span role="status">{t("memory.ofPairs", { foundPairs, pairs })}</span>
           </div>
         </div>
@@ -108,7 +109,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
             <p className="memory-win-label"><span aria-hidden="true">🎉</span> {t("memory.allPairsFound")}</p>
             <div className="memory-winner-mascot"><Mascot pose="jump" /></div>
             <h2 id={victoryTitle}>{t("memory.greatMemory")}</h2>
-            <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true">★</span></p>
+            <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true"><InlineSymbol mark="★" /></span></p>
             <div className="memory-victory-actions">
               <GameButton className="memory-play-again" onClick={() => finish(onReplay)}>{t("balloonsGame.playAgain")}</GameButton>
               <GameButton tone="purple" onClick={() => finish(onComplete)}>{t("memory.trySomethingElse")}</GameButton>

@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useState } from "react";
 import { Mascot } from "../components/Mascot";
@@ -27,7 +28,7 @@ export function Plans({ onBack }: { onBack: () => void }) {
         <p className="plan-price"><strong>{plan.price}</strong> <span>{plan.period}</span></p>
         <p className="plan-note">{plan.note}</p>
         <ul className="plan-features">
-          {plan.features.map((feature) => <li key={feature}><span aria-hidden="true">✓</span> {feature}</li>)}
+          {plan.features.map((feature) => <li key={feature}><span aria-hidden="true"><InlineSymbol mark="✓" /></span> {feature}</li>)}
         </ul>
         <button type="button" className={plan.id === "yearly" ? "primary-button" : "secondary-button"}
           aria-pressed={chosen === plan.id} onClick={() => setChosen(plan.id)}>{t("plans.choose", { value1: plan.name.toLowerCase() })}</button>

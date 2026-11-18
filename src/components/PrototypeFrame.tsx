@@ -1,3 +1,4 @@
+import { InlineSymbol } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { useEffect, useState, type ReactNode } from 'react';
 import { ambienceThemes, type AmbienceTheme } from '../audio/ambienceThemes';
@@ -32,11 +33,11 @@ export function PrototypeFrame({ children, theme = 'calm', music = false, paused
   }
   return <div className="prototype min-h-svh" data-ambience={theme} data-ambience-paused={hidden || paused || undefined}>
     <div className="amb-scene" aria-hidden="true">
-      {ambienceThemes[theme].marks.map((mark, i) => <span className={`amb-mark amb-mark-${i}`} key={`${theme}-${i}`}>{mark}</span>)}
+      {ambienceThemes[theme].marks.map((mark, i) => <span className={`amb-mark amb-mark-${i}`} key={`${theme}-${i}`}><InlineSymbol mark={mark} /></span>)}
     </div>
     {music && <div className="amb-controls"><button type="button" className="amb-music-button" aria-pressed={enabled && sound}
       disabled={!sound} title={sound ? t("prototypeFrame.backgroundMusic") : t("prototypeFrame.turnSoundOnToEnableBackgroundMusic")} onClick={toggle}>
-      <span aria-hidden="true">♫</span> {t("prototypeFrame.music")} {t(enabled && sound ? "control.on" : "control.off")}
+      <span aria-hidden="true"><InlineSymbol mark="♫" /></span> {t("prototypeFrame.music")} {t(enabled && sound ? "control.on" : "control.off")}
     </button></div>}
     {children}
   </div>;

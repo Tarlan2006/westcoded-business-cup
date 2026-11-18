@@ -1,3 +1,4 @@
+import { InlineSymbol, withSymbols } from "../../components/InlineSymbol";
 import { t, subscribe } from "../../i18n/index";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
@@ -145,7 +146,7 @@ function makeSketchCanvas() { return forwardRef<SketchCanvasHandle>(function Ske
 
   return (
     <div className="sk-drawing">
-      <div className="sk-paper-label"><span>{t("sketchCanvas.yourSketch")}</span><span>{t("sketchCanvas.makeItYourOwn")}</span></div>
+      <div className="sk-paper-label"><span>{t("sketchCanvas.yourSketch")}</span><span>{withSymbols(t("sketchCanvas.makeItYourOwn"))}</span></div>
       {unavailable && <p className="sk-notice" role="status">{t("sketchCanvas.drawingIsUnavailableInThisBrowserYou")}</p>}
       <canvas ref={canvasRef} className="sk-canvas" width="400" height="500"
         aria-label={t("sketchCanvas.drawingCanvasDrawTheMysteryHeroWith")}
@@ -156,7 +157,7 @@ function makeSketchCanvas() { return forwardRef<SketchCanvasHandle>(function Ske
         {colors.map(([name, value]) => <button type="button" key={name} className="sk-tool sk-color"
           aria-label={t("sketchCanvas.pencil", { name })} aria-pressed={!eraser && color === value} title={name}
           onClick={() => { setColor(value); setEraser(false); }}>
-          <span className="sk-swatch" style={{ backgroundColor: value }}>{!eraser && color === value ? "✓" : ""}</span>
+          <span className="sk-swatch" style={{ backgroundColor: value }}>{!eraser && color === value && <InlineSymbol mark="✓" />}</span>
         </button>)}
         {widths.map((value, i) => <button type="button" key={value} className="sk-tool"
           aria-label={t("sketchCanvas.brush", { value1: t((["brush.thin", "brush.medium", "brush.thick"] as const)[i]) })} aria-pressed={width === value}

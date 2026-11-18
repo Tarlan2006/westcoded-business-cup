@@ -1,3 +1,4 @@
+import { InlineSymbol, withSymbols } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useSoundEnabled } from "../audio/sfx";
@@ -101,8 +102,8 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
   return <main id="screen-toddler-cinema" className="prototype-screen toddler-cinema" aria-label={t("toddlerCinema.littleCinemaForAges1To2")}>
     <PrototypeHeader name={name} label={t("toddlerCinema.ages12")} detail={t("toddlerCinema.aLittleTimeToWatchAndWonder")} onParents={onParents} onHome={onHome} />
     <section className="toddler-heading">
-      <div><p className="toddler-eyebrow">{t("toddlerCinema.myLittleCinema")}</p><h1>{t("toddlerCinema.aLittleWorldOfWonder")}<span aria-hidden="true"> ✦</span></h1></div>
-      <span className="toddler-age-badge"><span aria-hidden="true">✿</span> {t("toddlerCinema.justForLittleOnes")}</span>
+      <div><p className="toddler-eyebrow">{t("toddlerCinema.myLittleCinema")}</p><h1>{t("toddlerCinema.aLittleWorldOfWonder")}<span aria-hidden="true"> <InlineSymbol mark="✦" /></span></h1></div>
+      <span className="toddler-age-badge"><span aria-hidden="true"><InlineSymbol mark="✿" /></span> {t("toddlerCinema.justForLittleOnes")}</span>
     </section>
     <section className="toddler-tv" aria-label={t("toddlerCinema.nowShowing")}>
       <div className="toddler-tv-top"><span><i aria-hidden="true" /> {waiting ? t("toddlerCinema.aLittleBreather") : t("toddlerCinema.nowShowingAlt")}</span><span>{String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}</span></div>
@@ -123,7 +124,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
         </div> : <ToddlerPlayer key={`${selected.id}:${attempt}`} ref={player} videoId={selected.id} title={selected.title}
           muted={muted} onStatus={setStatus} onEnded={ended} onMuted={() => setMuted(true)} />}
       </div>
-      <div className="toddler-tv-bottom"><span aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span><span>{t("toddlerCinema.aLittleAdventureTogether")}</span><span className="toddler-speaker" aria-hidden="true">▥</span></div>
+      <div className="toddler-tv-bottom"><span aria-hidden="true">{withSymbols("✦  ✦  ✦")}</span><span>{t("toddlerCinema.aLittleAdventureTogether")}</span><span className="toddler-speaker" aria-hidden="true"><InlineSymbol mark="▥" /></span></div>
     </section>
     <section className="toddler-now" aria-label={t("toddlerCinema.playbackControls")}>
       <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? t("toddlerCinema.comingUpNext") : t("toddlerCinema.yourLittleAdventure")}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? t("toddlerCinema.a10SecondBreatherBetweenEveryVideo") : selected.channel}</p></div></div>
@@ -132,16 +133,16 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
             if (status === "playing") player.current?.pauseVideo();
             else player.current?.playVideo();
-          }}>{status === "loading" ? t("toddlerCinema.gettingReady") : status === "playing" ? t("toddlerCinema.pause") : t("toddlerCinema.playVideo")}</button>
+          }}>{status === "loading" ? t("toddlerCinema.gettingReady") : status === "playing" ? withSymbols(t("toddlerCinema.pause")) : withSymbols(t("toddlerCinema.playVideo"))}</button>
           <button type="button" className={`toddler-button ${muted ? "toddler-sound" : "toddler-secondary"}`} aria-pressed={!muted} onClick={() => {
             if (muted) { player.current?.unMute(); player.current?.playVideo(); }
             setMuted((value) => !value);
-          }}>{muted ? t("toddlerCinema.tapForSound") : t("toddlerCinema.soundOn")}</button>
+          }}>{muted ? withSymbols(t("toddlerCinema.tapForSound")) : withSymbols(t("toddlerCinema.soundOn"))}</button>
         </>}
-        <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? t("toddlerCinema.nextInS", { seconds }) : t("toddlerCinema.nextAdventure")}</button>
+        <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? t("toddlerCinema.nextInS", { seconds }) : withSymbols(t("toddlerCinema.nextAdventure"))}</button>
       </div>
     </section>
-    {selected.quizTopic && !waiting && <button type="button" disabled={finishing} className="toddler-text-button" onClick={() => onPlay(selected.id)}>{t("toddlerCinema.exploreAnimalSoundsWith")}</button>}
+    {selected.quizTopic && !waiting && <button type="button" disabled={finishing} className="toddler-text-button" onClick={() => onPlay(selected.id)}>{withSymbols(t("toddlerCinema.exploreAnimalSoundsWith"))}</button>}
     <section className="toddler-queue" inert={finishing} aria-labelledby="toddler-queue-heading">
       <div className="toddler-queue-heading"><h2 id="toddler-queue-heading">{t("toddlerCinema.littleAdventuresLinedUp")}</h2><button type="button" role="switch" aria-checked={autoplay} className="toddler-autoplay" onClick={() => {
         setAutoplay((value) => !value);

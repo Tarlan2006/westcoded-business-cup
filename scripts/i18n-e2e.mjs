@@ -1,14 +1,16 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { chromium } from "playwright";
+import { auditScreenFonts } from "./audit-screen-fonts.mjs";
 import { checkRenderedFonts } from "./font-rendering.mjs";
 import en from "../src/i18n/en.ts";
 import kk from "../src/i18n/kk.ts";
 
 const base = process.env.I18N_URL || "http://localhost:5173";
 const output = process.env.I18N_SCREENS || "docs/screens";
-const sizes = [[360,740],[390,844],[768,1024],[1280,800]];
-const browser = await chromium.launch({ headless: true, args:["--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"], executablePath: process.env.CHROME_PATH || undefined });
+const fontAudit = process.env.I18N_FONT_AUDIT === "1";
+const sizes = fontAudit ? [[390,844],[1280,800]] : [[360,740],[390,844],[768,1024],[1280,800]];
+const browser = await chromium.launch({ headless: true, args:["--disable-quic","--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"], executablePath: process.env.CHROME_PATH || undefined });
 const findings = new Set();
 const rows = [];
 async function journey(lang) {
@@ -19,13 +21,15 @@ async function journey(lang) {
   const cdp = await context.newCDPSession(page);
   await cdp.send("DOM.enable");
   await cdp.send("CSS.enable");
-  page.setDefaultTimeout(12000);
+  page.setDefaultTimeout(fontAudit ? 90000 : 12000);
   const btn = key => page.getByRole("button", { name: label(key), exact: true });
   const tile = key => page.locator(".activity-grid").getByRole("button").filter({hasText:label(key)}).first().click();
   const directory = output + "/" + lang;
   await fs.mkdir(directory, {recursive:true});
+  const auditLog = directory + "/fonts.jsonl";
+  if (fontAudit) await fs.writeFile(auditLog, "");
   page.on("pageerror", e => findings.add(lang + " page error: " + e.message));
-  page.on("console", m => { if (m.type() === "error" && !m.text().includes("404 (Not Found)")) findings.add(lang + " console: " + m.text()); });
+  page.on("console", m => { if (m.type() === "error" && !(m.location().url === base + "/i18n-missing-page" && m.text().includes("404"))) findings.add(lang + " console: " + m.text()); });
   page.on("response", r => { if (r.url().startsWith(base) && r.status() >= 400 && !r.url().endsWith("/i18n-missing-page")) findings.add(r.status() + " " + r.url()); });
   page.on("request", r => {
     if (r.resourceType() === "font" && new URL(r.url()).origin !== new URL(base).origin)
@@ -42,7 +46,13 @@ async function journey(lang) {
     for (const [width,height] of sizes) {
       await page.setViewportSize({width,height});
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
-      if (width === 390 || width === 1280) {
+      if (fontAudit) {
+        assert.equal(await page.locator("html").getAttribute("lang"), lang);
+        const result = await auditScreenFonts(page, cdp);
+        assert(result.textRuns > 0, "No text inspected on " + name);
+        for (const issue of result.issues) findings.add(lang + " " + name + " " + width + " " + issue.selector + " " + issue.text + ": " + issue.why.join(", "));
+        await fs.appendFile(auditLog, JSON.stringify({name,lang,width,height,...result}) + "\n");
+      } else if (width === 390 || width === 1280) {
         try { await checkRenderedFonts(page, cdp); }
         catch (error) { throw Error(lang + " " + name + " " + width + ": " + error.message, { cause: error }); }
       }
@@ -132,6 +142,7 @@ async function journey(lang) {
     await shot("video");
     await page.locator(".video-frame-content button").click();
     assert.match(await page.locator("iframe").getAttribute("src"),/youtube-nocookie/);
+    if (fontAudit) await shot("video-player");
     await page.locator("#screen-video button").filter({hasText:label("video.playNow")}).click();
     for(let i=0;i<3;i++) {
       
@@ -139,6 +150,7 @@ async function journey(lang) {
       await choice.waitFor();
       if(!i)await shot("video-quiz");
       await choice.click();
+      if (fontAudit && !i) await shot("video-quiz-feedback");
       await btn(i===2?"quiz.finishQuiz":"quiz.nextQuestion").click();
     }
     await page.locator("#screen-complete").waitFor();
@@ -146,7 +158,7 @@ async function journey(lang) {
     await home();
     await shot("hub");
     await page.getByRole("button",{name:label("home.garage"),exact:false}).click();
-    await shot("garage");
+    await page.locator("#garageModal[open]").waitFor(); await shot("garage");
     await btn("garage.awesome").click();
     await parents();
     await shot("parents");
@@ -166,6 +178,16 @@ async function journey(lang) {
       await tile(key); await page.locator(selector).first().waitFor(); await shot(name);
       // The live navigation guard intentionally waits five seconds before confirming an exit.
       if(name==="tic-tac-toe") await page.waitForTimeout(5050);
+      if (fontAudit && name==="tic-tac-toe") {
+        await btn("activityHeader.homeBackToActivities").first().click();
+        await page.getByRole("dialog").waitFor(); await shot("leave-game"); await btn("leaveGameDialog.keepPlaying").click();
+        for (let i=0;i<5;i++) {
+          await page.waitForFunction(()=>document.querySelector(".ttt-room[data-result],.ttt-cell[aria-disabled=false]"));
+          if (await page.locator(".ttt-room[data-result]").count()) break;
+          await page.locator(".ttt-cell[aria-disabled=false]").first().click();
+        }
+        await page.locator(".ttt-room[data-result]").waitFor(); await shot("tic-tac-toe-result");
+      }
       if(name==="memory") {
         const pairs=await page.locator(".memory-card .memory-front").evaluateAll(nodes=>{const groups=new Map();nodes.forEach((n,i)=>{const art=n.innerHTML;groups.set(art,[...(groups.get(art)||[]),i])});return [...groups.values()]});
         for(const pair of pairs) {assert.equal(pair.length,2);for(const i of pair) await page.locator(".memory-card").nth(i).click(); await page.locator(".memory-card").nth(pair[0]).and(page.locator("[data-matched=true]")).waitFor();}
@@ -180,7 +202,7 @@ async function journey(lang) {
         const picker=page.locator(".sp-stop-picker select");
         if(await picker.isVisible()) await picker.selectOption("7"); else await page.locator(".sp-stop").last().click();
         await btn("journey.startQuiz").click(); await shot("space-quiz");
-        for(let i=0;i<5;i++){await page.locator(".sp-choice").first().click(); await page.locator(".sp-quiz-feedback + button, .sp-quiz button.sp-button-primary").last().click();}
+        for(let i=0;i<5;i++){await page.locator(".sp-choice").first().click(); if (fontAudit && !i) await shot("space-quiz-feedback"); await page.locator(".sp-quiz-feedback + button, .sp-quiz button.sp-button-primary").last().click();}
         await page.locator(".sp-result").waitFor(); await shot("space-result");
         await page.locator(".sp-result button").click(); await page.locator(".recon-reward").waitFor(); await shot("reward"); }
       await home();
@@ -193,18 +215,20 @@ async function journey(lang) {
     for (const [mode, key] of [["lava","content.floorIsLava"], ["roadtrip","content.roadtripSpy"]]) {
       if (mode === "roadtrip") {await tile("content.scavengerHunt"); await btn("profileSetup.inTheCar").click();} else await tile(key);
       await btn("setup.startGame").click(); await btn("mission.pause").waitFor(); await shot(mode);
-      await btn("mission.pause").click(); await btn("mission.endMission").click(); await btn("missionSummary.moreGames").waitFor(); await home();
+      await btn("mission.pause").click(); await btn("mission.endMission").click(); await btn("missionSummary.moreGames").waitFor(); if(fontAudit) await shot(mode+"-result"); await home();
     }
     await tile("activitySuggestions.ask"); await page.locator(".ask-suggestions").waitFor(); await shot("ask");
     await context.grantPermissions(["microphone"]);
     const transcript=lang==="kk"?"мысық туралы":"tell me about cats";
     await page.route("**/api/stt?*", route=>{ assert.equal(new URL(route.request().url()).searchParams.get("lang"),lang); return route.fulfill({json:{text:transcript}}); });
     const mic=page.locator("button.talk-button"); await mic.focus(); await page.keyboard.down("Space");
-    await page.locator("button.talk-button[data-recording=true]").waitFor(); await page.waitForTimeout(650); await page.keyboard.up("Space");
+    await page.locator("button.talk-button[data-recording=true]").waitFor(); await page.waitForTimeout(650); if(fontAudit) await shot("ask-recording"); await page.keyboard.up("Space");
     await page.waitForFunction(value=>document.querySelector("textarea")?.value===value,transcript); await shot("ask-transcript");
     await page.unroute("**/api/stt?*");
     await page.getByRole("textbox").fill(lang==="kk"?"Аспан неге көгілдір?":"Why is the sky blue?");
-    await btn("ask.ask").click(); await btn("ask.askAnother").waitFor(); await shot("ask-answer"); await home();
+    await btn("ask.ask").click(); await btn("ask.askAnother").waitFor(); await shot("ask-answer");
+    if (fontAudit && await btn("ask.quickQuizAboutThis").isVisible()) { await btn("ask.quickQuizAboutThis").click(); await page.locator(".quiz-card").waitFor(); await shot("ask-quiz"); }
+    await home();
     await endSession(); await setup("3-5"); await page.locator("#screen-video").waitFor(); await home();
     await tile("app.balloonCount"); await page.locator(".bl-balloon").first().waitFor(); await shot("balloons");
     for(let round=0;round<5;round++) {
@@ -232,8 +256,24 @@ async function journey(lang) {
     await page.clock.install(); await page.clock.fastForward(22*60*1000);
     await btn("sessionComplete.backToStart").waitFor(); await shot("session-end");
     await page.clock.resume();
+    if (fontAudit) {
+      await btn("sessionComplete.backToStart").click(); await setup("1-2");
+      await page.locator("#screen-toddler-cinema").waitFor();
+      // Videos without a quiz have no visible play-with-host button. Exercise the
+      // shipped route via its existing callback only in this private browser context.
+      await page.evaluate(() => {
+        const root = document.querySelector("#screen-toddler-cinema");
+        const key = Object.keys(root).find(k => k.startsWith("__reactFiber$"));
+        for (let node = root[key]; node; node = node.return) {
+          if (typeof node.memoizedProps?.onPlay === "function") { node.memoizedProps.onPlay(); return; }
+        }
+        throw Error("Toddler play callback unavailable");
+      });
+      await page.locator("#roundSecondsBadge").waitFor(); await shot("toddler-mission");
+    }
     await page.goto(base+"/privacy"); await page.getByRole("heading",{name:label("app.privacy"),exact:true}).waitFor(); await shot("privacy");
     await page.goto(base+"/i18n-missing-page"); await page.getByRole("link").waitFor(); await shot("404");
+    if (fontAudit) return;
     const clips=await page.evaluate(async lang=>{
       const response=await fetch("/audio/"+lang+"/manifest.json"); if(!response.ok)throw Error("manifest");
       const {clips}=await response.json(), audio=new AudioContext();
@@ -250,4 +290,4 @@ try {
   for(const lang of (process.env.I18N_LANGS || "kk,en").split(",")) await journey(lang);
   assert.deepEqual([...findings],[]);
 } finally { if(findings.size) console.error([...findings].join("\n")); await browser.close(); }
-console.log(rows.length+" screens checked at four sizes");
+console.log(rows.length+" screens checked at "+sizes.length+" sizes");

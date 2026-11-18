@@ -1,3 +1,4 @@
+import { InlineSymbol } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { useEffect, useRef } from "react";
 
@@ -12,7 +13,7 @@ export function LeaveGameDialog({ onStay, onLeave }: { onStay: () => void; onLea
   }, []);
   return <dialog className="flow-leave-dialog" ref={dialog} aria-labelledby="flow-leave-title" aria-describedby="flow-leave-description"
     onCancel={(event) => { event.preventDefault(); onStay(); }}>
-    <span className="flow-leave-icon" aria-hidden="true">☁</span>
+    <span className="flow-leave-icon" aria-hidden="true"><InlineSymbol mark="☁" /></span>
     <h2 id="flow-leave-title">{t("leaveGameDialog.leaveThisGame")}</h2>
     <p id="flow-leave-description">{t("leaveGameDialog.itSOkayToTakeABreak")}</p>
     <div className="flow-form-actions">

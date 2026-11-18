@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../components/InlineSymbol";
 import { t, subscribe } from "../i18n/index";
 import { lazy, Suspense, useState, type ReactNode } from "react";
 import type { Activity } from "../../shared/types";
@@ -65,7 +66,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
       <section className="flow-start panel" aria-labelledby="flow-start-title">
         <div className="flow-start-icon flow-start-mascot" aria-hidden="true"><Mascot pose="tablet" size={72} /></div>
         <div><p className="field-label" id="flow-start-title">{t("home.startHere")}</p><h1 className="font-display text-2xl sm:text-3xl font-bold">{first.title}</h1><p>{first.description}</p></div>
-        <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>{t("home.start")} <span aria-hidden="true">→</span><span className="sr-only"> {first.title}</span>
+        <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>{t("home.start")} <span aria-hidden="true"><InlineSymbol mark="→" /></span><span className="sr-only"> {first.title}</span>
         </button>
       </section>
       {ordered.map((group) => <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>

@@ -1,3 +1,4 @@
+import { withSymbols } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useContext, useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
@@ -109,7 +110,7 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
               }}>
               <Mascot pose="tablet" className="video-mascot" />
               <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
-              <span className="block text-xs sm:text-sm font-bold text-indigo-200">{t("videoCatalog.watchVideoPlaysOnYoutube")}</span>
+              <span className="block text-xs sm:text-sm font-bold text-indigo-200">{withSymbols(t("videoCatalog.watchVideoPlaysOnYoutube"))}</span>
             </button> : <>
               <Mascot pose="tablet" className="video-mascot" />
               <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">{t("videoCatalog.moreVideosComingSoon")}</h1>

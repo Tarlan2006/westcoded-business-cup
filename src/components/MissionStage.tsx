@@ -1,3 +1,4 @@
+import { InlineSymbol } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
@@ -80,7 +81,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
         {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}
         <div id="roundSecondsBadge" className="absolute -bottom-2 pointer-events-none bg-[#FFD13B] px-5 py-1 rounded-full border-3 border-white font-black text-lg text-[#1E1B4B] shadow-md">
-          {paused ? "Ⅱ" : feedback ? "✦" : t("missionStage.s", { seconds })}
+          {paused ? <InlineSymbol mark="Ⅱ" /> : feedback ? <InlineSymbol mark="✦" /> : t("missionStage.s", { seconds })}
         </div>
       </div>
     </div>

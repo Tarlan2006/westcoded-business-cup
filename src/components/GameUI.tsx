@@ -1,3 +1,4 @@
+import { InlineSymbol } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Chains } from "./Chains";
@@ -17,7 +18,7 @@ export function HubTile({ icon, title, children, onClick, tone }: {
   return <button className="activity-tile hub-tile" type="button" onClick={onClick} data-tone={tone}>
     <span className="activity-icon" aria-hidden="true">{icon}</span>
     <strong>{title}</strong><span className="tile-description">{children}</span>
-    <span aria-hidden="true" className="tile-arrow">→</span>
+    <span aria-hidden="true" className="tile-arrow"><InlineSymbol mark="→" /></span>
   </button>;
 }
 
@@ -55,6 +56,6 @@ export function SpeechBubble({ children, className = "", live }: { children: Rea
 const sparks = ["✦", "★", "♥", "✧", "✦", "♥", "★", "✧"];
 export function ParticlePop({ hearts = false }: { hearts?: boolean }) {
   return <span className="particle-pop" aria-hidden="true">{sparks.map((spark, i) => (
-    <i key={i} style={{ rotate: `${i * 45}deg` }}>{hearts ? "♥" : spark}</i>
+    <i key={i} style={{ rotate: `${i * 45}deg` }}><InlineSymbol mark={hearts ? "♥" : spark} /></i>
   ))}</span>;
 }

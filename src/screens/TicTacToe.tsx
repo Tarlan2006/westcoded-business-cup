@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useEffect, useReducer, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
@@ -147,7 +148,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
         </div>
         <div className="ttt-actions">
           <button type="button" className="primary-button" disabled={!result} onClick={() => dispatch("rematch")}>
-            <span aria-hidden="true">↻</span> {t("balloonsGame.playAgain")}</button>
+            <span aria-hidden="true"><InlineSymbol mark="↻" /></span> {t("balloonsGame.playAgain")}</button>
           {scores.X > 0 && <button type="button" className="secondary-button" onClick={() => onComplete(true)}>{t("ticTacToe.collectXp")}</button>}
         </div>
       </section>

@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../../components/InlineSymbol";
 import { t, contentText } from "../../i18n/index";
 import { Mascot } from "../../components/Mascot";
 import { useEffect, useRef, useState } from "react";
@@ -169,8 +170,8 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
   return (
     <section className="sk-game" aria-label={t("sketchGame.sketchArtist")}>
       {header === undefined ? <header className="sk-topbar">
-        <button type="button" className="sk-back" onClick={back}><span aria-hidden="true">←</span> {t("activityHeader.back")}</button>
-        <span className="sk-wordmark"><span className="sk-mark" aria-hidden="true">✎</span> {t("sketchGame.sketchArtist")}</span>
+        <button type="button" className="sk-back" onClick={back}><span aria-hidden="true"><InlineSymbol mark="←" /></span> {t("activityHeader.back")}</button>
+        <span className="sk-wordmark"><span className="sk-mark" aria-hidden="true"><InlineSymbol mark="✎" /></span> {t("sketchGame.sketchArtist")}</span>
         <span className="sk-age">{t("sketchGame.ages68")}</span>
       </header> : header}
       {stage === "intro" && <div className="sk-intro">
@@ -180,8 +181,8 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
           <span className="sk-case-tag">{t("sketchGame.case")} {String(cases.findIndex((entry) => entry.id === caseFile.id) + 1).padStart(2, "0")} <span aria-hidden="true">/</span> {t("sketchGame.artDivision")}</span>
           <h1 className="sk-title" ref={headingRef} tabIndex={-1}><span className="sk-title-prefix">{t("sketchGame.caseFile")}</span> {caseFile.title}</h1>
           <p className="sk-lead">{t("sketchGame.aWitnessSawAMysteryHeroListen")}</p>
-          <div className="sk-intro-facts"><span><b>{caseFile.clues.length}</b> {t("sketchGame.curiousClues")}</span><span><b>1</b> {t("sketchGame.mysteryHero")}</span><span><b>∞</b> {t("sketchGame.waysToDraw")}</span></div>
-          <button type="button" className="sk-button sk-start" onClick={() => setStage("draw")}>{t("sketchGame.startTheCase")} <span aria-hidden="true">→</span></button>
+          <div className="sk-intro-facts"><span><b>{caseFile.clues.length}</b> {t("sketchGame.curiousClues")}</span><span><b>1</b> {t("sketchGame.mysteryHero")}</span><span><b><InlineSymbol mark="∞" /></b> {t("sketchGame.waysToDraw")}</span></div>
+          <button type="button" className="sk-button sk-start" onClick={() => setStage("draw")}>{t("sketchGame.startTheCase")} <span aria-hidden="true"><InlineSymbol mark="→" /></span></button>
           <p className="sk-small">{t("sketchGame.noPerfectDrawingsNeededJustYourImagination")}</p>
         </div>
         <div className="sk-case-cover" aria-hidden="true">
@@ -215,24 +216,24 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
               <div className="sk-progress" aria-label={t("sketchGame.clueOf", { value1: clueIndex + 1, value2: caseFile.clues.length })}>{caseFile.clues.map((entry, i) => <span key={entry.id} className={`sk-progress-dot${i <= clueIndex ? " sk-progress-read" : ""}`} />)}</div>
               <p className="sk-clue-text" aria-live="polite" aria-atomic="true">“{clue.text}”</p>
               <div className="sk-button-row">
-                <button type="button" className="sk-button sk-secondary" onClick={() => void readClue()} disabled={!speak || speaking}><span aria-hidden="true">♫</span> {speaking ? t("sketchGame.reading") : t("sketchGame.hearIt")}</button>
-                <button type="button" className="sk-button" disabled={lastClue} onClick={() => { setSpeaking(false); setClueIndex((index) => index + 1); }}>{lastClue ? t("sketchGame.allCluesRead") : t("sketchGame.nextClue")}<span aria-hidden="true"> →</span></button>
+                <button type="button" className="sk-button sk-secondary" onClick={() => void readClue()} disabled={!speak || speaking}><span aria-hidden="true"><InlineSymbol mark="♫" /></span> {speaking ? t("sketchGame.reading") : t("sketchGame.hearIt")}</button>
+                <button type="button" className="sk-button" disabled={lastClue} onClick={() => { setSpeaking(false); setClueIndex((index) => index + 1); }}>{lastClue ? t("sketchGame.allCluesRead") : t("sketchGame.nextClue")}<span aria-hidden="true"> <InlineSymbol mark="→" /></span></button>
               </div>
               {!speak && <p className="sk-small">{t("sketchGame.textOnlyModeEveryClueIsHere")}</p>}
               {speechStatus && <p className="sk-notice" role="status">{speechStatus}</p>}
             </div>
             {clueIndex > 0 && <div className="sk-previous"><h2 className="sk-eyebrow">{t("sketchGame.yourClueNotes")}</h2><ol className="sk-clue-list">{caseFile.clues.slice(0, clueIndex).map((entry) => <li key={entry.id}>{entry.text}</li>)}</ol></div>}
-            <div className="sk-tip"><span aria-hidden="true">✦</span><p>{t("sketchGame.everyArtistSeesThingsALittleDifferently")}</p></div>
+            <div className="sk-tip"><span aria-hidden="true"><InlineSymbol mark="✦" /></span><p>{t("sketchGame.everyArtistSeesThingsALittleDifferently")}</p></div>
           </aside>
           <div className="sk-canvas-column">
             <SketchCanvas ref={canvasRef} />
-            <button type="button" className={`sk-button sk-done-drawing${lastClue ? " sk-ready" : ""}`} onClick={() => void compare()}>{t("sketchGame.iMDone")} <span aria-hidden="true">✓</span></button>
+            <button type="button" className={`sk-button sk-done-drawing${lastClue ? " sk-ready" : ""}`} onClick={() => void compare()}>{t("sketchGame.iMDone")} <span aria-hidden="true"><InlineSymbol mark="✓" /></span></button>
           </div>
         </div>
         <div className="sk-reference-source" ref={artRef} hidden>{Art && <Art />}</div>
       </>}
       {stage === "comparing" && <div className="sk-comparing" role="status" aria-live="polite">
-        <span className="sk-compare-icon" aria-hidden="true">✦</span>
+        <span className="sk-compare-icon" aria-hidden="true"><InlineSymbol mark="✦" /></span>
         <h1 className="sk-section-title" ref={headingRef} tabIndex={-1}>{t("sketchGame.comparing")}</h1>
         <p>{t("sketchGame.openingTheMysteryFileYourHeroIs")}</p>
         <div className="sk-compare-track"><span /></div>
@@ -250,7 +251,7 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
             <p className="sk-match" aria-live="polite">{t("sketchGame.match")} <strong>{result.match}%</strong></p>
             <p className="sk-breakdown">{automatic === null ? t("sketchGame.clues", { value1: result.clues }) : t("sketchGame.colorsShapeClues", { automatic, value2: result.clues })}</p>
             <p className="sk-encouragement">{sketchEncouragement(result.match)}</p>
-            <span className="sk-xp">✦ {result.points} XP</span>
+            <span className="sk-xp"><InlineSymbol mark="✦" /> {result.points} XP</span>
             <p className="sk-small">{t("sketchGame.checkAllCluesFor4BonusXp", { value1: caseFile.checklist.length })}</p>
             {automatic === null && <p className="sk-notice">{t("sketchGame.weReUsingYourClueChecklistFor")}</p>}
             {stats.flooded && <p className="sk-small">{t("sketchGame.trySeparateShapesNextTimeAPage")}</p>}
@@ -259,9 +260,9 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
           <fieldset className="sk-checklist"><legend>{t("sketchGame.didYouDraw")}</legend><p className="sk-small">{t("sketchGame.youKnowYourPictureBestTickThe")}</p>{caseFile.checklist.map((item, i) => <label key={item} className="sk-check-row"><input type="checkbox" checked={checked[i]} disabled={submitted} onChange={() => setChecked((previous) => previous.map((value, index) => index === i ? !value : value))} /><span>{item}</span></label>)}</fieldset>
         </div>
         <div className="sk-result-actions">
-          <button type="button" className="sk-button sk-secondary" onClick={savePicture} disabled={saving}>{saving ? t("sketchGame.saving") : t("sketchGame.saveMyPicture")} <span aria-hidden="true">↓</span></button>
-          <button type="button" className="sk-button sk-secondary" onClick={replay}>{t("balloonsGame.playAgain")} <span aria-hidden="true">↻</span></button>
-          <button type="button" className="sk-button" disabled={submitted} onClick={() => { if (submitting.current) return; submitting.current = true; setSubmitted(true); onComplete(result.points); }}>{t("sketchGame.done")} <span aria-hidden="true">✓</span></button>
+          <button type="button" className="sk-button sk-secondary" onClick={savePicture} disabled={saving}>{saving ? t("sketchGame.saving") : t("sketchGame.saveMyPicture")} <span aria-hidden="true"><InlineSymbol mark="↓" /></span></button>
+          <button type="button" className="sk-button sk-secondary" onClick={replay}>{t("balloonsGame.playAgain")} <span aria-hidden="true"><InlineSymbol mark="↻" /></span></button>
+          <button type="button" className="sk-button" disabled={submitted} onClick={() => { if (submitting.current) return; submitting.current = true; setSubmitted(true); onComplete(result.points); }}>{t("sketchGame.done")} <span aria-hidden="true"><InlineSymbol mark="✓" /></span></button>
         </div>
         {saveStatus && <p className="sk-save-status" role="status">{saveStatus}</p>}
         <p className="sk-privacy">{t("sketchCanvas.yourDrawingStaysOnThisDevice")}</p>

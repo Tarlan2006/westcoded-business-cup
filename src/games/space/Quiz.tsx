@@ -1,3 +1,4 @@
+import { InlineSymbol } from "../../components/InlineSymbol";
 import { t } from "../../i18n/index";
 import { Mascot } from "../../components/Mascot";
 import { useEffect, useId, useRef, useState } from "react";
@@ -64,7 +65,7 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
         {picked && <><strong>{picked === bigger.id ? t("quiz.yes") : t("quiz.goodTry")}</strong> {compareSizes(...pair)}</>}
       </div>
       {picked && <button className="sp-button sp-button-primary" type="button" onClick={advance}>
-        {index === questions.length - 1 ? t("quiz.seeResults") : t("quiz.nextQuestion")} <span aria-hidden="true">→</span>
+        {index === questions.length - 1 ? t("quiz.seeResults") : t("quiz.nextQuestion")} <span aria-hidden="true"><InlineSymbol mark="→" /></span>
       </button>}
     </section>
   );

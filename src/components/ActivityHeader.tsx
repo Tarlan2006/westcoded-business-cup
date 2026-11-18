@@ -1,3 +1,4 @@
+import { InlineSymbol, withSymbols } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { createContext, useContext, type ReactNode } from "react";
 import { SessionHeaderActions } from "./SessionControls";
@@ -17,8 +18,8 @@ export function ActivityHeader({ title, xp, onBack, backHref, backDisabled, chil
     <header className="topbar activity-header prototype-activity-header">
       <div className="flow-header-navigation">
         {exitControl ?? (!backHref && (navigation || onBack) && <button type="button" className="quiet-button" disabled={backDisabled} onClick={navigation?.onBack ?? onBack}>
-          <span aria-hidden="true">←</span> {t("activityHeader.back")}</button>)}
-        {backHref && <a className="quiet-button" href={backHref}>{t("activityHeader.backAlt")}</a>}
+          <span aria-hidden="true"><InlineSymbol mark="←" /></span> {t("activityHeader.back")}</button>)}
+        {backHref && <a className="quiet-button" href={backHref}>{withSymbols(t("activityHeader.backAlt"))}</a>}
         {!exitControl && navigation && <button type="button" className="quiet-button flow-home-button" disabled={backDisabled} aria-label={t("activityHeader.homeBackToActivities")} onClick={navigation.onHome}>🏠</button>}
       </div>
       <div className="flow-header-location"><span className="activity-header-title">{title}</span>
