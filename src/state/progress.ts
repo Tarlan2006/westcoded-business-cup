@@ -1,3 +1,4 @@
+import { getLanguage, type Language } from "../i18n";
 import type { Activity, AgeBand, Mode, Profile } from "../../shared/types";
 import { readPreferences, type Preferences } from "./preferences";
 
@@ -6,6 +7,7 @@ const rankThresholds = [0, 30, 100, 250, 500];
 const ranks = ["Recruit", "Scout", "Field Agent", "Special Agent", "Commander"];
 
 export interface ChildProfile extends Profile {
+  lang?: Language;
   preferences?: Preferences;
   garageSessions?: number;
   recentSessions?: string[];
@@ -80,8 +82,8 @@ export function saveProfile(codenameId: string, ageBand: AgeBand, preferences: P
   const progress = readProgress();
   const existing = progress.profiles.find((profile) => profile.codenameId === codenameId);
   const profile: ChildProfile = existing
-    ? { ...existing, ageBand, preferences }
-    : { id: codenameId, codenameId, ageBand, preferences, xp: 0, rank: 0, streak: 0, lastPlayedISO: "", loreNote: "" };
+    ? { ...existing, ageBand, preferences, lang: getLanguage() }
+    : { id: codenameId, codenameId, ageBand, preferences, lang: getLanguage(), xp: 0, rank: 0, streak: 0, lastPlayedISO: "", loreNote: "" };
   const profiles = progress.profiles.filter((entry) => entry.id !== profile.id);
   saveProgress({ ...progress, selectedId: profile.id, profiles: [...profiles, profile] });
   return readProgress();
@@ -90,7 +92,7 @@ export function saveProfile(codenameId: string, ageBand: AgeBand, preferences: P
 export function updateProfile(profileId: string, codenameId: string, ageBand: AgeBand, preferences: Preferences) {
   const progress = readProgress();
   const profiles = progress.profiles.map((profile) =>
-    profile.id === profileId ? { ...profile, codenameId, ageBand, preferences } : profile);
+    profile.id === profileId ? { ...profile, codenameId, ageBand, preferences, lang: getLanguage() } : profile);
   return saveProgress({ ...progress, profiles, selectedId: profileId });
 }
 
@@ -118,4 +120,9 @@ export function rewardActivity(
     };
   });
   return saveProgress({ ...progress, profiles, lastFinished: sessionId });
+}
+
+export function saveProfileLanguage(lang: Language) {
+  const p = readProgress();
+  if (p.selectedId) saveProgress({ ...p, profiles: p.profiles.map(child => child.id === p.selectedId ? { ...child, lang } : child) });
 }

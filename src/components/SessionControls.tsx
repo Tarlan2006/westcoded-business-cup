@@ -1,3 +1,4 @@
+import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { GrownUpsButton } from "./GrownUpsButton";
 import "./session.css";
@@ -60,7 +61,8 @@ export function ParentSessionDialog({ onClose, onExtend, onEnd }: {
 
   return <dialog className="session-dialog" ref={dialog} aria-labelledby="parent-session-title"
     onCancel={(event) => { event.preventDefault(); onClose(); }}>
-    <h2 id="parent-session-title">Session settings</h2>
+    <LanguageSwitch />
+        <h2 id="parent-session-title">Session settings</h2>
     <SessionClock />
     <div className="session-dialog-actions">
       <button type="button" className="session-button" ref={continueButton} onClick={onClose}>Keep playing</button>

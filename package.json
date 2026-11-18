@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "check:i18n": "node scripts/check-i18n.mjs",
     "check-content": "node scripts/check-content.mjs",
     "check-sketch": "node src/games/sketch/scoreSketch.check.ts",
     "check-space": "node src/games/space/scale.check.ts",

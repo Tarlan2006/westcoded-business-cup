@@ -1,3 +1,4 @@
+import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { playQueue, unlock } from "../audio/engine";
 import { useEffect, useRef, useState } from "react";
 import { useSoundEnabled } from "../audio/sfx";
@@ -36,7 +37,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
   </main>;
 
   return <main id="screen-greeting" className="prototype-screen fixed inset-0 z-40 bg-white flex flex-col justify-between p-6">
-    <div className="flex justify-end">
+    <div className="flex justify-end"><LanguageSwitch />
       <button type="button" className="px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-extrabold"
         aria-pressed={sound} onClick={onToggleSound}><span aria-hidden="true">{sound ? "🔊" : "🔇"}</span> Sound</button>
     </div>

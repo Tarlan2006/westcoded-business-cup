@@ -1,3 +1,4 @@
+import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { APP_NAME } from "../brand";
 import { useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
@@ -71,6 +72,7 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
             <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight">Tell {APP_NAME} about your child</h1>
           </div>
         </div>
+        <LanguageSwitch />
         <a href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}
           className="profile-local-profile hidden sm:inline-block shrink-0 px-3 py-1 rounded-full text-xs font-extrabold" aria-label="Saved on this phone · Privacy"><SetupIcon name="shield" /> Saved on this phone</a>
       </div>

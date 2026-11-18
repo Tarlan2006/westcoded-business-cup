@@ -520,3 +520,5 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @media (max-width: 640px) { .plans-grid { grid-template-columns: 1fr; } .plans-hero { flex-direction: column; text-align: center; } .plans-games { justify-content: center; } }
 
 @keyframes aid-appear { from { opacity: 0; } to { opacity: 1; } }
+
+.language-switch {display:inline-flex;align-items:center;gap:.15rem;border-radius:1rem;background:#eef2f7;padding:.15rem;color:#344155;font:700 .8rem Nunito,sans-serif}.language-switch button{border-radius:1rem;padding:.35rem .6rem}.language-switch [aria-pressed=true]{background:white;color:#4826a5}
