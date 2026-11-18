@@ -1,4 +1,6 @@
+import content from "./content-en.json" with { type: "json" };
 export default {
+  ...content,
   "meta.title": "{brand}",
   "app.grownUpsParentSettings": "Grown-ups › Parent settings",
   "app.grownUpsPrivacy": "Grown-ups › Privacy",

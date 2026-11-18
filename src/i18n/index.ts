@@ -21,6 +21,10 @@ export function t(key: MessageKey, vars: Record<string, string | number> = {}) {
   return messages[key].replace(/\{(\w+)\}/g, (_, name: string) =>
     name === "brand" ? APP_NAME : String(vars[name] ?? ""));
 }
+export function contentText(key: string) {
+  if (!Object.hasOwn(messages, key)) throw new Error("Unknown content key: " + key);
+  return t(key as MessageKey);
+}
 export function useT() { useLanguage(); return t; }
 export async function changeLanguage(next: Language, persist = true) {
   const ticket = ++request;

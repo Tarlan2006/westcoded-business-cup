@@ -1,4 +1,4 @@
-import { t } from "../i18n/index";
+import { contentText, t, useLanguage } from "../i18n/index";
 import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
@@ -15,6 +15,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   onBack: () => void; onComplete: (points: number) => void; onExit?: () => void;
 }) {
   const session = useContext(SessionActivity);
+  const lang = useLanguage();
   const bank = questions.filter((question) => question.ageBand === ageBand);
   const matching = bank.filter((question) => question.topic === topic);
   const ordered = topic ? [...matching, ...bank.filter((question) => question.topic !== topic)] : bank;
@@ -37,9 +38,9 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   const nextLabel = index === quiz.length - 1 || session?.finishing ? t("quiz.finishQuiz") : t("quiz.nextQuestion");
 
   useEffect(() => {
-    if (sound && current) void speak(current.question, clipId);
+    if (sound && current) void speak(contentText("quiz." + current.id + ".question"), clipId);
     return stop;
-  }, [clipId, current, sound, speak, stop]);
+  }, [lang, clipId, current, sound, speak, stop]);
 
   useEffect(() => {
     if (!missionMinutes) return;
@@ -79,16 +80,16 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     return <MissionStage heading={t("activitySuggestions.quiz")} round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
       demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord={t("quiz.quiz")} prop="💭"
       action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
-      prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}
+      prompt={answer === undefined ? [contentText("quiz." + current.id + ".question"), current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}
       feedback={answer !== undefined}
-      replies={current.choices.map((choice) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
-        data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{choice}</button>)}
+      replies={current.choices.map((choice, i) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
+        data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{contentText("quiz." + current.id + ".option" + i)}</button>)}
       controls={<>
         <button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E]`} disabled={answer === undefined} onClick={next}>
           {nextLabel}
         </button>
         <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined || session?.finishing}
-          onClick={() => { void speak(current.question, clipId); }}>{t("quiz.hearIt")}</button>
+          onClick={() => { void speak(contentText("quiz." + current.id + ".question"), clipId); }}>{t("quiz.hearIt")}</button>
       </>} />;
   }
 
@@ -97,15 +98,15 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
       {current && <section className="panel learn-card centered-card quiz-card">
         <p className="field-label">{t("quiz.questionOf", { value1: index + 1, value2: quiz.length })}</p>
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
-        <h2>{current.question}</h2>
+        <h2>{contentText("quiz." + current.id + ".question")}</h2>
         {sound && <button type="button" className="quiet-button" disabled={session?.finishing} onClick={() => {
-          void speak(current.question, clipId);
+          void speak(contentText("quiz." + current.id + ".question"), clipId);
         }}>{t("sketchGame.hearIt")}</button>}
         <div className="answer-list">
-          {current.choices.map((choice) => (
+          {current.choices.map((choice, i) => (
             <button className="secondary-button" key={choice} type="button" disabled={answer !== undefined}
               data-result={answer !== undefined && choice === current.answer ? "correct" : undefined}
-              onClick={() => choose(choice)}>{choice}</button>
+              onClick={() => choose(choice)}>{contentText("quiz." + current.id + ".option" + i)}</button>
           ))}
         </div>
         {answer !== undefined && <>

@@ -1,4 +1,4 @@
-import { t } from "../../i18n/index";
+import { t, contentText, getLanguage, subscribe } from "../../i18n/index";
 import bank from "./objects.json" with { type: "json" };
 
 export interface SpaceObject {
@@ -12,10 +12,17 @@ export interface SpaceObject {
   rangeKm?: number[];
 }
 
-export const objects: readonly SpaceObject[] = [...bank].sort((a, b) => a.diameterKm - b.diameterKm);
+function spaceObjects(): readonly SpaceObject[] {
+  return [...bank].sort((a, b) => a.diameterKm - b.diameterKm).map(obj => {
+    const text = (field: string) => contentText("space." + obj.id + "." + field);
+    return { ...obj, name: text("name"), label: text("label"), measure: text("measure"), fact: text("fact") };
+  });
+}
+export let objects = spaceObjects();
+subscribe(() => { objects = spaceObjects(); });
 export const stopCount = objects.length - 1;
 const logStops = objects.map(({ diameterKm }) => Math.log10(diameterKm));
-const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+const number = { format(value: number) { return value.toLocaleString(getLanguage() === "kk" ? "kk-KZ" : "en-US", { maximumFractionDigits: 1 }); } };
 
 export function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(value, max));

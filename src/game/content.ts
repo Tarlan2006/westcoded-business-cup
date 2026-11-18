@@ -1,4 +1,4 @@
-import { t, subscribe } from "../i18n/index";
+import { contentText, t, subscribe } from "../i18n/index";
 import type { AgeBand, Line, Mode } from "../../shared/types";
 import localLines from "../../content/local-lines.json";
 
@@ -36,7 +36,7 @@ const lines = new Map<string, Line>((localLines as Line[]).map((line) => [line.i
 export function lineFor(id: string): Line {
   const line = lines.get(id);
   if (!line) throw new Error(`Unknown line: ${id}`);
-  return line;
+  return { ...line, text: contentText("voice." + id) };
 }
 
 export const modeIntro = { hunt: "local_hunt_intro", roadtrip: "local_roadtrip_intro", lava: "local_lava_intro" };

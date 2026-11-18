@@ -1,4 +1,4 @@
-import { t } from "../i18n/index";
+import { contentText, t } from "../i18n/index";
 import { useMusicPause } from "../audio/useMusicPause";
 import { HoldButton } from "../components/HoldButton";
 import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
@@ -196,8 +196,8 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
 
   const demo = missionDemo(task, state.phase === "countdown");
   const doneButton = `${missionButtonStyle} btn-mint text-[#062C1E]`;
-  const quickReplies = choices ? choices.choices.map((answer) => <button type="button" key={answer} className={missionReplyStyle}
-    disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>) : isHunt
+  const quickReplies = choices ? choices.choices.map((answer, i) => <button type="button" key={answer} className={missionReplyStyle}
+    disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{task.id.startsWith("local_") ? answer : contentText("task." + task.id + ".option" + i)}</button>) : isHunt
     ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>{t("mission.foundIt")}</button> : undefined;
 
   return <MissionStage heading={MODES[session.mode].name} round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}

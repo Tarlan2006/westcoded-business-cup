@@ -1,4 +1,4 @@
-import { t } from "../../i18n/index";
+import { t, contentText } from "../../i18n/index";
 import { Mascot } from "../../components/Mascot";
 import { useEffect, useRef, useState } from "react";
 import type { SketchGameProps } from "./index";
@@ -55,7 +55,10 @@ async function referencePixels(svg: SVGSVGElement | null, width: number, height:
 }
 
 export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProps) {
-  const [caseFile, setCaseFile] = useState<CaseFile>(() => chooseCase());
+  const [original, setCaseFile] = useState<CaseFile>(() => chooseCase());
+  const caseFile = { ...original, title: contentText("sketch." + original.id + ".title"),
+    clues: original.clues.map(clue => ({ ...clue, text: contentText("sketch.clue." + clue.id) })),
+    checklist: original.checklist.map((_, i) => contentText("sketch.check." + i)) };
   const [stage, setStage] = useState<Stage>("intro");
   const [clueIndex, setClueIndex] = useState(0);
   const [checked, setChecked] = useState<boolean[]>(() => caseFile.checklist.map(() => false));

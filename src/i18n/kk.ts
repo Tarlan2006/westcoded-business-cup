@@ -1,6 +1,8 @@
+import content from "./content-kk.json" with { type: "json" };
 import type en from "./en";
 
 export default {
+  ...content,
   "meta.title": "{brand} · Балаларға арналған ойындар",
   "app.grownUpsParentSettings": "Ата-аналар › Баптаулар",
   "app.grownUpsPrivacy": "Ата-аналар › Құпиялық",
