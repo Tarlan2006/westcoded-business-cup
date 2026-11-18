@@ -16,6 +16,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: Nunito;
+  src: url("/fonts/nunito-cyrillic-ext.woff2") format("woff2");
+  unicode-range: U+0400-052F, U+2DE0-2DFF, U+A640-A69F;
+  font-weight: 400 900;
+  font-display: swap;
+}
+
 /* Flow: deliberate access to grown-up settings. */
 .flow-grownups { display: grid; justify-items: center; justify-self: start; min-width: 148px; gap: .35rem; }
 .flow-hold-button { border: 0; border-radius: 18px; padding: 3px; background: conic-gradient(var(--primary) var(--flow-hold-progress, 0deg), var(--border) 0); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
@@ -522,3 +530,9 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @keyframes aid-appear { from { opacity: 0; } to { opacity: 1; } }
 
 .language-switch {display:inline-flex;align-items:center;gap:.15rem;border-radius:1rem;background:#eef2f7;padding:.15rem;color:#344155;font:700 .8rem Nunito,sans-serif}.language-switch button{border-radius:1rem;padding:.35rem .6rem}.language-switch [aria-pressed=true]{background:white;color:#4826a5}
+
+:lang(kk) { hyphens: manual; }
+html[lang="kk"] :is(.font-display, h1, h2, h3) { font-family: Nunito, sans-serif; }
+html[lang="kk"] :is(.need-chip,.prof-age-btn,.flow-breadcrumb,.flow-hold-button > span) { white-space: normal; }
+html[lang="kk"] :is(.prototype-parent-button,.need-chip,.hub-greeting-bubble,.speech-bubble-duo,.profile-submit) { max-width: 100%; overflow-wrap: anywhere; }
+html[lang="kk"] .profile-setup-heading { flex-wrap: wrap; }
