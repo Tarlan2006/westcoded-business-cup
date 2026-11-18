@@ -1,6 +1,6 @@
+import { t } from "../i18n/index";
 import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Chains } from "./Chains";
-import { APP_NAME } from "../brand";
 import { Mascot } from "./Mascot";
 import type { ActivitySuggestion } from "./activitySuggestions";
 
@@ -32,7 +32,7 @@ export function LockedTile({ icon, title, children, onClick }: { icon: string; t
   const timer = useRef(0);
   useEffect(() => () => window.clearTimeout(timer.current), []);
   return <button className="activity-tile hub-tile locked-tile" type="button" data-rattling={rattling || undefined}
-    aria-description={`Locked. See ${APP_NAME} Plus plans`} onClick={() => {
+    aria-description={t("gameUI.lockedSeePlusPlans")} onClick={() => {
       if (rattling) return;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return onClick();
       setRattling(true);

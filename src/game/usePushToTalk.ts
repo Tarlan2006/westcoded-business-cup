@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useMusicPause } from "../audio/useMusicPause";
 import { useEffect, useRef, useState } from "react";
 import { transcribe } from "../lib/api";
@@ -70,9 +71,9 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
           const text = await transcribe(wav, transcribeTimeoutMs);
           if (recording.cancel) return;
           if (text.trim()) onSubmit.current(text);
-          else unavailable("Voice unavailable. Tap I DID IT! to keep playing.", "no-speech");
+          else unavailable(t("usePushToTalk.voiceUnavailableTapIDidItTo"), "no-speech");
         } catch {
-          if (!recording.cancel) unavailable("Voice unavailable. Tap I DID IT! to keep playing.");
+          if (!recording.cancel) unavailable(t("usePushToTalk.voiceUnavailableTapIDidItTo"));
         } finally {
           window.clearTimeout(recording.timer);
           if (current.current === recording) {
@@ -86,7 +87,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
     recording.timer = window.setTimeout(() => {
       release(true);
       if (fallback.current) fallback.current("microphone");
-      else setMessage("Microphone unavailable. Tap I DID IT! to keep playing.");
+      else setMessage(t("usePushToTalk.microphoneUnavailableTapIDidItTo"));
     }, 5000);
     void startRecording(maxRecordMs).then(() => {
       window.clearTimeout(recording.timer);
@@ -99,7 +100,7 @@ export function usePushToTalk(enabled: boolean, submit: (text: string) => void,
       if (current.current === recording) {
         current.current = null;
         setStatus("idle");
-        if (!recording.cancel) unavailable("Microphone unavailable. Tap I DID IT! to keep playing.");
+        if (!recording.cancel) unavailable(t("usePushToTalk.microphoneUnavailableTapIDidItTo"));
       }
     });
   }

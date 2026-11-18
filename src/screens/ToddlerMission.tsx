@@ -1,4 +1,4 @@
-import { APP_NAME } from "../brand";
+import { t, subscribe } from "../i18n/index";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useClipSpeech } from "../audio/useClipSpeech";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
@@ -6,20 +6,22 @@ import type { MascotAction, MascotMood } from "../components/Mascot";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
 import { SessionActivity } from "../components/SessionControls";
 
-const rounds = [
-  { seconds: 25, demoEmoji: "👏", demoWord: "CLAP!", prop: "👏", action: "clap", mood: "happy",
-    shortPrompt: `Clap hands with ${APP_NAME}! 👏👏`, speech: "Let us clap our hands together! Clap, clap, clap!",
-    replies: ["👏👏 Clap!", "😂 Tee-hee!"], praise: "Super clapping! 🌟" },
-  { seconds: 25, demoEmoji: "🙈", demoWord: "PEEK-A-BOO", prop: "🙈", action: "wave", mood: "giggle",
-    shortPrompt: `Peek-a-boo! Wave to ${APP_NAME}! 👋`, speech: "Peek-a-boo! I see you! Wave your hand!",
-    replies: ["👋 Bye-bye!", "🙈 Peek-a-boo!"], praise: "Peek-a-boo! You are so fast! 🎉" },
-  { seconds: 25, demoEmoji: "🐮", demoWord: "MOOO!", prop: "🐮", action: "jump", mood: "excited",
-    shortPrompt: "What does the cow say? 🐮", speech: "Look, a friendly cow! What does the cow say? Moooo!",
-    replies: ["🐮 Moooo!", "🐶 Woof!"], praise: "Moooo! Amazing job! ⭐" },
+function makeRounds() { return [
+  { seconds: 25, demoEmoji: "👏", demoWord: t("toddlerMission.clap"), prop: "👏", action: "clap", mood: "happy",
+    shortPrompt: t("toddlerMission.clapHandsWith"), speech: t("toddlerMission.letUsClapOurHandsTogetherClap"),
+    replies: [t("toddlerMission.clapAlt"), t("toddlerMission.teeHee")], praise: t("toddlerMission.superClapping") },
+  { seconds: 25, demoEmoji: "🙈", demoWord: t("toddlerMission.peekABoo"), prop: "🙈", action: "wave", mood: "giggle",
+    shortPrompt: t("toddlerMission.peekABooWaveTo"), speech: t("toddlerMission.peekABooISeeYouWave"),
+    replies: [t("toddlerMission.byeBye"), t("toddlerMission.peekABooAlt")], praise: t("toddlerMission.peekABooYouAreSoFast") },
+  { seconds: 25, demoEmoji: "🐮", demoWord: t("toddlerMission.mooo"), prop: "🐮", action: "jump", mood: "excited",
+    shortPrompt: t("toddlerMission.whatDoesTheCowSay"), speech: t("toddlerMission.lookAFriendlyCowWhatDoesThe"),
+    replies: [t("toddlerMission.moooo"), t("toddlerMission.woof")], praise: t("toddlerMission.mooooAmazingJob") },
 ] as const satisfies ReadonlyArray<{
   seconds: number; demoEmoji: string; demoWord: string; prop: string; action: MascotAction; mood: MascotMood;
   shortPrompt: string; speech: string; replies: readonly string[]; praise: string;
-}>;
+}>; }
+let rounds = makeRounds();
+subscribe(() => { rounds = makeRounds(); });
 
 export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: number; onExit: () => void; onComplete: (points: number) => void }) {
   const canStartActivity = useContext(SessionActivity)?.canStartActivity;
@@ -80,10 +82,10 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
     }, 1700);
   }
 
-  return <MissionStage {...round} heading={`Play with ${APP_NAME}`} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
+  return <MissionStage {...round} heading={t("toddlerMission.playWith")} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
     ratio={seconds / round.seconds} onExit={onExit} mood={feedback ? "excited" : round.mood} feedback={feedback}
     prompt={feedback ? round.praise : round.shortPrompt}
     replies={round.replies.map((label) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={advance}>{label}</button>)}
     controls={<button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E] col-span-2`} disabled={feedback}
-      onClick={advance}><span aria-hidden="true">✅</span> I DID IT!</button>} />;
+      onClick={advance}><span aria-hidden="true">✅</span> {t("mission.iDidIt")}</button>} />;
 }

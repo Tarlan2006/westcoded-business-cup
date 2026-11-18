@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index";
 /** DOM-free pixels; transparent pixels are composited onto white. */
 export interface ImageDataLike {
   width: number;
@@ -107,8 +108,8 @@ export function sketchResult(automatic: number | null, checked: readonly boolean
 }
 
 export function sketchEncouragement(match: number): string {
-  if (match < 40) return "Good start, agent! Try adding more clues.";
-  if (match < 70) return "Nice sketch! You caught many details.";
-  if (match < 90) return "Great work! That looks very close.";
-  return "Wow, perfect match!";
+  if (match < 40) return t("scoreSketch.goodStartAgentTryAddingMoreClues");
+  if (match < 70) return t("scoreSketch.niceSketchYouCaughtManyDetails");
+  if (match < 90) return t("scoreSketch.greatWorkThatLooksVeryClose");
+  return t("scoreSketch.wowPerfectMatch");
 }

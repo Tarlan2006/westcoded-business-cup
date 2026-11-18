@@ -54,23 +54,23 @@ interface HistoryEntry { screen: Screen; key: string; enteredAt: number; scrollY
 function entry(screen: Screen): HistoryEntry { return { screen, key: crypto.randomUUID(), enteredAt: Date.now() }; }
 function breadcrumb(screen: Screen): string {
   switch (screen.name) {
-    case "parent": return "Grown-ups › Parent settings";
-    case "privacy": return "Grown-ups › Privacy";
-    case "plans": return `Grown-ups › ${APP_NAME} Plus`;
-    case "setup": return `Move › ${MODES[screen.mode].name} › Setup`;
-    case "mission": return `Move › ${MODES[screen.session.mode].name}`;
-    case "results": return `Move › ${MODES[screen.session.mode].name} › Results`;
-    case "toddler": return `Watch › Play with ${APP_NAME}`;
-    case "quiz": return screen.topic ? `Learn › Ask ${APP_NAME} › Quick quiz` : "Learn › Quiz";
-    case "memory": return "Learn › Memory";
-    case "ask": return `Learn › Ask ${APP_NAME}`;
-    case "tic-tac-toe": return "Learn › Tic-tac-toe";
-    case "sketch": return "Learn › Sketch Artist";
-    case "space": return "Learn › Space Scale";
-    case "balloons": return "Learn › Balloon Count";
-    case "reward": return "Learn › Results";
-    case "video": return "Watch › Video library";
-    default: return "Activities";
+    case "parent": return t("app.grownUpsParentSettings");
+    case "privacy": return t("app.grownUpsPrivacy");
+    case "plans": return t("app.grownUpsPlus");
+    case "setup": return t("app.moveSetup", { value1: MODES[screen.mode].name });
+    case "mission": return t("app.move", { value1: MODES[screen.session.mode].name });
+    case "results": return t("app.moveResults", { value1: MODES[screen.session.mode].name });
+    case "toddler": return t("app.watchPlayWith");
+    case "quiz": return screen.topic ? t("app.learnAskQuickQuiz") : t("app.learnQuiz");
+    case "memory": return t("app.learnMemory");
+    case "ask": return t("app.learnAsk");
+    case "tic-tac-toe": return t("app.learnTicTacToe");
+    case "sketch": return t("app.learnSketchArtist");
+    case "space": return t("app.learnSpaceScale");
+    case "balloons": return t("app.learnBalloonCount");
+    case "reward": return t("app.learnResults");
+    case "video": return t("app.watchVideoLibrary");
+    default: return t("app.activities");
   }
 }
 
@@ -132,9 +132,13 @@ export default function App() {
   }, [finishing, current.screen.name, finishActivity, privacy]);
 
   useEffect(() => {
-    const section = privacy ? "Privacy" : session?.complete ? "Session complete" : welcoming ? "" : !session ? "Parent Setup" : breadcrumb(current.screen);
-    document.title = section ? section + " · " + APP_NAME : APP_NAME;
+    const section = privacy ? t("app.privacy") : session?.complete ? t("app.sessionComplete") : welcoming ? "" : !session ? t("app.parentSetup") : breadcrumb(current.screen);
+    document.title = section ? section + " · " + APP_NAME : t("meta.title");
     const description = privacy ? t("meta.privacy") : section ? t("meta.section", { section }) : t("meta.home");
+    for (const [property, value] of Object.entries({ "og:title": document.title, "og:description": description, "og:locale": lang === "kk" ? "kk_KZ" : "en_US", "og:locale:alternate": lang === "kk" ? "en_US" : "kk_KZ" })) {
+      document.querySelector(`meta[property="${property}"]`)?.setAttribute("content", value);
+    }
+    document.querySelector('link[rel="manifest"]')?.setAttribute("href", lang === "en" ? "/manifest.en.webmanifest" : "/manifest.webmanifest");
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
   }, [lang, privacy, session?.complete, !!session, welcoming, current.screen.name]);
 
@@ -229,12 +233,12 @@ export default function App() {
     music={sessionActive && !privacy && !['video', 'privacy', 'parent', 'plans'].includes(current.screen.name)}
     paused={parentsOpen || !!pendingNavigation || finishing}><ActivityXp value={profile?.xp}>
     <SessionClockProvider endsAt={sessionActivity?.endsAt}>
-    <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? "Grown-ups › Privacy" : breadcrumb(current.screen),
+    <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? t("app.grownUpsPrivacy") : breadcrumb(current.screen),
       name: profile ? profile.preferences?.nickname ?? codenameFor(profile.codenameId) : undefined }}>
       {visibleEntries.map((item) => <div key={item.key} data-flow-active={item.key === current.key}
         hidden={item.key !== current.key} inert={item.key !== current.key || actionFinished}>
         <SessionActivity value={item.key === current.key ? sessionActivity : null}>
-          <Suspense fallback={<LearnPage title="Loading activity…" onBack={goBack}><p role="status">Getting things ready.</p></LearnPage>}>
+          <Suspense fallback={<LearnPage title={t("app.loadingActivity")} onBack={goBack}><p role="status">{t("app.gettingThingsReady")}</p></LearnPage>}>
             {renderScreen(item.screen)}
             <FocusScreenHeading active={item.key === current.key} />
           </Suspense>
@@ -326,7 +330,7 @@ export default function App() {
       return <Mission key={mission.id} session={mission} profile={profile} navigationPaused={pendingNavigation !== null}
         onExit={openParents} onFinish={(result) => {
         if (!timer.canAcceptResult(session?.startedAt)) return;
-        const memory = result.done ? `Completed ${result.done} rounds in ${mission.mode}.` : `Played ${mission.mode}.`;
+        const memory = result.done ? t("app.completedRoundsIn", { value1: result.done, value2: mission.mode }) : t("app.played", { value1: mission.mode });
         const updated = rewardActivity(mission.id, profile.id, mission.mode, result.points, {
           mode: mission.mode, memory: result.loreNote || memory,
         });
@@ -339,7 +343,7 @@ export default function App() {
       const { mode, durationMinutes, roundLimit } = screen.session;
       const replay = () => launch(mode, profile, durationMinutes, roundLimit);
       return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome} onReplay={replay}>
-        {screen.session.mode === "roadtrip" && <p className="text-center text-sm text-indigo-200">Player 1: {screen.result.players[0]} · Player 2: {screen.result.players[1]}</p>}
+        {screen.session.mode === "roadtrip" && <p className="text-center text-sm text-indigo-200">{t("app.player1")} {screen.result.players[0]} {t("app.player2")} {screen.result.players[1]}</p>}
         {nextUp(mode, replay)}
       </MissionSummary>;
     }
@@ -389,8 +393,8 @@ export default function App() {
     }
     if (screen.name === "balloons" && profile.ageBand !== "1-2") {
       return <main>
-        <div className="shell flow-module-header"><ActivityHeader title="Balloon Count" onBack={goBack} /></div>
-        <Suspense fallback={<p className="shell learn-page" role="status">Opening Balloon Count…</p>}>
+        <div className="shell flow-module-header"><ActivityHeader title={t("app.balloonCount")} onBack={goBack} /></div>
+        <Suspense fallback={<p className="shell learn-page" role="status">{t("app.openingBalloonCount")}</p>}>
           <div className="prototype-balloons"><Balloons key={screen.id} ageGroup={profile.ageBand} onBack={goBack}
             speak={sound ? speakFallback : undefined} onComplete={(points) => earn(screen.id, "balloons", points)} /></div>
         </Suspense>
@@ -401,7 +405,7 @@ export default function App() {
         onReplay={() => openActivity("video")}>
         {nextUp(screen.activity, () => openActivity("video"))}
       </MissionSummary>;
-      return <LearnPage title="Nice work, agent!" onBack={goHome}>
+      return <LearnPage title={t("app.niceWorkAgent")} onBack={goHome}>
         <RewardCard profile={profile} points={screen.points} />
         {nextUp(screen.activity, () => openActivity(screen.activity, screen.topic))}
       </LearnPage>;

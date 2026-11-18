@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { HoldButton } from "./HoldButton";
 
 export function GrownUpsButton({ onOpen, exit = false, variant = "default", disabled = false }: {
@@ -7,9 +8,9 @@ export function GrownUpsButton({ onOpen, exit = false, variant = "default", disa
   return <div className={variant === "default" ? "flow-grownups" : undefined}>
     <HoldButton className={variant === "default" ? "flow-hold-button" : "prototype-parent-button"} disabled={disabled}
       duration={exiting ? 1400 : 1500} hintKey={exiting ? "exit" : "parents"} onComplete={onOpen}
-      aria-label={exiting ? "Hold: Exit" : variant === "parents" ? "Parents, press and hold" : "Grown-ups: hold for 1.5 seconds"}>
-      <span>{exiting ? "Hold: Exit" : variant === "parents" ? "👨‍👩‍👧 Parents" : "🔒 Grown-ups"}</span>
+      aria-label={exiting ? t("grownUpsButton.holdExit") : variant === "parents" ? t("grownUpsButton.parentsPressAndHold") : t("grownUpsButton.grownUpsHoldFor15Seconds")}>
+      <span>{exiting ? t("grownUpsButton.holdExit") : variant === "parents" ? t("grownUpsButton.parents") : t("grownUpsButton.grownUps")}</span>
     </HoldButton>
-    {variant === "default" && !exiting && <span className="flow-hold-hint">Press and hold</span>}
+    {variant === "default" && !exiting && <span className="flow-hold-hint">{t("grownUpsButton.pressAndHold")}</span>}
   </div>;
 }

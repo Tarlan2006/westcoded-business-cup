@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isSpeechActive, setMusic, speakFallback, stopSpeech } from "../audio/engine";
 
@@ -117,7 +118,7 @@ export function useSessionTimer(sound: boolean) {
         const stored = readSession();
         if (stored?.startedAt === active.startedAt && stored.reminded) return;
         save({ ...active, reminded: true });
-        void speakFallback("Two more minutes, pal!");
+        void speakFallback(t("useSessionTimer.twoMoreMinutesPal"));
       }
     }
     check();

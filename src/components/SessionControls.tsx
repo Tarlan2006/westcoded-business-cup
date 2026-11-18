@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { GrownUpsButton } from "./GrownUpsButton";
@@ -37,8 +38,8 @@ export function SessionClock({ id, fallback }: { id?: string; fallback?: ReactNo
   const seconds = useContext(SessionSeconds);
   if (seconds === null) return fallback ?? null;
   const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-  return <span className="session-time" id={id} role="timer" aria-label="Session time left"
-    title={seconds === 0 ? "Finishing up" : undefined}>{time} left</span>;
+  return <span className="session-time" id={id} role="timer" aria-label={t("sessionControls.sessionTimeLeft")}
+    title={seconds === 0 ? t("sessionControls.finishingUp") : undefined}>{t("sessionControls.left", { time })}</span>;
 }
 
 export function SessionHeaderActions() {
@@ -62,12 +63,12 @@ export function ParentSessionDialog({ onClose, onExtend, onEnd }: {
   return <dialog className="session-dialog" ref={dialog} aria-labelledby="parent-session-title"
     onCancel={(event) => { event.preventDefault(); onClose(); }}>
     <LanguageSwitch />
-        <h2 id="parent-session-title">Session settings</h2>
+        <h2 id="parent-session-title">{t("sessionControls.sessionSettings")}</h2>
     <SessionClock />
     <div className="session-dialog-actions">
-      <button type="button" className="session-button" ref={continueButton} onClick={onClose}>Keep playing</button>
-      <button type="button" className="session-button" onClick={onExtend}>+5 min</button>
-      <button type="button" className="session-button" onClick={onEnd}>End session now</button>
+      <button type="button" className="session-button" ref={continueButton} onClick={onClose}>{t("leaveGameDialog.keepPlaying")}</button>
+      <button type="button" className="session-button" onClick={onExtend}>{t("sessionControls.5Min")}</button>
+      <button type="button" className="session-button" onClick={onEnd}>{t("sessionControls.endSessionNow")}</button>
     </div>
   </dialog>;
 }

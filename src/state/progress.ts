@@ -1,10 +1,13 @@
+import { t, subscribe } from "../i18n/index";
 import { getLanguage, type Language } from "../i18n";
 import type { Activity, AgeBand, Mode, Profile } from "../../shared/types";
 import { readPreferences, type Preferences } from "./preferences";
 
 const storageKey = "mission-control.progress";
 const rankThresholds = [0, 30, 100, 250, 500];
-const ranks = ["Recruit", "Scout", "Field Agent", "Special Agent", "Commander"];
+function makeRanks() { return [t("progress.recruit"), t("progress.scout"), t("progress.fieldAgent"), t("progress.specialAgent"), t("progress.commander")]; }
+let ranks = makeRanks();
+subscribe(() => { ranks = makeRanks(); });
 
 export interface ChildProfile extends Profile {
   lang?: Language;

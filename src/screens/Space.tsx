@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
 import { useSoundEnabled } from "../audio/sfx";
@@ -21,15 +22,15 @@ export function Space({ exploreOnly, onBack, onComplete }: Pick<SpaceGameProps, 
   return (
     <main className="sp-host">
       <div className="shell flow-module-header">
-        <ActivityHeader title="Space Scale" onBack={onBack}>
+        <ActivityHeader title={t("spaceGame.spaceScale")} onBack={onBack}>
           <button type="button" className="quiet-button" disabled={!globalSound} aria-pressed={sound} onClick={() => {
             stopSpeech();
             setSound((enabled) => !enabled);
-          }}>{sound ? "Fact audio on" : "Fact audio off"}</button>
+          }}>{sound ? t("space.factAudioOn") : t("space.factAudioOff")}</button>
         </ActivityHeader>
       </div>
       <Suspense fallback={<div className="shell learn-page">
-        <p role="status">Opening Space Scale…</p>
+        <p role="status">{t("space.openingSpaceScale")}</p>
       </div>}>
         <Game header={null} speak={sound ? speakFallback : undefined}
           onBack={() => { stopSpeech(); onBack(); }}

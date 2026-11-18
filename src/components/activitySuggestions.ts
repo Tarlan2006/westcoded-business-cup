@@ -1,4 +1,4 @@
-import { APP_NAME } from "../brand";
+import { t, subscribe } from "../i18n/index";
 import type { Activity } from "../../shared/types";
 import quizBank from "../../content/quiz.json";
 import { MODES } from "../game/content";
@@ -8,18 +8,28 @@ import { activeModes, type ActivityGroup, type Preferences } from "../state/pref
 import type { ChildProfile } from "../state/progress";
 
 export interface ActivitySuggestion { activity: Activity; title: string; description: string; icon: string; topic?: string }
-const quiz: ActivitySuggestion = { activity: "quiz", title: "Quiz", description: "Answer fun questions. Let's think together.", icon: "🧠" };
-const memory: ActivitySuggestion = { activity: "memory", title: "Memory", description: "Turn over the cards and find matching pairs.", icon: "🃏" };
-const ask: ActivitySuggestion = { activity: "ask", title: `Ask ${APP_NAME}`, description: "Ask about space, animals, or your favorite hero.", icon: "💬" };
-const video: ActivitySuggestion = { activity: "video", title: "Video library", description: "Pick a short video to watch together.", icon: "▶️" };
-const balloons: ActivitySuggestion = { activity: "balloons", title: "Balloon Count", description: "Count the balloons before time runs out!", icon: "🎈" };
+function makeQuiz(): ActivitySuggestion { return { activity: "quiz", title: t("activitySuggestions.quiz"), description: t("activitySuggestions.answerFunQuestionsLetSThinkTogether"), icon: "🧠" }; }
+let quiz = makeQuiz();
+subscribe(() => { quiz = makeQuiz(); });
+function makeMemory(): ActivitySuggestion { return { activity: "memory", title: t("activitySuggestions.memory"), description: t("activitySuggestions.turnOverTheCardsAndFindMatching"), icon: "🃏" }; }
+let memory = makeMemory();
+subscribe(() => { memory = makeMemory(); });
+function makeAsk(): ActivitySuggestion { return { activity: "ask", title: t("activitySuggestions.ask"), description: t("activitySuggestions.askAboutSpaceAnimalsOrYourFavorite"), icon: "💬" }; }
+let ask = makeAsk();
+subscribe(() => { ask = makeAsk(); });
+function makeVideo(): ActivitySuggestion { return { activity: "video", title: t("activitySuggestions.videoLibrary"), description: t("activitySuggestions.pickAShortVideoToWatchTogether"), icon: "▶️" }; }
+let video = makeVideo();
+subscribe(() => { video = makeVideo(); });
+function makeBalloons(): ActivitySuggestion { return { activity: "balloons", title: t("app.balloonCount"), description: t("activitySuggestions.countTheBalloonsBeforeTimeRunsOut"), icon: "🎈" }; }
+let balloons = makeBalloons();
+subscribe(() => { balloons = makeBalloons(); });
 
 export function availableActivities(profile: ChildProfile, preferences: Preferences): ActivitySuggestion[] {
   if (profile.ageBand === "1-2") return [video];
   const moves = activeModes(preferences.location).map((mode) => ({ activity: mode, title: MODES[mode].name, description: MODES[mode].description, icon: MODES[mode].icon }));
   // Space Scale's distances and big numbers suit 6–8, not 3–5.
   const older: ActivitySuggestion[] = profile.ageBand === "6-8" ? [ask, sketchGameMeta,
-    { activity: "tic-tac-toe", title: "Tic-tac-toe", description: "Try three in a row against the computer.", icon: "⭐" }, spaceGameMeta] : [];
+    { activity: "tic-tac-toe", title: t("activitySuggestions.ticTacToe"), description: t("activitySuggestions.tryThreeInARowAgainstThe"), icon: "⭐" }, spaceGameMeta] : [];
   return [quiz, memory, ...older, balloons, ...moves, video].filter(item =>
     profile.ageBand !== "6-8" || item.activity !== "balloons");
 }
@@ -63,7 +73,7 @@ export function orderedGroups(profile: ChildProfile, { first, needs = [], intere
 export function nextActivities(profile: ChildProfile, preferences: Preferences, previous: Activity): ActivitySuggestion[] {
   const options = availableActivities(profile, preferences).filter((entry) => entry.activity !== previous);
   if (profile.ageBand === "3-5" && previous === "quiz" && (profile.activities?.quiz ?? 0) > 0) {
-    return [{ ...video, title: "Watch your video reward", description: "You unlocked it! Choose a video to watch together." }, memory];
+    return [{ ...video, title: t("activitySuggestions.watchYourVideoReward"), description: t("activitySuggestions.youUnlockedItChooseAVideoTo") }, memory];
   }
   const recommended = startingActivity(profile, preferences).activity;
   return [...options.filter((item) => item.activity === recommended), ...options.filter((item) => item.activity !== recommended)].slice(0, 2);

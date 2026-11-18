@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import type { MascotAction, MascotMood } from "../components/Mascot";
 import type { Task } from "./content";
 
@@ -10,12 +11,12 @@ const huntProps: Record<string, string> = {
 };
 
 export function missionDemo(task: Task, countdown: boolean): Demo {
-  if (task.mode === "roadtrip") return { demoEmoji: "👀", demoWord: "SPOT!", prop: "🔍", action: "wave", mood: "detective" };
+  if (task.mode === "roadtrip") return { demoEmoji: "👀", demoWord: t("missionDemo.spot"), prop: "🔍", action: "wave", mood: "detective" };
   if (task.mode === "lava") {
     return task.riddle
-      ? { demoEmoji: "🌋", demoWord: "THINK!", action: "none", mood: "surprised" }
-      : { demoEmoji: countdown ? "🌋" : "❄️", demoWord: countdown ? "LAVA!" : "FREEZE!", action: "none", mood: "surprised" };
+      ? { demoEmoji: "🌋", demoWord: t("missionDemo.think"), action: "none", mood: "surprised" }
+      : { demoEmoji: countdown ? "🌋" : "❄️", demoWord: countdown ? t("missionDemo.lava") : t("missionDemo.freeze"), action: "none", mood: "surprised" };
   }
   const prop = huntProps[task.id.split("_")[1]];
-  return { demoEmoji: prop ?? "🧸", demoWord: "FIND!", prop: prop ?? "🔍", action: "sneak", mood: "detective" };
+  return { demoEmoji: prop ?? "🧸", demoWord: t("missionDemo.find"), prop: prop ?? "🔍", action: "sneak", mood: "detective" };
 }

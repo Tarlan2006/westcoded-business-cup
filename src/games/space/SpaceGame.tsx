@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index";
 import { Mascot } from "../../components/Mascot";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ObjectArt } from "./art/ObjectArt";
@@ -36,19 +37,17 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
   }
 
   return (
-    <section className="sp-game" aria-label="Space Scale">
+    <section className="sp-game" aria-label={t("spaceGame.spaceScale")}>
       {header === undefined ? <header className="sp-topbar">
-        <button type="button" className="sp-button sp-button-soft" onClick={onBack} aria-label="Back to activities">
-          <span aria-hidden="true">←</span> Back
-        </button>
-        <div className="sp-title">Space Scale</div>
+        <button type="button" className="sp-button sp-button-soft" onClick={onBack} aria-label={t("nextUp.backToActivities")}>
+          <span aria-hidden="true">←</span> {t("activityHeader.back")}</button>
+        <div className="sp-title">{t("spaceGame.spaceScale")}</div>
       </header> : header}
       {stage === "intro" && <div className="sp-intro">
         <div className="sp-intro-copy">
-          <h1>How big<br />is <em>space?</em></h1>
-          <p>Start with someone your size. Zoom out, past planets and all the way to a giant red star.</p>
-          <button type="button" className="sp-button sp-button-primary" onClick={() => setStage("journey")}>
-            Start exploring <span aria-hidden="true">→</span>
+          <h1>{t("spaceGame.howBig")}<br />{t("spaceGame.is")} <em>{t("spaceGame.space")}</em></h1>
+          <p>{t("spaceGame.startWithSomeoneYourSizeZoomOut")}</p>
+          <button type="button" className="sp-button sp-button-primary" onClick={() => setStage("journey")}>{t("spaceGame.startExploring")} <span aria-hidden="true">→</span>
           </button>
         </div>
         <div className="sp-hero" aria-hidden="true">
@@ -69,12 +68,11 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
           <Mascot pose="jump" size={120} />
           {["earth", "jupiter", "star"].map((art) => <div key={art}><ObjectArt art={art} /></div>)}
         </div>
-        <h1 tabIndex={-1} ref={resultTitle}>What a journey!</h1>
-        <p>You zoomed from a child all the way to {objects.at(-1)?.name}.</p>
+        <h1 tabIndex={-1} ref={resultTitle}>{t("spaceGame.whatAJourney")}</h1>
+        <p>{t("spaceGame.youZoomedFromAChildAllThe", { value1: objects[objects.length - 1].name })}</p>
         <p className="sp-result-score">+{points} XP</p>
-        <p>{exploreOnly ? "8 XP for exploring" : `8 XP for exploring · ${correct} out of 5 quiz answers right`}</p>
-        <button type="button" className="sp-button sp-button-primary" disabled={submitted} onClick={finish}>
-          Done <span aria-hidden="true">✓</span>
+        <p>{exploreOnly ? t("spaceGame.8XpForExploring") : t("spaceGame.8XpForExploringOutOf5", { correct })}</p>
+        <button type="button" className="sp-button sp-button-primary" disabled={submitted} onClick={finish}>{t("sketchGame.done")} <span aria-hidden="true">✓</span>
         </button>
       </div>}
     </section>

@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { APP_NAME } from "../brand";
 import { useEffect, useId, useRef, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
@@ -57,24 +58,24 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
   return (
     <div className="memory-view" data-pairs={pairs}>
       <main className="shell memory-shell">
-        <ActivityHeader title="Memory" onBack={onBack} />
+        <ActivityHeader title={t("activitySuggestions.memory")} onBack={onBack} />
         <div className="memory-intro">
           <div>
-            <h1>Memory</h1>
-            <p>Flip two cards to find a matching pair.</p>
+            <h1>{t("activitySuggestions.memory")}</h1>
+            <p>{t("memory.flipTwoCardsToFindAMatching")}</p>
           </div>
           <div className="memory-progress">
             <span className="memory-stars" aria-hidden="true">{Array.from({ length: pairs }, (_, index) =>
               <span key={index} data-earned={index < foundPairs}>★</span>)}</span>
-            <span role="status">{foundPairs} of {pairs} pairs</span>
+            <span role="status">{t("memory.ofPairs", { foundPairs, pairs })}</span>
           </div>
         </div>
         <div className="memory-layout">
-          <div className="memory-grid" role="group" aria-label="Memory cards">
+          <div className="memory-grid" role="group" aria-label={t("memory.memoryCards")}>
             {deck.map((icon, index) => {
               const found = matched.includes(index);
               const visible = found || shown.includes(index);
-              const label = visible ? `${memoryIcons[icon]}, card ${index + 1}${found ? ", matched" : ""}` : `Hidden card ${index + 1}`;
+              const label = visible ? t("memory.card", { value1: memoryIcons[icon], value2: index + 1, value3: found ? ", matched" : "" }) : t("memory.hiddenCard", { value1: index + 1 });
               return <button key={index} type="button" aria-label={label} className="memory-card"
                 data-face-up={visible} data-matched={found || undefined} data-miss={visible && !found && missed || undefined}
                 aria-disabled={visible || shown.length >= 2}
@@ -97,20 +98,20 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
           <aside className="memory-guide" aria-label={`${APP_NAME}`}>
             <div className="memory-guide-mascot"><Mascot pose={won ? "jump" : "point"} size={64} /></div>
             <SpeechBubble className="memory-speech" live>
-              {won ? "You found them all!" : missed ? "Oops, not a pair! Try again!" : "Find the matching dino friends!"}
+              {won ? t("memory.youFoundThemAll") : missed ? t("memory.oopsNotAPairTryAgain") : t("memory.findTheMatchingDinoFriends")}
             </SpeechBubble>
           </aside>
         </div>
         {won && <>
-          <GameButton className="memory-show-result" onClick={() => victory.current?.showModal()}>Show results</GameButton>
+          <GameButton className="memory-show-result" onClick={() => victory.current?.showModal()}>{t("memory.showResults")}</GameButton>
           <dialog className="memory-victory" ref={victory} aria-labelledby={victoryTitle} aria-describedby={victoryReward}>
-            <p className="memory-win-label"><span aria-hidden="true">🎉</span> All pairs found!</p>
+            <p className="memory-win-label"><span aria-hidden="true">🎉</span> {t("memory.allPairsFound")}</p>
             <div className="memory-winner-mascot"><Mascot pose="jump" /></div>
-            <h2 id={victoryTitle}>Great memory!</h2>
+            <h2 id={victoryTitle}>{t("memory.greatMemory")}</h2>
             <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true">★</span></p>
             <div className="memory-victory-actions">
-              <GameButton className="memory-play-again" onClick={() => finish(onReplay)}>Play again</GameButton>
-              <GameButton tone="purple" onClick={() => finish(onComplete)}>Try something else</GameButton>
+              <GameButton className="memory-play-again" onClick={() => finish(onReplay)}>{t("balloonsGame.playAgain")}</GameButton>
+              <GameButton tone="purple" onClick={() => finish(onComplete)}>{t("memory.trySomethingElse")}</GameButton>
             </div>
           </dialog>
         </>}

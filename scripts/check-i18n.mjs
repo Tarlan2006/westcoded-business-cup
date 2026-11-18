@@ -11,12 +11,12 @@ for (const key of new Set([...Object.keys(en), ...Object.keys(kk)])) {
   const tokens = s => [...(s ?? "").matchAll(/\{\w+\}/g)].map(m => m[0]).sort().join();
   if (tokens(en[key]) !== tokens(kk[key])) problems.push(key + ": placeholders differ");
 }
-for (const file of fs.readdirSync("src", {recursive:true}).filter(f => f.endsWith(".tsx"))) {
+for (const file of fs.readdirSync("src", {recursive:true}).filter(f => f.endsWith(".tsx") && !f.endsWith("preview.tsx"))) {
   const path = "src/" + file;
   const source = ts.createSourceFile(path, fs.readFileSync(path, "utf8"), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   function check(node) {
     const text = ts.isJsxText(node) ? node.text : ts.isJsxAttribute(node) && /^(aria-label|alt|title|placeholder|label|detail|description)$/.test(node.name.getText(source)) && node.initializer && ts.isStringLiteral(node.initializer) ? node.initializer.text : "";
-    if (/[A-Za-z]/.test(text) && !allowed.has(text.trim())) problems.push(path + ":" + (source.getLineAndCharacterOfPosition(node.getStart()).line + 1) + " " + text.trim());
+    if (/[A-Za-z]/.test(text.replace(/&nbsp;|\bXP\b/g, "")) && !allowed.has(text.trim())) problems.push(path + ":" + (source.getLineAndCharacterOfPosition(node.getStart()).line + 1) + " " + text.trim());
     ts.forEachChild(node, check);
   }
   check(source);

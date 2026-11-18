@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useRef } from "react";
 
 export function LeaveGameDialog({ onStay, onLeave }: { onStay: () => void; onLeave: () => void }) {
@@ -12,11 +13,11 @@ export function LeaveGameDialog({ onStay, onLeave }: { onStay: () => void; onLea
   return <dialog className="flow-leave-dialog" ref={dialog} aria-labelledby="flow-leave-title" aria-describedby="flow-leave-description"
     onCancel={(event) => { event.preventDefault(); onStay(); }}>
     <span className="flow-leave-icon" aria-hidden="true">☁</span>
-    <h2 id="flow-leave-title">Leave this game?</h2>
-    <p id="flow-leave-description">It's okay to take a break. Finished games are saved. This round will start over.</p>
+    <h2 id="flow-leave-title">{t("leaveGameDialog.leaveThisGame")}</h2>
+    <p id="flow-leave-description">{t("leaveGameDialog.itSOkayToTakeABreak")}</p>
     <div className="flow-form-actions">
-      <button ref={stay} type="button" className="primary-button" onClick={onStay}>Keep playing</button>
-      <button type="button" className="secondary-button" onClick={onLeave}>Leave game</button>
+      <button ref={stay} type="button" className="primary-button" onClick={onStay}>{t("leaveGameDialog.keepPlaying")}</button>
+      <button type="button" className="secondary-button" onClick={onLeave}>{t("leaveGameDialog.leaveGame")}</button>
     </div>
   </dialog>;
 }

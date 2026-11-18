@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index";
 import { Mascot } from "../../components/Mascot";
 import { useEffect, useId, useRef, useState } from "react";
 import { ObjectArt } from "./art/ObjectArt";
@@ -44,8 +45,8 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
     <section className="sp-quiz" aria-labelledby={headingId}>
       <div className="sp-quiz-title">
         <div>
-          <p className="sp-kicker">Question {index + 1} of {questions.length}</p>
-          <h1 id={headingId} ref={heading} tabIndex={-1}>Which is bigger?</h1>
+          <p className="sp-kicker">{t("quiz.questionOf", { value1: index + 1, value2: questions.length })}</p>
+          <h1 id={headingId} ref={heading} tabIndex={-1}>{t("quiz.whichIsBigger")}</h1>
         </div>
         <div className="sp-quiz-rocket"><Mascot pose="point" size={64} /></div>
       </div>
@@ -60,10 +61,10 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
         ))}
       </div>
       <div className="sp-quiz-feedback" role="status" aria-atomic="true">
-        {picked && <><strong>{picked === bigger.id ? "Yes!" : "Good try!"}</strong> {compareSizes(...pair)}</>}
+        {picked && <><strong>{picked === bigger.id ? t("quiz.yes") : t("quiz.goodTry")}</strong> {compareSizes(...pair)}</>}
       </div>
       {picked && <button className="sp-button sp-button-primary" type="button" onClick={advance}>
-        {index === questions.length - 1 ? "See results" : "Next question"} <span aria-hidden="true">→</span>
+        {index === questions.length - 1 ? t("quiz.seeResults") : t("quiz.nextQuestion")} <span aria-hidden="true">→</span>
       </button>}
     </section>
   );

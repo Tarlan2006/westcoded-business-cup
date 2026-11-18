@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useContext, useEffect, useEffectEvent, useRef, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import questions from "../../content/quiz.json";
@@ -33,7 +34,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   const roundDuration = ageBand === "6-8" && index === 0 ? 40 : 35;
   const roundSeconds = Math.max(0, roundDuration - Math.floor((now - roundStartedAt) / 1000));
   const advanceOnTimeout = useEffectEvent(() => next());
-  const nextLabel = index === quiz.length - 1 || session?.finishing ? "Finish quiz" : "Next question";
+  const nextLabel = index === quiz.length - 1 || session?.finishing ? t("quiz.finishQuiz") : t("quiz.nextQuestion");
 
   useEffect(() => {
     if (sound && current) void speak(current.question, clipId);
@@ -75,10 +76,10 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
 
   if (current && missionMinutes) {
     const seconds = Math.max(0, missionMinutes * 60 - Math.floor((now - startedAt) / 1000));
-    return <MissionStage heading="Quiz" round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
-      demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord="QUIZ!" prop="💭"
+    return <MissionStage heading={t("activitySuggestions.quiz")} round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
+      demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord={t("quiz.quiz")} prop="💭"
       action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
-      prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}
+      prompt={answer === undefined ? [current.question, current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}
       feedback={answer !== undefined}
       replies={current.choices.map((choice) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
         data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{choice}</button>)}
@@ -87,19 +88,19 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
           {nextLabel}
         </button>
         <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined || session?.finishing}
-          onClick={() => { void speak(current.question, clipId); }}>🔊 Hear it</button>
+          onClick={() => { void speak(current.question, clipId); }}>{t("quiz.hearIt")}</button>
       </>} />;
   }
 
   return (
-    <LearnPage title={topic ? "Quick quiz" : "Quiz"} onBack={onBack}>
+    <LearnPage title={topic ? t("quiz.quickQuiz") : t("activitySuggestions.quiz")} onBack={onBack}>
       {current && <section className="panel learn-card centered-card quiz-card">
-        <p className="field-label">Question {index + 1} of {quiz.length}</p>
+        <p className="field-label">{t("quiz.questionOf", { value1: index + 1, value2: quiz.length })}</p>
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{current.question}</h2>
         {sound && <button type="button" className="quiet-button" disabled={session?.finishing} onClick={() => {
           void speak(current.question, clipId);
-        }}>Hear it</button>}
+        }}>{t("sketchGame.hearIt")}</button>}
         <div className="answer-list">
           {current.choices.map((choice) => (
             <button className="secondary-button" key={choice} type="button" disabled={answer !== undefined}
@@ -109,7 +110,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         </div>
         {answer !== undefined && <>
           <Mascot pose={answer === current.answer ? "jump" : "point"} size={120} className="mx-auto" />
-          <p role="status">{answer === current.answer ? "Correct! +10 XP" : "Good try! +2 XP"}</p>
+          <p role="status">{answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}</p>
           <GameButton onClick={next}>{nextLabel}</GameButton>
         </>}
       </section>}

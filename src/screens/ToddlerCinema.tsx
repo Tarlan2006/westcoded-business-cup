@@ -1,5 +1,5 @@
+import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState } from "react";
-import { APP_NAME } from "../brand";
 import { useSoundEnabled } from "../audio/sfx";
 import { AnimalSounds } from "../components/AnimalSounds";
 import { Mascot } from "../components/Mascot";
@@ -98,62 +98,62 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
     setAttempt((value) => value + 1);
   }
 
-  return <main id="screen-toddler-cinema" className="prototype-screen toddler-cinema" aria-label="Little cinema for ages 1 to 2">
-    <PrototypeHeader name={name} label="Ages 1–2" detail="A little time to watch and wonder" onParents={onParents} onHome={onHome} />
+  return <main id="screen-toddler-cinema" className="prototype-screen toddler-cinema" aria-label={t("toddlerCinema.littleCinemaForAges1To2")}>
+    <PrototypeHeader name={name} label={t("toddlerCinema.ages12")} detail={t("toddlerCinema.aLittleTimeToWatchAndWonder")} onParents={onParents} onHome={onHome} />
     <section className="toddler-heading">
-      <div><p className="toddler-eyebrow">MY LITTLE CINEMA</p><h1>A little world of wonder<span aria-hidden="true"> ✦</span></h1></div>
-      <span className="toddler-age-badge"><span aria-hidden="true">✿</span> Just for little ones</span>
+      <div><p className="toddler-eyebrow">{t("toddlerCinema.myLittleCinema")}</p><h1>{t("toddlerCinema.aLittleWorldOfWonder")}<span aria-hidden="true"> ✦</span></h1></div>
+      <span className="toddler-age-badge"><span aria-hidden="true">✿</span> {t("toddlerCinema.justForLittleOnes")}</span>
     </section>
-    <section className="toddler-tv" aria-label="Now showing">
-      <div className="toddler-tv-top"><span><i aria-hidden="true" /> {waiting ? "A LITTLE BREATHER" : "NOW SHOWING"}</span><span>{String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}</span></div>
+    <section className="toddler-tv" aria-label={t("toddlerCinema.nowShowing")}>
+      <div className="toddler-tv-top"><span><i aria-hidden="true" /> {waiting ? t("toddlerCinema.aLittleBreather") : t("toddlerCinema.nowShowingAlt")}</span><span>{String(index + 1).padStart(2, "0")} / {String(videos.length).padStart(2, "0")}</span></div>
       <div className="toddler-screen" inert={finishing}>
         {animalTime ? <AnimalSounds sound={sound} onDone={afterAnimals} /> : waiting ? <div className="toddler-intermission">
-          <div className="toddler-break-art"><Mascot pose="tablet" /><span className="toddler-count" role="timer" aria-label={`${seconds} seconds until the next video`}>{seconds}</span></div>
-          <p className="toddler-eyebrow">ONE LITTLE PAUSE</p><h2>Wiggle your fingers!</h2>
-          <p>Our next little adventure starts in {seconds} seconds.</p>
-          <div className="toddler-break-track" role="progressbar" aria-label="Break before next video" aria-valuemin={0} aria-valuemax={10} aria-valuenow={10 - seconds}>
+          <div className="toddler-break-art"><Mascot pose="tablet" /><span className="toddler-count" role="timer" aria-label={t("toddlerCinema.secondsUntilTheNextVideo", { seconds })}>{seconds}</span></div>
+          <p className="toddler-eyebrow">{t("toddlerCinema.oneLittlePause")}</p><h2>{t("toddlerCinema.wiggleYourFingers")}</h2>
+          <p>{t("toddlerCinema.ourNextLittleAdventureStartsInSeconds", { seconds })}</p>
+          <div className="toddler-break-track" role="progressbar" aria-label={t("toddlerCinema.breakBeforeNextVideo")} aria-valuemin={0} aria-valuemax={10} aria-valuenow={10 - seconds}>
             <span style={{ width: `${(1 - remaining / breakMs) * 100}%` }} />
           </div>
-          <button className="toddler-text-button" type="button" onClick={() => { setPending(null); setStopped(true); }}>Stay on a break</button>
+          <button className="toddler-text-button" type="button" onClick={() => { setPending(null); setStopped(true); }}>{t("toddlerCinema.stayOnABreak")}</button>
         </div> : stopped || status === "error" ? <div className="toddler-intermission toddler-rest">
           <div className="toddler-rest-mascot"><Mascot pose={status === "error" ? "point" : "wave"} /></div>
-          <h2>{status === "error" ? "This video needs a little help" : "A lovely little pause"}</h2>
-          <p>{status === "error" ? "Check your connection, try again, or choose the next video." : "Ready for another little adventure?"}</p>
-          <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? "Try again" : "Watch again"}</button>
+          <h2>{status === "error" ? t("toddlerCinema.thisVideoNeedsALittleHelp") : t("toddlerCinema.aLovelyLittlePause")}</h2>
+          <p>{status === "error" ? t("toddlerCinema.checkYourConnectionTryAgainOrChoose") : t("toddlerCinema.readyForAnotherLittleAdventure")}</p>
+          <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? t("toddlerCinema.tryAgain") : t("toddlerCinema.watchAgain")}</button>
         </div> : <ToddlerPlayer key={`${selected.id}:${attempt}`} ref={player} videoId={selected.id} title={selected.title}
           muted={muted} onStatus={setStatus} onEnded={ended} onMuted={() => setMuted(true)} />}
       </div>
-      <div className="toddler-tv-bottom"><span aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span><span>A little adventure, together</span><span className="toddler-speaker" aria-hidden="true">▥</span></div>
+      <div className="toddler-tv-bottom"><span aria-hidden="true">✦ &nbsp; ✦ &nbsp; ✦</span><span>{t("toddlerCinema.aLittleAdventureTogether")}</span><span className="toddler-speaker" aria-hidden="true">▥</span></div>
     </section>
-    <section className="toddler-now" aria-label="Playback controls">
-      <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? "COMING UP NEXT" : "YOUR LITTLE ADVENTURE"}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? "A 10-second breather between every video" : selected.channel}</p></div></div>
+    <section className="toddler-now" aria-label={t("toddlerCinema.playbackControls")}>
+      <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? t("toddlerCinema.comingUpNext") : t("toddlerCinema.yourLittleAdventure")}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? t("toddlerCinema.a10SecondBreatherBetweenEveryVideo") : selected.channel}</p></div></div>
       <div className="toddler-controls" inert={finishing}>
         {!animalTime && !waiting && !stopped && status !== "error" && <>
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
             if (status === "playing") player.current?.pauseVideo();
             else player.current?.playVideo();
-          }}>{status === "loading" ? "Getting ready…" : status === "playing" ? "Ⅱ Pause" : "▶ Play video"}</button>
+          }}>{status === "loading" ? t("toddlerCinema.gettingReady") : status === "playing" ? t("toddlerCinema.pause") : t("toddlerCinema.playVideo")}</button>
           <button type="button" className={`toddler-button ${muted ? "toddler-sound" : "toddler-secondary"}`} aria-pressed={!muted} onClick={() => {
             if (muted) { player.current?.unMute(); player.current?.playVideo(); }
             setMuted((value) => !value);
-          }}>{muted ? "♪ Tap for sound" : "♪ Sound on"}</button>
+          }}>{muted ? t("toddlerCinema.tapForSound") : t("toddlerCinema.soundOn")}</button>
         </>}
-        <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? `Next in ${seconds}s` : "Next adventure →"}</button>
+        <button type="button" className="toddler-button toddler-primary" disabled={waiting} onClick={() => queue(nextIndex)}>{waiting ? t("toddlerCinema.nextInS", { seconds }) : t("toddlerCinema.nextAdventure")}</button>
       </div>
     </section>
-    {selected.quizTopic && !waiting && <button type="button" disabled={finishing} className="toddler-text-button" onClick={() => onPlay(selected.id)}>Explore animal sounds with {APP_NAME} →</button>}
+    {selected.quizTopic && !waiting && <button type="button" disabled={finishing} className="toddler-text-button" onClick={() => onPlay(selected.id)}>{t("toddlerCinema.exploreAnimalSoundsWith")}</button>}
     <section className="toddler-queue" inert={finishing} aria-labelledby="toddler-queue-heading">
-      <div className="toddler-queue-heading"><h2 id="toddler-queue-heading">Little adventures, lined up</h2><button type="button" role="switch" aria-checked={autoplay} className="toddler-autoplay" onClick={() => {
+      <div className="toddler-queue-heading"><h2 id="toddler-queue-heading">{t("toddlerCinema.littleAdventuresLinedUp")}</h2><button type="button" role="switch" aria-checked={autoplay} className="toddler-autoplay" onClick={() => {
         setAutoplay((value) => !value);
         if (waiting) { setPending(null); setStopped(true); }
-      }}><span className="toddler-toggle" aria-hidden="true" /> Autoplay next</button></div>
+      }}><span className="toddler-toggle" aria-hidden="true" /> {t("toddlerCinema.autoplayNext")}</button></div>
       <div className="toddler-episodes">{videos.map((video, position) => <button type="button" key={video.id} disabled={waiting || position === index}
         className="toddler-card" aria-label={`${position === index ? "Now showing" : "Play next"}: ${video.title}`} aria-current={position === index ? "true" : undefined}
         onClick={() => queue(position)}>
-        <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy" /><span>{position === index ? "NOW SHOWING" : `0${position + 1}`}</span></div>
-        <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{position === index ? "Enjoy this little moment" : "Starts after a 10-second break"}</span>
+        <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy" /><span>{position === index ? t("toddlerCinema.nowShowingAlt") : `0${position + 1}`}</span></div>
+        <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{position === index ? t("toddlerCinema.enjoyThisLittleMoment") : t("toddlerCinema.startsAfterA10SecondBreak")}</span>
       </button>)}</div>
     </section>
-    <footer className="toddler-footer"><p>Made for watching together. Videos play through YouTube and may show ads.</p><p>Only this little playlist plays next.</p></footer>
+    <footer className="toddler-footer"><p>{t("toddlerCinema.madeForWatchingTogetherVideosPlayThrough")}</p><p>{t("toddlerCinema.onlyThisLittlePlaylistPlaysNext")}</p></footer>
   </main>;
 }

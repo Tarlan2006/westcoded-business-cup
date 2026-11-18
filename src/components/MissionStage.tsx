@@ -1,4 +1,4 @@
-import { APP_NAME } from "../brand";
+import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
@@ -36,20 +36,20 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
   const giggling = tickled && ticklingRound.current === round && !paused && !feedback;
   const clock = `${Math.floor(clockSeconds / 60)}:${String(clockSeconds % 60).padStart(2, "0")}`;
 
-  return <main id="screen-mission" aria-label="Mission" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
-    <h1 className="sr-only">{heading ?? "Mission"}</h1>
+  return <main id="screen-mission" aria-label={t("missionStage.mission")} className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-3 flex flex-col items-center justify-between space-y-3 z-10">
+    <h1 className="sr-only">{heading ?? t("missionStage.mission")}</h1>
     <header className="mission-stats w-full flex flex-wrap items-center justify-between gap-1 bg-[#1C145C]/90 px-4 py-2 rounded-2xl border-2 border-[#4C35DE]">
-      <div className="flex items-center gap-2" id="starProgressContainer" aria-label={`Round ${round}`}>
+      <div className="flex items-center gap-2" id="starProgressContainer" aria-label={t("missionStage.round", { round })}>
         {Array.from({ length: total }, (_, index) => <span key={index} aria-hidden="true"
           className={`text-xl transition-transform ${index <= visibleRound ? "scale-110" : "opacity-35"}`}>⭐</span>)}
       </div>
-      <SessionClock id="sessionClockDisplay" fallback={<div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label="Time left">{clock}</div>} />
+      <SessionClock id="sessionClockDisplay" fallback={<div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label={t("missionStage.timeLeft")}>{clock}</div>} />
       <div className="flex flex-wrap items-center gap-2">
-        {paused && navigation && <button type="button" className="prototype-parent-button" aria-label="Home, back to activities" onClick={navigation.onHome}>🏠</button>}
+        {paused && navigation && <button type="button" className="prototype-parent-button" aria-label={t("activityHeader.homeBackToActivities")} onClick={navigation.onHome}>🏠</button>}
         {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled || session?.finishing} onOpen={onExit} />
       </div>
     </header>
-    {navigation && <nav className="sr-only" aria-label="Breadcrumb">{navigation.breadcrumb}</nav>}
+    {navigation && <nav className="sr-only" aria-label={t("activityHeader.breadcrumb")}>{navigation.breadcrumb}</nav>}
 
     <div className="relative flex flex-col items-center justify-center my-1">
       <div className="prototype-countdown relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
@@ -63,7 +63,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
           <span aria-hidden="true" className="text-4xl leading-none">{demoEmoji}</span>
           <span className="px-1 text-center leading-none text-[10px] font-black uppercase text-[#1E1B4B] mt-0.5">{demoWord}</span>
         </div>
-        <button type="button" className="absolute inset-0 flex items-center justify-center cursor-pointer rounded-full" aria-label={`Tickle ${APP_NAME}`}
+        <button type="button" className="absolute inset-0 flex items-center justify-center cursor-pointer rounded-full" aria-label={t("missionStage.tickle")}
           disabled={paused} onClick={(event) => {
             window.clearTimeout(tickleTimer.current);
             const { clientX, clientY, detail } = event;
@@ -80,14 +80,14 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
         {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}
         <div id="roundSecondsBadge" className="absolute -bottom-2 pointer-events-none bg-[#FFD13B] px-5 py-1 rounded-full border-3 border-white font-black text-lg text-[#1E1B4B] shadow-md">
-          {paused ? "Ⅱ" : feedback ? "✦" : `${seconds}s`}
+          {paused ? "Ⅱ" : feedback ? "✦" : t("missionStage.s", { seconds })}
         </div>
       </div>
     </div>
 
     <div className="w-full bg-white rounded-3xl p-4 sm:p-5 border-4 border-[#8B5CF6] shadow-[0_10px_28px_rgba(0,0,0,0.35)] text-center space-y-3">
-      <p className="caption font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug" aria-live="polite">{giggling ? "Hee-hee-hee! That tickles! 😂" : prompt}</p>
-      {replies && <div className="flex flex-wrap items-center justify-center gap-2.5" aria-label="Quick replies">{replies}</div>}
+      <p className="caption font-display text-xl sm:text-2xl font-bold text-[#1E1B4B] leading-snug" aria-live="polite">{giggling ? t("missionStage.heeHeeHeeThatTickles") : prompt}</p>
+      {replies && <div className="flex flex-wrap items-center justify-center gap-2.5" aria-label={t("missionStage.quickReplies")}>{replies}</div>}
     </div>
     <div className="w-full grid grid-cols-2 gap-3 sm:gap-4 pt-1">{controls}</div>
     {status && <p className="text-sm text-indigo-200" role="status">{status}</p>}

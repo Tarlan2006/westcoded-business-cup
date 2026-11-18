@@ -1,11 +1,14 @@
+import { t, subscribe } from "../i18n/index";
 import type { AgeBand, Line, Mode } from "../../shared/types";
 import localLines from "../../content/local-lines.json";
 
-export const MODES: Record<Mode, { name: string; icon: string; description: string }> = {
-  hunt: { name: "Scavenger Hunt", icon: "🔍", description: "Find everyday objects before time runs out." },
-  roadtrip: { name: "Roadtrip Spy", icon: "🚗", description: "Spot things through the window. Two players." },
-  lava: { name: "Floor is Lava", icon: "🌋", description: "Find a safe spot, freeze, and solve riddles." },
-};
+function makeMODES(): Record<Mode, { name: string; icon: string; description: string }> { return {
+  hunt: { name: t("content.scavengerHunt"), icon: "🔍", description: t("content.findEverydayObjectsBeforeTimeRunsOut") },
+  roadtrip: { name: t("content.roadtripSpy"), icon: "🚗", description: t("content.spotThingsThroughTheWindowTwoPlayers") },
+  lava: { name: t("content.floorIsLava"), icon: "🌋", description: t("content.findASafeSpotFreezeAndSolve") },
+}; }
+export let MODES = makeMODES();
+subscribe(() => { MODES = makeMODES(); });
 
 export interface Task {
   id: string;
@@ -44,7 +47,7 @@ export const timeUpLine = "local_time_up";
 export const tryAgainLine = "local_try_again";
 
 const localPraise = ["local_praise_found", "local_praise_radio", "local_praise_next"];
-const localTasks: Task[] = [
+function makeLocalTasks(): Task[] { return [
   ...localLines.filter((line) => /^local_(hunt|roadtrip)_task_/.test(line.id)).map((line, i) => ({
     id: line.id.replace("_task_", "_"),
     mode: line.mode as "hunt" | "roadtrip",
@@ -59,14 +62,16 @@ const localTasks: Task[] = [
   {
     id: "local_lava_riddle_1", mode: "lava", ageBand: "all", durationSec: 20,
     lineIds: ["local_lava_riddle_line_1"],
-    riddle: { choices: ["A towel", "A sock"], answer: "A towel" },
+    riddle: { choices: [t("content.aTowel"), t("content.aSock")], answer: t("content.aTowel") },
   },
   {
     id: "local_lava_riddle_2", mode: "lava", ageBand: "all", durationSec: 20,
     lineIds: ["local_lava_riddle_line_2"],
-    riddle: { choices: ["A shoe", "A clock"], answer: "A clock" },
+    riddle: { choices: [t("content.aShoe"), t("content.aClock")], answer: t("content.aClock") },
   },
-];
+]; }
+let localTasks = makeLocalTasks();
+subscribe(() => { localTasks = makeLocalTasks(); });
 
 const importedLines: Line[] = [];
 for (const mode of ["common", "hunt", "roadtrip", "lava"] as const) {
@@ -108,7 +113,7 @@ export const codenames = [...new Set([
 ])];
 
 export function codenameFor(id: string) {
-  return codenames.includes(id) ? lineFor(id).text : "Agent";
+  return codenames.includes(id) ? lineFor(id).text : t("content.agent");
 }
 
 export function praiseFor(mode: Mode, ageBand: AgeBand): string[] {

@@ -1,5 +1,5 @@
+import { t } from "../i18n/index";
 import { HoldButton } from "../components/HoldButton";
-import { APP_NAME } from "../brand";
 import { useContext, useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
 import type { AskRequest, AskResponse } from "../../shared/types";
@@ -50,7 +50,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   const finishing = session?.finishing ?? false;
 
   function hint() {
-    setVoiceHint("Type your question");
+    setVoiceHint(t("ask.typeYourQuestion"));
     input.current?.focus();
   }
 
@@ -104,15 +104,15 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
     voice.start();
   }
 
-  const voiceLabel = voice.status === "opening" ? "Opening mic…" : voice.status === "recording"
-    ? "Let go to send" : voice.status === "decoding" ? "Listening…" : "Hold to talk";
+  const voiceLabel = voice.status === "opening" ? t("ask.openingMic") : voice.status === "recording"
+    ? t("holdButton.letGoToSend") : voice.status === "decoding" ? t("ask.listening") : t("ask.holdToTalk");
 
   return (
-    <LearnPage title={`Ask ${APP_NAME}`} onBack={onBack}>
-      <p className="learn-description">Ask about space, animals, or how things work. Hold the button and talk!</p>
+    <LearnPage title={t("activitySuggestions.ask")} onBack={onBack}>
+      <p className="learn-description">{t("ask.askAboutSpaceAnimalsOrHowThings")}</p>
       {result ? (
         <section className="panel learn-card">
-          {asked && <p className="field-label ask-question">You asked: “{asked}”</p>}
+          {asked && <p className="field-label ask-question">{t("ask.youAsked", { asked })}</p>}
           <div className="ask-host">
             <Mascot pose="point" size={72} className="ask-mascot" />
             <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
@@ -121,13 +121,13 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
           {sound && <button type="button" className="quiet-button" disabled={finishing} onClick={() => {
             stopSpeech();
             void speakFallback(result.answer);
-          }}>Hear answer</button>}
+          }}>{t("ask.hearAnswer")}</button>}
           <div className="answer-list">
             <button type="button" className="primary-button" disabled={finishing} onClick={() => {
               stopSpeech();
               setResult(undefined);
-            }}>Ask another</button>
-            <button type="button" className="secondary-button" disabled={finishing} onClick={() => onQuiz(topic)}>Quick quiz about this</button>
+            }}>{t("ask.askAnother")}</button>
+            <button type="button" className="secondary-button" disabled={finishing} onClick={() => onQuiz(topic)}>{t("ask.quickQuizAboutThis")}</button>
           </div>
         </section>
       ) : (
@@ -142,25 +142,25 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
             {voiceLabel}
           </HoldButton>
           <label>
-            <span className="field-label">Your question</span>
+            <span className="field-label">{t("ask.yourQuestion")}</span>
             <textarea ref={input} rows={2} required maxLength={200} autoComplete="off"
               value={question} onChange={(event) => {
                 voice.release(true);
                 setVoiceHint("");
                 setQuestion(event.target.value);
-              }} placeholder="Type your question" disabled={busy || finishing} />
+              }} placeholder={t("ask.typeYourQuestion")} disabled={busy || finishing} />
           </label>
           <button type="submit" className="primary-button" disabled={busy || !question.trim() || finishing}>
-            {busy ? "Thinking…" : "Ask"}
+            {busy ? t("ask.thinking") : t("ask.ask")}
           </button>
           {voiceHint && <p role="status">{voiceHint}</p>}
-          <div className="answer-list ask-suggestions" aria-label="Try asking">
+          <div className="answer-list ask-suggestions" aria-label={t("ask.tryAsking")}>
             {suggestedQuestions(topics).map((idea) => <button key={idea} type="button" className="quiet-button"
               disabled={busy || finishing} onClick={() => { void submit(idea); }}>{idea}</button>)}
           </div>
         </form>
       )}
-      <p className="learn-description text-sm">{APP_NAME} doesn’t save your questions.</p>
+      <p className="learn-description text-sm">{t("ask.doesnTSaveYourQuestions")}</p>
     </LearnPage>
   );
 }

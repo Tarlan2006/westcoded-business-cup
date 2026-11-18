@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useReducer, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { Mascot } from "../components/Mascot";
@@ -95,9 +96,9 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
   const thinking = !result && turn === "O";
   const canPlay = !result && !thinking;
   const canChangeLevel = Boolean(result) || board.every((cell) => cell === null);
-  const message = result === "X" ? "Oh no, you got me! You win!" : result === "O" ? "Good game! Want a rematch?"
-    : result === "tie" ? "It's a tie, great game!" : thinking ? "Hmm, let me think..."
-      : board.includes("X") ? "Nice move! Your turn." : "Your turn!";
+  const message = result === "X" ? t("ticTacToe.ohNoYouGotMeYouWin") : result === "O" ? t("ticTacToe.goodGameWantARematch")
+    : result === "tie" ? t("ticTacToe.itSATieGreatGame") : thinking ? t("ticTacToe.hmmLetMeThink")
+      : board.includes("X") ? t("ticTacToe.niceMoveYourTurn") : t("ticTacToe.yourTurn");
 
   useEffect(() => {
     if (!thinking) return;
@@ -110,20 +111,20 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
 
   return (
     <main className="shell ttt-shell">
-      <ActivityHeader title="Tic-tac-toe" onBack={scores.X === 0 && scores.O + scores.tie > 0 ? () => onComplete(false) : onBack} />
+      <ActivityHeader title={t("activitySuggestions.ticTacToe")} onBack={scores.X === 0 && scores.O + scores.tie > 0 ? () => onComplete(false) : onBack} />
       <section className="ttt-room" aria-labelledby="ttt-title" data-result={result ?? undefined}>
         <header className="ttt-title">
-          <h1 id="ttt-title">Stars vs. Clouds</h1>
-          <p>You're the star. Make a row of three!</p>
+          <h1 id="ttt-title">{t("ticTacToe.starsVsClouds")}</h1>
+          <p>{t("ticTacToe.youReTheStarMakeARow")}</p>
         </header>
         <div className="ttt-controls">
-          <div className="ttt-levels" role="group" aria-label="Difficulty">
+          <div className="ttt-levels" role="group" aria-label={t("ticTacToe.difficulty")}>
             {(["Easy", "Clever"] as const).map((level) => (
               <button key={level} type="button" className="ttt-level" aria-pressed={difficulty === level} disabled={!canChangeLevel}
-                onClick={() => setDifficulty(level)}>{level}</button>
+                onClick={() => setDifficulty(level)}>{level === "Easy" ? t("ticTacToe.easy") : t("ticTacToe.clever")}</button>
             ))}
           </div>
-          <p className="ttt-score">You {scores.X} <span aria-hidden="true">·</span> Computer {scores.O} <span aria-hidden="true">·</span> Ties {scores.tie}</p>
+          <p className="ttt-score">{t("ticTacToe.you")} {scores.X} <span aria-hidden="true">·</span> {t("ticTacToe.computer")} {scores.O} <span aria-hidden="true">·</span> {t("ticTacToe.ties")} {scores.tie}</p>
         </div>
         <div className="ttt-host">
           <div className="ttt-mascot"><Mascot pose={thinking ? "tablet" : result === "X" ? "jump" : "point"} size={64} /></div>
@@ -131,10 +132,10 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
             {message}{result === "tie" && <TieHearts />}
           </p>
         </div>
-        <div className="ttt-board" role="group" aria-label="Tic-tac-toe board">
+        <div className="ttt-board" role="group" aria-label={t("ticTacToe.ticTacToeBoard")}>
           {board.map((cell, index) => (
             <button key={index} type="button" className="ttt-cell" aria-disabled={!canPlay || Boolean(cell)}
-              aria-label={`Row ${Math.floor(index / 3) + 1}, column ${index % 3 + 1}, ${cell === "X" ? "star" : cell === "O" ? "cloud" : "empty"}`}
+              aria-label={t("ticTacToe.rowColumn", { value1: Math.floor(index / 3) + 1, value2: index % 3 + 1, value3: cell === "X" ? "star" : cell === "O" ? "cloud" : "empty" })}
               data-winning={winningLine?.includes(index) || undefined}
               onClick={() => dispatch({ mark: "X", index, board })}>{cell && <Piece kind={cell === "X" ? "star" : "cloud"} />}</button>
           ))}
@@ -146,9 +147,8 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
         </div>
         <div className="ttt-actions">
           <button type="button" className="primary-button" disabled={!result} onClick={() => dispatch("rematch")}>
-            <span aria-hidden="true">↻</span> Play again
-          </button>
-          {scores.X > 0 && <button type="button" className="secondary-button" onClick={() => onComplete(true)}>Collect XP</button>}
+            <span aria-hidden="true">↻</span> {t("balloonsGame.playAgain")}</button>
+          {scores.X > 0 && <button type="button" className="secondary-button" onClick={() => onComplete(true)}>{t("ticTacToe.collectXp")}</button>}
         </div>
       </section>
     </main>

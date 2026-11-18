@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useRef } from "react";
 import { Mascot } from "../components/Mascot";
 
@@ -13,13 +14,13 @@ export function SessionComplete({ name, xp, streak, onBack }: {
   return <main className="prototype-screen session-complete" aria-labelledby="session-complete-title">
     <div className="session-card space-y-4">
       <Mascot pose="jump" size={120} className="mx-auto" />
-      <h1 className="text-3xl font-bold" id="session-complete-title" tabIndex={-1} ref={heading}>Session complete</h1>
-      <p className="wrap-anywhere">Great job, {name}! See you next time!</p>
+      <h1 className="text-3xl font-bold" id="session-complete-title" tabIndex={-1} ref={heading}>{t("app.sessionComplete")}</h1>
+      <p className="wrap-anywhere">{t("sessionComplete.greatJobSeeYouNextTime", { name })}</p>
       <div className="flex flex-wrap justify-center gap-2">
         <span className="session-time">{xp} XP</span>
-        <span className="session-time">{streak}-day streak</span>
+        <span className="session-time">{t("sessionComplete.dayStreak", { streak })}</span>
       </div>
-      <button type="button" className="session-button session-button-primary w-full" onClick={onBack}>Back to start</button>
+      <button type="button" className="session-button session-button-primary w-full" onClick={onBack}>{t("sessionComplete.backToStart")}</button>
     </div>
   </main>;
 }

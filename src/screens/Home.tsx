@@ -1,3 +1,4 @@
+import { t, subscribe } from "../i18n/index";
 import { lazy, Suspense, useState, type ReactNode } from "react";
 import type { Activity } from "../../shared/types";
 import { useSoundEnabled } from "../audio/sfx";
@@ -25,7 +26,9 @@ export function LearnPage({ title, onBack, backHref, children, wide = false, xp 
   </main>;
 }
 
-const groups = { active: "Move", learn: "Learn", watch: "Watch" };
+function makeGroups() { return { active: t("home.move"), learn: t("balloonsGame.learn"), watch: t("home.watch") }; }
+let groups = makeGroups();
+subscribe(() => { groups = makeGroups(); });
 const tileTone: Partial<Record<Activity, "active" | "learn" | "watch" | "mint" | "sun">> = {
   hunt: "active", roadtrip: "sun", lava: "active", memory: "mint", "tic-tac-toe": "mint", sketch: "sun", video: "watch", balloons: "sun",
 };
@@ -48,22 +51,21 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
   const first = startingActivity(profile, preferences);
   const open = (activity: ActivitySuggestion) => onActivity(activity.activity, activity.topic);
 
-  return <main className="prototype-screen prototype-hub relative w-full max-w-4xl mx-auto px-4 py-4 z-10" aria-label="Activities">
-    <PrototypeHeader name={name} label={`${profile.xp} XP`} detail={`${rankName(profile.rank)} · ${profile.streak}-Day Streak`}
+  return <main className="prototype-screen prototype-hub relative w-full max-w-4xl mx-auto px-4 py-4 z-10" aria-label={t("app.activities")}>
+    <PrototypeHeader name={name} label={`${profile.xp} XP`} detail={t("home.dayStreak", { value1: rankName(profile.rank), value2: profile.streak })}
       onParents={onParent}>
-      <button type="button" className="prototype-parent-button" aria-pressed={sound} onClick={onToggleSound}>Sound {sound ? "on" : "off"}</button>
-      <button type="button" className="prototype-parent-button" onClick={() => setGarage(true)}>🛸 Garage</button>
+      <button type="button" className="prototype-parent-button" aria-pressed={sound} onClick={onToggleSound}>{t("home.sound")} {sound ? "on" : "off"}</button>
+      <button type="button" className="prototype-parent-button" onClick={() => setGarage(true)}>{t("home.garage")}</button>
     </PrototypeHeader>
     <div className="learn-page">
-      <section className="hub-greeting" aria-label={`${APP_NAME} says hello`}>
+      <section className="hub-greeting" aria-label={t("home.saysHello")}>
         <Mascot pose="wave" size={72} />
-        <p className="hub-greeting-bubble">Hi, {name}! What shall we do today?</p>
+        <p className="hub-greeting-bubble">{t("home.hiWhatShallWeDoToday", { name })}</p>
       </section>
       <section className="flow-start panel" aria-labelledby="flow-start-title">
         <div className="flow-start-icon flow-start-mascot" aria-hidden="true"><Mascot pose="tablet" size={72} /></div>
-        <div><p className="field-label" id="flow-start-title">Start here</p><h1 className="font-display text-2xl sm:text-3xl font-bold">{first.title}</h1><p>{first.description}</p></div>
-        <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>
-          Start <span aria-hidden="true">→</span><span className="sr-only"> {first.title}</span>
+        <div><p className="field-label" id="flow-start-title">{t("home.startHere")}</p><h1 className="font-display text-2xl sm:text-3xl font-bold">{first.title}</h1><p>{first.description}</p></div>
+        <button type="button" className="btn-game btn-mint rounded-2xl min-h-12 px-5 py-3 font-display font-bold text-[#062C1E]" onClick={() => open(first)}>{t("home.start")} <span aria-hidden="true">→</span><span className="sr-only"> {first.title}</span>
         </button>
       </section>
       {ordered.map((group) => <section className="activity-section" key={group} aria-labelledby={`group-${group}`}>
@@ -74,17 +76,17 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
         </div>
       </section>)}
       <section className="activity-section" aria-labelledby="group-plus">
-        <h2 id="group-plus" className="font-display text-2xl font-bold">Unlock more <span className="plus-badge">{APP_NAME.toUpperCase()} PLUS</span></h2>
+        <h2 id="group-plus" className="font-display text-2xl font-bold">{t("home.unlockMore")} <span className="plus-badge">{t("home.plus", { value1: APP_NAME.toUpperCase() })}</span></h2>
         <div className="locked-hint">
           <Mascot pose="point" size={84} />
-          <p className="hub-greeting-bubble">These games are still locked up. Ask a grown-up!</p>
+          <p className="hub-greeting-bubble">{t("home.theseGamesAreStillLockedUpAsk")}</p>
         </div>
         <div className="activity-grid locked-grid">
           {lockedGames.map((game) => <LockedTile key={game.id} icon={game.icon} title={game.title} onClick={onPlans}>{game.description}</LockedTile>)}
         </div>
       </section>
-      <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>Privacy</a>
+      <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>{t("app.privacy")}</a>
     </div>
-    {garage && <Suspense fallback={<p role="status">Getting things ready.</p>}><Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} /></Suspense>}
+    {garage && <Suspense fallback={<p role="status">{t("app.gettingThingsReady")}</p>}><Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} /></Suspense>}
   </main>;
 }

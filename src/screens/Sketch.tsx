@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { speakFallback, stopSpeech } from "../audio/engine";
 import { useSoundEnabled } from "../audio/sfx";
@@ -20,15 +21,15 @@ export function Sketch({ onBack, onComplete }: Pick<SketchGameProps, "onBack" | 
 
   return <main>
     <div className="shell flow-module-header">
-      <ActivityHeader title="Sketch Artist" onBack={onBack}>
+      <ActivityHeader title={t("sketchGame.sketchArtist")} onBack={onBack}>
         <button type="button" className="quiet-button" disabled={!globalSound} aria-pressed={sound} onClick={() => {
           stopSpeech();
           setSound((enabled) => !enabled);
-        }}>{sound ? "Clue audio on" : "Clue audio off"}</button>
+        }}>{sound ? t("sketch.clueAudioOn") : t("sketch.clueAudioOff")}</button>
       </ActivityHeader>
     </div>
     <Suspense fallback={<div className="shell learn-page" role="status">
-      <p>Opening the case…</p>
+      <p>{t("sketch.openingTheCase")}</p>
     </div>}>
       <SketchGame header={null} speak={sound ? speakClue : undefined}
         onBack={() => { stopSpeech(); onBack(); }}

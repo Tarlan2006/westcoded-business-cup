@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useState, type ReactNode } from 'react';
 import { ambienceThemes, type AmbienceTheme } from '../audio/ambienceThemes';
 import { setMusic, unlock } from '../audio/engine';
@@ -34,8 +35,8 @@ export function PrototypeFrame({ children, theme = 'calm', music = false, paused
       {ambienceThemes[theme].marks.map((mark, i) => <span className={`amb-mark amb-mark-${i}`} key={`${theme}-${i}`}>{mark}</span>)}
     </div>
     {music && <div className="amb-controls"><button type="button" className="amb-music-button" aria-pressed={enabled && sound}
-      disabled={!sound} title={sound ? 'Background music' : 'Turn Sound on to enable background music'} onClick={toggle}>
-      <span aria-hidden="true">♫</span> Music {enabled && sound ? 'on' : 'off'}
+      disabled={!sound} title={sound ? t("prototypeFrame.backgroundMusic") : t("prototypeFrame.turnSoundOnToEnableBackgroundMusic")} onClick={toggle}>
+      <span aria-hidden="true">♫</span> {t("prototypeFrame.music")} {enabled && sound ? 'on' : 'off'}
     </button></div>}
     {children}
   </div>;

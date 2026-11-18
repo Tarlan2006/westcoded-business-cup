@@ -1,7 +1,8 @@
+import { t } from "../../../i18n/index";
 /** An original, friendly gecko: four sticky fingertips on each hand. */
 export function GeckoHero() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label="Gecko Hero: a smiling green wall-climber with goggles, sticky fingers, a yellow cape and a star-tipped curly tail">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="img" aria-label={t("geckoHero.geckoHeroASmilingGreenWallClimber")}>
       <rect width="400" height="500" fill="#fff" />
       <g stroke="#32694b" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M171 205 Q219 191 244 210 Q262 238 301 254 Q273 282 239 273 L185 238Z" fill="#ffe071" stroke="#b99a35" />

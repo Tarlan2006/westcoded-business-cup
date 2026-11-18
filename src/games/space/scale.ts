@@ -1,3 +1,4 @@
+import { t } from "../../i18n/index";
 import bank from "./objects.json" with { type: "json" };
 
 export interface SpaceObject {
@@ -32,15 +33,15 @@ export function screenSize(diameterKm: number, kmPerPixel: number, viewportPx: n
 }
 
 function formatCompact(value: number) {
-  if (value >= 1e9) return `${number.format(value / 1e9)} billion`;
-  if (value >= 1e6) return `${number.format(value / 1e6)} million`;
+  if (value >= 1e9) return t("scale.billion", { value1: number.format(value / 1e9) });
+  if (value >= 1e6) return t("scale.million", { value1: number.format(value / 1e6) });
   return number.format(value);
 }
 
 export function formatSize(km: number) {
-  if (km < 1) return `${number.format(km * 1000)} m`;
+  if (km < 1) return t("scale.m", { value1: number.format(km * 1000) });
   const rounded = km >= 1000 && km < 1e6 ? Number(km.toPrecision(3)) : km;
-  return `${formatCompact(rounded)} km`;
+  return t("scale.km", { value1: formatCompact(rounded) });
 }
 
 export function sizeRatio(a: SpaceObject, b: SpaceObject) {
@@ -52,5 +53,5 @@ export function compareSizes(a: SpaceObject, b: SpaceObject) {
   const ratio = sizeRatio(a, b);
   const amount = formatCompact(ratio < 10 ? ratio : ratio < 1000 ? Math.round(ratio) : Number(ratio.toPrecision(2)));
   const name = big.label.charAt(0).toUpperCase() + big.label.slice(1);
-  return `${name} is about ${amount} times as big as ${small.label}.`;
+  return t("scale.isAboutTimesAsBigAs", { name, amount, value3: small.label });
 }

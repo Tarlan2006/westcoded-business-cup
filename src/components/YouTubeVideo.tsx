@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useRef } from "react";
 
 type Player = { destroy: () => void };
@@ -18,7 +19,7 @@ function loadAPI() {
     };
     const script = document.createElement("script");
     script.src = "https://www.youtube.com/iframe_api";
-    script.onerror = () => { apiPromise = undefined; script.remove(); reject(new Error("Player API unavailable")); };
+    script.onerror = () => { apiPromise = undefined; script.remove(); reject(new Error(t("youTubeVideo.playerApiUnavailable"))); };
     document.head.append(script);
   });
 }

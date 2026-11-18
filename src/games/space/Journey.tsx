@@ -1,3 +1,4 @@
+import { t, subscribe } from "../../i18n/index";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ObjectArt } from "./art/ObjectArt";
 import { cameraScale, clamp, compareSizes, formatSize, objects, stopCount } from "./scale";
@@ -14,10 +15,12 @@ function Chevron({ back = false }: { back?: boolean }) {
   </svg>;
 }
 
-const types: Record<string, string> = {
-  child: "Person", whale: "Animal", mountain: "Mountain", moon: "Natural satellite",
-  earth: "Planet", jupiter: "Gas giant", sun: "Star", star: "Red supergiant",
-};
+function makeTypes(): Record<string, string> { return {
+  child: t("journey.person"), whale: t("journey.animal"), mountain: t("journey.mountain"), moon: t("journey.naturalSatellite"),
+  earth: t("journey.planet"), jupiter: t("journey.gasGiant"), sun: t("journey.star"), star: t("journey.redSupergiant"),
+}; }
+let types = makeTypes();
+subscribe(() => { types = makeTypes(); });
 const artSize = 640;
 
 function useCamera() {
@@ -175,10 +178,10 @@ export function Journey({ onFinish, speak, exploreOnly }: {
   const [speechStatus, setSpeechStatus] = useState("");
   const object = objects[active];
   const previous = objects[active - 1];
-  const comparison = previous ? compareSizes(object, previous) : "Start here, then see what is bigger.";
-  const dimension = { height: "tall", length: "long", "height above sea level": "above sea level", diameter: "wide" }[object.measure];
+  const comparison = previous ? compareSizes(object, previous) : t("journey.startHereThenSeeWhatIsBigger");
+  const dimension = { height: "tall", length: "long", "height above sea level": t("journey.aboveSeaLevel"), diameter: "wide" }[object.measure];
   const comparisonText = previous?.measure === "diameter" && object.measure === "diameter"
-    ? comparison.replace("times as big as", "times as wide as") : comparison;
+    ? comparison.replace(t("journey.timesAsBigAs"), t("journey.timesAsWideAs")) : comparison;
 
   useEffect(() => {
     scroller.current?.focus({ preventScroll: true });
@@ -191,14 +194,14 @@ export function Journey({ onFinish, speak, exploreOnly }: {
     try {
       await speak(`${object.name}. ${object.fact}`);
     } catch {
-      setSpeechStatus("Audio is unavailable. You can read the fact here.");
+      setSpeechStatus(t("journey.audioIsUnavailableYouCanReadThe"));
     } finally {
       setSpeaking(false);
     }
   }
 
   return (
-    <div className="sp-scroll" ref={scroller} role="region" tabIndex={0} aria-label="Space journey" onKeyDown={(event) => {
+    <div className="sp-scroll" ref={scroller} role="region" tabIndex={0} aria-label={t("journey.spaceJourney")} onKeyDown={(event) => {
       if (event.target instanceof HTMLSelectElement || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
         event.preventDefault();
@@ -206,10 +209,10 @@ export function Journey({ onFinish, speak, exploreOnly }: {
       }
     }}>
       <div className="sp-track" style={{ "--sp-track-distance": `${stopCount * 390}px` } as CSSProperties}>
-        <section className="sp-sticky" aria-label="Scale viewer">
+        <section className="sp-sticky" aria-label={t("journey.scaleViewer")}>
           <header className="sp-journey-title">
             <h1 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h1>
-            <p className="sp-measure">{types[object.art]} · about {formatSize(object.diameterKm)} {dimension}</p>
+            <p className="sp-measure">{types[object.art]} {t("journey.about")} {formatSize(object.diameterKm)} {dimension}</p>
           </header>
           <div className="sp-scene" ref={scene} style={{ "--sp-art-size": `${artSize}px` } as CSSProperties} aria-hidden="true">
             <div className="sp-baseline" />
@@ -220,15 +223,13 @@ export function Journey({ onFinish, speak, exploreOnly }: {
                   {id === "sun" && <i className="sp-sun-dot" />}
                 </div>
                 <span className="sp-object-caption" ref={(element) => { captions.current[index] = element; }}>
-                  {name}{id === "sun" && <span className="sp-tiny-caption"> (a tiny dot!)</span>}
+                  {name}{id === "sun" && <span className="sp-tiny-caption"> {t("journey.aTinyDot")}</span>}
                 </span>
               </div>
             ))}
           </div>
           <p className="sp-comparison">{comparisonText}
-            {object.rangeKm && <span className="sp-range">
-              Estimated range: {formatSize(object.rangeKm[0])} to {formatSize(object.rangeKm[1])}.
-            </span>}
+            {object.rangeKm && <span className="sp-range">{t("journey.estimatedRangeTo", { value1: formatSize(object.rangeKm[0]), value2: formatSize(object.rangeKm[1]) })}</span>}
           </p>
           <div className="sp-discovery">
             <p>{object.fact}</p>
@@ -238,14 +239,14 @@ export function Journey({ onFinish, speak, exploreOnly }: {
                 strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M4 9h4l5-4v14l-5-4H4zm12 0a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12" />
               </svg>
-              {speaking ? "Reading…" : "Hear it"}
+              {speaking ? t("sketchGame.reading") : t("sketchGame.hearIt")}
             </button>}
             <p className="sp-sr-only" role="status">{speechStatus}</p>
           </div>
           <div className="sp-journey-actions" data-final={active === stopCount || undefined}>
-            <button className="sp-button sp-button-soft sp-chevron" type="button" aria-label="Previous stop"
+            <button className="sp-button sp-button-soft sp-chevron" type="button" aria-label={t("journey.previousStop")}
               aria-disabled={active === 0} onClick={() => step(-1)}><Chevron back /></button>
-            <nav className="sp-stops" aria-label="Journey stops">
+            <nav className="sp-stops" aria-label={t("journey.journeyStops")}>
               <div className="sp-stop-buttons">
                 {objects.map((stop, index) => (
                   <button type="button" key={stop.id} className="sp-stop"
@@ -257,15 +258,15 @@ export function Journey({ onFinish, speak, exploreOnly }: {
                 <div className="sp-stop-dots" aria-hidden="true">
                   {objects.map(({ id }, index) => <span key={id} className="sp-dot" data-active={index === active || undefined} />)}
                 </div>
-                <select aria-label="Jump to a stop" value={active} onChange={(event) => goTo(Number(event.target.value))}>
+                <select aria-label={t("journey.jumpToAStop")} value={active} onChange={(event) => goTo(Number(event.target.value))}>
                   {objects.map(({ id, name }, index) => <option key={id} value={index}>{index + 1}. {name}</option>)}
                 </select>
               </div>
             </nav>
             {active === stopCount ? <button className="sp-button sp-button-primary sp-stage-next" type="button" onClick={onFinish}>
-              {exploreOnly ? "Finish journey" : "Start quiz"}
+              {exploreOnly ? t("journey.finishJourney") : t("journey.startQuiz")}
             </button> : <button className="sp-button sp-button-soft sp-chevron sp-stage-next" type="button"
-              aria-label="Next" onClick={() => step(1)}><Chevron /></button>}
+              aria-label={t("journey.next")} onClick={() => step(1)}><Chevron /></button>}
           </div>
         </section>
       </div>

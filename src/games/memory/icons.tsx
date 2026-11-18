@@ -1,17 +1,20 @@
+import { t, subscribe } from "../../i18n/index";
 import type { ReactNode } from "react";
 
 // Eight friendly dinosaur cards, drawn on a 64×64 grid with the site's thick dark
 // outline so each pair is easy to tell apart at a glance.
-export const memoryIcons = {
-  trex: "T. rex",
-  tri: "Triceratops",
-  stego: "Stegosaurus",
-  longneck: "Long-neck dinosaur",
-  ptero: "Pterodactyl",
-  egg: "Baby dino in an egg",
-  ankylo: "Ankylosaurus",
-  spino: "Spinosaurus",
-} as const;
+function makeMemoryIcons() { return {
+  trex: t("icons.tRex"),
+  tri: t("icons.triceratops"),
+  stego: t("icons.stegosaurus"),
+  longneck: t("icons.longNeckDinosaur"),
+  ptero: t("icons.pterodactyl"),
+  egg: t("icons.babyDinoInAnEgg"),
+  ankylo: t("icons.ankylosaurus"),
+  spino: t("icons.spinosaurus"),
+} as const; }
+export let memoryIcons = makeMemoryIcons();
+subscribe(() => { memoryIcons = makeMemoryIcons(); });
 
 export type MemoryIconName = keyof typeof memoryIcons;
 

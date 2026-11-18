@@ -1,3 +1,4 @@
+import { t, subscribe } from "../../i18n/index";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
@@ -10,10 +11,12 @@ export interface SketchSnapshot {
 }
 export interface SketchCanvasHandle { snapshot: () => SketchSnapshot | null }
 
-const colors = [
-  ["Green", "#73bc79"], ["Yellow", "#ffd45b"], ["Blue", "#629ed9"], ["Pink", "#e68caf"],
-  ["Purple", "#9c85cc"], ["Orange", "#ec9a59"], ["Brown", "#9a735e"], ["Ink", "#344457"],
-] as const;
+function makeColors() { return [
+  [t("sketchCanvas.green"), "#73bc79"], [t("sketchCanvas.yellow"), "#ffd45b"], [t("sketchCanvas.blue"), "#629ed9"], [t("sketchCanvas.pink"), "#e68caf"],
+  [t("sketchCanvas.purple"), "#9c85cc"], [t("sketchCanvas.orange"), "#ec9a59"], [t("sketchCanvas.brown"), "#9a735e"], [t("sketchCanvas.ink"), "#344457"],
+] as const; }
+let colors = makeColors();
+subscribe(() => { colors = makeColors(); });
 const widths = [5, 11, 22];
 
 function paint(context: CanvasRenderingContext2D, stroke: Stroke) {
@@ -39,7 +42,7 @@ function paint(context: CanvasRenderingContext2D, stroke: Stroke) {
   context.stroke();
 }
 
-export const SketchCanvas = forwardRef<SketchCanvasHandle>(function SketchCanvas(_, ref) {
+function makeSketchCanvas() { return forwardRef<SketchCanvasHandle>(function SketchCanvas(_, ref) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokes = useRef<Stroke[]>([]);
   const current = useRef<Stroke | null>(null);
@@ -142,44 +145,44 @@ export const SketchCanvas = forwardRef<SketchCanvasHandle>(function SketchCanvas
 
   return (
     <div className="sk-drawing">
-      <div className="sk-paper-label"><span>Your sketch</span><span>Make it your own ✦</span></div>
-      {unavailable && <p className="sk-notice" role="status">Drawing is unavailable in this browser. You can still read the clues.</p>}
+      <div className="sk-paper-label"><span>{t("sketchCanvas.yourSketch")}</span><span>{t("sketchCanvas.makeItYourOwn")}</span></div>
+      {unavailable && <p className="sk-notice" role="status">{t("sketchCanvas.drawingIsUnavailableInThisBrowserYou")}</p>}
       <canvas ref={canvasRef} className="sk-canvas" width="400" height="500"
-        aria-label="Drawing canvas. Draw the mystery hero with your finger, mouse or pen."
+        aria-label={t("sketchCanvas.drawingCanvasDrawTheMysteryHeroWith")}
         style={{ touchAction: "none", width: "100%", aspectRatio: "4 / 5", display: "block" }}
         onPointerDown={start} onPointerMove={move} onPointerUp={finish}
-        onPointerCancel={finish} onLostPointerCapture={finish}>
-        Your browser needs canvas support to draw. All clues are also available as text.
-      </canvas>
-      <div className="sk-toolbar" role="group" aria-label="Drawing tools">
+        onPointerCancel={finish} onLostPointerCapture={finish}>{t("sketchCanvas.yourBrowserNeedsCanvasSupportToDraw")}</canvas>
+      <div className="sk-toolbar" role="group" aria-label={t("sketchCanvas.drawingTools")}>
         {colors.map(([name, value]) => <button type="button" key={name} className="sk-tool sk-color"
-          aria-label={`${name} pencil`} aria-pressed={!eraser && color === value} title={name}
+          aria-label={t("sketchCanvas.pencil", { name })} aria-pressed={!eraser && color === value} title={name}
           onClick={() => { setColor(value); setEraser(false); }}>
           <span className="sk-swatch" style={{ backgroundColor: value }}>{!eraser && color === value ? "✓" : ""}</span>
         </button>)}
         {widths.map((value, i) => <button type="button" key={value} className="sk-tool"
-          aria-label={`${["Thin", "Medium", "Thick"][i]} brush`} aria-pressed={width === value}
-          title={`${["Thin", "Medium", "Thick"][i]} brush`} onClick={() => setWidth(value)}>
+          aria-label={t("sketchCanvas.brush", { value1: ["Thin", "Medium", "Thick"][i] })} aria-pressed={width === value}
+          title={t("sketchCanvas.brush", { value1: ["Thin", "Medium", "Thick"][i] })} onClick={() => setWidth(value)}>
           <span className="sk-brush-dot" style={{ width: value, height: value }} />
         </button>)}
-        <button type="button" className="sk-tool" aria-pressed={eraser} aria-label="Eraser" title="Eraser" onClick={() => setEraser(!eraser)}>
+        <button type="button" className="sk-tool" aria-pressed={eraser} aria-label={t("sketchCanvas.eraser")} title={t("sketchCanvas.eraser")} onClick={() => setEraser(!eraser)}>
           <svg className="sk-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="m4 15 9-11 8 7-9 10H8Z M8 11l8 7M11 21h10" /></svg>
         </button>
-        <button type="button" className="sk-tool" aria-label="Undo" title="Undo last stroke" disabled={!count} onClick={() => { strokes.current.pop(); setCount(strokes.current.length); redraw(); }}>
+        <button type="button" className="sk-tool" aria-label={t("sketchCanvas.undo")} title={t("sketchCanvas.undoLastStroke")} disabled={!count} onClick={() => { strokes.current.pop(); setCount(strokes.current.length); redraw(); }}>
           <svg className="sk-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M8 5 3 10l5 5M3 10h10a6 6 0 0 1 0 12" /></svg>
         </button>
-        <button type="button" ref={clearButton} className="sk-tool" aria-label="Clear" title="Clear drawing" disabled={!count} onClick={() => setConfirmClear(true)}>
+        <button type="button" ref={clearButton} className="sk-tool" aria-label={t("sketchCanvas.clear")} title={t("sketchCanvas.clearDrawing")} disabled={!count} onClick={() => setConfirmClear(true)}>
           <svg className="sk-tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7m4-7v7" /></svg>
         </button>
       </div>
-      {confirmClear && <div className="sk-clear-confirm" role="alertdialog" aria-label="Clear drawing?" onKeyDown={(event) => { if (event.key === "Escape") closeClear(); }}>
-        <p>Clear drawing?</p><span>This removes all your strokes.</span>
+      {confirmClear && <div className="sk-clear-confirm" role="alertdialog" aria-label={t("sketchCanvas.clearDrawingAlt")} onKeyDown={(event) => { if (event.key === "Escape") closeClear(); }}>
+        <p>{t("sketchCanvas.clearDrawingAlt")}</p><span>{t("sketchCanvas.thisRemovesAllYourStrokes")}</span>
         <div className="sk-button-row">
-          <button type="button" className="sk-button sk-secondary" ref={keepButton} onClick={closeClear}>Keep drawing</button>
-          <button type="button" className="sk-button" onClick={() => { strokes.current = []; setCount(0); redraw(); closeClear(); }}>Yes, clear</button>
+          <button type="button" className="sk-button sk-secondary" ref={keepButton} onClick={closeClear}>{t("sketchCanvas.keepDrawing")}</button>
+          <button type="button" className="sk-button" onClick={() => { strokes.current = []; setCount(0); redraw(); closeClear(); }}>{t("sketchCanvas.yesClear")}</button>
         </div>
       </div>}
-      <p className="sk-privacy">Your drawing stays on this device</p>
+      <p className="sk-privacy">{t("sketchCanvas.yourDrawingStaysOnThisDevice")}</p>
     </div>
   );
-});
+}); }
+export let SketchCanvas = makeSketchCanvas();
+subscribe(() => { SketchCanvas = makeSketchCanvas(); });

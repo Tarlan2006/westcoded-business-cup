@@ -1,8 +1,11 @@
-export const spaceGameMeta = {
+import { t, subscribe } from "../../i18n/index";
+function makeSpaceGameMeta() { return {
   id: "space",
-  title: "Space Scale",
-  description: "How big is space? Scroll and see!",
+  title: t("spaceGame.spaceScale"),
+  description: t("meta.howBigIsSpaceScrollAndSee"),
   icon: "🪐",
   ageBands: ["6-8"],
   activity: "space",
-} as const;
+} as const; }
+export let spaceGameMeta = makeSpaceGameMeta();
+subscribe(() => { spaceGameMeta = makeSpaceGameMeta(); });

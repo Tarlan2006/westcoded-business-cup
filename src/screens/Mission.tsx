@@ -1,6 +1,6 @@
+import { t } from "../i18n/index";
 import { useMusicPause } from "../audio/useMusicPause";
 import { HoldButton } from "../components/HoldButton";
-import { APP_NAME } from "../brand";
 import { useContext, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import type { Profile, TurnRequest, TurnResponse } from "../../shared/types";
 import { MissionStage, missionButtonStyle, missionReplyStyle } from "../components/MissionStage";
@@ -198,29 +198,29 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
   const doneButton = `${missionButtonStyle} btn-mint text-[#062C1E]`;
   const quickReplies = choices ? choices.choices.map((answer) => <button type="button" key={answer} className={missionReplyStyle}
     disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{answer}</button>) : isHunt
-    ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>🔎 Found it!</button> : undefined;
+    ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>{t("mission.foundIt")}</button> : undefined;
 
   return <MissionStage heading={MODES[session.mode].name} round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}
     {...demo} mood={recording ? "listening" : isFeedback ? state.feedback === timeUp ? "surprised" : "excited" : demo.mood}
     action={isFeedback ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={isFeedback && state.feedback !== timeUp}
     onExit={onExit} exitDisabled={state.phase === "resolving"}
-    toolbar={<button type="button" className="prototype-parent-button" disabled={state.phase === "resolving"} onClick={togglePause}>{paused ? "Resume" : "Pause"}</button>}
-    prompt={paused ? "Ready when you are." : state.phase === "resolving" ? `${APP_NAME} is checking in…` : running ? assignment : caption || assignment}
+    toolbar={<button type="button" className="prototype-parent-button" disabled={state.phase === "resolving"} onClick={togglePause}>{paused ? t("mission.resume") : t("mission.pause")}</button>}
+    prompt={paused ? t("mission.readyWhenYouAre") : state.phase === "resolving" ? t("mission.isCheckingIn") : running ? assignment : caption || assignment}
     replies={!paused && state.phase === "round" ? quickReplies : undefined}
-    status={isHunt && !paused ? voice.message : isRoadtrip ? `Player 1: ${state.players[0]} · Player 2: ${state.players[1]}` : undefined}
+    status={isHunt && !paused ? voice.message : isRoadtrip ? t("mission.player1Player2", { value1: state.players[0], value2: state.players[1] }) : undefined}
     controls={paused ? <>
-      <button type="button" className={doneButton} onClick={togglePause}>Resume mission</button>
-      <button type="button" className={`${missionButtonStyle} btn-purple text-white`} onClick={() => dispatch({ type: "finish", now: Date.now() })}>End mission</button>
+      <button type="button" className={doneButton} onClick={togglePause}>{t("mission.resumeMission")}</button>
+      <button type="button" className={`${missionButtonStyle} btn-purple text-white`} onClick={() => dispatch({ type: "finish", now: Date.now() })}>{t("mission.endMission")}</button>
     </> : isRoadtrip ? ([1, 2] as const).map((player) => <button key={player} type="button"
       className={player === 1 ? doneButton : `${missionButtonStyle} btn-sky text-white`}
-      disabled={!running} onClick={() => completeWithButton(player)}>Player {player} spotted it!</button>) : <>
+      disabled={!running} onClick={() => completeWithButton(player)}>{t("mission.playerSpottedIt", { player })}</button>) : <>
       <button type="button" className={`${doneButton}${isHunt ? "" : " col-span-2"}`}
-        disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> I DID IT!</button>
+        disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> {t("mission.iDidIt")}</button>
       {isHunt && <HoldButton talk hintKey="hunt-talk" className={`${missionButtonStyle} btn-sky text-white talk-button`}
         disabled={!running || voice.status === "decoding" || (activity?.finishing && !recording)} onBegin={startVoice}
         onRelease={() => voice.release()} onCancel={voice.cancelHold}>
-        <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? "Opening mic…" : "Let go to send"
-          : voice.status === "decoding" ? "Listening…" : "TALK"}</span>
+        <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? t("ask.openingMic") : t("holdButton.letGoToSend")
+          : voice.status === "decoding" ? t("ask.listening") : t("mission.talk")}</span>
       </HoldButton>}
     </>} />;
 }

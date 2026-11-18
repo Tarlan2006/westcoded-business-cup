@@ -1,17 +1,21 @@
-import { APP_NAME } from "../brand";
-export const shipParts = [
-  { id: "thruster", name: "Moon Thruster", icon: "🚀" },
-  { id: "dish", name: "Star Signal Dish", icon: "📡" },
-  { id: "window", name: "Starlight Window", icon: "🪟" },
-  { id: "shield", name: "Comet Shield", icon: "🛡️" },
-  { id: "battery", name: "Meteor Battery", icon: "🔋" },
-] as const;
+import { t, subscribe } from "../i18n/index";
+function makeShipParts() { return [
+  { id: "thruster", name: t("garage.moonThruster"), icon: "🚀" },
+  { id: "dish", name: t("garage.starSignalDish"), icon: "📡" },
+  { id: "window", name: t("garage.starlightWindow"), icon: "🪟" },
+  { id: "shield", name: t("garage.cometShield"), icon: "🛡️" },
+  { id: "battery", name: t("garage.meteorBattery"), icon: "🔋" },
+] as const; }
+export let shipParts = makeShipParts();
+subscribe(() => { shipParts = makeShipParts(); });
 
-const teasers = [
-  `${APP_NAME} found a mystery signal. What could be sending it?`,
-  "A tiny clue might lead to a giant discovery.",
-  `${APP_NAME} is plotting a new route through the stars.`,
-];
+function makeTeasers() { return [
+  t("garage.foundAMysterySignalWhatCouldBe"),
+  t("garage.aTinyClueMightLeadToA"),
+  t("garage.isPlottingANewRouteThroughThe"),
+]; }
+let teasers = makeTeasers();
+subscribe(() => { teasers = makeTeasers(); });
 
 export const partForSession = (sessions: number) => sessions > 0 ? shipParts[(sessions - 1) % shipParts.length] : undefined;
 export const nextEpisode = (sessions: number) => teasers[Math.max(0, sessions - 1) % teasers.length];

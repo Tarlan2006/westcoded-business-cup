@@ -1,3 +1,4 @@
+import { t } from "../i18n/index";
 import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 
 export type VideoStatus = "loading" | "playing" | "paused" | "blocked" | "error";
@@ -27,13 +28,13 @@ let api: Promise<YouTubeAPI> | undefined;
 function loadYouTube() {
   if (youtubeWindow.YT?.Player) return Promise.resolve(youtubeWindow.YT);
   api ??= new Promise<YouTubeAPI>((resolve, reject) => {
-    const timeout = window.setTimeout(() => reject(new Error("Video player unavailable")), 10_000);
+    const timeout = window.setTimeout(() => reject(new Error(t("toddlerPlayer.videoPlayerUnavailable"))), 10_000);
     const previous = youtubeWindow.onYouTubeIframeAPIReady;
     youtubeWindow.onYouTubeIframeAPIReady = () => {
       window.clearTimeout(timeout);
       previous?.();
       if (youtubeWindow.YT?.Player) resolve(youtubeWindow.YT);
-      else reject(new Error("Video player unavailable"));
+      else reject(new Error(t("toddlerPlayer.videoPlayerUnavailable")));
     };
     const script = document.createElement("script");
     script.src = "https://www.youtube.com/iframe_api";
@@ -41,7 +42,7 @@ function loadYouTube() {
     script.onerror = () => {
       window.clearTimeout(timeout);
       script.remove();
-      reject(new Error("Video player unavailable"));
+      reject(new Error(t("toddlerPlayer.videoPlayerUnavailable")));
     };
     document.head.append(script);
   }).catch((error) => { api = undefined; throw error; });

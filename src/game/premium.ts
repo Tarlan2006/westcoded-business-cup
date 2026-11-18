@@ -1,29 +1,35 @@
+import { t, subscribe } from "../i18n/index";
 // AIdos Plus: the games behind a lock and the subscription plans they lead to.
 // Prices and features live here so they are easy to change in one place.
 // There is no checkout yet; choosing a plan only tells the grown-up it is coming.
 
-export const lockedGames = [
-  { id: "dino-dig", icon: "🦕", title: "Dino Dig", description: "Dig up fossils and build your own dinosaur." },
-  { id: "music-band", icon: "🥁", title: "Music Band", description: "Make songs with drums, bells, and your voice." },
-  { id: "story-quest", icon: "📖", title: "Story Quest", description: "Choose what happens next in a spoken adventure." },
-] as const;
+function makeLockedGames() { return [
+  { id: "dino-dig", icon: "🦕", title: t("premium.dinoDig"), description: t("premium.digUpFossilsAndBuildYourOwn") },
+  { id: "music-band", icon: "🥁", title: t("premium.musicBand"), description: t("premium.makeSongsWithDrumsBellsAndYour") },
+  { id: "story-quest", icon: "📖", title: t("premium.storyQuest"), description: t("premium.chooseWhatHappensNextInASpoken") },
+] as const; }
+export let lockedGames = makeLockedGames();
+subscribe(() => { lockedGames = makeLockedGames(); });
 
-import { APP_NAME } from '../brand';
-const plusFeatures = [
-  "Unlock Dino Dig, Music Band, and Story Quest",
-  "New missions and quizzes every week",
-  `Unlimited Ask ${APP_NAME} questions`,
-  "Up to 4 child profiles",
-  "Weekly progress note for grown-ups",
-  "Cancel anytime",
-] as const;
+function makePlusFeatures() { return [
+  t("premium.unlockDinoDigMusicBandAndStory"),
+  t("premium.newMissionsAndQuizzesEveryWeek"),
+  t("premium.unlimitedAskQuestions"),
+  t("premium.upTo4ChildProfiles"),
+  t("premium.weeklyProgressNoteForGrownUps"),
+  t("premium.cancelAnytime"),
+] as const; }
+let plusFeatures = makePlusFeatures();
+subscribe(() => { plusFeatures = makePlusFeatures(); });
 
-export const plans = [
-  { id: "monthly", name: "Monthly", price: "$18", period: "per month", note: "Billed every month", features: plusFeatures },
+function makePlans() { return [
+  { id: "monthly", name: t("premium.monthly"), price: "$18", period: t("premium.perMonth"), note: t("premium.billedEveryMonth"), features: plusFeatures },
   {
-    id: "yearly", name: "Yearly", price: "$144", period: "per year", note: "Just $12 a month · save 33%", badge: "Best value",
-    features: ["Everything in Monthly", "2 extra mission packs a year", "Early access to new games"],
+    id: "yearly", name: t("premium.yearly"), price: "$144", period: t("premium.perYear"), note: t("premium.just12AMonthSave33"), badge: t("premium.bestValue"),
+    features: [t("premium.everythingInMonthly"), t("premium.2ExtraMissionPacksAYear"), t("premium.earlyAccessToNewGames")],
   },
-] as const;
+] as const; }
+export let plans = makePlans();
+subscribe(() => { plans = makePlans(); });
 
 export type PlanId = (typeof plans)[number]["id"];
