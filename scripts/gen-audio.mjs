@@ -234,7 +234,11 @@ async function main() {
   if (errors) process.exitCode = 1;
 }
 
-main().catch((error) => {
+if (process.argv.includes("--lang")) {
+  const child = spawnSync(python, [join(root, "scripts/localized-audio.py"), ...process.argv.slice(2)], { stdio: "inherit", windowsHide: true, env: { ...process.env, PYTHONUTF8: "1" } });
+  if (child.error) throw child.error;
+  process.exitCode = child.status ?? 1;
+} else main().catch((error) => {
   console.error(`Audio generation error: ${error.message}`);
   process.exitCode = 1;
 });

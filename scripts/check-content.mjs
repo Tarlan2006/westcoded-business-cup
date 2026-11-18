@@ -34,7 +34,7 @@ function verify() {
       uniqueId(line.id, label, ids);
       assert(line.voice === "hq" && kinds.has(line.kind) && ageBands.has(line.ageBand), `${label}: invalid voice, kind or ageBand`);
       assert(name === "local-lines" ? modes.includes(line.mode) : line.mode === name, `${label}: mode must match the bank`);
-      assert(line.file === `/audio/${line.mode}/${line.id}.mp3`, `${label}: file must match the mode and ID`);
+      assert(/^\/audio\/en\/[a-f0-9]+\.mp3$/.test(line.file), `Invalid English recording for ${line.id}`);
       assert(Number.isInteger(line.durationMs) && line.durationMs >= 0, `${label}: invalid durationMs`);
       safeText(line.text, label, 140);
       const instructions = line.text.replace(/\bdon['’]t run\b/gi, "");

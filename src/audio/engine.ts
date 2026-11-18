@@ -1,3 +1,4 @@
+import { contentText, getLanguage, subscribe } from "../i18n";
 import { AIDOS_VOICE, normalizeSpeech } from "../../shared/voice";
 import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
 import { changeVoicePlayback, setSpeechMeter } from "./speechMotion";
@@ -19,6 +20,7 @@ interface AudioGraph {
   analyser: AnalyserNode;
 }
 
+const voiceVersion = () => getLanguage() === "kk" ? "kk-iseke-v1" : AIDOS_VOICE;
 let graph: AudioGraph | undefined;
 let manifest: Promise<Map<string, string>> | undefined;
 const clips = new Map<string, Promise<AudioBuffer>>();
@@ -77,12 +79,12 @@ export async function unlock(): Promise<void> {
 function loadManifest(): Promise<Map<string, string>> {
   manifest ??= (async () => {
     try {
-      const response = await fetch("/audio/manifest.json?voice=" + AIDOS_VOICE, { signal: AbortSignal.timeout(2500) });
+      const response = await fetch("/audio/" + getLanguage() + "/manifest.json?voice=" + voiceVersion(), { signal: AbortSignal.timeout(2500) });
       if (!response.ok) return new Map();
       const data: unknown = await response.json();
       if (!data || typeof data !== "object") return new Map();
       const root = data as Record<string, unknown>;
-      if (root.voice !== AIDOS_VOICE) return new Map();
+      if (root.voice !== voiceVersion()) return new Map();
       const entries = root.clips ?? root.lines ?? data;
       if (!entries || typeof entries !== "object") return new Map();
       const rows: [string, unknown][] = Array.isArray(entries)
@@ -109,20 +111,21 @@ function loadManifest(): Promise<Map<string, string>> {
 }
 
 async function loadClip(id: string, context: AudioContext): Promise<AudioBuffer> {
-  const stored = clips.get(id);
+  const cacheKey = getLanguage() + ":" + id;
+  const stored = clips.get(cacheKey);
   if (stored) return stored;
   const path = (await loadManifest()).get(id);
   if (!path) throw new Error("Clip is missing from the audio manifest.");
-  const loading = clips.get(id) ?? (async () => {
+  const loading = clips.get(cacheKey) ?? (async () => {
     const response = await fetch(path + "?voice=" + AIDOS_VOICE, { signal: AbortSignal.timeout(3000) });
     if (!response.ok) throw new Error("Clip is unavailable.");
     return context.decodeAudioData(await response.arrayBuffer());
   })();
-  clips.set(id, loading);
+  clips.set(cacheKey, loading);
   try {
     return await loading;
   } catch (error) {
-    if (clips.get(id) === loading) clips.delete(id);
+    if (clips.get(cacheKey) === loading) clips.delete(cacheKey);
     throw error;
   }
 }
@@ -204,7 +207,7 @@ export function playQueue(ids: string[], opts?: { gapMs?: number }): Promise<voi
     changeSpeech(1);
     try {
       for (let index = 0; index < ids.length; index++) {
-        const buffer = await clip;
+        const buffer = await clip.catch(() => undefined);
         if (generation !== playbackGeneration) return;
         const next = ids[index + 1];
         if (next) {
@@ -212,7 +215,8 @@ export function playQueue(ids: string[], opts?: { gapMs?: number }): Promise<voi
           // Playback awaits this prefetch after the preceding clip.
           void clip.catch(() => {});
         }
-        await playBuffer(graph, buffer);
+        if (buffer) await playBuffer(graph, buffer);
+        else await deviceSpeech(contentText("voice." + ids[index]));
         if (next && gap) await wait(gap);
       }
     } finally {
@@ -279,6 +283,7 @@ export function playSfx(id: SoundEffect): void {
 
 export function stopSpeech(): void {
   playbackGeneration += 1;
+  if (typeof window !== "undefined") window.speechSynthesis?.cancel();
   queue = Promise.resolve(); // A cancelled download must not block the next prompt.
   stopCurrentClip?.();
 }
@@ -353,12 +358,12 @@ function changeSpeech(delta: number) {
   updateMusic();
 }
 
-// Every spoken line uses the pinned AIdos voice. Never switch to a device voice.
+// The recording index and the device fallback follow the active language.
 let voiceIndex: Promise<Record<string,string>> | undefined;
 const spokenBuffers = new Map<string, Promise<AudioBuffer>>();
 function loadVoiceIndex() {
-  voiceIndex ??= fetch('/audio/voice-index.json?voice=' + AIDOS_VOICE, {signal: AbortSignal.timeout(2500)})
-    .then(async response => { if(!response.ok) throw new Error('voice_index'); const data=await response.json(); if(data.voice!==AIDOS_VOICE)throw new Error('voice_version');return data.texts as Record<string,string>; })
+  voiceIndex ??= fetch('/audio/' + getLanguage() + '/voice-index.json?voice=' + voiceVersion(), {signal: AbortSignal.timeout(2500)})
+    .then(async response => { if(!response.ok) throw new Error('voice_index'); const data=await response.json(); if(data.voice!==voiceVersion())throw new Error('voice_version');return data.texts as Record<string,string>; })
     .catch(() => { voiceIndex=undefined; return {}; });
   return voiceIndex;
 }
@@ -370,6 +375,7 @@ async function voiceBuffer(text: string, context: AudioContext) {
       let response: Response | undefined;
       if(index[text]) response=await fetch(index[text]+'?voice='+AIDOS_VOICE,{signal:AbortSignal.timeout(3000)}).catch(()=>undefined);
       if(!response?.ok){
+        if (getLanguage() !== 'en') throw new Error('no_recording');
         response=await fetch('/api/voice',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text}),signal:AbortSignal.timeout(7500)});
         if(response.headers.get('X-AIdos-Voice')!==AIDOS_VOICE)throw new Error('voice_version');
       }
@@ -388,9 +394,30 @@ export function speakFallback(raw: string): Promise<void> {
   const generation=playbackGeneration;
   return enqueue(async()=>{
     const output=audioGraph();await ready(output);
-    const buffer=await voiceBuffer(text,output.context);
+    const buffer=await voiceBuffer(text,output.context).catch(() => undefined);
     if(generation!==playbackGeneration)return;
     changeSpeech(1);
-    try {await playBuffer(output,buffer);} finally {changeSpeech(-1);}
-  }).catch(()=>{ /* Keep captions and Hear it; never use a different fallback voice. */ });
+    try {if (buffer) await playBuffer(output,buffer); else await deviceSpeech(text);} finally {changeSpeech(-1);}
+  }).catch(()=>{ /* Captions remain available. */ });
 }
+
+function deviceSpeech(text: string): Promise<void> {
+  const synth = window.speechSynthesis;
+  const lang = getLanguage();
+  const voice = synth?.getVoices().find(v => v.lang.toLowerCase().split(/[-_]/)[0] === lang);
+  if (!voice) return Promise.resolve();
+  return new Promise(resolve => {
+    const words = new SpeechSynthesisUtterance(text);
+    words.voice = voice;
+    words.lang = lang === "kk" ? "kk-KZ" : "en-US";
+    const timeout = window.setTimeout(() => { synth.cancel(); resolve(); }, 20000);
+    words.onend = words.onerror = () => { clearTimeout(timeout); resolve(); };
+    synth.speak(words);
+  });
+}
+subscribe(() => {
+  stopSpeech();
+  manifest = undefined;
+  voiceIndex = undefined;
+  spokenBuffers.clear();
+});

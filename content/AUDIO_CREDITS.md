@@ -15,3 +15,5 @@ The real animal sounds in `public/audio/animals` come from Wikimedia Commons. AI
 - `animal_cow.mp3`: [Single Cow Moo.ogg](https://commons.wikimedia.org/wiki/File:Single_Cow_Moo.ogg) by MichaeltheFox8621, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - `animal_cat.mp3`: [Meow of a Siamese cat - freemaster2.wav](https://commons.wikimedia.org/wiki/File:Meow_of_a_Siamese_cat_-_freemaster2.wav) by freemaster2, [CC0](https://creativecommons.org/publicdomain/zero/1.0/)
 - `animal_dog.mp3`: [Barking of a dog.ogg](https://commons.wikimedia.org/wiki/File:Barking_of_a_dog.ogg) by Amada44, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
+
+Kazakh speech uses Piper kk_KZ-iseke-x_low trained on ISSAI Kazakh TTS (CC BY 4.0). Model card: https://huggingface.co/rhasspy/piper-voices/blob/main/kk/kk_KZ/iseke/x_low/MODEL_CARD . English speech retains the existing recordings, re-encoded in mono for the two-language pack.

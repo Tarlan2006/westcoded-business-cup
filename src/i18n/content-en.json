@@ -435,5 +435,10 @@
   "sketch.check.2": "Yellow stripe on the chest",
   "sketch.check.3": "Big round sticky fingertips",
   "sketch.check.4": "Short yellow cape",
-  "sketch.check.5": "Long curly tail with a star"
+  "sketch.check.5": "Long curly tail with a star",
+  "voice.ui_hold": "Hold to talk",
+  "voice.ui_again": "Try again",
+  "voice.ui_won": "You did it!",
+  "voice.ui_error": "Microphone unavailable. Tap I DID IT! to keep playing.",
+  "voice.ui_greeting": "Hey pal! Ready for a screen-free adventure?"
 }

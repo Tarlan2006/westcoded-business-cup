@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 export const root = fileURLToPath(new URL("../", import.meta.url));
 export const audioDir = join(root, "public/audio");
 export const manifestPath = join(audioDir, "manifest.json");
-export const sizeLimit = 12_000_000;
+export const sizeLimit = 6_000_000;
 export const modes = ["common", "hunt", "roadtrip", "lava"];
 export const bankNames = [...modes, "local-lines"];
 
@@ -29,7 +29,7 @@ export function readClips() {
   const clips = [...banks.values()].flat().map((row) => ({ id: row.id, file: row.file, text: row.text }));
   for (const row of quiz) {
     if (row.ageBand === "1-2" || row.ageBand === "3-5") clips.push({
-      id: `quiz_${row.id}`, file: `/audio/quiz/quiz_${row.id}.mp3`, text: row.question,
+      id: `quiz_${row.id}`, file: readManifest()[`quiz_${row.id}`], text: row.question,
     });
   }
   return { banks, quiz, clips };
