@@ -1,26 +1,13 @@
 .aidos-mascot { position: relative; isolation: isolate; vertical-align: bottom; flex-shrink: 0; }
 .hub-greeting > .aidos-mascot, .ask-host > .aidos-mascot { margin-inline: 0; }
-.aid-sprite { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.aid-frames { transform-box: fill-box; }
-
-/* A third of the strip is one frame. Keep the paper-doll edges crisp between poses. */
+/* Keep its measured space while the full sheet decodes. The poster also covers a decode failure. */
+.aidos-mascot:not([data-ready]) { background: url("/mascot/frames/welcome.webp") center bottom / contain no-repeat; }
+.aid-frames { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; pointer-events: none; transform-origin: center bottom; }
 @media (prefers-reduced-motion: no-preference) {
-  [data-motion="idle"] .aid-frames { animation: aid-blink 4s steps(1, end) infinite; }
-  [data-motion="wave"] .aid-frames { animation: aid-wave 2.4s steps(1, end) infinite; }
-  [data-mouth="1"] { transform: translateX(calc(-100% / 3)); }
-  [data-mouth="2"] { transform: translateX(calc(-200% / 3)); }
-  [data-pose="jump"][data-motion="wave"] .aid-sprite { animation: aid-cheer .48s ease-in-out 2; }
+  .aidos-mascot[data-motion="idle"][data-running="true"] .aid-frames {
+    animation: aid-breathe 1.8s cubic-bezier(.3333,0,.6667,1) infinite alternate;
+  }
 }
-@keyframes aid-blink {
-  0%, 97%, 100% { transform: none; }
-  91%, 95% { transform: translateX(calc(-100% / 3)); }
-  93% { transform: translateX(calc(-200% / 3)); }
-}
-@keyframes aid-wave {
-  0%, 24%, 48%, 100% { transform: none; }
-  6%, 18%, 30%, 42% { transform: translateX(calc(-100% / 3)); }
-  12%, 36% { transform: translateX(calc(-200% / 3)); }
-}
-@keyframes aid-cheer {
-  50% { transform: translateY(-4%); }
+@keyframes aid-breathe {
+  to { transform: translateY(-.65%) scale(1.012); }
 }

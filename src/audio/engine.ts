@@ -1,7 +1,7 @@
 import { contentText, getLanguage, subscribe } from "../i18n";
 import { AIDOS_VOICE, normalizeSpeech } from "../../shared/voice";
 import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
-import { changeVoicePlayback, setSpeechMeter } from "./speechMotion";
+import { changeVoicePlayback, setSpeechMeter, speechBoundary } from "./speechMotion";
 type SoundEffect = "siren" | "tick" | "radio" | "fanfare" | "whoosh";
 
 const effects: Record<SoundEffect, { tones: number[]; length: number; wave: OscillatorType }> = {
@@ -44,7 +44,7 @@ function audioGraph(): AudioGraph {
   const ambience = context.createGain();
   const effects = context.createGain();
   const analyser = context.createAnalyser();
-  analyser.fftSize = 256;
+  analyser.fftSize = 1024;
   const waveform = new Uint8Array(analyser.fftSize);
   setSpeechMeter(() => {
     if (context.state !== 'running') return 0;
@@ -425,10 +425,14 @@ function deviceSpeech(text: string): Promise<void> {
     }
     const timeout = window.setTimeout(() => { finish(); synth.cancel(); }, 20000);
     finishDeviceSpeech = finish;
-    words.onstart = () => {
+    words.onboundary = () => { if (started && !finished) speechBoundary(); };
+    words.onstart = words.onresume = () => {
       if (finished || started) return;
       started = true;
       changeVoicePlayback('browser', 1);
+    };
+    words.onpause = () => {
+      if (started && !finished) { started = false; changeVoicePlayback('browser', -1); }
     };
     words.onend = words.onerror = finish;
     try { synth.speak(words); } catch { finish(); }

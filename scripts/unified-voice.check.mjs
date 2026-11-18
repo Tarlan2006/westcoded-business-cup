@@ -21,7 +21,7 @@ const sample=await readFile('public'+manifest.clips.common_setup_greeting);
 await page.route('**/api/ask',r=>r.fulfill({json:{answer:'Wheels turn to help things move.',source:'llm'}}));
 await page.route('**/api/voice',r=>{voiceRequests++;return r.fulfill({contentType:'audio/mpeg',headers:{'X-AIdos-Voice':voice},body:sample});});
 try{
- await page.goto(base);await page.getByRole('button',{name:'CONTINUE',exact:true}).waitFor();await page.locator('.aid-frames').evaluate(async node=>{const image=new Image();image.src=node.getAttribute('href');await image.decode()});
+ await page.goto(base);await page.getByRole('button',{name:'CONTINUE',exact:true}).waitFor();await page.locator('.aidos-mascot[data-ready="true"] canvas').first().waitFor();
  await page.screenshot({path:out+'/exact-reference.png'});
  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();await page.waitForFunction(()=>window.voiceStarts.length>0);await page.waitForFunction(()=>window.voiceActive===0);
  await page.getByLabel('What should AIdos call your child? *',{exact:true}).fill('Pal');await page.getByRole('button',{name:'6–8 yrs',exact:true}).click();await page.getByRole('button',{name:/START.*FOR/}).click();
@@ -30,7 +30,7 @@ try{
  for(let i=0;i<3;i++){const count=await page.evaluate(()=>window.voiceStarts.length);await page.getByRole('button',{name:'Hear answer',exact:true}).click();await page.waitForFunction(n=>window.voiceStarts.length>n,count);await page.waitForFunction(()=>window.voiceActive===0);}
  assert.equal(voiceRequests,1,'Repeated answer uses decoded cache');assert.equal(await page.evaluate(()=>window.deviceSpeech),0);assert.equal(await page.evaluate(()=>window.beepCount),0);
  assert(!requests.some(p=>/renderer-|guide.glb|pocket-tts|huggingface/.test(p)));
- assert(await page.locator('.aid-frames').evaluateAll(images=>images.length>0 && images.every(i=>i.getAttribute('href')==='/mascot/frames/guide.webp')));
+ assert(await page.locator('.aidos-mascot[data-ready="true"] canvas').count()>0);
  assert.equal(errors.length,0,errors.join('\n'));
  await page.screenshot({path:out+'/ask.png',fullPage:true});
  await writeFile(out+'/unified-voice.json',JSON.stringify({base,voice,voiceRequests,replays:3,deviceVoiceCalls:0,beeps:0,errors,passed:true},null,2));
