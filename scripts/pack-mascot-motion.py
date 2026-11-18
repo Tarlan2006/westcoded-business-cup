@@ -86,13 +86,43 @@ def wave(angle):
 arm_tiles = [wave(angle) for angle in np.linspace(-30, 0, 8)]
 
 # Three full, stable poses. Rows below contain only the pixels that can change.
-atlas = Image.new("RGBA", (960, 700))
+atlas = Image.new("RGBA", (960, 928))
 groups = [(eyes, eye_tiles, 496), (mouth, mouth_tiles, 529), (arm, arm_tiles, 559)]
 for col, base in enumerate([keys[0], keys[5], keys[6]]):
     atlas.paste(base, (W*col, 0))
 for box, tiles, y in groups:
     for i, tile in enumerate(tiles):
         atlas.paste(tile, (i*tile.width, y))
+# Rigid head layers pivot at the collar. Keep the lower jacket and eye outlines fixed.
+head = (65, 0, 249, 189)
+gaze = (110, 96, 202, 135)
+for variant, (tilt, look_x, look_y) in enumerate([(3.5, -1.2, 0), (-3, 2.2, -1.8)]):
+    turn = np.deg2rad(tilt) * smooth((185-Y)/27)
+    dx, dy = X-158, Y-164
+    for i, eye in enumerate(eye_tiles):
+        layer = keys[0].copy()
+        layer.paste(eye, eyes[:2])
+        iris = smooth((1-np.minimum(ellipse(134,115,12,10), ellipse(179,114,12,10)))/.44)
+        weight = iris*(1-i/4)
+        shifted = warp(layer, X-look_x*weight, Y-look_y*weight)
+        tilted = warp(shifted, 158+dx*np.cos(turn)+dy*np.sin(turn),
+                      164-dx*np.sin(turn)+dy*np.cos(turn))
+        if i == 0:
+            atlas.paste(tilted.crop(head), (variant*184,700))
+        atlas.paste(tilted.crop(gaze), ((variant*5+i)*92,889))
+# Reuse the raised sleeve of the current boy on the far shoulder for a two-hand cheer.
+# Keep the photographed face, collar, belt buckle and boots from the original key.
+cheer = keys[5]
+mirrored = warp(cheer, 314-X, Y)
+jacket = smooth((145-X)/18)*smooth((359-Y)/18)*smooth((Y-154)/20)
+body = Image.composite(mirrored, cheer, mask(jacket))
+far_arm = mirrored.copy()
+far_arm.putalpha(mask(np.asarray(mirrored.getchannel("A"))/255 *
+                      smooth((113-X)/8)*smooth((181-Y)/18)))
+cheer = Image.alpha_composite(far_arm, body)
+# Store only the changed left side; the happy face and other hand use the wave base.
+atlas.paste(cheer.crop((0,64,153,253)), (530, 700))
+atlas.paste(cheer.crop((0,253,153,361)), (700, 700))
 atlas.save("public/mascot/frames/guide.webp", quality=91, method=6)
 
 # Enlarge the exact encoded runtime tiles on two backgrounds for visual review.

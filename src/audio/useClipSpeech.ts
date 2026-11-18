@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
+import { contentText } from "../i18n";
+import { useSoundEnabled } from "./sfx";
 import { playQueue, speakFallback, stopSpeech } from "./engine";
 
 export function useClipSpeech() {
@@ -25,4 +27,15 @@ export function useClipSpeech() {
   }, [stop]);
 
   return { speak, stop };
+}
+
+/** Speak once per missed attempt, even when two guides display the same game result. */
+export function useEncouragement(missed: boolean) {
+  const { speak } = useClipSpeech();
+  const sound = useSoundEnabled();
+  const previous = useRef(false);
+  useEffect(() => {
+    if (missed && !previous.current && sound) void speak(contentText("voice.common_quiz_encourage"), "common_quiz_encourage");
+    previous.current = missed;
+  }, [missed, sound, speak]);
 }

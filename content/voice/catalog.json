@@ -1188,5 +1188,10 @@
     "id": "voice_2533155913101cf6",
     "text": "Let's take a little break and try again soon!",
     "file": "/audio/en/2533155913101cf67f21.mp3"
+  },
+  {
+    "id": "common_quiz_encourage",
+    "file": "/audio/en/1f4635782684d8cde719.mp3",
+    "text": "Good effort, pal. Ready to try again?"
   }
 ]

@@ -18,7 +18,7 @@ function randomPairs(): Pair[] {
   return pairs.slice(0, questionCount);
 }
 
-export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
+export function Quiz({ onFinish, speak }: { onFinish: (correct: number) => void; speak?: (text: string) => Promise<void> | void }) {
   const [questions] = useState(randomPairs);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string>();
@@ -49,13 +49,17 @@ export function Quiz({ onFinish }: { onFinish: (correct: number) => void }) {
           <p className="sp-kicker">{t("quiz.questionOf", { value1: index + 1, value2: questions.length })}</p>
           <h1 id={headingId} ref={heading} tabIndex={-1}>{t("quiz.whichIsBigger")}</h1>
         </div>
-        <div className="sp-quiz-rocket"><Mascot pose="point" size={64} /></div>
+        <div className="sp-quiz-rocket"><Mascot emotion={picked ? (picked === bigger.id ? "correct" : "wrong") : "idle"} eventKey={index} pose="point" size={64} /></div>
       </div>
       <div className="sp-choices">
         {pair.map((object) => (
           <button type="button" className="sp-choice" key={object.id} aria-label={object.name}
             aria-disabled={Boolean(picked)} data-answer={picked && (object.id === bigger.id ? "correct" : picked === object.id ? "picked" : undefined)}
-            onClick={() => { if (!picked) setPicked(object.id); }}>
+            onClick={() => {
+              if (picked) return;
+              setPicked(object.id);
+              if (object.id !== bigger.id) void Promise.resolve(speak?.(t("voice.common_quiz_encourage"))).catch(() => {});
+            }}>
             <span className="sp-choice-art"><ObjectArt art={object.art} /></span>
             <strong>{object.name}</strong>
           </button>

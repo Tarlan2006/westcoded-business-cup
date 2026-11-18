@@ -244,6 +244,7 @@
     "ui_again": "/audio/kk/4c5b2d95fb88a26ae21a.mp3",
     "ui_won": "/audio/kk/f8a7d449b51931895335.mp3",
     "ui_error": "/audio/kk/f8706cee84cd0cc2ef39.mp3",
-    "ui_greeting": "/audio/kk/788246c58f8e1eafdf12.mp3"
+    "ui_greeting": "/audio/kk/788246c58f8e1eafdf12.mp3",
+    "common_quiz_encourage": "/audio/kk/f6925ea146938e192962.mp3"
   }
 }

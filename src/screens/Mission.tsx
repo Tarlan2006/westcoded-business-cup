@@ -200,9 +200,13 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
     disabled={!running} onClick={() => completeWithButton(undefined, answer)}>{task.id.startsWith("local_") ? answer : contentText("task." + task.id + ".option" + i)}</button>) : isHunt
     ? <button type="button" className={missionReplyStyle} disabled={!running} onClick={() => completeWithButton()}>{t("mission.foundIt")}</button> : undefined;
 
+  const celebrate = isFeedback && state.feedback !== timeUp && state.feedback !== tryAgainLine;
   return <MissionStage heading={MODES[session.mode].name} round={state.round} seconds={remainingSeconds} clockSeconds={missionSeconds} ratio={progress}
-    {...demo} mood={recording ? "listening" : isFeedback ? state.feedback === timeUp ? "surprised" : "excited" : demo.mood}
-    action={isFeedback ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={isFeedback && state.feedback !== timeUp}
+    emotion={paused ? "idle" : recording ? "listening" : state.phase === "resolving" || voice.status === "decoding" ? "thinking"
+      : isFeedback ? (celebrate ? "correct" : "wrong")
+      : state.round === 1 && state.phase === "countdown" ? "greeting" : "idle"}
+    {...demo} mood={recording ? "listening" : celebrate ? "excited" : demo.mood}
+    action={celebrate ? "clap" : demo.action} speaking={speaking} paused={paused} feedback={celebrate}
     onExit={onExit} exitDisabled={state.phase === "resolving"}
     toolbar={<button type="button" className="prototype-parent-button" disabled={state.phase === "resolving"} onClick={togglePause}>{paused ? t("mission.resume") : t("mission.pause")}</button>}
     prompt={paused ? t("mission.readyWhenYouAre") : state.phase === "resolving" ? t("mission.isCheckingIn") : running ? assignment : caption || assignment}

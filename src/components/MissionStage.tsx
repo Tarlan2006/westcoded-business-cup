@@ -1,3 +1,4 @@
+import type { Emotion } from "./mascotMotion";
 import { InlineSymbol } from "./InlineSymbol";
 import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
@@ -18,9 +19,9 @@ export function PrototypeParticles({ icon, count, x = 50, y = 55 }: { icon: stri
 }
 
 export function MissionStage({ heading, round, total = 3, seconds, clockSeconds, ratio, demoEmoji, demoWord, action, mood,
-  speaking, prompt, replies, controls, status, onExit, exitDisabled, toolbar, feedback, paused }: {
+  emotion, speaking, prompt, replies, controls, status, onExit, exitDisabled, toolbar, feedback, paused }: {
   heading?: string; round: number; total?: number; seconds: number; clockSeconds: number; ratio: number;
-  demoEmoji: string; demoWord: string; prop?: string; action?: MascotAction; mood: MascotMood; speaking?: boolean;
+  demoEmoji: string; demoWord: string; prop?: string; action?: MascotAction; mood: MascotMood; emotion?: Emotion; speaking?: boolean;
   prompt: string; replies?: ReactNode; controls: ReactNode; status?: string; onExit: () => void; exitDisabled?: boolean;
   toolbar?: ReactNode; feedback?: boolean; paused?: boolean;
 }) {
@@ -76,7 +77,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
             tickleTimer.current = window.setTimeout(() => setTickled(false), 900);
           }}>
           <span className={`block w-52 h-52 sm:w-60 sm:h-60 drop-shadow-xl${giggling ? " aidos-giggle" : ""}`}>
-            <Mascot pose={poseFor(mood, paused ? "none" : action)} speaking={speaking} /></span>
+            <Mascot pose={poseFor(mood, paused ? "none" : action)} emotion={emotion} eventKey={round} speaking={speaking} /></span>
         </button>
         {giggling && <PrototypeParticles icon="💖" count={8} {...tap} />}
         {feedback && <PrototypeParticles icon="🎉" count={10} />}

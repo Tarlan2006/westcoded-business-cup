@@ -233,7 +233,7 @@ export function SketchGame({ onComplete, onBack, speak, header }: SketchGameProp
         <div className="sk-reference-source" ref={artRef} hidden>{Art && <Art />}</div>
       </>}
       {stage === "comparing" && <div className="sk-comparing" role="status" aria-live="polite">
-        <span className="sk-compare-icon" aria-hidden="true"><InlineSymbol mark="✦" /></span>
+        <Mascot pose="tablet" emotion="thinking" size={80} />
         <h1 className="sk-section-title" ref={headingRef} tabIndex={-1}>{t("sketchGame.comparing")}</h1>
         <p>{t("sketchGame.openingTheMysteryFileYourHeroIs")}</p>
         <div className="sk-compare-track"><span /></div>

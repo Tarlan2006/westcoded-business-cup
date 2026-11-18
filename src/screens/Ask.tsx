@@ -14,7 +14,7 @@ import { SessionActivity } from "../components/SessionControls";
 
 
 
-async function askServer(question: string, controller: AbortController): Promise<AskResponse> {
+async function askServer(question: string, controller: AbortController): Promise<AskResponse & { offline?: boolean }> {
   const lang = getLanguage();
   try {
     const response = await fetch("/api/ask", {
@@ -32,7 +32,7 @@ async function askServer(question: string, controller: AbortController): Promise
   } catch {
     // Use the built-in answers offline and when the Worker is unavailable.
   }
-  return answerFromFaq(question, lang);
+  return { ...answerFromFaq(question, lang), offline: true };
 }
 
 export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
@@ -41,7 +41,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   const lang = useLanguage();
   const [question, setQuestion] = useState("");
   const [asked, setAsked] = useState("");
-  const [result, setResult] = useState<AskResponse>();
+  const [result, setResult] = useState<AskResponse & { offline?: boolean }>();
   const [topic, setTopic] = useState("sky and space");
   const [busy, setBusy] = useState(false);
   const [voiceHint, setVoiceHint] = useState("");
@@ -114,13 +114,18 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   return (
     <LearnPage title={t("activitySuggestions.ask")} onBack={onBack}>
       <p className="learn-description">{t("ask.askAboutSpaceAnimalsOrHowThings")}</p>
-      {result ? (
-        <section className="panel learn-card">
-          {asked && <p className="field-label ask-question">{t("ask.youAsked", { asked })}</p>}
-          <div className="ask-host">
-            <Mascot pose="point" size={72} className="ask-mascot" />
-            <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>
+      <form className="panel learn-card" onSubmit={event => {
+        event.preventDefault();
+        if (!result) void submit(question);
+      }}>
+          {result && asked && <p className="field-label ask-question">{t("ask.youAsked", { asked })}</p>}
+          <div className={result ? "ask-host" : "contents"}>
+            <Mascot pose={busy ? "tablet" : "point"} size={result ? 72 : undefined}
+              emotion={recording ? "listening" : busy || voice.status === "decoding" ? "thinking" : result?.offline ? "network" : "idle"}
+              className={result ? "ask-mascot" : "ask-mascot-large"} />
+            {result && <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>}
           </div>
+        {result ? <>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
           {sound && <button type="button" className="quiet-button" disabled={finishing} onClick={() => {
             stopSpeech();
@@ -133,13 +138,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
             }}>{t("ask.askAnother")}</button>
             <button type="button" className="secondary-button" disabled={finishing} onClick={() => onQuiz(topic)}>{t("ask.quickQuizAboutThis")}</button>
           </div>
-        </section>
-      ) : (
-        <form className="panel learn-card" onSubmit={(event) => {
-          event.preventDefault();
-          void submit(question);
-        }}>
-          <Mascot pose={busy || voice.status === "decoding" ? "tablet" : "point"} className="ask-mascot-large" />
+        </> : <>
           <HoldButton talk hintKey="ask-talk" className="game-button talk-button" data-button-tone="sky"
             data-recording={voice.status === "recording" || undefined} disabled={busy || voice.status === "decoding" || (finishing && !recording)}
             onBegin={beginVoice} onRelease={() => voice.release()} onCancel={voice.cancelHold}>
@@ -162,8 +161,8 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
             {suggestedQuestions(topics, 3, lang).map((idea) => <button key={idea} type="button" className="quiet-button"
               disabled={busy || finishing} onClick={() => { void submit(idea); }}>{idea}</button>)}
           </div>
-        </form>
-      )}
+        </>}
+      </form>
       <p className="learn-description text-sm">{t("ask.doesnTSaveYourQuestions")}</p>
     </LearnPage>
   );

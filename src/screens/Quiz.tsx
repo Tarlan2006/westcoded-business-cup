@@ -59,7 +59,9 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     if (answer !== undefined) return;
     setAnswer(choice);
     setPoints(points + (choice === current.answer ? 10 : 2));
-    stop();
+    if (sound && choice !== current.answer) {
+      void speak(contentText("voice.common_quiz_encourage"), "common_quiz_encourage");
+    } else stop();
   }
 
   const [heard, setHeard] = useState("");
@@ -68,8 +70,11 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     if (index >= 0) { choose(current.choices[index]); setHeard(""); } else setHeard(text);
   }
   const voice = usePushToTalk(!!current && answer === undefined && !session?.finishing, trySpoken, () => setHeard(" "));
+  const emotion = answer !== undefined ? (answer === current.answer ? "correct" : "wrong")
+    : voice.status === "recording" || voice.status === "opening" ? "listening"
+    : voice.status === "decoding" ? "thinking" : index === 0 ? "greeting" : "idle";
   const voiceControl = answer === undefined && <>
-    <HoldButton talk hintKey="quiz-talk" className="quiet-button" onBegin={voice.start} onRelease={() => voice.release()} onCancel={voice.cancelHold} disabled={session?.finishing || voice.status === "decoding"}>
+    <HoldButton talk hintKey="quiz-talk" className="quiet-button" onBegin={() => { stop(); voice.start(); }} onRelease={() => voice.release()} onCancel={voice.cancelHold} disabled={session?.finishing || voice.status === "decoding"}>
       {voice.status === "recording" ? t("holdButton.letGoToSend") : t("ask.holdToTalk")}
     </HoldButton>
     {heard && <label>{t("quiz.editAnswer")} <input value={heard} onChange={event => setHeard(event.target.value)} onKeyDown={event => { if (event.key === "Enter") trySpoken(heard); }} /><button type="button" onClick={() => trySpoken(heard)}>{t("quiz.submitAnswer")}</button></label>}
@@ -96,9 +101,9 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     const seconds = Math.max(0, missionMinutes * 60 - Math.floor((now - startedAt) / 1000));
     return <MissionStage heading={t("activitySuggestions.quiz")} round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
       demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord={t("quiz.quiz")} prop="💭"
-      action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
+      emotion={emotion} action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
       prompt={answer === undefined ? [contentText("quiz." + current.id + ".question"), current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}
-      feedback={answer !== undefined}
+      feedback={answer === current.answer}
       replies={current.choices.map((choice, i) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
         data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{contentText("quiz." + current.id + ".option" + i)}</button>)}
       controls={<>{voiceControl}
@@ -114,6 +119,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     <LearnPage title={topic ? t("quiz.quickQuiz") : t("activitySuggestions.quiz")} onBack={onBack}>
       {current && <section className="panel learn-card centered-card quiz-card">
         <p className="field-label">{t("quiz.questionOf", { value1: index + 1, value2: quiz.length })}</p>
+        <Mascot pose={emotion === "correct" ? "jump" : "point"} emotion={emotion} eventKey={index} size={120} className="mx-auto" />
         {current.emoji && <p className="quiz-emoji" aria-hidden="true">{current.emoji}</p>}
         <h2>{contentText("quiz." + current.id + ".question")}</h2>
         {sound && <button type="button" className="quiet-button" disabled={session?.finishing} onClick={() => {
@@ -128,7 +134,6 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
           ))}
         </div>
         {answer !== undefined && <>
-          <Mascot pose={answer === current.answer ? "jump" : "point"} size={120} className="mx-auto" />
           <p role="status">{answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}</p>
           <GameButton onClick={next}>{nextLabel}</GameButton>
         </>}

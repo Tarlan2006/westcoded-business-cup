@@ -1,143 +1,128 @@
-import { getSpeechFrame, subscribeSpeechFrame } from '../audio/speechMotion';
-import type { MascotPose } from './Mascot';
+import type { SpeechFrame } from '../audio/speechMotion';
+import { watchMascot, wakeMascots } from './mascotClock';
+import { guideReady, painter, type Art } from './mascotPainter';
 
-const atlas = new Image();
-atlas.src = '/mascot/frames/guide.webp?v=2';
-const decoded = atlas.decode().then(() => true, () => false);
-const width = 320, height = 496, fadeMs = 64;
-type Motion = 'idle' | 'wave' | 'talk';
-type Rect = [number, number, number, number];
-const patches: Record<Motion, { column: number; y: number; box: Rect }> = {
-  idle: { column: 0, y: 496, box: [116, 98, 81, 33] },
-  wave: { column: 1, y: 559, box: [200, 41, 113, 141] },
-  talk: { column: 2, y: 529, box: [154, 127, 51, 31] },
-};
-const blink = [[0,3400],[1,66],[2,66],[3,66],[4,76],[3,66],[2,66],[1,66]];
-const wave = [[0,230],[1,112],[2,90],[3,78],[4,78],[5,84],[6,100],[7,190],
-  [6,100],[5,84],[4,78],[3,78],[2,90],[1,112],[0,900]];
-
-function surface() {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  return canvas.getContext('2d')!;
+export type Emotion = 'idle' | 'greeting' | 'listening' | 'thinking' | 'speaking' | 'correct' | 'wrong' | 'network';
+const duration: Partial<Record<Emotion, number>> = {greeting:3200, correct:1380, wrong:1500, network:1300};
+const lids = [0,1,2,3,4,3,2,1];
+const random = (min: number, max: number) => min + Math.random()*(max-min);
+const tau = 2*Math.PI;
+function waveFrame(age: number) {
+  return Math.round(3.5*(1-Math.cos(tau*age/1350)));
 }
 
-export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement, pose: MascotPose, allowed: boolean) {
-  const ctx = canvas.getContext('2d')!;
-  const rest: Motion = pose === 'wave' || pose === 'jump' ? 'wave' : 'idle';
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  let disposed = false, ready = false, visible = false, running = false;
-  let mode: Motion | undefined, tile = -1, step = 0, timer = 0, raf = 0;
-  let fullFade = false;
-  let previous: CanvasRenderingContext2D | undefined, composite: CanvasRenderingContext2D | undefined;
-  let unsubscribe: (() => void) | undefined;
+export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
+  const draw = painter(canvas);
+  let requested: Emotion = 'idle', state: Emotion | undefined, key: string | number | undefined;
+  let lastGreeting: string | number | undefined, greeted = false, blinkCount = 0;
+  let until = Infinity, entered = 0, speaking = true, blink = 0, double = false, glance = 0;
+  let previousTick = 0;
+  let visible = false, ready = false, disposed = false, last = 0, lastSample = 0;
+  let y = 0, angle = 0, scale = 1;
+  let detach: (() => void) | undefined;
 
-  function show(next: Motion, index: number, still = false) {
-    if (mode === next && tile === index && !still) return;
-    cancelAnimationFrame(raf);
-    const { column, y, box } = patches[next];
-    const [left, top, w, h] = box;
-    const full = next !== mode || still || fullFade;
-    const rect: Rect = full ? [0, 0, width, height] : box;
-    const [x, dy, dw, dh] = rect;
-    let target: CanvasImageSource = atlas;
-    let source: Rect = [index*w, y, w, h];
-    if (full) {
-      composite ??= surface();
-      composite.clearRect(0, 0, width, height);
-      composite.drawImage(atlas, column*width, 0, width, height, 0, 0, width, height);
-      composite.clearRect(...box);
-      composite.drawImage(atlas, ...source, left, top, w, h);
-      target = composite.canvas;
-      source = rect;
+  function tick(now: number, voice: SpeechFrame, reduced: boolean) {
+    const intent = now < until ? requested : 'idle';
+    const audible = !reduced && speaking && voice.active;
+    const next = audible && (intent === 'idle' || intent === 'greeting') ? 'speaking' : intent;
+    const resumed = now-previousTick > 1500;
+    previousTick = now;
+    const changed = next !== state;
+    if (changed || resumed) {
+      state = next; entered = now;
+      blink = now + (state === 'thinking' ? 280 : random(2000,4000));
+      glance = now + random(8000,12000);
+      double = false; blinkCount = 0;
+      host.dataset.emotion = state;
     }
-    const fade = mode !== undefined && !still;
-    fullFade = fade && full;
-    mode = next;
-    tile = index;
-    host.dataset.motion = mode;
-    canvas.dataset.frame = String(index);
-    if (next === 'talk') canvas.dataset.mouth = String(index);
-    else delete canvas.dataset.mouth;
-    if (!fade) {
-      ctx.clearRect(...rect);
-      ctx.drawImage(target, ...source, ...rect);
-      host.dataset.ready = 'true';
-      return;
+    const age = now-entered;
+    const slow = state === 'thinking';
+    const lidMs = slow ? 108 : 64;
+    if (now >= blink + lids.length*lidMs) {
+      const second = !double && Math.random() < .18;
+      blink = second ? now+145 : blink+random(2000,4000);
+      double = second;
+      if (slow && ++blinkCount >= 2) blink = Infinity;
     }
-    previous ??= surface();
-    previous.clearRect(0, 0, dw, dh);
-    previous.drawImage(canvas, ...rect, 0, 0, dw, dh);
-    const before = previous.canvas;
-    const start = performance.now();
-    function paint(now: number) {
-      const t = Math.max(0, Math.min(1, (now-start)/fadeMs));
-      const weight = t*t*(3-2*t);
-      ctx.clearRect(...rect);
-      ctx.globalAlpha = 1-weight;
-      ctx.drawImage(before, 0, 0, dw, dh, x, dy, dw, dh);
-      // Sum premultiplied samples; an opaque cheek stays opaque throughout a fade.
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.globalAlpha = weight;
-      ctx.drawImage(target, ...source, ...rect);
-      ctx.globalAlpha = 1;
-      ctx.globalCompositeOperation = 'source-over';
-      if (t === 1) fullFade = false;
-      raf = t < 1 ? requestAnimationFrame(paint) : 0;
+    if (now >= glance+920) glance += random(8000,12000);
+    const lid = reduced || now < blink ? 0 : lids[Math.min(7, Math.floor((now-blink)/lidMs))];
+    let art: Art = 'idle', frame = lid;
+    let tilt = 0, lift = 0;
+    switch (state) {
+      case 'greeting': art = 'wave'; frame = reduced ? 4 : waveFrame(age); break;
+      case 'correct':
+        art = 'cheer'; frame = 0;
+        lift = -7*Math.abs(Math.sin(Math.PI*Math.min(age,900)/450))*(1-Math.min(age,900)/1100);
+        break;
+      case 'wrong':
+        art = 'talk'; frame = audible ? voice.mouth : 0;
+        tilt = 1.6*Math.sin(tau*age/720)*Math.max(0,1-age/1500);
+        lift = 1.15*(1-Math.cos(tau*age/720));
+        break;
+      case 'network':
+        art = 'talk'; frame = audible ? voice.mouth : 0;
+        tilt = -1.7*Math.sin(Math.PI*Math.min(1,age/1300));
+        break;
+      case 'thinking': art = 'think'; tilt = -.8; break;
+      case 'listening': art = 'listen'; tilt = .65; break;
+      case 'speaking':
+        art = 'talk'; frame = audible ? voice.mouth : 0;
+        tilt = .85*Math.sin(tau*age/1450); break;
+      case 'idle':
+        if (!reduced && now >= glance) art = 'listen';
+        break;
     }
-    raf = requestAnimationFrame(paint);
-  }
-
-  function advance() {
-    const sequence = rest === 'wave' ? wave : blink;
-    const [index, delay] = sequence[step];
-    show(rest, index);
-    step = (step+1) % sequence.length;
-    timer = window.setTimeout(advance, delay);
-  }
-  function updateSpeech() {
-    const speech = getSpeechFrame();
-    if (speech.active) {
-      clearTimeout(timer);
-      timer = step = 0;
-      show('talk', speech.mouth);
-    } else if (!timer) advance();
+    draw(art,frame,now,reduced);
+    const motion = art === 'talk' && (audible || state === 'speaking') ? 'talk' : art === 'wave' ? 'wave' : 'idle';
+    if (host.dataset.motion !== motion) host.dataset.motion = motion;
+    if (motion === 'talk') {
+      if (canvas.dataset.mouth !== String(frame)) canvas.dataset.mouth = String(frame);
+    } else if (canvas.hasAttribute('data-mouth')) delete canvas.dataset.mouth;
+    if (!host.dataset.ready) host.dataset.ready = 'true';
+    if (host.dataset.running !== String(!reduced && visible && !document.hidden))
+      host.dataset.running = String(!reduced && visible && !document.hidden);
+    // The same clock drives breathing during silence, microphone capture and network waits.
+    if (reduced) {
+      canvas.style.transform = 'none';
+      y = angle = 0; scale = 1;
+    } else if (changed || now-lastSample >= 30) {
+      const breath = (1-Math.cos(tau*now/3200))/2;
+      const mix = 1-Math.exp(-Math.min(100,now-last)/32);
+      y += (lift-breath*.85-y)*mix;
+      angle += (tilt-angle)*mix;
+      scale += (1+breath*.014-scale)*mix;
+      canvas.style.transform = `translateY(${y.toFixed(3)}%) rotate(${angle.toFixed(3)}deg) scale(${scale.toFixed(5)})`;
+      last = lastSample = now;
+    }
+    return until > now ? until : Infinity;
   }
   function sync() {
+    detach?.(); detach = undefined;
     if (!ready || disposed) return;
-    const animate = visible && !document.hidden && !reduce.matches;
-    if (animate === running && mode !== undefined) return;
-    running = animate;
-    clearTimeout(timer);
-    cancelAnimationFrame(raf);
-    unsubscribe?.();
-    unsubscribe = undefined;
-    timer = step = raf = 0;
-    host.dataset.running = String(animate);
-    show(rest, 0, true);
-    if (animate) {
-      if (allowed) {
-        unsubscribe = subscribeSpeechFrame(updateSpeech);
-        updateSpeech();
-      } else advance();
-    }
+    if (visible && !document.hidden) detach = watchMascot(tick);
+    else host.dataset.running = 'false';
   }
-  const observer = new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    sync();
-  });
+  const observer = new IntersectionObserver(([entry]) => { visible=entry.isIntersecting; sync(); });
   observer.observe(host);
-  document.addEventListener('visibilitychange', sync);
-  reduce.addEventListener('change', sync);
-  void decoded.then(ok => { ready = ok; sync(); });
-  return () => {
-    disposed = true;
-    clearTimeout(timer);
-    cancelAnimationFrame(raf);
-    unsubscribe?.();
-    observer.disconnect();
-    reduce.removeEventListener('change', sync);
-    document.removeEventListener('visibilitychange', sync);
+  document.addEventListener('visibilitychange',sync);
+  void guideReady.then(ok => {ready=ok;sync();});
+  return {
+    update(emotion: Emotion, allowSpeech: boolean, eventKey?: string | number) {
+      speaking = allowSpeech;
+      if (emotion !== requested || eventKey !== key) {
+        requested = emotion; key = eventKey;
+        until = performance.now()+(duration[emotion] ?? Infinity);
+        if (emotion === 'greeting') {
+          if (greeted && lastGreeting === eventKey) until = 0;
+          greeted = true; lastGreeting = eventKey;
+        }
+        if (emotion === state) state = undefined;
+      }
+      wakeMascots();
+    },
+    dispose() {
+      disposed = true; detach?.(); observer.disconnect();
+      document.removeEventListener('visibilitychange',sync);
+    }
   };
 }

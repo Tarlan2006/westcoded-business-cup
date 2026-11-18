@@ -12,7 +12,7 @@ export function Plans({ onBack }: { onBack: () => void }) {
 
   return <LearnPage title={t("plans.plus")} onBack={onBack}>
     <section className="plans-hero panel">
-      <Mascot pose="jump" size={130} />
+      <Mascot pose="point" size={130} />
       <div>
         <p className="field-label">{t("plans.forGrownUps")}</p>
         <h2>{t("plans.unlockMoreGamesAndAdventures")}</h2>

@@ -440,5 +440,6 @@
   "voice.ui_again": "Try again",
   "voice.ui_won": "You did it!",
   "voice.ui_error": "Microphone unavailable. Tap I DID IT! to keep playing.",
-  "voice.ui_greeting": "Hey pal! Ready for a screen-free adventure?"
+  "voice.ui_greeting": "Hey pal! Ready for a screen-free adventure?",
+  "voice.common_quiz_encourage": "Good effort, pal. Ready to try again?"
 }

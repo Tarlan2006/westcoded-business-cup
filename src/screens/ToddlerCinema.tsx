@@ -117,7 +117,7 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
           </div>
           <button className="toddler-text-button" type="button" onClick={() => { setPending(null); setStopped(true); }}>{t("toddlerCinema.stayOnABreak")}</button>
         </div> : stopped || status === "error" ? <div className="toddler-intermission toddler-rest">
-          <div className="toddler-rest-mascot"><Mascot pose={status === "error" ? "point" : "wave"} /></div>
+          <div className="toddler-rest-mascot"><Mascot emotion={status === "error" ? "network" : "greeting"} pose={status === "error" ? "point" : "wave"} /></div>
           <h2>{status === "error" ? t("toddlerCinema.thisVideoNeedsALittleHelp") : t("toddlerCinema.aLovelyLittlePause")}</h2>
           <p>{status === "error" ? t("toddlerCinema.checkYourConnectionTryAgainOrChoose") : t("toddlerCinema.readyForAnotherLittleAdventure")}</p>
           <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? t("toddlerCinema.tryAgain") : t("toddlerCinema.watchAgain")}</button>

@@ -30,7 +30,7 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
   }, [stage, repeat, onContinue]);
 
   if (stage < 3 || repeat) return <main id="screen-splash" className="prototype-screen fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500" aria-label={t("welcome.loading")}>
-    <div className="splash-mascot mb-6 drop-shadow-lg"><Mascot pose="tablet" size={200} eager /></div>
+    <div className="splash-mascot mb-6 drop-shadow-lg"><Mascot pose="wave" size={200} eager /></div>
     <h1 className="splash-title font-display text-3xl sm:text-4xl font-bold text-[#6C47FF] tracking-tight mb-2">{t("welcome.welcomeTo")}</h1>
     <p className="text-slate-400 font-extrabold text-sm tracking-widest uppercase mb-6" role="status">{status[Math.min(stage, 2)]}</p>
     <div className="w-64 h-4 bg-slate-200 rounded-full overflow-hidden p-0.5" role="progressbar" aria-label={t("welcome.loadingProgress")} aria-valuenow={progress[Math.min(stage, 2)]}>

@@ -83,7 +83,7 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
   }
 
   return <MissionStage {...round} heading={t("toddlerMission.playWith")} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
-    ratio={seconds / round.seconds} onExit={onExit} mood={feedback ? "excited" : round.mood} feedback={feedback}
+    ratio={seconds / round.seconds} onExit={onExit} emotion={feedback ? "correct" : index === 0 ? "greeting" : "idle"} mood={feedback ? "excited" : round.mood} feedback={feedback}
     prompt={feedback ? round.praise : round.shortPrompt}
     replies={round.replies.map((label) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={advance}>{label}</button>)}
     controls={<button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E] col-span-2`} disabled={feedback}

@@ -1,0 +1,16 @@
+{
+  "fps": 25.0,
+  "seconds": 60,
+  "maxGapSeconds": 0.64,
+  "pixelThreshold": 6,
+  "minChangedPixels": 90,
+  "analysisScale": 0.5,
+  "region": {
+    "x": 235,
+    "y": 101.75,
+    "width": 210,
+    "height": 280
+  },
+  "samples": 751,
+  "consoleErrors": []
+}

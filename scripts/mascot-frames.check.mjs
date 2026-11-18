@@ -25,7 +25,7 @@ try {
     observer.observe({type:'layout-shift'});
     const bounds=()=>{const r=node.getBoundingClientRect();return [r.x,r.y,r.width,r.height].join(',');};
     let previous=performance.now();
-    const until=previous+3300;
+    const until=previous+1750;
     await new Promise(resolve=>{
       const tick=now=>{
         if(now>previous) gaps.push(now-previous);
@@ -97,7 +97,7 @@ try {
   const silentCloseMs=await page.evaluate(async()=>{
     const canvas=document.querySelector('canvas[data-mouth]');
     const voice=window.voiceGain;
-    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=2';await guide.decode();
+    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=3';await guide.decode();
     const target=document.createElement('canvas');target.width=51;target.height=31;
     const reference=target.getContext('2d');reference.drawImage(guide,0,529,51,31,0,0,51,31);
     const expected=reference.getImageData(0,0,51,31).data;

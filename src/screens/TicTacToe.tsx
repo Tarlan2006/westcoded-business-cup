@@ -2,6 +2,7 @@ import { InlineSymbol } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useEffect, useReducer, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
+import { useEncouragement } from "../audio/useClipSpeech";
 import { Mascot } from "../components/Mascot";
 import { Confetti, TieHearts } from "./ttt/Celebration";
 import { Piece } from "./ttt/Piece";
@@ -94,6 +95,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
   const [{ board, turn, scores, result }, dispatch] = useReducer(playRound, undefined,
     () => startRound("X", { X: 0, O: 0, tie: 0 }));
   const winningLine = winner(board);
+  useEncouragement(result === "O");
   const thinking = !result && turn === "O";
   const canPlay = !result && !thinking;
   const canChangeLevel = Boolean(result) || board.every((cell) => cell === null);
@@ -128,7 +130,7 @@ export function TicTacToe({ onBack, onComplete }: { onBack: () => void; onComple
           <p className="ttt-score">{t("ticTacToe.you")} {scores.X} <span aria-hidden="true">·</span> {t("ticTacToe.computer")} {scores.O} <span aria-hidden="true">·</span> {t("ticTacToe.ties")} {scores.tie}</p>
         </div>
         <div className="ttt-host">
-          <div className="ttt-mascot"><Mascot pose={thinking ? "tablet" : result === "X" ? "jump" : "point"} size={64} /></div>
+          <div className="ttt-mascot"><Mascot emotion={thinking ? "thinking" : result === "X" ? "correct" : result === "O" ? "wrong" : board.every(cell => cell === null) ? "greeting" : "idle"} pose={thinking ? "tablet" : result === "X" ? "jump" : "point"} size={64} /></div>
           <p className="ttt-bubble" aria-live="polite" aria-atomic="true">
             {message}{result === "tie" && <TieHearts />}
           </p>

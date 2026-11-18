@@ -94,7 +94,7 @@ function Session({ ageGroup, onComplete, onBack, speak }: BalloonsGameProps) {
     if (phase.current !== "answer" || exited) return;
     setPicked(value); setWins((previous) => [...previous, value === round.count]);
     transition("result");
-    say(speaking.current, value === round.count ? t("balloonsGame.yesBalloonsGreatCounting", { value1: round.count }) : t("balloonsGame.closeThereWereNextOne", { value1: round.count }));
+    say(speaking.current, value === round.count ? t("balloonsGame.yesBalloonsGreatCounting", { value1: round.count }) : t("voice.common_quiz_encourage"));
   }
   function advance() {
     if (phase.current !== "result") return;

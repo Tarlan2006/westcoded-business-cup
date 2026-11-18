@@ -53,14 +53,14 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
         </div>
         <div className="sp-hero" aria-hidden="true">
           <div className="sp-hero-earth"><ObjectArt art="earth" /></div>
-          <div className="sp-hero-rocket"><Mascot pose="point" /></div>
+          <div className="sp-hero-rocket"><Mascot emotion="greeting" pose="point" /></div>
           <div className="sp-hero-moon"><ObjectArt art="moon" /></div>
         </div>
       </div>}
       {stage === "journey" && <div className="sp-journey">
         <Journey speak={speak} exploreOnly={exploreOnly} onFinish={() => setStage(exploreOnly ? "result" : "quiz")} />
       </div>}
-      {stage === "quiz" && <Quiz onFinish={(count) => {
+      {stage === "quiz" && <Quiz speak={speak} onFinish={(count) => {
         setCorrect(count);
         setStage("result");
       }} />}

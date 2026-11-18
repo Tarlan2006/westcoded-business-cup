@@ -1,5 +1,5 @@
 import kazakh from "./faq-kk.json" with { type: "json" };
-import { responses, type Language } from "./language";
+import { responses, type Language } from "./language.ts";
 import faq from "../content/faq.json" with { type: "json" };
 import type { AskResponse } from "./types";
 

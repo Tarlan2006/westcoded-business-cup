@@ -4,6 +4,7 @@ import { APP_NAME } from "../brand";
 import { useEffect, useId, useRef, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { GameButton, SpeechBubble } from "../components/GameUI";
+import { useEncouragement } from "../audio/useClipSpeech";
 import { Mascot } from "../components/Mascot";
 import { MemoryCardBack, MemoryIcon, memoryIcons, type MemoryIconName } from "../games/memory/icons";
 import "./Memory.css";
@@ -27,6 +28,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
   const [matched, setMatched] = useState<number[]>([]);
   const isPair = shown.length === 2 && deck[shown[0]] === deck[shown[1]];
   const missed = shown.length === 2 && !isPair;
+  useEncouragement(missed);
   const won = matched.length === deck.length;
   const foundPairs = matched.length / 2;
   const victory = useRef<HTMLDialogElement>(null);
@@ -97,7 +99,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
             })}
           </div>
           <aside className="memory-guide" aria-label={`${APP_NAME}`}>
-            <div className="memory-guide-mascot"><Mascot pose={won ? "jump" : "point"} size={64} /></div>
+            <div className="memory-guide-mascot"><Mascot emotion={won || isPair ? "correct" : missed ? "wrong" : !shown.length && !foundPairs ? "greeting" : "idle"} pose={won ? "jump" : "point"} size={64} /></div>
             <SpeechBubble className="memory-speech" live>
               {won ? t("memory.youFoundThemAll") : missed ? t("memory.oopsNotAPairTryAgain") : t("memory.findTheMatchingDinoFriends")}
             </SpeechBubble>
