@@ -65,7 +65,7 @@
 .toddler-age-badge { display:none }
 .toddler-now { flex-direction:column; align-items:stretch; gap:16px; margin-block:28px 24px }
 .toddler-controls { justify-content:stretch }
-.toddler-controls .toddler-button { flex:1 }
+.toddler-controls .toddler-button { flex:1 1 auto; max-width:100%; overflow-wrap:anywhere }
 .toddler-screen { aspect-ratio:16/10 }
 .toddler-intermission { padding:10px }
 .toddler-break-art { margin:0 0 4px; gap:12px }

@@ -50,14 +50,15 @@ try {
     await submit.click();
     const autoplay = page.locator(".toddler-autoplay");
     await autoplay.waitFor();
-    const fits = await autoplay.evaluate(element => {
-      const range = document.createRange();
-      range.selectNodeContents(element);
-      const box = element.getBoundingClientRect();
-      return document.documentElement.scrollWidth === innerWidth && [...range.getClientRects()].every(rect =>
-        rect.left >= box.left - 1 && rect.right <= box.right + 1);
+    const fits = await page.locator(".toddler-autoplay,.toddler-controls button").evaluateAll(controls => {
+      return document.documentElement.scrollWidth === innerWidth && controls.every(element => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const box = element.getBoundingClientRect();
+        return [...range.getClientRects()].every(rect => rect.left >= box.left - 1 && rect.right <= box.right + 1);
+      });
     });
-    assert(fits, "Autoplay label exceeds its touch region");
+    assert(fits, "Video control label exceeds its touch region");
     await autoplay.click();
     assert.equal(await autoplay.getAttribute("aria-checked"), "false");
     if (lang === "kk" && process.env.DESIGN_PROOF) await page.locator(".toddler-queue").screenshot({ path: process.env.DESIGN_PROOF });
