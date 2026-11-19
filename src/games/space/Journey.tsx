@@ -212,7 +212,7 @@ export function Journey({ onFinish, speak, exploreOnly }: {
         <section className="sp-sticky" aria-label={t("journey.scaleViewer")}>
           <header className="sp-journey-title">
             <h1 aria-live="polite" aria-atomic="true"><span key={object.id}>{object.name}</span></h1>
-            <p className="sp-measure">{types[object.art]} {t("journey.about")} {formatSize(object.diameterKm)} {dimension}</p>
+            <p className="sp-measure">{t("journey.measurement", { type: types[object.art], size: formatSize(object.diameterKm), dimension: dimension ?? "" })}</p>
           </header>
           <div className="sp-scene" ref={scene} style={{ "--sp-art-size": `${artSize}px` } as CSSProperties} aria-hidden="true">
             <div className="sp-baseline" />

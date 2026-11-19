@@ -337,7 +337,7 @@ export default {
   "journey.audioIsUnavailableYouCanReadThe": "Audio is unavailable. You can read the fact here.",
   "journey.spaceJourney": "Space journey",
   "journey.scaleViewer": "Scale viewer",
-  "journey.about": "· about",
+  "journey.measurement": "{type} · about {size} {dimension}",
   "journey.aTinyDot": "(a tiny dot!)",
   "journey.estimatedRangeTo": "Estimated range: {value1} to {value2}.",
   "journey.previousStop": "Previous stop",

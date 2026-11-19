@@ -82,7 +82,7 @@ app.post("/api/turn", bodyLimit({
   return c.json(await chooseTurn(request, c.env.GROQ_API_KEY, c.env.LLM_MODEL));
 });
 
-app.onError((_error, c) => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Сұрауды өңдеу мүмкін болмады." : "Request could not be processed" }, 500));
+app.onError((_error, c) => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Жауап келмеді. Қайта байқап көрші." : "Request could not be processed" }, 500));
 
 app.all("/api/*", c => c.json({ error: requestLanguage(c.req.raw) === "kk" ? "Ойынға оралайық." : "Let's return to the game." }, 404));
 app.get("*", async c => {
@@ -94,7 +94,7 @@ app.get("*", async c => {
   const response = await c.env.ASSETS.fetch(new Request(url, c.req.raw));
   if (!privacy || response.status !== 200) return response;
   const title = "Құпиялық · " + APP_NAME;
-  const description = APP_NAME + " баланың баптауларын қалай сақтайды? Дауыс пен сұрақтар қалай өңделеді?";
+  const description = APP_NAME + " ойын деректерін қайда сақтайды? Сұрақтар мен дауыс жазбалары қалай өңделеді?";
   return new HTMLRewriter()
     .on("title", { element: el => { el.setInnerContent(title); } })
     .on('meta[name="description"],meta[property="og:description"],meta[name="twitter:description"]', { element: el => { el.setAttribute("content", description); } })

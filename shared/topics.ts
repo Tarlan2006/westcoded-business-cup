@@ -26,7 +26,7 @@ export function topicLabels(ids: readonly TopicId[]): string[] {
 
 const kazakhExamples: Record<TopicId, string[]> = {
   "dinosaurs": [
-    "Тираннозавр қаншалықты үлкен болған?",
+    "Тираннозаврдың бойы қандай болған?",
     "Динозаврлар неге жойылды?"
   ],
   "space": [
@@ -51,7 +51,7 @@ const kazakhExamples: Record<TopicId, string[]> = {
   ],
   "heroes": [
     "Батыр адам қандай болады?",
-    "Адам кейіпкерлер сияқты ұша ала ма?"
+    "Адам ертегідегі батырдай ұша ала ма?"
   ]
 };
 

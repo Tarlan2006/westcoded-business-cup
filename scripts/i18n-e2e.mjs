@@ -9,7 +9,10 @@ import kk from "../src/i18n/kk.ts";
 const base = process.env.I18N_URL || "http://localhost:5173";
 const output = process.env.I18N_SCREENS || "docs/screens";
 const fontAudit = process.env.I18N_FONT_AUDIT === "1";
-const sizes = fontAudit ? [[390,844],[1280,800]] : [[360,740],[390,844],[768,1024],[1280,800]];
+const layoutAudit = process.env.I18N_LAYOUT_AUDIT === "1";
+const extended = fontAudit || layoutAudit;
+const sizes = layoutAudit ? [[360,740],[369,800],[390,844],[768,1024],[1280,800]]
+  : fontAudit ? [[390,844],[1280,800]] : [[360,740],[390,844],[768,1024],[1280,800]];
 const browser = await chromium.launch({ headless: true, args:["--disable-quic","--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"], executablePath: process.env.CHROME_PATH || undefined });
 const findings = new Set();
 const rows = [];
@@ -56,29 +59,36 @@ async function journey(lang) {
         try { await checkRenderedFonts(page, cdp); }
         catch (error) { throw Error(lang + " " + name + " " + width + ": " + error.message, { cause: error }); }
       }
-      const info = await page.evaluate(() => {
+      const info = await page.evaluate(checkSpacing => {
         const visible = e => e.getClientRects().length && !e.closest("[hidden],[aria-hidden=true]");
         const labels = [...document.querySelectorAll("button,input,textarea,main,nav,[role=group],img")].filter(visible)
           .flatMap(e => ["aria-label","alt","title","placeholder"].map(a => e.getAttribute(a) || ""));
         const empty = [...document.querySelectorAll("button")].filter(visible).filter(e => !e.textContent.trim() && !e.getAttribute("aria-label") && !e.getAttribute("aria-labelledby") && !e.querySelector("[aria-label],img[alt],title")).length;
         const cut = [];
-        for (const button of [...document.querySelectorAll("button")].filter(visible)) {
+        const controls = checkSpacing
+          ? "button,a[href],h1,h2,h3,h4,p,legend,dd,.speech-bubble,.speech-bubble-duo,.hub-greeting-bubble,.session-time,.sk-case-tag,[role=tab]"
+          : "button";
+        for (const button of [...document.querySelectorAll(controls)].filter(visible)) {
+          if(checkSpacing && (!button.checkVisibility({visibilityProperty:true,opacityProperty:true}) || button.closest(".sr-only,.flow-sr-only"))) continue;
           const bounds = button.getBoundingClientRect();
           const walker = document.createTreeWalker(button, NodeFilter.SHOW_TEXT);
           while(walker.nextNode()) {
             const node = walker.currentNode;
             if(!node.textContent.trim() || node.parentElement.closest("svg,.sr-only,[aria-hidden=true]")) continue;
             const range = document.createRange(); range.selectNodeContents(node);
-            const checkHeight = button.matches(".need-chip,.profile-submit");
+            const checkHeight = checkSpacing ? button.matches("button,a[href],[role=tab],.speech-bubble,.speech-bubble-duo,.hub-greeting-bubble") : button.matches(".need-chip,.profile-submit");
+            let inset = -2;
+            if (checkSpacing && button.matches("button") && getComputedStyle(button).backgroundColor !== "rgba(0, 0, 0, 0)") inset = 3;
+            if (checkSpacing && button.matches("#screen-complete .btn-lime")) inset = 15;
             if ([...range.getClientRects()].some(rect => rect.width > 0 &&
-              (rect.left < bounds.left-2 || rect.right > bounds.right+2 ||
+              (rect.left < bounds.left+inset || rect.right > bounds.right-inset ||
                (checkHeight && (rect.top < bounds.top-2 || rect.bottom > bounds.bottom+2))))) cut.push(node.textContent.trim());
           }
         }
         return { text: [document.body.innerText,...labels].join(" "), empty, cut, width: document.documentElement.scrollWidth };
-      });
+      }, layoutAudit);
       if (info.width > width + 1) findings.add(lang+" "+name+" overflow "+width+" -> "+info.width);
-      if (info.cut.length) findings.add(lang+" "+name+" button overflow at "+width+": "+info.cut.join(", "));
+      if (info.cut.length) findings.add(lang+" "+name+" text outside bounds at "+width+": "+info.cut.join(", "));
       if (info.empty) findings.add(lang+" "+name+" unnamed buttons: "+info.empty);
       if (/undefined|\[object/.test(info.text)) findings.add(lang+" "+name+" invalid text");
       if (lang === "kk") {
@@ -86,6 +96,7 @@ async function journey(lang) {
         if (latin) findings.add(name+" English: "+[...new Set(latin)].join(" "));
       }
       if (width===390 || width===1280) await page.screenshot({path:directory+"/"+name+"-"+width+"x"+height+".png",fullPage:true,animations:"disabled"});
+      if (layoutAudit && name==="complete" && width===369) await page.locator("#screen-complete").screenshot({path:directory+"/complete-369.png"});
     }
     console.log(lang, name);
     rows.push(lang+"/"+name);
@@ -142,7 +153,7 @@ async function journey(lang) {
     await shot("video");
     await page.locator(".video-frame-content button").click();
     assert.match(await page.locator("iframe").getAttribute("src"),/youtube-nocookie/);
-    if (fontAudit) await shot("video-player");
+    if (extended) await shot("video-player");
     await page.locator("#screen-video button").filter({hasText:label("video.playNow")}).click();
     for(let i=0;i<3;i++) {
       
@@ -150,7 +161,7 @@ async function journey(lang) {
       await choice.waitFor();
       if(!i)await shot("video-quiz");
       await choice.click();
-      if (fontAudit && !i) await shot("video-quiz-feedback");
+      if (extended && !i) await shot("video-quiz-feedback");
       await btn(i===2?"quiz.finishQuiz":"quiz.nextQuestion").click();
     }
     await page.locator("#screen-complete").waitFor();
@@ -178,7 +189,7 @@ async function journey(lang) {
       await tile(key); await page.locator(selector).first().waitFor(); await shot(name);
       // The live navigation guard intentionally waits five seconds before confirming an exit.
       if(name==="tic-tac-toe") await page.waitForTimeout(5050);
-      if (fontAudit && name==="tic-tac-toe") {
+      if (extended && name==="tic-tac-toe") {
         await btn("activityHeader.homeBackToActivities").first().click();
         await page.getByRole("dialog").waitFor(); await shot("leave-game"); await btn("leaveGameDialog.keepPlaying").click();
         for (let i=0;i<5;i++) {
@@ -202,7 +213,7 @@ async function journey(lang) {
         const picker=page.locator(".sp-stop-picker select");
         if(await picker.isVisible()) await picker.selectOption("7"); else await page.locator(".sp-stop").last().click();
         await btn("journey.startQuiz").click(); await shot("space-quiz");
-        for(let i=0;i<5;i++){await page.locator(".sp-choice").first().click(); if (fontAudit && !i) await shot("space-quiz-feedback"); await page.locator(".sp-quiz-feedback + button, .sp-quiz button.sp-button-primary").last().click();}
+        for(let i=0;i<5;i++){await page.locator(".sp-choice").first().click(); if (extended && !i) await shot("space-quiz-feedback"); await page.locator(".sp-quiz-feedback + button, .sp-quiz button.sp-button-primary").last().click();}
         await page.locator(".sp-result").waitFor(); await shot("space-result");
         await page.locator(".sp-result button").click(); await page.locator(".recon-reward").waitFor(); await shot("reward"); }
       await home();
@@ -215,19 +226,19 @@ async function journey(lang) {
     for (const [mode, key] of [["lava","content.floorIsLava"], ["roadtrip","content.roadtripSpy"]]) {
       if (mode === "roadtrip") {await tile("content.scavengerHunt"); await btn("profileSetup.inTheCar").click();} else await tile(key);
       await btn("setup.startGame").click(); await btn("mission.pause").waitFor(); await shot(mode);
-      await btn("mission.pause").click(); await btn("mission.endMission").click(); await btn("missionSummary.moreGames").waitFor(); if(fontAudit) await shot(mode+"-result"); await home();
+      await btn("mission.pause").click(); await btn("mission.endMission").click(); await btn("missionSummary.moreGames").waitFor(); if(extended) await shot(mode+"-result"); await home();
     }
     await tile("activitySuggestions.ask"); await page.locator(".ask-suggestions").waitFor(); await shot("ask");
     await context.grantPermissions(["microphone"]);
     const transcript=lang==="kk"?"мысық туралы":"tell me about cats";
     await page.route("**/api/stt?*", route=>{ assert.equal(new URL(route.request().url()).searchParams.get("lang"),lang); return route.fulfill({json:{text:transcript}}); });
     const mic=page.locator("button.talk-button"); await mic.focus(); await page.keyboard.down("Space");
-    await page.locator("button.talk-button[data-recording=true]").waitFor(); await page.waitForTimeout(650); if(fontAudit) await shot("ask-recording"); await page.keyboard.up("Space");
+    await page.locator("button.talk-button[data-recording=true]").waitFor(); await page.waitForTimeout(650); if(extended) await shot("ask-recording"); await page.keyboard.up("Space");
     await page.waitForFunction(value=>document.querySelector("textarea")?.value===value,transcript); await shot("ask-transcript");
     await page.unroute("**/api/stt?*");
     await page.getByRole("textbox").fill(lang==="kk"?"Аспан неге көгілдір?":"Why is the sky blue?");
     await btn("ask.ask").click(); await btn("ask.askAnother").waitFor(); await shot("ask-answer");
-    if (fontAudit && await btn("ask.quickQuizAboutThis").isVisible()) { await btn("ask.quickQuizAboutThis").click(); await page.locator(".quiz-card").waitFor(); await shot("ask-quiz"); }
+    if (extended && await btn("ask.quickQuizAboutThis").isVisible()) { await btn("ask.quickQuizAboutThis").click(); await page.locator(".quiz-card").waitFor(); await shot("ask-quiz"); }
     await home();
     await endSession(); await setup("3-5"); await page.locator("#screen-video").waitFor(); await home();
     await tile("app.balloonCount"); await page.locator(".bl-balloon").first().waitFor(); await shot("balloons");
@@ -256,7 +267,7 @@ async function journey(lang) {
     await page.clock.install(); await page.clock.fastForward(22*60*1000);
     await btn("sessionComplete.backToStart").waitFor(); await shot("session-end");
     await page.clock.resume();
-    if (fontAudit) {
+    if (extended) {
       await btn("sessionComplete.backToStart").click(); await setup("1-2");
       await page.locator("#screen-toddler-cinema").waitFor();
       // Videos without a quiz have no visible play-with-host button. Exercise the

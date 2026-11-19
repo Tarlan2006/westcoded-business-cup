@@ -34,7 +34,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
         <h1 className="font-display text-3xl sm:text-4xl font-bold text-white wrap-anywhere">{t("rewardCard.wayToGoAgent", { name })}</h1>
 
         {part && <button type="button" aria-label={t("missionSummary.openSpaceshipGarageNewShipPart", { value1: part.name })} onClick={() => setGarage(true)}
-          className="relative mx-auto w-44 max-w-full h-44 rounded-3xl bg-linear-to-b from-[#6C47FF] to-[#2A1F8A] border-4 border-[#FFD13B] flex flex-col items-center justify-center p-4 shadow-lg">
+          className="relative mx-auto w-44 max-w-full min-h-44 rounded-3xl bg-linear-to-b from-[#6C47FF] to-[#2A1F8A] border-4 border-[#FFD13B] flex flex-col items-center justify-center p-4 shadow-lg">
           <span aria-hidden="true" className="text-6xl mb-1 animate-bounce">{part.icon}</span>
           <span className="text-xs font-black uppercase tracking-wider text-[#FFD13B]">{t("missionSummary.newShipPart")}</span>
           <span className="font-display font-bold text-base text-white max-w-full wrap-anywhere">{part.name}</span>
@@ -51,7 +51,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
         </div>
         <p className="text-xs text-indigo-200">{t("missionSummary.xpTotalXp", { value1: rankName(profile.rank), points, value2: profile.xp })}</p>
 
-        <button type="button" onClick={onReplay} className="w-full py-4 rounded-2xl btn-game btn-lime text-white font-display font-bold text-xl cursor-pointer">{t("missionSummary.playNextAdventure")}</button>
+        <button type="button" onClick={onReplay} className="w-full px-4 py-4 wrap-break-word rounded-2xl btn-game btn-lime text-white font-display font-bold text-xl cursor-pointer">{t("missionSummary.playNextAdventure")}</button>
         <button type="button" onClick={onHome} className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-base">{t("missionSummary.moreGames")}</button>
       </div>
     </section>

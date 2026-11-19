@@ -8,7 +8,7 @@
   margin: 12px auto 0;
 }
 
-.ttt-title { grid-area: title; text-align: center; }
+.ttt-title { grid-area: title; min-width: 0; text-align: center; }
 .ttt-title h1 { font-size: clamp(2.08rem, 8vw, 4.5rem); letter-spacing: -.02em; }
 .ttt-title p { margin-top: 3px; color: var(--muted); font-weight: 800; }
 .ttt-controls { grid-area: controls; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
@@ -153,6 +153,8 @@
     box-shadow: var(--shadow);
   }
   .ttt-title, .ttt-controls, .ttt-host, .ttt-actions { text-align: left; justify-content: flex-start; }
+  :lang(kk) .ttt-title { container-type: inline-size; }
+  :lang(kk) .ttt-title h1 { font-size: clamp(2.08rem, 13cqi, 4.5rem); overflow-wrap: anywhere; }
   .ttt-mascot { flex-basis: 88px; }
   .ttt-bubble { background: var(--surface); }
 }

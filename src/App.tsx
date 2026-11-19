@@ -332,7 +332,8 @@ export default function App() {
       return <Mission key={mission.id} session={mission} profile={profile} navigationPaused={pendingNavigation !== null}
         onExit={openParents} onFinish={(result) => {
         if (!timer.canAcceptResult(session?.startedAt)) return;
-        const memory = result.done ? t("app.completedRoundsIn", { value1: result.done, value2: mission.mode }) : t("app.played", { value1: mission.mode });
+        const modeLabel = lang === "kk" ? MODES[mission.mode].name : mission.mode;
+        const memory = result.done ? t("app.completedRoundsIn", { value1: result.done, value2: modeLabel }) : t("app.played", { value1: modeLabel });
         const updated = rewardActivity(mission.id, profile.id, mission.mode, result.points, {
           mode: mission.mode, memory: result.loreNote || memory,
         });
