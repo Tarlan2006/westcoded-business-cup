@@ -1,7 +1,7 @@
 import { InlineSymbol } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { APP_NAME } from "../brand";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { GameButton, SpeechBubble } from "../components/GameUI";
 import { useEncouragement } from "../audio/useClipSpeech";
@@ -32,6 +32,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
   const won = matched.length === deck.length;
   const foundPairs = matched.length / 2;
   const victory = useRef<HTMLDialogElement>(null);
+  const [victoryOpen, setVictoryOpen] = useState(false);
   const submitted = useRef(false);
   const victoryTitle = useId();
   const victoryReward = useId();
@@ -45,12 +46,19 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
     return () => window.clearTimeout(timer);
   }, [shown, isPair]);
 
-  useEffect(() => {
+  const openVictory = useCallback(() => {
+    const dialog = victory.current;
+    if (!dialog) return;
+    dialog.showModal();
+    setVictoryOpen(true);
+  }, []);
+
+  useLayoutEffect(() => {
     if (!won) return;
     const dialog = victory.current;
-    dialog?.showModal();
+    openVictory();
     return () => dialog?.close();
-  }, [won]);
+  }, [won, openVictory]);
 
   function finish(action: () => void) {
     if (submitted.current) return;
@@ -106,10 +114,11 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
           </aside>
         </div>
         {won && <>
-          <GameButton className="memory-show-result" onClick={() => victory.current?.showModal()}>{t("memory.showResults")}</GameButton>
-          <dialog className="memory-victory" ref={victory} aria-labelledby={victoryTitle} aria-describedby={victoryReward}>
+          <GameButton className="memory-show-result" onClick={openVictory}>{t("memory.showResults")}</GameButton>
+          <dialog className="memory-victory" ref={victory} aria-labelledby={victoryTitle} aria-describedby={victoryReward}
+            onClose={event => { if (!event.currentTarget.open) setVictoryOpen(false); }}>
             <p className="memory-win-label"><span aria-hidden="true">🎉</span> {t("memory.allPairsFound")}</p>
-            <div className="memory-winner-mascot"><Mascot pose="jump" /></div>
+            <div className="memory-winner-mascot">{victoryOpen && <Mascot pose="jump" speaking={false} />}</div>
             <h2 id={victoryTitle}>{t("memory.greatMemory")}</h2>
             <p className="memory-xp" id={victoryReward}>+20 XP <span aria-hidden="true"><InlineSymbol mark="★" /></span></p>
             <div className="memory-victory-actions">

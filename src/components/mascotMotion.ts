@@ -15,13 +15,16 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
   const draw = painter(canvas);
   let requested: Emotion = 'idle', state: Emotion | undefined, key: string | number | undefined;
   let lastGreeting: string | number | undefined, greeted = false, blinkCount = 0;
-  let until = Infinity, entered = 0, speaking = true, blink = 0, double = false, glance = 0;
+  let until: number | undefined;
+  let entered = 0, speaking = true, blink = 0, double = false, glance = 0;
   let previousTick = 0;
   let visible = false, ready = false, disposed = false, last = 0, lastSample = 0;
   let y = 0, angle = 0, scale = 1;
   let detach: (() => void) | undefined;
 
   function tick(now: number, voice: SpeechFrame, reduced: boolean) {
+    // An opening gesture gets its full duration after the first visible frame.
+    until ??= now + (duration[requested] ?? Infinity);
     const intent = now < until ? requested : 'idle';
     const audible = !reduced && speaking && voice.active;
     const next = audible && (intent === 'idle' || intent === 'greeting') ? 'speaking' : intent;
@@ -102,7 +105,11 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
     if (visible && !document.hidden) detach = watchMascot(tick);
     else host.dataset.running = 'false';
   }
-  const observer = new IntersectionObserver(([entry]) => { visible=entry.isIntersecting; sync(); });
+  const observer = new IntersectionObserver(entries => {
+    // A dialog can move into the top layer in the same batch as its hidden record.
+    visible = entries[entries.length - 1].isIntersecting;
+    sync();
+  });
   observer.observe(host);
   document.addEventListener('visibilitychange',sync);
   void guideReady.then(ok => {ready=ok;sync();});
@@ -111,7 +118,7 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
       speaking = allowSpeech;
       if (emotion !== requested || eventKey !== key) {
         requested = emotion; key = eventKey;
-        until = performance.now()+(duration[emotion] ?? Infinity);
+        until = previousTick ? performance.now()+(duration[emotion] ?? Infinity) : undefined;
         if (emotion === 'greeting') {
           if (greeted && lastGreeting === eventKey) until = 0;
           greeted = true; lastGreeting = eventKey;
