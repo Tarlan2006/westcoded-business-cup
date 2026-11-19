@@ -28,9 +28,10 @@
 .toddler-secondary { color:#e9e2ff; background:#ffffff09; border-color:#b49fff44 }
 .toddler-sound { color:#322038; background:#ffe7aa; border-color:#fff2d1 }
 .toddler-queue { border-top:1px solid #a78bfa33; padding-top:24px }
-.toddler-queue-heading { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:16px }
+.toddler-queue-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:var(--control-gap); margin-bottom:16px }
 .toddler-queue-heading h2 { font-size:18px; margin:0 }
-.toddler-autoplay { display:flex; align-items:center; gap:8px; min-height:44px; background:none; border:0; color:#d2c6ff; font-size:10px; white-space:nowrap; cursor:pointer }
+.toddler-autoplay { display:flex; align-items:center; gap:var(--control-gap); min-height:var(--control-target); max-width:100%; background:none; border:0; color:#d2c6ff; font-size:.8125rem; line-height:1.4; text-align:start; cursor:pointer }
+.toddler-autoplay .toddler-toggle { flex-shrink:0; }
 .toddler-toggle { width:30px; height:18px; border-radius:999px; background:#625288; padding:3px; transition:background .2s }
 .toddler-toggle::after { content:''; display:block; width:12px; height:12px; border-radius:50%; background:#fff; transition:transform .2s }
 .toddler-autoplay[aria-checked=true] .toddler-toggle { background:#78dcb3 }
@@ -75,10 +76,16 @@
 .toddler-queue-heading h2 { font-size:16px }
 .toddler-episodes { gap:9px }
 .toddler-card { padding:5px 5px 10px; border-radius:12px }
-.toddler-card-title { font-size:10px; margin-inline:2px }
-.toddler-card-detail { font-size:8px; margin-inline:2px }
-.toddler-thumbnail>span { font-size:7px; left:4px; bottom:4px; padding:3px 4px }
+.toddler-card-title { font-size:.9375rem; margin-inline:2px }
+.toddler-card-detail { font-size:.8125rem; margin-inline:2px }
+.toddler-thumbnail>span { font-size:.625rem; left:4px; bottom:4px; padding:3px 4px }
 .toddler-footer { display:block }
 .toddler-footer p { margin:5px 0 }
+}
+@media (max-width: 520px) {
+  .toddler-episodes { grid-template-columns: minmax(0, 1fr); gap: var(--control-gap); }
+  .toddler-card { display: grid; grid-template-columns: 30% minmax(0, 1fr); align-content: center; column-gap: .75rem; padding: .625rem; }
+  .toddler-thumbnail { grid-row: span 2; align-self: center; margin: 0; }
+  .toddler-card-detail { margin-top: .25rem; }
 }
 @media(prefers-reduced-motion:reduce) { .toddler-cinema *,.toddler-cinema *::after { animation:none!important; transition:none!important } }

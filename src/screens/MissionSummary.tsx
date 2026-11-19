@@ -51,7 +51,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
         </div>
         <p className="text-xs text-indigo-200">{t("missionSummary.xpTotalXp", { value1: rankName(profile.rank), points, value2: profile.xp })}</p>
 
-        <button type="button" onClick={onReplay} className="w-full px-4 py-4 wrap-break-word rounded-2xl btn-game btn-lime text-white font-display font-bold text-xl cursor-pointer">{t("missionSummary.playNextAdventure")}</button>
+        <button type="button" onClick={onReplay} className="w-full px-4 py-4 wrap-break-word rounded-2xl btn-game btn-lime font-display font-bold text-xl cursor-pointer">{t("missionSummary.playNextAdventure")}</button>
         <button type="button" onClick={onHome} className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-base">{t("missionSummary.moreGames")}</button>
       </div>
     </section>

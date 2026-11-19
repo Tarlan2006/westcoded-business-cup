@@ -151,7 +151,8 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
       <div className="toddler-episodes">{videos.map((video, position) => <button type="button" key={video.id} disabled={waiting || position === index}
         className="toddler-card" aria-label={`${t(position === index ? "toddlerCinema.nowShowing" : "cinema.playNext")}: ${video.title}`} aria-current={position === index ? "true" : undefined}
         onClick={() => queue(position)}>
-        <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy" /><span>{position === index ? t("toddlerCinema.nowShowingAlt") : `0${position + 1}`}</span></div>
+        <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy"
+          onError={event => { event.currentTarget.hidden = true; }} /><span>{position === index ? t("toddlerCinema.nowShowingAlt") : `0${position + 1}`}</span></div>
         <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{position === index ? t("toddlerCinema.enjoyThisLittleMoment") : t("toddlerCinema.startsAfterA10SecondBreak")}</span>
       </button>)}</div>
     </section>

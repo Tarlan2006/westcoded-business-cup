@@ -319,8 +319,8 @@ export default function App() {
       else if (activity === "quiz" && topic) setScreen({ name: "quiz", id: crypto.randomUUID(), topic });
       else startLearn(activity);
     }
-    function nextUp(activity: Activity, replay: () => void) {
-      return <NextUp options={nextActivities(profile, preferences, activity)} onReplay={replay} onChoose={openActivity} onHome={goHome} />;
+    function nextUp(activity: Activity, replay?: () => void) {
+      return <NextUp options={nextActivities(profile, preferences, activity)} onReplay={replay} onChoose={openActivity} onHome={replay ? goHome : undefined} />;
     }
 
     if (screen.name === "setup") {
@@ -347,7 +347,7 @@ export default function App() {
       const replay = () => launch(mode, profile, durationMinutes, roundLimit);
       return <MissionSummary points={screen.result.points} profile={profile} onHome={goHome} onReplay={replay}>
         {screen.session.mode === "roadtrip" && <p className="text-center text-sm text-indigo-200">{t("app.player1")} {screen.result.players[0]} {t("app.player2")} {screen.result.players[1]}</p>}
-        {nextUp(mode, replay)}
+        {nextUp(mode)}
       </MissionSummary>;
     }
     if (screen.name === "toddler" && profile.ageBand === "1-2") {
@@ -406,7 +406,7 @@ export default function App() {
     if (screen.name === "reward") {
       if (screen.afterVideo || screen.activity === "toddler") return <MissionSummary profile={profile} points={screen.points} onHome={goHome}
         onReplay={() => openActivity("video")}>
-        {nextUp(screen.activity, () => openActivity("video"))}
+        {nextUp(screen.activity)}
       </MissionSummary>;
       return <LearnPage title={t("app.niceWorkAgent")} onBack={goHome}>
         <RewardCard profile={profile} points={screen.points} />

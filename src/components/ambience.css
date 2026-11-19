@@ -8,7 +8,7 @@
 .amb-mark-3 { right: 0; bottom: 30%; color: var(--mint-action, #2ce69b); animation-delay: -4s; }
 [data-ambience="cosmic"] .amb-mark-1 { border: 1px solid currentColor; border-radius: 50%; padding: 4px; }
 [data-ambience="studio"] .amb-mark { transform: rotate(-12deg); }
-.amb-controls { position: relative; z-index: 1; display: flex; justify-content: flex-end; width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding-top: max(8px, env(safe-area-inset-top)); }
+.amb-controls { position: relative; z-index: 1; display: flex; justify-content: flex-end; width: min(1100px, calc(100% - 2 * var(--page-gutter))); margin: 0 auto; padding-top: max(8px, env(safe-area-inset-top)); }
 .amb-music-button { min-width: 100px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--border, #5946e3); border-radius: 12px; background: var(--bg-card-dark, #1e1666); color: #fff; font: 800 14px var(--font-heading); cursor: pointer; }
 .amb-music-button:focus-visible { outline: 3px solid var(--gold-star, #ffd13b); outline-offset: 3px; }
 .amb-music-button:disabled { opacity: .65; cursor: default; }

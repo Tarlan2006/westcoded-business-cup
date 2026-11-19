@@ -216,11 +216,11 @@ export function Mission({ session, profile, onFinish, onExit, navigationPaused =
       <button type="button" className={doneButton} onClick={togglePause}>{t("mission.resumeMission")}</button>
       <button type="button" className={`${missionButtonStyle} btn-purple text-white`} onClick={() => dispatch({ type: "finish", now: Date.now() })}>{t("mission.endMission")}</button>
     </> : isRoadtrip ? ([1, 2] as const).map((player) => <button key={player} type="button"
-      className={player === 1 ? doneButton : `${missionButtonStyle} btn-sky text-white`}
+      className={player === 1 ? doneButton : `${missionButtonStyle} btn-sky`}
       disabled={!running} onClick={() => completeWithButton(player)}>{t("mission.playerSpottedIt", { player })}</button>) : <>
       <button type="button" className={`${doneButton}${isHunt ? "" : " col-span-2"}`}
         disabled={!running || freezeHold || !!choices} onClick={() => completeWithButton()}><span aria-hidden="true">✅</span> {t("mission.iDidIt")}</button>
-      {isHunt && <HoldButton talk hintKey="hunt-talk" className={`${missionButtonStyle} btn-sky text-white talk-button`}
+      {isHunt && <HoldButton talk hintKey="hunt-talk" className={`${missionButtonStyle} btn-sky talk-button`}
         disabled={!running || voice.status === "decoding" || (activity?.finishing && !recording)} onBegin={startVoice}
         onRelease={() => voice.release()} onCancel={voice.cancelHold}>
         <span aria-hidden="true">🎙️</span><span>{recording ? voice.status === "opening" ? t("ask.openingMic") : t("holdButton.letGoToSend")

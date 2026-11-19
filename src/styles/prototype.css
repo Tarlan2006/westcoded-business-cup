@@ -33,6 +33,7 @@
 }
 
 .btn-lime {
+  color: var(--action-ink);
   background: linear-gradient(180deg, #58CC02 0%, #46A302 100%);
   box-shadow: 0 6px 0 #2F7500;
 }
@@ -49,7 +50,7 @@
 }
 
 .btn-purple {
-  background: linear-gradient(180deg, #8B5CF6 0%, #6D28D9 100%);
+  background: linear-gradient(180deg, #8050E5 0%, #6D28D9 100%);
   box-shadow: 0 6px 0 #4C1D95;
 }
 .btn-purple:active {
@@ -65,6 +66,7 @@
 }
 
 .btn-sky {
+  color: #10263b;
   background: linear-gradient(180deg, #38BDF8 0%, #0EA5E9 100%);
   box-shadow: 0 7px 0 #0369A1;
 }
@@ -140,7 +142,7 @@
    component styles. Motion is optional for both. */
 .prototype :is(input, textarea) { user-select: text; }
 .prototype .profile-location { width: auto; min-height: 2rem; }
-.prototype .btn-game:disabled { background: var(--bg-card-dark); filter: saturate(.45); opacity: .7; }
+.prototype .btn-game:disabled { background: var(--bg-card-dark); color: var(--ink-soft); filter: saturate(.45); opacity: .7; }
 .prototype-screen { min-height: 100svh; }
 .prototype-screen[hidden] { display: none; }
 
@@ -204,7 +206,7 @@
 }
 
 /* Minimum touch areas; retain the existing palette, typography and layout. */
-.prototype button, .prototype input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; min-width: 44px; }
+.prototype button, .prototype input:not([type="checkbox"]):not([type="radio"]) { min-height: var(--control-target); min-width: var(--control-target); }
 .prototype .prototype-parent-button, .prototype .profile-location { min-height: 44px; }
 .prototype a[href="/privacy"] { min-height: 44px; min-width: 44px; align-content: center; }
 .prototype-screen { min-height: 100dvh; }
@@ -214,6 +216,7 @@
 
 /* Allow short landscape screens and enlarged text to scroll normally. */
 #screen-greeting, #screen-splash { position: relative; inset: auto; padding-bottom: max(24px, env(safe-area-inset-bottom)); }
+#screen-greeting button:focus-visible { outline-color: #4826a5; }
 
 @media (width < 40rem) {
   .prototype .profile-setup-form a[href="/privacy"]:not(.profile-local-profile) { display: inline-flex; align-items: center; }

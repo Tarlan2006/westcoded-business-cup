@@ -3,17 +3,23 @@ import fs from "node:fs/promises";
 import { chromium } from "playwright";
 import { auditScreenFonts } from "./audit-screen-fonts.mjs";
 import { checkRenderedFonts } from "./font-rendering.mjs";
+import { gradientContrast } from "./design-contrast.mjs";
 import en from "../src/i18n/en.ts";
 import kk from "../src/i18n/kk.ts";
 
 const base = process.env.I18N_URL || "http://localhost:5173";
 const output = process.env.I18N_SCREENS || "docs/screens";
 const fontAudit = process.env.I18N_FONT_AUDIT === "1";
-const layoutAudit = process.env.I18N_LAYOUT_AUDIT === "1";
+const designAudit = process.env.I18N_DESIGN_AUDIT === "1";
+const layoutAudit = designAudit || process.env.I18N_LAYOUT_AUDIT === "1";
 const extended = fontAudit || layoutAudit;
 const sizes = layoutAudit ? [[360,740],[369,800],[390,844],[768,1024],[1280,800]]
   : fontAudit ? [[390,844],[1280,800]] : [[360,740],[390,844],[768,1024],[1280,800]];
 const browser = await chromium.launch({ headless: true, args:["--disable-quic","--use-fake-device-for-media-stream","--use-fake-ui-for-media-stream"], executablePath: process.env.CHROME_PATH || undefined });
+if (designAudit) {
+  sizes.unshift([320, 740]);
+  sizes.push([844, 390]);
+}
 const findings = new Set();
 const rows = [];
 async function journey(lang) {
@@ -24,12 +30,14 @@ async function journey(lang) {
   const cdp = await context.newCDPSession(page);
   await cdp.send("DOM.enable");
   await cdp.send("CSS.enable");
-  page.setDefaultTimeout(fontAudit ? 90000 : 12000);
+  page.setDefaultTimeout(extended ? 90000 : 12000);
   const btn = key => page.getByRole("button", { name: label(key), exact: true });
   const tile = key => page.locator(".activity-grid").getByRole("button").filter({hasText:label(key)}).first().click();
   const directory = output + "/" + lang;
   await fs.mkdir(directory, {recursive:true});
   const auditLog = directory + "/fonts.jsonl";
+  const designLog = directory + "/targets.jsonl";
+  if (designAudit) await fs.writeFile(designLog, "");
   if (fontAudit) await fs.writeFile(auditLog, "");
   page.on("pageerror", e => findings.add(lang + " page error: " + e.message));
   page.on("console", m => { if (m.type() === "error" && !(m.location().url === base + "/i18n-missing-page" && m.text().includes("404"))) findings.add(lang + " console: " + m.text()); });
@@ -49,6 +57,32 @@ async function journey(lang) {
     for (const [width,height] of sizes) {
       await page.setViewportSize({width,height});
       await page.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+      if (designAudit) {
+        if (width === 390) {
+          const actions = page.locator("button:is(.btn-lime,.btn-mint,.btn-purple,.btn-sky,.profile-submit):visible:enabled");
+          for (const action of await actions.all()) {
+            const ratio = await action.evaluate(gradientContrast);
+            if (ratio < 4.5) findings.add(lang + " " + name + " action contrast " + ratio.toFixed(2));
+          }
+          if (name === "complete") assert.equal(await page.locator(".flow-next button.game-button,.flow-next .flow-home-link").count(), 0);
+        }
+        const targets = await page.evaluate(() => {
+          const root = document.querySelector("dialog:modal") || document;
+          return [...root.querySelectorAll("button,a[href],input,select,summary,textarea,[role=button]")]
+            .filter(control => !control.closest("[inert],[hidden],[aria-hidden=true],.sr-only,.flow-sr-only") &&
+              control.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
+            .map(control => {
+              const label = control.matches("input[type=checkbox],input[type=radio]") ? control.closest("label") : null;
+              const box = (label || control).getBoundingClientRect();
+              return { element: control.tagName.toLowerCase(), classes: control.className, id: control.id,
+                label: (control.getAttribute("aria-label") || control.textContent.trim()).slice(0, 60),
+                width: Math.round(box.width * 10) / 10, height: Math.round(box.height * 10) / 10 };
+            });
+        });
+        const small = targets.filter(target => target.width < 44 || target.height < 44);
+        await fs.appendFile(designLog, JSON.stringify({ name, width, height, checked: targets.length, small }) + "\n");
+        if (small.length) findings.add(lang + " " + name + " " + width + ": " + small.length + " targets under 44px");
+      }
       if (fontAudit) {
         assert.equal(await page.locator("html").getAttribute("lang"), lang);
         const result = await auditScreenFonts(page, cdp);
@@ -243,7 +277,11 @@ async function journey(lang) {
     await endSession(); await setup("3-5"); await page.locator("#screen-video").waitFor(); await home();
     await tile("app.balloonCount"); await page.locator(".bl-balloon").first().waitFor(); await shot("balloons");
     for(let round=0;round<5;round++) {
-      await btn("balloonsGame.iCounted").click(); await page.locator(".bl-answer").first().waitFor();
+      const counted = btn("balloonsGame.iCounted");
+      const firstAnswer = page.locator(".bl-answer").first();
+      await counted.or(firstAnswer).first().waitFor();
+      if (await counted.isVisible() && await counted.isEnabled()) await counted.click();
+      await firstAnswer.waitFor();
       if(!round) await shot("balloons-answer");
       await page.locator(".bl-answer").first().click();
       if(!round) await shot("balloons-feedback");

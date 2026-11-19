@@ -110,7 +110,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
         <button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E]`} disabled={answer === undefined} onClick={next}>
           {nextLabel}
         </button>
-        <button type="button" className={`${missionButtonStyle} btn-sky text-white`} disabled={!sound || answer !== undefined || session?.finishing}
+        <button type="button" className={`${missionButtonStyle} btn-sky`} disabled={!sound || answer !== undefined || session?.finishing}
           onClick={() => { void speak(contentText("quiz." + current.id + ".question"), clipId); }}>{t("quiz.hearIt")}</button>
       </>} />;
   }

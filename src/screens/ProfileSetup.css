@@ -11,7 +11,7 @@
   position: relative;
   z-index: 1;
   min-height: 100dvh;
-  padding: 1.5rem 1.25rem 2.5rem;
+  padding: var(--section-gap) var(--page-gutter) 2.5rem;
   background: #fff;
   color: var(--setup-text);
   color-scheme: light;
@@ -92,7 +92,7 @@
   text-align: center;
   outline: none;
 }
-.profile-setup .profile-custom-time:focus-within { border-color: var(--setup-sky-border); }
+.profile-setup .profile-custom-time:has(input:focus-visible) { outline: 3px solid var(--setup-blue); outline-offset: 3px; }
 .profile-setup .profile-custom-time input::placeholder { color: var(--setup-muted); opacity: 1; }
 .profile-setup .profile-setup-form { container-type: inline-size; }
 @container (min-width: 620px) {
@@ -112,10 +112,8 @@
 
 .profile-setup .profile-submit {
   background: linear-gradient(#5fd400, #4ab300);
-  color: #fff;
+  color: var(--action-ink);
   box-shadow: 0 6px 0 #37840a;
-  -webkit-text-stroke: 2.5px #142711;
-  paint-order: stroke fill;
 }
 
 .profile-setup .profile-submit:active { box-shadow: 0 1px 0 #37840a; }
@@ -123,7 +121,6 @@
   background: #f1f5f9;
   color: #475569;
   box-shadow: 0 4px 0 var(--setup-border);
-  -webkit-text-stroke-width: 0;
 }
 
 .profile-setup .profile-icon {
@@ -136,7 +133,7 @@
 }
 
 @media (min-width: 640px) {
-  .profile-setup.prototype-screen { padding: 2rem 1rem 2.5rem; }
+  .profile-setup.prototype-screen { padding: 2rem var(--page-gutter) 2.5rem; }
   .profile-setup .profile-setup-form {
     padding: 2rem;
     border: 3px solid var(--setup-border);

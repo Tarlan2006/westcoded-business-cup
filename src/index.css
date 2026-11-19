@@ -50,6 +50,11 @@
 @media (max-width: 600px) { .flow-start.panel { grid-template-columns: 48px minmax(0, 1fr); } .flow-start-icon { width: 48px; height: 48px; } .flow-start > button { grid-column: 1 / -1; width: 100%; } }
 
 :root {
+  --control-target: 44px;
+  --control-gap: .5rem;
+  --section-gap: clamp(1.5rem, 3vw, 2rem);
+  --page-gutter: clamp(1rem, 3vw, 2rem);
+  --action-ink: #142711;
   color-scheme: dark;
   --bg: #0f0a3c;
   --cosmic: radial-gradient(circle at 20% 10%, #24187a 0%, #0f0a3c 65%, #090626 100%);
@@ -97,11 +102,11 @@ button:not(:disabled), select { cursor: pointer; }
 button:disabled { cursor: default; color: var(--muted); background: var(--bg-soft); }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 
-.shell { width: min(100% - 2rem, 1100px); margin-inline: auto; padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+.shell { width: min(calc(100% - 2 * var(--page-gutter)), 1100px); margin-inline: auto; padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
 .topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: .65rem; border-bottom: 1px solid var(--border); }
 .activity-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .45rem; text-align: center; }
 .activity-header-title { font: 600 clamp(1rem, 3vw, 1.3rem)/1.12 var(--font-heading); }
-.activity-header-actions { display: flex; flex-wrap: wrap; gap: .35rem; justify-content: flex-end; align-items: center; }
+.activity-header-actions { display: flex; flex-wrap: wrap; gap: var(--control-gap); justify-content: flex-end; align-items: center; }
 .xp-chip { flex: none; display: inline-flex; align-items: center; min-height: 32px; padding: .25rem .65rem; border-radius: var(--radius-pill); background: var(--sun-soft); color: var(--accent-text); font-size: .8rem; font-weight: 900; white-space: nowrap; }
 .wordmark { display: inline-flex; align-items: center; gap: .6rem; font: 600 1.2rem/1 var(--font-heading); }
 .signal { display: inline-block; width: 1rem; aspect-ratio: 1; border: 3px solid var(--primary); border-radius: 50%; background: var(--accent); }
@@ -234,7 +239,9 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 .ask-answer { font-size: clamp(1.15rem, 3vw, 1.5rem); line-height: 1.45; }
 .gate-answer { max-width: 15rem; }
 .parent-panel > .quiet-button { justify-self: start; }
-.privacy h2 { margin-top: .5rem; }
+.parent-panel.privacy { gap: var(--control-gap); }
+.privacy p { line-height: 1.6; }
+.privacy p + h2 { margin-top: calc(var(--section-gap) - var(--control-gap)); }
 .results { text-align: center; }
 .results .aidos-mascot { width: min(31vw, 132px); margin: 0 auto .5rem; }
 .results > .field-label { margin-inline: auto; }
@@ -247,7 +254,7 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @media (max-width: 700px) {
   .topbar { min-height: 62px; }
   .activity-header .quiet-button { padding-inline: .55rem; font-size: .84rem; }
-  .activity-header-actions { gap: .3rem; }
+  .activity-header-actions { gap: var(--control-gap); }
   .xp-chip { padding-inline: .45rem; }
   .welcome-ages { grid-template-columns: 1fr; gap: .55rem; }
   .welcome-age { grid-template-columns: 2.65rem 1fr; gap: .12rem .7rem; align-content: center; padding: .85rem 2.5rem .85rem .9rem; min-height: 94px; }
@@ -447,6 +454,8 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 /* AIdos in the Hub: greeting, "Start here" and the Ask tile. */
 .hub-greeting { display: flex; align-items: flex-end; gap: .75rem; margin-bottom: .25rem; }
 .hub-greeting .aidos-mascot { flex: none; }
+.prototype-hub { padding-inline: var(--page-gutter); }
+.prototype-hub .learn-page { gap: var(--section-gap); }
 .hub-greeting-bubble { position: relative; margin-bottom: 1.6rem; padding: .7rem 1rem; border-radius: 20px; background: #fff; color: #1e1b4b; font: 700 clamp(1rem, 3.6vw, 1.25rem) var(--font-heading); box-shadow: 0 5px 0 #cbd5e1; }
 .hub-greeting-bubble::before { content: ""; position: absolute; left: -10px; bottom: 14px; border-width: 9px 12px 9px 0; border-style: solid; border-color: transparent #fff transparent transparent; }
 .flow-start-icon.flow-start-mascot { width: auto; height: auto; background: none; overflow: visible; }
