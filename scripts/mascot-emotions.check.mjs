@@ -18,6 +18,7 @@ try {
   // A changing syllable must not postpone the end of the transition to speaking.
   await page.evaluate(async () => {
     const {painter, loadGuide} = await import('/src/components/mascotPainter.ts');
+    const {poseTransitionMs} = await import('/src/components/mascotTransition.ts');
     if (!await loadGuide()) throw Error('Missing mascot atlas');
     function surface() {
       const canvas = document.createElement('canvas');
@@ -32,11 +33,33 @@ try {
     draw('talk', 1, 36, false);
     draw('talk', 2, 61, false);
     draw('talk', 3, 85, false);
-    painter(reference)('talk', 3, 85, true);
-    const head = c => c.getContext('2d').getImageData(0, 0, 320, 127).data;
+    draw('talk', 6, 165, false);
+    draw('talk', 3, 10+poseTransitionMs, false);
+    painter(reference)('talk', 3, 10+poseTransitionMs, true);
+    const head = c => c.getContext('2d').getImageData(0, 0, 320, 496).data;
     const expected = head(reference);
     if (head(canvas).some((v,i) => Math.abs(v-expected[i])>1)) {
       throw Error('Speech restarted the whole-body transition');
+    }
+    const arts=['idle','wave','talk','listen','think','cheer'];
+    for(const a of arts) for(const b of arts) {
+      if(a===b) continue;
+      const run=painter(canvas);
+      run(a,0,0,true);
+      const start=canvas.toDataURL();
+      run(b,0,10,false);
+      if(start!==canvas.toDataURL()) throw Error('Pose snapped on entry: '+a+' to '+b);
+      run(b,0,80,false);
+      const middle=canvas.toDataURL();
+      if(start===middle) throw Error('Pose held still: '+a+' to '+b);
+      const next=b==='wave'?'talk':'wave';
+      run(next,1,80,false);
+      if(middle!==canvas.toDataURL()) throw Error('Interrupted pose snapped: '+a+' to '+b);
+      run(next,1,80+poseTransitionMs,false);
+      painter(reference)(next,1,0,true);
+      if(canvas.toDataURL()!==reference.toDataURL()) throw Error('Interrupted pose did not settle');
+      run(a,0,500,true);
+      if(canvas.toDataURL()!==start) throw Error('Reduced motion did not jump to the requested pose');
     }
   });
   const rect=await guide.boundingBox();
