@@ -11,6 +11,10 @@
 }
 
 .creator-credit a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  vertical-align: middle;
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 0.2em;

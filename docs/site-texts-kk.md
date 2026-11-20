@@ -67,8 +67,6 @@
 | `setup.passengersOnlyStayBuckledAndKeepThe` | Passengers only. Stay buckled and keep the driver focused. | Тек жолаушылар ойнайды. Белдікті шешпеңіз. Жүргізушіні алаңдатпаңыз. |
 | `setup.playWithAnAdultNearbyClearThe` | Play with an adult nearby. Clear the floor, walk, and keep both feet on the ground. | Балаңыздың жанында болыңыз. Аяқ астындағы заттарды алып қойыңыз. Жүгірмей, еденнен көтерілмей ойнасын. |
 | `setup.startGame` | Start game | Ойынды бастау |
-| `preferences.healthyHabitsWaterTeeth` | Healthy habits (water, teeth) | Күнделікті әдеттер (су ішу, тіс тазалау) |
-| `preferences.superheroes` | Superheroes | Суперқаһармандар |
 | `language.label` | Language | Тіл |
 
 ## Video · Бейнелер
@@ -126,7 +124,6 @@
 | `toddlerCinema.onlyThisLittlePlaylistPlaysNext` | Only this little playlist plays next. | Тек осы тізімдегі бейнелер кезекпен қосылады. |
 | `videoCatalog.nextVideo` | Next video | Келесі бейне |
 | `videoCatalog.playWith` | Play with | Бірге ойнайық: |
-| `videoCatalog.now` | Now! | Қазір ойнау |
 | `videoCatalog.videos` | Videos | Бейнелер |
 | `videoCatalog.episodeOf` | Episode {value1} of {value2} • {value3} | Бейне: {value1} / {value2} · {value3} |
 | `videoCatalog.watchWithAGrownUp` | Watch with a grown-up | Үлкендермен бірге көр |
@@ -207,10 +204,8 @@
 
 | Кілт | English | Қазақша |
 | --- | --- | --- |
-| `nextUp.keepTheGoodMomentsGoing` | Keep the good moments going | Тағы ойнаймыз ба? |
 | `nextUp.nextUp` | Next up | Келесі ойын |
 | `nextUp.playAgain` | ↻ Play again | ↻ Қайта ойнау |
-| `nextUp.tryNext` | Try next | Мыналарды да ойнап көр |
 | `nextUp.backToActivities` | Back to activities | Ойындарға оралу |
 | `rewardCard.missionComplete` | Mission complete | Тапсырма орындалды |
 | `rewardCard.activityReward` | Activity reward | Ойын сыйлығы |
@@ -255,11 +250,6 @@
 | `activitySuggestions.countTheBalloonsBeforeTimeRunsOut` | Count the balloons before time runs out! | Уақыт бітпей, шарларды санап үлгер! |
 | `activitySuggestions.ticTacToe` | Tic-tac-toe | Үшеуін қатар қой |
 | `activitySuggestions.tryThreeInARowAgainstThe` | Try three in a row against the computer. | Үш таңбаңды қатар қоюға тырыс. Компьютермен кезек ойнайсың. |
-| `activitySuggestions.animals` | Animals | Жануарлар |
-| `activitySuggestions.dinosaurs` | Dinosaurs | Динозаврлар |
-| `activitySuggestions.art` | Art | Өнер |
-| `activitySuggestions.space` | Space | Ғарыш |
-| `activitySuggestions.vehicles` | Vehicles | Көлік |
 | `activitySuggestions.watchYourVideoReward` | Watch your video reward | Сыйлыққа берілген бейне |
 | `activitySuggestions.youUnlockedItChooseAVideoTo` | You unlocked it! Choose a video to watch together. | Жарайсың! Енді көргің келген бейнені таңда. |
 | `home.move` | Move | Қимыл |
@@ -271,9 +261,15 @@
 | `home.hiWhatShallWeDoToday` | Hi, {name}! What shall we do today? | Сәлем, {name}! Бүгін не ойнаймыз? |
 | `home.startHere` | Start here | Алдымен мынаны көр |
 | `home.start` | Start | Бастау |
-| `home.unlockMore` | Unlock more | Тағы қандай ойындар бар? |
-| `home.plus` | {value1} PLUS | {value1} Плюс |
-| `home.theseGamesAreStillLockedUpAsk` | These games are still locked up. Ask a grown-up! | Бұл ойындар әзірге жабық. Үлкендермен бірге қарап көр. |
+| `upcoming.heading` | Coming soon | Жақында ашылады |
+| `upcoming.intro` | These games are coming soon. | Бұл ойындар жақында қосылады. |
+| `upcoming.badge` | Coming soon | Жақында |
+| `upcoming.dino.title` | Dino Dig | Динозавр қазбалары |
+| `upcoming.dino.description` | Dig up fossils and build your own dinosaur. | Қазба сүйектерді тауып, динозаврдың қаңқасын құрастыр. |
+| `upcoming.music.title` | Music Band | Музыка ойнайық |
+| `upcoming.music.description` | Make songs with drums, bells, and your voice. | Барабан соқ, қоңырау сыңғырлат, әнге қосыл. |
+| `upcoming.story.title` | Story Quest | Ертегіні жалғастыр |
+| `upcoming.story.description` | Choose what happens next in a spoken adventure. | Ертегінің қалай жалғасатынын өзің таңда. |
 | `garage.moonThruster` | Moon Thruster | Айға ұшатын қозғалтқыш |
 | `garage.starSignalDish` | Star Signal Dish | Кеме антеннасы |
 | `garage.starlightWindow` | Starlight Window | Жұлдызды терезе |
@@ -311,7 +307,6 @@
 | `animalSounds.listenAReal` | Listen, a real {value1}! | Тыңдашы! Мынау — {value1}. |
 | `animalSounds.isTellingYou` | AIdos is telling you | AIdos-ты тыңдашы! |
 | `animalSounds.animalOf` | Animal {value1} of {value2} | Жануарлар: {value1} / {value2} |
-| `gameUI.lockedSeePlusPlans` | Locked. See AIdos Plus plans | Бұл ойын әзірге жабық. AIdos Плюс туралы білу |
 | `leaveGameDialog.leaveThisGame` | Leave this game? | Ойыннан шығасың ба? |
 | `leaveGameDialog.itSOkayToTakeABreak` | It's okay to take a break. Finished games are saved. This round will start over. | Ойынды қоя тұрғың келе ме? Бұрынғы жетістіктерің сақталады. Бұл айналымды басынан ойнайсың. |
 | `leaveGameDialog.keepPlaying` | Keep playing | Ойнай беру |
@@ -641,28 +636,7 @@
 | `grownUpsButton.parents` | 👨‍👩‍👧 Parents | 👨‍👩‍👧 Ата-аналар |
 | `grownUpsButton.grownUps` | 🔒 Grown-ups | 🔒 Ересектер |
 | `grownUpsButton.pressAndHold` | Press and hold | Басып тұр |
-| `premium.dinoDig` | Dino Dig | Динозавр қазбалары |
-| `premium.digUpFossilsAndBuildYourOwn` | Dig up fossils and build your own dinosaur. | Қазба сүйектерді тауып, динозаврдың қаңқасын құрастыр. |
-| `premium.musicBand` | Music Band | Музыка ойнайық |
-| `premium.makeSongsWithDrumsBellsAndYour` | Make songs with drums, bells, and your voice. | Барабан соқ, қоңырау сыңғырлат, әнге қосыл. |
-| `premium.storyQuest` | Story Quest | Ертегіні жалғастыр |
-| `premium.chooseWhatHappensNextInASpoken` | Choose what happens next in a spoken adventure. | Ертегінің қалай жалғасатынын өзің таңда. |
-| `premium.unlockDinoDigMusicBandAndStory` | Unlock Dino Dig, Music Band, and Story Quest | Динозаврлар, музыка және ертегі туралы үш жаңа ойын |
-| `premium.newMissionsAndQuizzesEveryWeek` | New missions and quizzes every week | Апта сайын жаңа тапсырмалар мен сұрақтар |
-| `premium.unlimitedAskQuestions` | Unlimited Ask AIdos questions | AIdos-қа қалағаныңызша сұрақ қоя аласыз |
-| `premium.upTo4ChildProfiles` | Up to 4 child profiles | Төрт балаға жеке-жеке профиль ашуға болады |
-| `premium.weeklyProgressNoteForGrownUps` | Weekly progress note for grown-ups | Балаңыздың жетістіктері туралы апта сайын хабар аласыз |
-| `premium.cancelAnytime` | Cancel anytime | Кез келген уақытта тоқтата аласыз |
-| `premium.monthly` | Monthly | Айлық |
-| `premium.perMonth` | per month | айына |
-| `premium.billedEveryMonth` | Billed every month | Ай сайын төленеді |
-| `premium.yearly` | Yearly | Жылдық |
-| `premium.perYear` | per year | жылына |
-| `premium.just12AMonthSave33` | Just $12 a month · save 33% | Айына 12 доллар · 33% үнемдейсіз |
-| `premium.bestValue` | Best value | Ең тиімдісі |
-| `premium.everythingInMonthly` | Everything in Monthly | Айлық жоспардың барлық мүмкіндігі |
-| `premium.2ExtraMissionPacksAYear` | 2 extra mission packs a year | Жылына қосымша екі тапсырма жинағы |
-| `premium.earlyAccessToNewGames` | Early access to new games | Жаңа ойындарды алғашқылардың бірі болып көріңіз |
+| `parent.socialProject` | AIdos is a social project by Nexcel Solutions. | AIdos — Nexcel Solutions командасының әлеуметтік жобасы. |
 | `parent.savedOnThisDevice` | Saved on this device | Осы құрылғыда сақталады |
 | `parent.needsNoAccountRealNameOrCamera` | AIdos needs no account, real name, or camera. Names, notes, settings, and game progress stay in this browser. Requests may include age groups and topics from your choices. Clear this site’s data in your browser settings to erase it. | AIdos-пен ойнау үшін тіркелудің қажеті жоқ. Шын атыңызды енгізудің де, камераны қосудың да қажеті жоқ. Лақап ат, жазбалар, баптаулар мен ойын нәтижелері осы браузерде сақталады. Сұрауға баланың жас тобы мен таңдаған тақырыбы қосылуы мүмкін. Деректерді өшіру үшін браузерден осы сайттың деректерін тазалаңыз. |
 | `parent.voiceIsOptional` | Voice is optional | Микрофонсыз да ойнауға болады |
@@ -670,13 +644,6 @@
 | `parent.questionsInLearn` | Questions in Learn | Ойын кезінде қойылған сұрақтар |
 | `parent.askSendsTheQuestionTextToOur` | Ask AIdos sends the question text to our server. When enabled, Groq receives your question to answer it. AIdos does not save your questions or log them. Please leave out names, addresses, schools, and phone numbers. | AIdos-қа қойған сұрағыңыз серверге жіберіледі. Groq қосулы болса, сұрағыңыз оған да жіберіледі. AIdos сұрақтарды сақтамайды, журналға да жазбайды. Аты-жөніңізді, мекенжайыңызды, мектебіңізді немесе телефон нөміріңізді жазбаңыз. |
 | `parent.videosPlayThroughYoutubeYoutubeMayShow` | Videos play through YouTube. YouTube may show ads or suggest other videos. For ages 1–2, videos start without sound. Tap to hear them. You can turn off the next video's automatic start. Older children tap to start their first video. | Бейнелер YouTube арқылы көрсетіледі. YouTube жарнама немесе басқа бейне ұсынуы мүмкін. 1–2 жастағы балаларға бейне дыбыссыз қосылады. Дыбыс үшін түртіңіз. Келесі бейненің өздігінен қосылуын өшіре аласыз. Ересектеу балалар алғашқы бейнені өздері қосады. |
-| `plans.plus` | AIdos Plus | AIdos Плюс |
-| `plans.forGrownUps` | For grown-ups | Ата-аналарға |
-| `plans.unlockMoreGamesAndAdventures` | Unlock more games and adventures | Балаңызға тағы қандай ойындар бар? |
-| `plans.gamesYouUnlock` | Games you unlock | Жазылымға кіретін ойындар |
-| `plans.choose` | Choose {value1} | {value1} жоспарын таңдау |
-| `plans.thanksPlusIsComingSoonNoPayment` | Thanks! AIdos Plus {value1} ({value2} {value3}) is coming soon. No payment was taken. | Рақмет! Таңдауыңыз: AIdos Плюс · {value1} ({value2} {value3}). Жазылым жақында ашылады. Төлем алынған жоқ. |
-| `plans.pricesInUsDollarsSubscriptionsAreNot` | Prices in US dollars. Subscriptions are not available to buy yet. | Бағалар АҚШ долларымен көрсетілген. Жазылым әзірге сатылмайды. |
 
 ## Errors · Қателер және дауыс
 
@@ -1154,7 +1121,6 @@
 | `app.pal` | pal | дос |
 | `app.grownUpsParentSettings` | Grown-ups › Parent settings | Ата-аналар › Баптаулар |
 | `app.grownUpsPrivacy` | Grown-ups › Privacy | Ата-аналар › Құпиялық |
-| `app.grownUpsPlus` | Grown-ups › AIdos Plus | Ата-аналар › AIdos Плюс |
 | `app.moveSetup` | Move › {value1} › Setup | Қимыл › {value1} › Баптаулар |
 | `app.move` | Move › {value1} | Қимыл › {value1} |
 | `app.moveResults` | Move › {value1} › Results | Қимыл › {value1} › Нәтиже |

@@ -46,7 +46,7 @@ Verified after rename: Chrome title/Splash/meta, all seven MyPal audio hashes an
 2. Authenticate with `npx wrangler login`.
 3. Set GROQ_API_KEY using npx wrangler secret put GROQ_API_KEY. Set LLM_MODEL using npx wrangler secret put LLM_MODEL to a model enabled in your Groq account. Hunt falls back locally without both. Ask can use the existing Cloudflare AI binding without a Groq key.
 4. `wrangler.jsonc` lists the MyPal URL and development origins in `ALLOWED_ORIGINS`. Add any owned custom production origins explicitly, comma-separated, without trailing slashes.
-5. For local development only, set ALLOWED_ORIGINS in .dev.vars to the exact localhost origins printed by Vite (for example http://localhost:5173 and http://127.0.0.1:5173), plus production if needed. An empty configured value allows no browser Origin. .env.example lists names only, not secrets or defaults.
+5. For local development only, set ALLOWED_ORIGINS in .dev.vars to the exact localhost origins printed by Vite (for example http://localhost:5173 and http://127.0.0.1:5173), and production if needed. An empty configured value allows no browser Origin. .env.example lists names only, not secrets or defaults.
 6. WORKERS_AI_MODEL is optional. Verify the AI binding and model availability in your Cloudflare account. Configure secrets as Worker bindings, never client VITE variables.
 7. Run `npm run build` and `npx wrangler deploy --keep-vars` to preserve dashboard variables. Verify `/api/health` and run `node src/screens/flow.check.mjs` with `FLOW_SITE_URL` set to the deployment URL and Playwright available.
 
@@ -58,7 +58,7 @@ Verified after rename: Chrome title/Splash/meta, all seven MyPal audio hashes an
 
 ## Deployment record — 2026-11-15 (Asia/Qyzylorda)
 
-- Source: main commit d255641 (based on 7b0a2be); Worker plus Vite frontend assets built together. No src files were changed by this task.
+- Source: main commit d255641 (based on 7b0a2be); Worker and Vite frontend assets built together. No src files were changed by this task.
 - Live URL: https://mission-control.tarlan-b06.workers.dev
 - Cloudflare version: bd1e316d-3ac9-4250-906d-a30cb3a68da2, deployed to 100% traffic.
 - Previous version: 5b317da5-5030-4a7b-91a2-43663394078e.

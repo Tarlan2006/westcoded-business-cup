@@ -49,4 +49,4 @@ for (const age of ["3-5", "6-8"] as AgeGroup[]) {
   console.log(`PASS ${age}: 2000 seeds, every N, mobile/desktop, counts, bounds, spacing, quadrants, color variety, stable seed, distinct seeds, unique answers, progression`);
 }
 for (let correct = 0; correct <= 5; correct++) assert.equal(pointsFor(correct), correct * 4 + 8);
-console.log(`PASS ${checked} layouts plus deterministic/alternate seed repeats; smallest SVG ${smallest.toFixed(1)}px (hit targets remain >=44px); rewards 8..28 XP`);
+console.log(`PASS ${checked} layouts and deterministic/alternate seed repeats; smallest SVG ${smallest.toFixed(1)}px (hit targets remain >=44px); rewards 8..28 XP`);

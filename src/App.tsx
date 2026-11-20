@@ -17,7 +17,6 @@ import { codenameFor, MODES, tasksFor } from "./game/content";
 import type { Mission as MissionState, Session } from "./game/mission";
 import { Hub, LearnPage } from "./screens/Home";
 const Privacy = lazy(() => import("./screens/Parent").then(module => ({ default: module.Privacy })));
-const Plans = lazy(() => import("./screens/Plans").then(module => ({ default: module.Plans })));
 const ProfileSetup = lazy(() => import("./screens/ProfileSetup").then(module => ({ default: module.ProfileSetup })));
 import { SessionComplete } from "./screens/SessionComplete";
 const Setup = lazy(() => import("./screens/Setup").then(module => ({ default: module.Setup })));
@@ -40,7 +39,7 @@ const VideoCatalog = lazy(() => import("./screens/VideoCatalog").then(({ VideoCa
 const Balloons = lazy(() => import("./games/balloons"));
 
 type Screen =
-  | { name: "home" | "parent" | "ask" | "privacy" | "plans" }
+  | { name: "home" | "parent" | "ask" | "privacy" }
   | { name: "setup"; mode: Mode }
   | { name: "quiz"; id: string; topic?: string; afterVideo?: boolean }
   | { name: "memory" | "tic-tac-toe" | "sketch" | "space" | "balloons"; id: string }
@@ -56,7 +55,6 @@ function breadcrumb(screen: Screen): string {
   switch (screen.name) {
     case "parent": return t("app.grownUpsParentSettings");
     case "privacy": return t("app.grownUpsPrivacy");
-    case "plans": return t("app.grownUpsPlus");
     case "setup": return t("app.moveSetup", { value1: MODES[screen.mode].name });
     case "mission": return t("app.move", { value1: MODES[screen.session.mode].name });
     case "results": return t("app.moveResults", { value1: MODES[screen.session.mode].name });
@@ -128,7 +126,7 @@ export default function App() {
     if (!finishing) return;
     setPendingNavigation(null);
     setParentsOpen(false);
-    if (privacy || ["home", "parent", "privacy", "plans", "setup", "results", "reward"].includes(current.screen.name)) finishActivity();
+    if (privacy || ["home", "parent", "privacy", "setup", "results", "reward"].includes(current.screen.name)) finishActivity();
   }, [finishing, current.screen.name, finishActivity, privacy]);
 
   useEffect(() => {
@@ -232,7 +230,7 @@ export default function App() {
 
   return <SoundEnabled value={sound}><PrototypeFrame
     theme={themeForActivity(current.screen.name === 'mission' ? current.screen.session.mode : current.screen.name === 'setup' ? current.screen.mode : current.screen.name)}
-    music={sessionActive && !privacy && !['video', 'privacy', 'parent', 'plans'].includes(current.screen.name)}
+    music={sessionActive && !privacy && !['video', 'privacy', 'parent'].includes(current.screen.name)}
     paused={parentsOpen || !!pendingNavigation || finishing}><ActivityXp value={profile?.xp}>
     <SessionClockProvider endsAt={sessionActivity?.endsAt}>
     <ActivityNavigation value={{ onBack: goBack, onHome: goHome, breadcrumb: privacy ? t("app.grownUpsPrivacy") : breadcrumb(current.screen),
@@ -250,6 +248,7 @@ export default function App() {
         const leave = pendingNavigation; setPendingNavigation(null); leave();
       }} />}
       {parentsOpen && sessionActive && !finishing && <ParentSessionDialog onClose={() => setParentsOpen(false)}
+        onPrivacy={() => { setParentsOpen(false); setScreen({ name: "privacy" }); }}
         onExtend={() => { timer.extend(); setParentsOpen(false); }}
         onEnd={() => { timer.end(); setParentsOpen(false); }} />}
     </ActivityNavigation>
@@ -260,7 +259,6 @@ export default function App() {
     const preferences = profile?.preferences ?? defaultPreferences;
 
     if (privacy || screen.name === "privacy") return <Privacy onBack={privacy ? undefined : goBack} />;
-    if (screen.name === "plans") return <Plans onBack={goBack} />;
 
     function chooseProfile(codenameId: string, ageBand: AgeBand, choices: Preferences) {
       if (canStartActivity() && profile?.preferences) return;
@@ -427,7 +425,6 @@ export default function App() {
         }} />;
     }
     return <Hub profile={profile} preferences={preferences} onActivity={openActivity} onToggleSound={toggleSound}
-      onParent={openParents} onPrivacy={() => setScreen({ name: "privacy" })}
-      onPlans={() => setScreen({ name: "plans" })} />;
+      onParent={openParents} onPrivacy={() => setScreen({ name: "privacy" })} />;
   }
 }

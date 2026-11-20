@@ -1,5 +1,5 @@
 {
-  "base": "http://127.0.0.1:5190",
+  "base": "http://127.0.0.1:5198",
   "mockAPI": true,
   "fontScale": 2,
   "youtube": "embed URL and failure UI only; playback is not simulated as verified",
@@ -8,6 +8,16 @@
       "name": "greeting",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 173,
+          "height": 230
+        }
+      ],
       "headings": [
         "Hey pal! Ready for a screen-free adventure?"
       ],
@@ -17,8 +27,18 @@
       "name": "setup",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
       "headings": [
-        "Tell MyPal about your child"
+        "Tell AIdos about your child"
       ],
       "smallTargets": []
     },
@@ -26,6 +46,30 @@
       "name": "video",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "tablet",
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
       "headings": [
         "Video library"
       ],
@@ -35,6 +79,16 @@
       "name": "quiz",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 326,
+          "height": 280
+        }
+      ],
       "headings": [
         "Quiz"
       ],
@@ -44,6 +98,23 @@
       "name": "complete",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "loaded": true,
+          "contained": true,
+          "width": 113,
+          "height": 150
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 76.796875,
+          "height": 102.390625
+        }
+      ],
       "headings": [
         "Way to go, Agent AuditPal!"
       ],
@@ -53,8 +124,39 @@
       "name": "hub",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 76.796875,
+          "height": 102.390625
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -62,8 +164,39 @@
       "name": "garage",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 76.796875,
+          "height": 102.390625
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -71,8 +204,39 @@
       "name": "parents-dialog",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 76.796875,
+          "height": 102.390625
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -80,6 +244,16 @@
       "name": "memory",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
       "headings": [
         "Memory"
       ],
@@ -89,6 +263,16 @@
       "name": "tictactoe",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
       "headings": [
         "Stars vs. Clouds"
       ],
@@ -98,6 +282,16 @@
       "name": "space",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 208.56944274902344,
+          "height": 208.5693359375
+        }
+      ],
       "headings": [
         "How bigis space?"
       ],
@@ -107,6 +301,8 @@
       "name": "space-journey",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
       "headings": [
         "Child"
       ],
@@ -116,6 +312,16 @@
       "name": "sketch",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
       "headings": [
         "Case file: The Wall-Climber"
       ],
@@ -125,6 +331,16 @@
       "name": "sketch-canvas",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 48,
+          "height": 64
+        }
+      ],
       "headings": [
         "The Wall-Climber"
       ],
@@ -134,17 +350,18 @@
       "name": "sketch-reveal",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
       "headings": [
         "Meet Gecko Hero!"
-      ],
-      "smallTargets": []
-    },
-    {
-      "name": "plans",
-      "size": "390x844",
-      "overflow": false,
-      "headings": [
-        "MyPal Plus"
       ],
       "smallTargets": []
     },
@@ -152,6 +369,8 @@
       "name": "mission-setup",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
       "headings": [
         "Choose your game"
       ],
@@ -161,6 +380,16 @@
       "name": "mission",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 326,
+          "height": 280
+        }
+      ],
       "headings": [
         "Scavenger Hunt"
       ],
@@ -170,6 +399,16 @@
       "name": "mission-paused",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 326,
+          "height": 280
+        }
+      ],
       "headings": [
         "Scavenger Hunt"
       ],
@@ -179,8 +418,25 @@
       "name": "mission-result",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "loaded": true,
+          "contained": true,
+          "width": 113,
+          "height": 150
+        },
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 76.796875,
+          "height": 102.390625
+        }
+      ],
       "headings": [
-        "Loading activity…"
+        "Way to go, Agent AuditPal!"
       ],
       "smallTargets": []
     },
@@ -188,8 +444,18 @@
       "name": "ask",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 141.5625,
+          "height": 219.4375
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -197,8 +463,18 @@
       "name": "ask-answer",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 114.34375,
+          "height": 177.234375
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -206,8 +482,18 @@
       "name": "ask-mic-denied",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 141.5625,
+          "height": 219.4375
+        }
+      ],
       "headings": [
-        "Ask MyPal"
+        "Ask AIdos"
       ],
       "smallTargets": []
     },
@@ -215,6 +501,16 @@
       "name": "session-complete",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "jump",
+          "loaded": true,
+          "contained": true,
+          "width": 90,
+          "height": 120
+        }
+      ],
       "headings": [
         "Session complete"
       ],
@@ -224,8 +520,18 @@
       "name": "setup-again",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
       "headings": [
-        "Tell MyPal about your child"
+        "Tell AIdos about your child"
       ],
       "smallTargets": []
     },
@@ -233,6 +539,30 @@
       "name": "hub-science-3-5",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        },
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        },
+        {
+          "pose": "tablet",
+          "loaded": true,
+          "contained": true,
+          "width": 54,
+          "height": 72
+        }
+      ],
       "headings": [
         "Quiz"
       ],
@@ -242,6 +572,16 @@
       "name": "balloons",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "point",
+          "loaded": true,
+          "contained": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
       "headings": [
         "Balloon Count"
       ],
@@ -251,8 +591,18 @@
       "name": "toddler-video",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [
+        {
+          "pose": "wave",
+          "loaded": true,
+          "contained": true,
+          "width": 36,
+          "height": 48
+        }
+      ],
       "headings": [
-        "A little world of wonder ✦"
+        "A little world of wonder "
       ],
       "smallTargets": []
     },
@@ -260,6 +610,8 @@
       "name": "privacy",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
       "headings": [
         "Privacy"
       ],
@@ -269,27 +621,12 @@
       "name": "404",
       "size": "390x844",
       "overflow": false,
+      "oldBrand": false,
+      "mascots": [],
       "headings": [
         "Let's find our way back!"
       ],
       "smallTargets": []
-    }
-  ],
-  "chains": [
-    {
-      "size": "390x844",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
     }
   ],
   "errors": [],
@@ -330,6 +667,7 @@
       "path": "/api/ask",
       "privateData": false,
       "keys": [
+        "lang",
         "question"
       ]
     },
@@ -337,6 +675,7 @@
       "path": "/api/ask",
       "privateData": false,
       "keys": [
+        "lang",
         "question"
       ]
     }

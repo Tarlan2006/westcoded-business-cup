@@ -200,13 +200,39 @@ async function journey(lang) {
     }
     await page.locator("#screen-complete").waitFor();
     await shot("complete");
+    const replay = page.locator(".flow-next");
+    if (await replay.count()) {
+      for (const key of ["upcoming.dino.title","upcoming.music.title","upcoming.story.title"])
+        assert.equal(await replay.getByText(label(key), {exact:true}).count(), 0);
+    }
     await home();
     await shot("hub");
+    const upcoming = page.getByRole("region", {name: label("upcoming.heading")});
+    assert.deepEqual(await upcoming.locator("h3").allTextContents(),
+      ["upcoming.dino.title", "upcoming.music.title", "upcoming.story.title"].map(label));
+    assert.equal(await upcoming.getByText(label("upcoming.badge"), {exact:true}).count(), lang === "en" ? 4 : 3);
+    assert.equal(await upcoming.locator("li[aria-disabled=true]").count(), 3);
+    assert.equal(await upcoming.locator("button,a,input,[tabindex],[role=button]").count(), 0);
+    const credit = page.locator("footer a");
+    assert.equal(await credit.getAttribute("href"), "https://nexcel.kz/free");
+    assert.equal(await credit.getAttribute("rel"), "noopener");
+    for (const [width,height] of [[390,844],[1280,800]]) {
+      await page.setViewportSize({width,height});
+      await upcoming.screenshot({path:directory+"/upcoming-"+width+"x"+height+".png"});
+      await page.locator("footer").screenshot({path:directory+"/footer-"+width+"x"+height+".png"});
+    }
+    await page.setViewportSize({width:390,height:844});
     await page.getByRole("button",{name:label("home.garage"),exact:false}).click();
     await page.locator("#garageModal[open]").waitFor(); await shot("garage");
     await btn("garage.awesome").click();
     await parents();
     await shot("parents");
+    const parentDialog = page.getByRole("dialog");
+    await parentDialog.getByText(label("parent.socialProject")).waitFor();
+    await parentDialog.getByRole("link", {name:label("app.privacy")}).click();
+    await page.locator("article.privacy").waitFor();
+    await btn("activityHeader.back").first().click();
+    await parents();
     const before=await page.evaluate(()=>JSON.parse(localStorage.getItem("mission-control.progress")).profiles[0].xp);
     await page.getByRole("button",{name:lang==="kk"?"EN":"KZ",exact:true}).click();
     await page.getByRole("button",{name:lang==="kk"?"KZ":"EN",exact:true}).click();
@@ -218,7 +244,7 @@ async function journey(lang) {
     for(const [key,name,selector] of [
       ["activitySuggestions.memory","memory",".memory-grid"],["activitySuggestions.ticTacToe","tic-tac-toe",".ttt-board"],
       ["sketchGame.sketchArtist","sketch",".sk-title"],["spaceGame.spaceScale","space",".sp-button-primary"],
-      ["activitySuggestions.quiz","quiz",".quiz-card"],["premium.dinoDig","plans",".plan-card"]
+      ["activitySuggestions.quiz","quiz",".quiz-card"]
     ]) {
       await tile(key); await page.locator(selector).first().waitFor(); await shot(name);
       // The live navigation guard intentionally waits five seconds before confirming an exit.

@@ -485,38 +485,12 @@ select, .gate-answer input, .learn-card textarea { width: 100%; min-height: 48px
 @keyframes splash-bounce { 0%, 100% { transform: translateY(0) scaleY(1); } 45% { transform: translateY(-16px) scaleY(1.02); } 55% { transform: translateY(-16px); } 90% { transform: translateY(0) scaleY(.96); } }
 @keyframes splash-title { from { transform: translateY(12px) scale(.9); opacity: 0; } to { transform: none; opacity: 1; } }
 
-/* AIdos Plus: locked games in the Hub and the plans page. */
-.locked-tile { position: relative; overflow: hidden; border-style: solid; }
-.locked-tile > :not(.chains) { opacity: .72; }
-.locked-tile .activity-icon { filter: grayscale(.6); }
-.chains { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.locked-hint { display: flex; align-items: flex-end; gap: .6rem; margin: -.2rem 0 .3rem; }
-.locked-hint .aidos-mascot { flex: none; }
-.locked-hint p { margin: 0 0 1.2rem; }
-.plus-badge { padding: .2rem .6rem; border-radius: 99px; background: #ffd13b; color: #1e1b4b; font: 800 .7rem var(--font-heading); letter-spacing: .06em; vertical-align: middle; }
-@media (prefers-reduced-motion: no-preference) {
-  .locked-tile[data-rattling] { animation: locked-shake .55s ease-in-out; }
-  .locked-tile[data-rattling] .chains { animation: chains-rattle .55s ease-in-out; }
-  .locked-tile[data-rattling] .chains-padlock { animation: padlock-swing .55s ease-in-out; transform-box: fill-box; transform-origin: 50% 0; }
-}
-@keyframes locked-shake { 20% { transform: rotate(-1.5deg); } 40% { transform: rotate(1.5deg); } 60% { transform: rotate(-1deg); } 80% { transform: rotate(.6deg); } }
-@keyframes chains-rattle { 15%, 55% { transform: translate(-3px, 2px); } 35%, 75% { transform: translate(3px, -2px); } }
-@keyframes padlock-swing { 25% { transform: rotate(14deg); } 55% { transform: rotate(-10deg); } 80% { transform: rotate(5deg); } }
-.plans-hero { display: flex; align-items: center; gap: 1rem; }
-.plans-hero h2 { margin: .2rem 0 .5rem; font-size: clamp(1.35rem, 4.5vw, 2rem); }
-.plans-games { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0; padding: 0; list-style: none; }
-.plans-games li { padding: .3rem .65rem; border-radius: 99px; background: var(--bg-soft); font-weight: 800; font-size: .85rem; }
-.plans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1rem; }
-.plan-card { position: relative; display: flex; flex-direction: column; gap: .4rem; border: 3px solid var(--border); }
-.plan-card[data-plan="yearly"] { border-color: #ffd13b; box-shadow: 0 0 0 4px rgba(255, 209, 59, .18); }
-.plan-card h2 { font-size: 1.4rem; margin: 0; }
-.plan-badge { position: absolute; top: -.8rem; right: 1rem; padding: .2rem .7rem; border-radius: 99px; background: #ffd13b; color: #1e1b4b; font: 800 .75rem var(--font-heading); text-transform: uppercase; }
-.plan-price { margin: 0; } .plan-price strong { font: 700 2.4rem/1 var(--font-heading); } .plan-price span { color: var(--ink-soft); font-weight: 800; }
-.plan-note { margin: 0; color: var(--ink-soft); font-size: .85rem; font-weight: 700; }
-.plan-features { display: grid; gap: .35rem; margin: .4rem 0 .8rem; padding: 0; list-style: none; flex: 1; }
-.plan-features li { display: flex; gap: .45rem; } .plan-features li span { color: var(--success, #2ce69b); font-weight: 900; }
-.plans-status { margin-top: 1rem; border: 2px solid var(--success, #2ce69b); font-weight: 700; }
-@media (max-width: 640px) { .plans-grid { grid-template-columns: 1fr; } .plans-hero { flex-direction: column; text-align: center; } .plans-games { justify-content: center; } }
+.upcoming-games { margin: .65rem 0 0; padding: 0; list-style: none; }
+.upcoming-card { min-width: 0; display: grid; align-content: start; gap: .4rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--bg-soft); color: var(--ink-soft); }
+.upcoming-card h3 { color: var(--text); font: 700 1.1rem/1.25 var(--font-heading); }
+.upcoming-card p { line-height: 1.4; }
+.upcoming-card .activity-icon { filter: saturate(.65); }
+.upcoming-chip { justify-self: start; margin-top: .25rem; padding: .18rem .6rem; border: 1px solid var(--border); border-radius: 1rem; font-weight: 800; font-size: .8rem; }
 
 @keyframes aid-appear { from { opacity: 0; } to { opacity: 1; } }
 

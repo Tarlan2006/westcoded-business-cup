@@ -18,7 +18,7 @@ The user approved a procedural 3D interpretation with an approximate face. The a
 
 These are local source-start measurements, not end-to-end guarantees for mobile networks or speakers. Browser TTS voice/startup and API response time remain device/network dependent. The 143 MP3s were decoded and measured: longest leading low-level interval 40 ms, zero samples at or above 0.999 amplitude. No long leading silence or digital clipping was found. This does not substitute for listening on every physical device.
 
-The 3D check verifies four poses, nonempty rendering, no edge clipping, moving meshes, one shared context, reduced motion and no-WebGL fallback. Smoke checks cover all three ages, games, quiz, Mission, Ask, Parents, session expiry and locked cards at four viewports. Separate speech tests exercise actual PCM mouth levels, mocked browser speech events, cancellation and stable placement. Music checks cover mute, themes, microphone/dialog/tab pauses and reduced motion. Layout checks include doubled text on mobile.
+The 3D check verifies four poses, nonempty rendering, no edge clipping, moving meshes, one shared context, reduced motion and no-WebGL fallback. Smoke checks cover all three ages, games, quiz, Mission, Ask, Parents and session expiry at four viewports. Separate speech tests exercise actual PCM mouth levels, mocked browser speech events, cancellation and stable placement. Music checks cover mute, themes, microphone/dialog/tab pauses and reduced motion. Layout checks include doubled text on mobile.
 
 Commands:
 

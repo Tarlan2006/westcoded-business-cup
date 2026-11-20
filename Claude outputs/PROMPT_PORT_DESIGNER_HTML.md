@@ -40,7 +40,7 @@
 | Нет других игр | Hub с нашими играми (см. ниже). |
 
 ## Hub и игры (в дизайне их нет, добавляем в том же стиле)
-- Экран Hub в стиле дизайнера: тёмный фон, шапка как у video-экрана (аватар, имя, «Parents»), плитки `.hub-tile` с большими иконками и цветными заливками из палитры: Quiz, Memory, Move (Hunt/Roadtrip/Lava), Ask Bleep, Space Scale, Sketch Artist, Tic-tac-toe, Balloon Count (когда будет). Плитки по возрасту как у нас: 1–2 только видео-режим; 3–5 Quiz/Memory/Move/Space; 6–8 плюс Ask, Tic-tac-toe, Sketch.
+- Экран Hub в стиле дизайнера: тёмный фон, шапка как у video-экрана (аватар, имя, «Parents»), плитки `.hub-tile` с большими иконками и цветными заливками из палитры: Quiz, Memory, Move (Hunt/Roadtrip/Lava), Ask Bleep, Space Scale, Sketch Artist, Tic-tac-toe, Balloon Count (когда будет). Плитки по возрасту как у нас: 1–2 только видео-режим; 3–5 Quiz/Memory/Move/Space; 6–8 и дополнительно Ask, Tic-tac-toe, Sketch.
 - Вход в Hub: со страницы Complete вторая кнопка «More games», из шапки video/mission экранов (кроме Mission во время раунда), и как главный экран при повторном запуске.
 - Все наши игры (Memory, Space Scale, Sketch, Tic-tac-toe, Quiz, Move, Ask) уже тёмные; открывай их внутри рамки дизайна: та же шапка, кнопки Back/Home, фон и шрифты. Игры не переписывай, только обёртка и цвета в тему. Сохрани: историю навигации, «Next up», хлебные крошки, press-and-hold Grown-ups (в дизайне это «Hold: Exit», сделай так же), начисление XP.
 

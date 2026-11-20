@@ -1,7 +1,5 @@
 import { InlineSymbol } from "./InlineSymbol";
-import { t } from "../i18n/index";
-import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
-import { Chains } from "./Chains";
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Mascot } from "./Mascot";
 import type { ActivitySuggestion } from "./activitySuggestions";
 
@@ -25,24 +23,6 @@ export function HubTile({ icon, title, children, onClick, tone }: {
 /** Tile icon: Ask AIdos shows AIdos himself, every other activity its emoji. */
 export function ActivityIcon({ item }: { item: ActivitySuggestion }) {
   return item.activity === "ask" ? <Mascot pose="point" className="tile-mascot" /> : item.icon;
-}
-
-/** A AIdos Plus game, wrapped in chains. A tap rattles them, then opens the plans. */
-export function LockedTile({ icon, title, children, onClick }: { icon: string; title: string; children: ReactNode; onClick: () => void }) {
-  const [rattling, setRattling] = useState(false);
-  const timer = useRef(0);
-  useEffect(() => () => window.clearTimeout(timer.current), []);
-  return <button className="activity-tile hub-tile locked-tile" type="button" data-rattling={rattling || undefined}
-    aria-description={t("gameUI.lockedSeePlusPlans")} onClick={() => {
-      if (rattling) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return onClick();
-      setRattling(true);
-      timer.current = window.setTimeout(() => { setRattling(false); onClick(); }, 550);
-    }}>
-    <span className="activity-icon" aria-hidden="true">{icon}</span>
-    <strong>{title}</strong><span className="tile-description">{children}</span>
-    <Chains />
-  </button>;
 }
 
 export function Chip({ selected, children, ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { selected: boolean }) {

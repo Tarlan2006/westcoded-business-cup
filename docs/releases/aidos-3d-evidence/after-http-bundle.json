@@ -210,16 +210,6 @@
       "secretPatterns": false
     },
     {
-      "name": "Plans-C6gQ0NgY.js",
-      "bytes": 1939,
-      "gzipBytes": 838,
-      "consoleLog": 0,
-      "debugger": 0,
-      "localhost": 0,
-      "legacyHost": 0,
-      "secretPatterns": false
-    },
-    {
       "name": "preferences-9w6TDbnG.js",
       "bytes": 1048,
       "gzipBytes": 579,

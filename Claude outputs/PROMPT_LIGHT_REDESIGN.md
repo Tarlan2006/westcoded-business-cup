@@ -1,7 +1,7 @@
 # Codex: весь сайт в светлом стиле Bleep (как приветствие), не только первый экран
 
 Репозиторий: Tarlan2006/westcoded-business-cup, ветка main. `git pull --rebase` перед началом. Коммиты без Co-Authored-By и трейлеров Claude. Этот промпт ЗАМЕНЯЕТ PROMPT_START_SCREEN.md и предыдущие тёмные дизайн-промпты (реконструкция, Memory restyle).
-Эталон дизайна (7 экранов): https://claude.ai/artifact/9KU1snn3b2T89wPg1grqUp : Greeting, Age, Interests, Hub, Memory, Reward, Desktop. Плюс скриншот приветствия пользователя. Весь сайт должен выглядеть как этот светлый «Duolingo-подобный» стиль.
+Эталон дизайна (7 экранов): https://claude.ai/artifact/9KU1snn3b2T89wPg1grqUp : Greeting, Age, Interests, Hub, Memory, Reward, Desktop. Также приложен скриншот приветствия пользователя. Весь сайт должен выглядеть как этот светлый «Duolingo-подобный» стиль.
 
 ## Шаг 0. Аудит
 Сравни текущий сайт (https://mission-control.tarlan-b06.workers.dev/) с эталоном. Первым делом перечисли в ответе: что показывается первым, порядок экранов, какие экраны ещё тёмные/не по дизайну, какие файлы за них отвечают. Затем исправляй.

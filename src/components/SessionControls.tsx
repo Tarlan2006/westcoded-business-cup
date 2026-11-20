@@ -48,8 +48,8 @@ export function SessionHeaderActions() {
   return <><SessionClock /><GrownUpsButton variant="parents" disabled={session.finishing} onOpen={session.openParents} /></>;
 }
 
-export function ParentSessionDialog({ onClose, onExtend, onEnd }: {
-  onClose: () => void; onExtend: () => void; onEnd: () => void;
+export function ParentSessionDialog({ onClose, onExtend, onEnd, onPrivacy }: {
+  onClose: () => void; onPrivacy: () => void; onExtend: () => void; onEnd: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const continueButton = useRef<HTMLButtonElement>(null);
@@ -63,12 +63,14 @@ export function ParentSessionDialog({ onClose, onExtend, onEnd }: {
   return <dialog className="session-dialog" ref={dialog} aria-labelledby="parent-session-title"
     onCancel={(event) => { event.preventDefault(); onClose(); }}>
     <LanguageSwitch />
-        <h2 id="parent-session-title">{t("sessionControls.sessionSettings")}</h2>
+    <h2 id="parent-session-title">{t("sessionControls.sessionSettings")}</h2>
     <SessionClock />
     <div className="session-dialog-actions">
       <button type="button" className="session-button" ref={continueButton} onClick={onClose}>{t("leaveGameDialog.keepPlaying")}</button>
       <button type="button" className="session-button" onClick={onExtend}>{t("sessionControls.5Min")}</button>
       <button type="button" className="session-button" onClick={onEnd}>{t("sessionControls.endSessionNow")}</button>
     </div>
+    <p>{t("parent.socialProject")}</p>
+    <a className="quiet-button" href="/privacy" onClick={event => { event.preventDefault(); onPrivacy(); }}>{t("app.privacy")}</a>
   </dialog>;
 }

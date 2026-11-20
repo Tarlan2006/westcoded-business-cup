@@ -9,17 +9,20 @@ const output = process.env.SMOKE_OUTPUT ?? 'docs/screens';
 const mock = process.env.SMOKE_MOCK_API === '1';
 const sizes = (process.env.SMOKE_SIZES ?? '390x844,768x1024,1280x900,844x390').split(',').map(s => s.split('x').map(Number));
 const browser = await chromium.launch({ ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}), headless: true });
-const report = { base, mockAPI: mock, fontScale: Number(process.env.SMOKE_FONT_SCALE ?? 1), youtube: 'embed URL and failure UI only; playback is not simulated as verified', screens: [], chains: [], errors: [], console: [], network: [] };
+const report = { base, mockAPI: mock, fontScale: Number(process.env.SMOKE_FONT_SCALE ?? 1), youtube: 'embed URL and failure UI only; playback is not simulated as verified', screens: [], errors: [], console: [], network: [] };
 await mkdir(output, { recursive: true });
 const privateMarker = 'PRIVATE_PARENT_NOTE_7D31';
 async function shot(page, name, size) {
   await page.waitForFunction(() => ![...document.querySelectorAll('[role="status"]')].some(el => el.getClientRects().length && /Getting things ready|Opening Balloon Count|Opening Space Scale/.test(el.textContent)));
   await page.evaluate(() => document.fonts.ready);
-  await page.evaluate(async () => {
-    await Promise.all([...document.querySelectorAll('.aidos-mascot img')].filter(img => img.getClientRects().length && !img.closest('[hidden],[inert]')).map(img => { img.loading = 'eager'; return img.decode(); }));
-  });
-  await page.waitForTimeout(100);
-  await page.waitForFunction(() => [...document.querySelectorAll('.aidos-mascot')].filter(el => el.getClientRects().length && !el.closest('[hidden],[inert]')).every(el => el.dataset.reference === 'approved'));
+  const previousScroll = await page.evaluate(() => scrollY);
+  for (const mascot of await page.locator('.aidos-mascot:visible').all()) {
+    if (await mascot.evaluate(el => !!el.closest('[inert],[hidden]'))) continue;
+    await mascot.scrollIntoViewIfNeeded();
+    await mascot.locator('canvas').waitFor();
+    await mascot.and(page.locator('[data-ready=true]')).waitFor();
+  }
+  await page.evaluate(y => window.scrollTo(0, y), previousScroll);
   await page.screenshot({ path: `${output}/${name}-${size}.png`, fullPage: true });
   const layout = await page.evaluate(() => {
     const visible = el => el.getClientRects().length && !el.closest('[hidden],[inert]');
@@ -28,8 +31,8 @@ async function shot(page, name, size) {
       oldBrand: /MyPal|Bleep/i.test(document.body.innerText),
       mascots: [...document.querySelectorAll('.aidos-mascot')].filter(visible).map(el => {
         const box = el.getBoundingClientRect();
-        const art = el.querySelector('.aid-reference').getBoundingClientRect();
-        return { pose: el.dataset.pose, approvedReference: el.dataset.reference === 'approved', loaded: [...el.querySelectorAll('img')].every(img => img.naturalWidth && /\/mascot\/aidos-/.test(img.currentSrc)), contained: art.left >= box.left - 3 && art.right <= box.right + 3, width: box.width, height: box.height };
+        const art = el.querySelector('.aid-frames').getBoundingClientRect();
+        return { pose: el.dataset.pose, loaded: el.dataset.ready === 'true', contained: art.left >= box.left - 3 && art.right <= box.right + 3, width: box.width, height: box.height };
       }),
       headings: [...document.querySelectorAll('h1')].filter(visible).map(el => el.textContent),
       smallTargets: [...document.querySelectorAll('button,a,input,select')].filter(visible).filter(el => {
@@ -46,7 +49,7 @@ async function home(page) {
   else await page.getByRole('button', { name: 'Home, back to activities', exact: true }).first().click();
   const leave = page.getByRole('button', { name: 'Leave game', exact: true });
   if (await leave.isVisible()) await leave.click();
-  await page.getByRole('region', { name: 'Start here', exact: true }).waitFor();
+  await page.locator('.flow-start').waitFor();
 }
 async function tile(page, title) { await page.locator('.activity-grid').getByRole('button', { name: new RegExp(title) }).click(); }
 async function hold(button) { await button.focus(); await button.press('Enter', { delay: 1600 }); }
@@ -61,6 +64,7 @@ try {
     const size = `${width}x${height}`;
     const context = await browser.newContext({ viewport: { width, height }, hasTouch: width < 900, reducedMotion: 'reduce' });
     await context.addInitScript(() => {
+      localStorage.setItem('mypal.lang', 'en');
       localStorage.setItem('mission-control.sound', 'off');
       const original = Date.now; window.auditOffset = 0; Date.now = () => original() + window.auditOffset;
     });
@@ -104,7 +108,7 @@ try {
     await page.getByRole('button', { name: /Garage/ }).click(); await shot(page, 'garage', size);
     await page.getByRole('button', { name: 'AWESOME!', exact: true }).click();
     assert.equal(await page.locator('.activity-grid').getByRole('button', { name: /Balloon Count/ }).count(), 0);
-    await page.reload(); await page.getByRole('region', { name: 'Start here', exact: true }).waitFor();
+    await page.reload(); await page.locator('.flow-start').waitFor();
     assert(await page.evaluate(() => !!JSON.parse(localStorage.getItem('mission-control.session'))?.sessionEndsAt));
     await hold(page.getByRole('button', { name: 'Parents, press and hold', exact: true }));
     await page.getByRole('dialog').waitFor(); await shot(page, 'parents-dialog', size);
@@ -126,20 +130,10 @@ try {
       }
       await home(page);
     }
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    for (const title of ['Dino Dig', 'Music Band', 'Story Quest']) {
-      const locked = page.locator('.activity-grid').getByRole('button', { name: new RegExp(title) });
-      assert.equal(await locked.locator('svg.chains').count(), 1);
-      if (title === 'Music Band') { await locked.focus(); await page.keyboard.press('Enter'); } else await locked.click();
-      assert.equal(await locked.getAttribute('data-rattling'), 'true');
-      const animation = await locked.locator('.chains').evaluate(el => getComputedStyle(el).animationName);
-      assert(animation.includes('chains-rattle')); report.chains.push({ size, title, animation });
-      await page.getByRole('heading', { name: 'AIdos Plus', exact: true }).waitFor();
-      if (title === 'Dino Dig') await shot(page, 'plans', size);
-      await home(page);
-    }
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    await tile(page, 'Dino Dig'); await page.getByRole('heading', { name: 'AIdos Plus', exact: true }).waitFor(); await home(page);
+    const upcoming = page.getByRole('region', { name: 'Coming soon' });
+    assert.deepEqual(await upcoming.locator('h3').allTextContents(), ['Dino Dig', 'Music Band', 'Story Quest']);
+    assert.equal(await upcoming.locator('li[aria-disabled=true]').count(), 3);
+    assert.equal(await upcoming.locator('button, a, [tabindex]').count(), 0);
     await tile(page, 'Scavenger Hunt'); await shot(page, 'mission-setup', size);
     await page.getByRole('button', { name: 'Start game', exact: true }).click();
     await page.getByRole('button', { name: /I DID IT/ }).waitFor();
@@ -150,7 +144,7 @@ try {
     await page.getByRole('button', { name: 'Pause', exact: true }).click();
     await shot(page, 'mission-paused', size);
     await page.getByRole('button', { name: 'End mission', exact: true }).click();
-    await page.getByRole('heading', { level: 1 }).first().waitFor(); await shot(page, 'mission-result', size); await home(page);
+    await page.locator('#screen-complete').waitFor(); await page.locator('.flow-next-grid button').first().waitFor(); await shot(page, 'mission-result', size); await home(page);
     await tile(page, 'Ask AIdos'); await page.getByPlaceholder('Type your question').waitFor(); await shot(page, 'ask', size);
     await page.getByPlaceholder('Type your question').fill('Why is the sky blue?'); await page.getByRole('button', { name: 'Ask', exact: true }).click();
     await page.getByRole('button', { name: 'Ask another', exact: true }).waitFor(); await shot(page, 'ask-answer', size);
@@ -174,8 +168,8 @@ try {
       profile.preferences = { ...profile.preferences, first: 'learn', needs: ['science'], interests: ['Space'] };
       localStorage.setItem('mission-control.progress', JSON.stringify(progress));
     });
-    await page.reload(); await page.getByRole('region', { name: 'Start here', exact: true }).waitFor();
-    assert(!(await page.getByRole('region', { name: 'Start here', exact: true }).innerText()).includes('Space Scale'));
+    await page.reload(); await page.locator('.flow-start').waitFor();
+    assert(!(await page.locator('.flow-start').innerText()).includes('Space Scale'));
     await shot(page, 'hub-science-3-5', size);
     await tile(page, 'Balloon Count'); await shot(page, 'balloons', size);
     await home(page); await hold(page.getByRole('button', { name: 'Parents, press and hold', exact: true })); await page.getByRole('button', { name: 'End session now', exact: true }).click();
@@ -186,7 +180,7 @@ try {
     await context.close(); console.log(`PASS flow ${size}`);
   }
   assert(report.network.every(r => !r.privateData), 'Private parent/child data left the browser');
-  assert(report.network.filter(r => r.path === '/api/ask').every(r => JSON.stringify(r.keys) === '["question"]'), 'Ask payload must contain only question');
+  assert(report.network.filter(r => r.path === '/api/ask').every(r => JSON.stringify(r.keys.sort()) === '["lang","question"]'), 'Ask sends the question and its language');
   assert.equal(report.errors.length, 0, JSON.stringify(report.errors));
   assert(report.screens.every(s => !s.oldBrand), 'Old brand visible');
   assert(report.screens.every(s => s.mascots.every(m => m.loaded && m.contained)), 'Mascot missing or outside its frame');

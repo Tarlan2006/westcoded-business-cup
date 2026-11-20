@@ -387,25 +387,6 @@
       "smallTargets": []
     },
     {
-      "name": "plans",
-      "size": "390x844",
-      "overflow": false,
-      "oldBrand": false,
-      "mascots": [
-        {
-          "pose": "jump",
-          "loaded": true,
-          "contained": true,
-          "width": 98,
-          "height": 130
-        }
-      ],
-      "headings": [
-        "AIdos Plus"
-      ],
-      "smallTargets": []
-    },
-    {
       "name": "mission-setup",
       "size": "390x844",
       "overflow": false,
@@ -1039,25 +1020,6 @@
       ],
       "headings": [
         "Meet Gecko Hero!"
-      ],
-      "smallTargets": []
-    },
-    {
-      "name": "plans",
-      "size": "768x1024",
-      "overflow": false,
-      "oldBrand": false,
-      "mascots": [
-        {
-          "pose": "jump",
-          "loaded": true,
-          "contained": true,
-          "width": 98,
-          "height": 130
-        }
-      ],
-      "headings": [
-        "AIdos Plus"
       ],
       "smallTargets": []
     },
@@ -1699,25 +1661,6 @@
       "smallTargets": []
     },
     {
-      "name": "plans",
-      "size": "1280x900",
-      "overflow": false,
-      "oldBrand": false,
-      "mascots": [
-        {
-          "pose": "jump",
-          "loaded": true,
-          "contained": true,
-          "width": 98,
-          "height": 130
-        }
-      ],
-      "headings": [
-        "AIdos Plus"
-      ],
-      "smallTargets": []
-    },
-    {
       "name": "mission-setup",
       "size": "1280x900",
       "overflow": false,
@@ -2355,25 +2298,6 @@
       "smallTargets": []
     },
     {
-      "name": "plans",
-      "size": "844x390",
-      "overflow": false,
-      "oldBrand": false,
-      "mascots": [
-        {
-          "pose": "jump",
-          "loaded": true,
-          "contained": true,
-          "width": 98,
-          "height": 130
-        }
-      ],
-      "headings": [
-        "AIdos Plus"
-      ],
-      "smallTargets": []
-    },
-    {
       "name": "mission-setup",
       "size": "844x390",
       "overflow": false,
@@ -2627,68 +2551,6 @@
         "Let's find our way back!"
       ],
       "smallTargets": []
-    }
-  ],
-  "chains": [
-    {
-      "size": "390x844",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "768x1024",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "768x1024",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "768x1024",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "1280x900",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "1280x900",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "1280x900",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "844x390",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "844x390",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "844x390",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
     }
   ],
   "errors": [],

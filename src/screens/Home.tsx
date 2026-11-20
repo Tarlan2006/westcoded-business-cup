@@ -7,11 +7,9 @@ import { useSoundEnabled } from "../audio/sfx";
 import { ActivityHeader } from "../components/ActivityHeader";
 import { availableActivities, orderedGroups, startingActivity, type ActivitySuggestion } from "../components/activitySuggestions";
 const Garage = lazy(() => import("../components/Garage").then(module => ({ default: module.Garage })));
-import { ActivityIcon, HubTile, LockedTile } from "../components/GameUI";
-import { lockedGames } from "../game/premium";
+import { ActivityIcon, HubTile } from "../components/GameUI";
 import { Mascot } from "../components/Mascot";
 import { PrototypeHeader } from "../components/PrototypeHeader";
-import { APP_NAME } from "../brand";
 import { codenameFor } from "../game/content";
 import type { ActivityGroup, Preferences } from "../state/preferences";
 import { rankName, type ChildProfile } from "../state/progress";
@@ -35,14 +33,20 @@ const tileTone: Partial<Record<Activity, "active" | "learn" | "watch" | "mint" |
   hunt: "active", roadtrip: "sun", lava: "active", memory: "mint", "tic-tac-toe": "mint", sketch: "sun", video: "watch", balloons: "sun",
 };
 
+const upcomingGames = [
+  { icon: "🦕", title: "upcoming.dino.title", description: "upcoming.dino.description" },
+  { icon: "🥁", title: "upcoming.music.title", description: "upcoming.music.description" },
+  { icon: "📖", title: "upcoming.story.title", description: "upcoming.story.description" },
+] as const;
+
 function groupOf(activity: Activity): ActivityGroup {
   if (activity === "video" || activity === "toddler") return "watch";
   if (activity === "hunt" || activity === "roadtrip" || activity === "lava") return "active";
   return "learn";
 }
 
-export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, onActivity, onPlans }: {
-  profile: ChildProfile; preferences: Preferences; onToggleSound: () => void; onParent: () => void; onPrivacy: () => void; onPlans: () => void;
+export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, onActivity }: {
+  profile: ChildProfile; preferences: Preferences; onToggleSound: () => void; onParent: () => void; onPrivacy: () => void;
   onActivity: (activity: Activity, topic?: string) => void;
 }) {
   const [garage, setGarage] = useState(false);
@@ -77,15 +81,17 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
             tone={tileTone[item.activity] ?? "learn"} icon={<ActivityIcon item={item} />} title={item.title} onClick={() => open(item)}>{item.description}</HubTile>)}
         </div>
       </section>)}
-      <section className="activity-section" aria-labelledby="group-plus">
-        <h2 id="group-plus" className="font-display text-2xl font-bold">{t("home.unlockMore")} <span className="plus-badge">{t("home.plus", { value1: document.documentElement.lang === "kk" ? APP_NAME : APP_NAME.toUpperCase() })}</span></h2>
-        <div className="locked-hint">
-          <Mascot pose="point" size={84} />
-          <p className="hub-greeting-bubble">{t("home.theseGamesAreStillLockedUpAsk")}</p>
-        </div>
-        <div className="activity-grid locked-grid">
-          {lockedGames.map((game) => <LockedTile key={game.id} icon={game.icon} title={game.title} onClick={onPlans}>{game.description}</LockedTile>)}
-        </div>
+      <section className="activity-section" aria-labelledby="upcoming-heading">
+        <h2 id="upcoming-heading" className="font-display text-2xl font-bold">{t("upcoming.heading")}</h2>
+        <p>{t("upcoming.intro")}</p>
+        <ul className="activity-grid upcoming-games">
+          {upcomingGames.map(game => <li key={game.title} className="upcoming-card" aria-disabled="true">
+            <span aria-hidden="true" className="activity-icon">{game.icon}</span>
+            <h3>{t(game.title)}</h3>
+            <p>{t(game.description)}</p>
+            <span className="upcoming-chip">{t("upcoming.badge")}</span>
+          </li>)}
+        </ul>
       </section>
       <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>{t("app.privacy")}</a>
     </div>

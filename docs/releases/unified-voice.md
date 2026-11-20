@@ -10,7 +10,7 @@ Production: https://aidos.nexcel.kz. Release via Cloudflare Builds from main; se
 - Privacy and architecture docs describe server synthesis honestly. Historical authoring references and dev-only standalone game previews do not define the production voice.
 
 ## Verification
-- Typecheck, lint, production build, content checks (143 required clips plus all 238 catalogue paths), Sketch and Space scoring, Worker/FAQ and voice-route tests passed.
+- Typecheck, lint, production build, content checks (143 required clips and all 238 catalogue paths), Sketch and Space scoring, Worker/FAQ and voice-route tests passed.
 - Decoded all 238 MP3s: no clipped samples, peak 0.6521, longest leading low-amplitude interval 465 ms.
 - Three greeting plays started at about 59 ms, 0.4 ms and 0.2 ms locally. A cancelled slow download did not block the next line. Quiz, Sketch, Balloons and FAQ fixed lines loaded local prepared assets without synthesis requests.
 - Browser Ask test: three replays, one dynamic audio download, zero device voice calls or electronic beep oscillators. This test mocks the dynamic provider response; it does not establish live service availability.
@@ -23,4 +23,4 @@ The fixed catalogue was successfully generated through production. Subsequent li
 ## Rollback
 See the current section of `docs/DEPLOY.md`. The foundation commit `220816c` preserves the supplied image and server route but has the earlier client voice implementation. Prefer a corrective forward release; do not reset shared main.
 
-Production verification after e065bbf: exact PNG, greeting MP3 and voice-index hashes match local files; real Ask FAQ plus voice started in 424 ms without a TTS call. The arbitrary synthesis probe still returned the daily-limit code. Manifest fetches now also carry the voice version to bypass older browser caches.
+Production verification after e065bbf: exact PNG, greeting MP3 and voice-index hashes match local files; real Ask FAQ and voice started in 424 ms without a TTS call. The arbitrary synthesis probe still returned the daily-limit code. Manifest fetches now also carry the voice version to bypass older browser caches.

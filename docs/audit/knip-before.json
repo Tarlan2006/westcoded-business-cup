@@ -739,31 +739,6 @@
       "unresolved": []
     },
     {
-      "file": "src/game/premium.ts",
-      "binaries": [],
-      "catalog": [],
-      "catalogReferences": [],
-      "dependencies": [],
-      "devDependencies": [],
-      "duplicates": [],
-      "enumMembers": [],
-      "exports": [
-        {
-          "name": "plusFeatures",
-          "line": 11,
-          "col": 14,
-          "pos": 658
-        }
-      ],
-      "files": [],
-      "namespaceMembers": [],
-      "optionalPeerDependencies": [],
-      "subpaths": [],
-      "types": [],
-      "unlisted": [],
-      "unresolved": []
-    },
-    {
       "file": "src/games/space/index.ts",
       "binaries": [],
       "catalog": [],

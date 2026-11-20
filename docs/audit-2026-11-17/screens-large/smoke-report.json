@@ -140,15 +140,6 @@
       "smallTargets": []
     },
     {
-      "name": "plans",
-      "size": "390x844",
-      "overflow": false,
-      "headings": [
-        "MyPal Plus"
-      ],
-      "smallTargets": []
-    },
-    {
       "name": "mission-setup",
       "size": "390x844",
       "overflow": false,
@@ -273,23 +264,6 @@
         "Let's find our way back!"
       ],
       "smallTargets": []
-    }
-  ],
-  "chains": [
-    {
-      "size": "390x844",
-      "title": "Dino Dig",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Music Band",
-      "animation": "chains-rattle"
-    },
-    {
-      "size": "390x844",
-      "title": "Story Quest",
-      "animation": "chains-rattle"
     }
   ],
   "errors": [],

@@ -1,6 +1,6 @@
 # MyPal release audit
 
-Audit started 2026-11-15. Baseline: `85db5da`; final audit also includes upstream `827684f` (locked-game chains) and `06506e2` (preschool video replacement). No deployment is authorized in this task.
+Audit started 2026-11-15. Baseline: `85db5da`; final audit also includes upstream `827684f` and `06506e2` (preschool video replacement). No deployment is authorized in this task.
 Existing visual identity, colors, fonts and product copy are preserved. Error/404 copy and metadata are within scope.
 
 ## Method and baseline
@@ -49,7 +49,7 @@ Further stage results, screenshots, scanner output, cleanup decisions and before
 - Added canonical, OpenGraph description/type/URL/dimensions, Twitter large card, robots and sitemap for the two actual public URLs. Internal games are intentionally not advertised as nonexistent routes.
 - Generated `public/og-image.png` at exactly 1200×630 from existing mascot art, brand palette, font and greeting. No new visual identity. Messaging-client cache refresh is not tested without those accounts.
 - Privacy has server-rendered unique metadata for crawlers. App state changes update document title/description. Critical existing WOFF2 fonts are preloaded; existing `font-display: swap` remains.
-- Plans, Parent Setup, mission Setup, Sketch/Space wrappers now load lazily. Main bundle drops from Vite 96.70 KB gzip to 93.26 KB at this stage. All game code and behavior are retained.
+- Parent Setup, mission Setup, Sketch/Space wrappers now load lazily. Main bundle drops from Vite 96.70 KB gzip to 93.26 KB at this stage. All game code and behavior are retained.
 - Typecheck and build pass. HTTP headers/statuses were exercised against the built local Worker on port 5181.
 
 ## Stage 4 — interaction, accessibility and upstream merge
@@ -63,10 +63,9 @@ Further stage results, screenshots, scanner output, cleanup decisions and before
 | A11Y-01 | P1 | White/pale Sketch caption on pale reference card | Reused existing dark ink for readable contrast; card/art palette retained |
 | UI-04 | P2 | Sketch intro exceeds tablet width due to rotated art and grid minimums | Constrained grid tracks and gave the rotated cover an 8px inset |
 | A11Y-02 | P2 | Small sound/header/video controls; missing h1 on Space stages | Minimum 44px targets and semantic headings, without changing wording/type sizes |
-| A11Y-03 | P2 | Accessible button names omit visible wording | Natural button names plus supplementary description; visible text retained |
+| A11Y-03 | P2 | Accessible button names omit visible wording | Natural button names and supplementary description; visible text retained |
 | DEP-01 | P1 | High-severity tmp advisory via development patch-package | Compatible lockfile update to patch-package 8.0.1; npm audit now reports zero vulnerabilities |
 
-The newest main added steel chains and a 550ms rattle before opening MyPal Plus. Pull/rebase succeeded, but applying autostash conflicted in `GameUI.tsx`. Work stopped; the user explicitly authorised the merge. The upstream `Chains` component, all animation CSS, timer cleanup, repeat-tap guard and reduced-motion immediate action are retained. The old direct-click handler and emoji-lock markup from the stashed version were discarded in favour of main. Accessibility uses the visible title/description as the button name and `aria-description` for the locked state. No chain logic was removed. `useId` was removed only because the unused Segmented component was deleted; the animation's `useEffect/useRef/useState` remain.
 
 The shared Chip component was retained: TypeScript showed that the standalone Balloon preview imports it, despite Knip marking it unused. The initial deletion was reversed before committing. This is why static-analysis output was reviewed rather than applied mechanically.
 
@@ -78,7 +77,7 @@ Removed confirmed unused code:
 - Old `RocketArt` SVG in Space; the active artwork and mascot remain.
 - Unused `onVolumeChange` observer loop and its now-unused state in the audio engine. The playback graph, microphone and voice generation are unchanged.
 - Unused `topicsFromInterests` / `interestsFromTopics` converters.
-- Unnecessary exports of internal voice settings, preference arrays/type, animal list, premium features and recorder duration constant.
+- Unnecessary exports of internal voice settings, preference arrays/type, animal list and recorder duration constant.
 
 Retained deliberately:
 
@@ -92,10 +91,9 @@ Retained deliberately:
 
 ## Final verification and evidence
 
-- Build, client/Worker typecheck, lint, content, Sketch scoring, Space scale checks and mocked Worker/FAQ suite pass. Content: 132 lines, 48 tasks, 27 quiz questions, 30 FAQ answers, 143/143 clips. Worker tests include injection, privacy fields, profanity, empty/long input, upstream failures/timeouts, STT, CORS, limits and routing. FAQ checks cover 90 question formulations plus collision regressions.
+- Build, client/Worker typecheck, lint, content, Sketch scoring, Space scale checks and mocked Worker/FAQ suite pass. Content: 132 lines, 48 tasks, 27 quiz questions, 30 FAQ answers, 143/143 clips. Worker tests include injection, privacy fields, profanity, empty/long input, upstream failures/timeouts, STT, CORS, limits and routing. FAQ checks cover 90 question formulations and collision regressions.
 - [Normal browser report](docs/screens/smoke-report.json) and [screenshots](docs/screens): 390×844, 768×1024, 1280×900 and 844×390. Tests assert one visible h1, no horizontal overflow, minimum 44px interactive areas (including enclosing labels), no uncaught JavaScript exceptions, no private-note/nickname sentinel in API bodies, and Ask's question-only payload.
-- Full path: Greeting → mandatory nickname validation → timed session → video embed → quiz → Complete → Hub → Garage → Memory/Tic-tac-toe/Space/Sketch → PNG download → Plus plans → Hunt/pause/result → Ask → denied microphone → offline fallback → session expiry/reload → Setup again → 3–5 science/balloons → 1–2 cinema → Privacy → 404.
-- All three locked cards are checked with motion enabled at every viewport (12 animation checks). The script asserts `data-rattling`, `chains-rattle`, and arrival at Plans. Music Band uses Enter; reduced motion is also checked. Open games are exercised with a real click/drawing export, not merely inspected for their presence.
+- Full path: Greeting → mandatory nickname validation → timed session → video embed → quiz → Complete → Hub → Garage → Memory/Tic-tac-toe/Space/Sketch → PNG download → Hunt/pause/result → Ask → denied microphone → offline fallback → session expiry/reload → Setup again → 3–5 science/balloons → 1–2 cinema → Privacy → 404.
 - [Large-text report](docs/screens/large-text/smoke-report.json): same path at 390×844 with root text size 200%. This simulates enlarged CSS text; it is not proof of native iOS Dynamic Type behaviour.
 - Console resource failures are intentional in this suite: one mocked 503, one offline request and the explicit 404 visit per viewport. They are retained in reports, not misrepresented as a literally empty console. No application runtime exception is expected or accepted.
 - [HTTP and bundle checks](docs/audit/after-http-bundle.json): expected 200/404, security headers, own/legacy/dev Origin accepted, foreign Origin 403, bounded 40-request **local** rate-limit test includes 429 and Retry-After. API responses are no-store; hash-named assets are immutable. Public HTTP→HTTPS is covered by Worker tests; no production deployment occurred.
@@ -104,7 +102,7 @@ Retained deliberately:
 
 ### Performance and SEO
 
-Baseline and final build figures use the same measurement methods. The baseline predates upstream's new chains; the final includes them. Garage, Privacy and secondary screens are loaded lazily. The final Vite main bundle is **93.09 KB gzip**, versus **96.70 KB** before; this is approximately the requested 93KB target. Node zlib measurements are recorded independently in the JSON reports; do not mix those numbers with Vite's estimator. No functionality was removed to reduce size.
+Baseline and final build figures use the same measurement methods. Garage, Privacy and secondary screens are loaded lazily. The final Vite main bundle is **93.09 KB gzip**, versus **96.70 KB** before; this is approximately the requested 93KB target. Node zlib measurements are recorded independently in the JSON reports; do not mix those numbers with Vite's estimator. No functionality was removed to reduce size.
 
 Lighthouse mobile navigation results (P / A / BP / SEO):
 
@@ -134,11 +132,11 @@ The requested SEO scanner improved from **48/100, two errors** on the initial pr
 | P3 | HSTS/custom-domain hardening and static SEO warnings | Not claimed fixed; inspect Cloudflare policy after deployment and consider SSR only if public search traffic matters |
 | P3 | Uptime monitoring | Health endpoint exists; no external monitor/account configured, so no fictional status link |
 
-No design-original files or Cloudflare secrets were changed. README now describes the audience, working product, proposed $18/month or $144/year model, and limitations honestly: premium games/checkout/progress emails are not implemented. Deployment docs describe the pending release and rollback using the version captured immediately before a future deployment, rather than a stale hard-coded version.
+No design-original files or Cloudflare secrets were changed. README now describes the audience, working product and current feature coverage. Deployment docs describe the pending release and rollback using the version captured immediately before a future deployment, rather than a stale hard-coded version.
 
 ## Final synchronisation
 
-The last pull brought `06506e2`, replacing the 3–5 video with a dinosaur video. It merged without conflicts. Build, typecheck, lint and content checks were rerun; its long title was checked on all four viewports with no overflow ([evidence](docs/screens/new-main-video.json)). The full 120-state/12-chain smoke plus the 30-state/3-chain enlarged-text run passed before this isolated data replacement; the changed video received the targeted repeat. Final bundle/HTTP and navigation Lighthouse reports were refreshed after it. There are 154 screenshot artifacts (120 normal, 30 enlarged text, four new-video checks).
+The last pull brought `06506e2`, replacing the 3–5 video with a dinosaur video. It merged without conflicts. Build, typecheck, lint and content checks were rerun; its long title was checked on all four viewports with no overflow ([evidence](docs/screens/new-main-video.json)). The full 120-state smoke and the 30-state enlarged-text run passed before this isolated data replacement; the changed video received the targeted repeat. Final bundle/HTTP and navigation Lighthouse reports were refreshed after it. There are 154 screenshot artifacts (120 normal, 30 enlarged text, four new-video checks).
 
 No release or Cloudflare secret change was performed. Commits are local; this audit does not claim a push or deployment. The conflict-recovery autostash remains as a safety copy.
 

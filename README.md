@@ -14,7 +14,7 @@ To add a language, copy both dictionary files for the new locale, preserving key
 
 ## Who it helps
 
-Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. AIdos offers voice-led movement missions for a screen-free break, plus optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. AIdos is not childcare or a safety monitor.
+Working parents in the United States need a short, predictable break while children aged 1–8 need engaging play. AIdos offers voice-led movement missions for a screen-free break, and optional videos and learning games. Parents choose the duration; an adult should supervise young children and clear a safe play area. AIdos is not childcare or a safety monitor.
 
 ## How it works
 
@@ -36,11 +36,11 @@ Movement modes include Scavenger Hunt, Floor is Lava and Roadtrip Spy for passen
 
 A single host connects spoken movement tasks, learning games, local rewards and a parent-set clock. Recorded prompts keep missions usable when cloud replies fail; optional Ask replies use guarded models and a prepared FAQ. Fixed lines have local recordings in both languages.
 
-## Business model and current limits
+## A social project for families
 
-The prototype shows **AIdos Plus: $18/month or $144/year**. These are proposed prices, not an active subscription service. The locked Dino Dig, Music Band and Story Quest cards open the plans screen; checkout, these premium games, weekly content and progress emails are not implemented. Monetisation, parental consent and provider retention need validation before launch.
+AIdos is a Nexcel Solutions social project. Families can use all released activities. Dino Dig, Music Band and Story Quest are upcoming games.
 
-There are no accounts, cross-device sync or payment processing. Reload recovery uses this browser's localStorage. Network-free recovery works while the page is loaded; there is no offline service worker guaranteeing a fresh launch. An external uptime monitor is **not configured**; `/api/health` provides a health endpoint.
+Profiles stay on this device. Reload recovery uses this browser's localStorage. Network-free recovery works while the page is loaded; there is no offline service worker guaranteeing a fresh launch. An external uptime monitor is **not configured**; `/api/health` provides a health endpoint.
 
 ## Stack and architecture
 
