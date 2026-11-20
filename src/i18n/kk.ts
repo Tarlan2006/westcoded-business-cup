@@ -3,6 +3,7 @@ import type en from "./en";
 
 export default {
   ...content,
+  "footer.creatorCredit": "<creator>Nexcel Solutions</creator> командасы жасады",
   "preview.controls": "Көріністі баптау",
   "preview.dev": "СЫНАҚ НҰСҚАСЫ",
   "preview.age": "{value} жас",

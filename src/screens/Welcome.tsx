@@ -1,3 +1,4 @@
+import { CreatorCredit } from "../components/CreatorCredit";
 import { t, subscribe } from "../i18n/index";
 import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { playQueue, unlock } from "../audio/engine";
@@ -53,5 +54,6 @@ export function Welcome({ repeat, onContinue, onToggleSound }: {
       <button type="button" onClick={() => { if (sound) { void unlock().then(() => playQueue(["common_setup_greeting"])).catch(() => {}); } onContinue(); }}
         className="w-full sm:w-auto px-12 py-4 rounded-2xl btn-game btn-lime font-display font-bold text-lg tracking-wider uppercase cursor-pointer">{t("welcome.continue")}</button>
     </div>
+    <footer><CreatorCredit /></footer>
   </main>;
 }

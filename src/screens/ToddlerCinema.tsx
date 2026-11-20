@@ -1,3 +1,4 @@
+import { CreatorCredit } from "../components/CreatorCredit";
 import { InlineSymbol, withSymbols } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -156,6 +157,9 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
         <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{position === index ? t("toddlerCinema.enjoyThisLittleMoment") : t("toddlerCinema.startsAfterA10SecondBreak")}</span>
       </button>)}</div>
     </section>
-    <footer className="toddler-footer"><p>{t("toddlerCinema.madeForWatchingTogetherVideosPlayThrough")}</p><p>{t("toddlerCinema.onlyThisLittlePlaylistPlaysNext")}</p></footer>
+    <footer>
+      <div className="toddler-footer"><p>{t("toddlerCinema.madeForWatchingTogetherVideosPlayThrough")}</p><p>{t("toddlerCinema.onlyThisLittlePlaylistPlaysNext")}</p></div>
+      <CreatorCredit />
+    </footer>
   </main>;
 }

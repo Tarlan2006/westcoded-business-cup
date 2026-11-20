@@ -1,3 +1,4 @@
+import { CreatorCredit } from "../components/CreatorCredit";
 import { InlineSymbol } from "../components/InlineSymbol";
 import { t, subscribe } from "../i18n/index";
 import { lazy, Suspense, useState, type ReactNode } from "react";
@@ -88,6 +89,7 @@ export function Hub({ profile, preferences, onToggleSound, onParent, onPrivacy, 
       </section>
       <a className="quiet-button" href="/privacy" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>{t("app.privacy")}</a>
     </div>
+    <footer><CreatorCredit /></footer>
     {garage && <Suspense fallback={<p role="status">{t("app.gettingThingsReady")}</p>}><Garage name={name} sessions={profile.garageSessions ?? 0} onClose={() => setGarage(false)} /></Suspense>}
   </main>;
 }

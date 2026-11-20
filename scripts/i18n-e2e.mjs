@@ -126,7 +126,7 @@ async function journey(lang) {
       if (info.empty) findings.add(lang+" "+name+" unnamed buttons: "+info.empty);
       if (/undefined|\[object/.test(info.text)) findings.add(lang+" "+name+" invalid text");
       if (lang === "kk") {
-        const latin = info.text.replace(/AIdos|KZ|EN|XP|YouTube|NASA Space Place|GUS ADVENTURES|Super Simple Songs|Joy Nest Kids|Cloudflare Workers AI|Groq|JavaScript/gi,"").match(/[a-z]+/gi);
+        const latin = info.text.replace(/AIdos|Nexcel Solutions|KZ|EN|XP|YouTube|NASA Space Place|GUS ADVENTURES|Super Simple Songs|Joy Nest Kids|Cloudflare Workers AI|Groq|JavaScript/gi,"").match(/[a-z]+/gi);
         if (latin) findings.add(name+" English: "+[...new Set(latin)].join(" "));
       }
       if (width===390 || width===1280) await page.screenshot({path:directory+"/"+name+"-"+width+"x"+height+".png",fullPage:true,animations:"disabled"});

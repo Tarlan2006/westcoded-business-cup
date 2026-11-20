@@ -1,6 +1,7 @@
 import content from "./content-en.json" with { type: "json" };
 export default {
   ...content,
+  "footer.creatorCredit": "Made by the <creator>Nexcel Solutions</creator> team",
   "preview.controls": "Preview controls",
   "preview.dev": "DEV PREVIEW",
   "preview.age": "Ages {value}",

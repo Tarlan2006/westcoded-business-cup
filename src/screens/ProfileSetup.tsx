@@ -1,3 +1,4 @@
+import { CreatorCredit } from "../components/CreatorCredit";
 import { t, subscribe } from "../i18n/index";
 import { LanguageSwitch } from "../i18n/LanguageSwitch";
 import { useRef, useState } from "react";
@@ -179,5 +180,6 @@ export function ProfileSetup({ profile, profiles, onBack, onSave, onPrivacy }: {
         <a href="/privacy" className="sm:hidden ml-auto underline" onClick={(event) => { event.preventDefault(); onPrivacy(); }}>{t("app.privacy")}</a>
       </div>
     </form>
+    <footer><CreatorCredit /></footer>
   </main>;
 }

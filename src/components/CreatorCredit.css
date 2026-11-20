@@ -1,0 +1,27 @@
+.creator-credit {
+  margin: 0;
+  padding: 1rem 0 0.25rem;
+  color: #cdc8e4;
+  font: 600 0.8125rem/1.55 var(--font-body);
+  text-align: center;
+}
+
+:is(#screen-greeting, #screen-profile-setup) .creator-credit {
+  color: #526176;
+}
+
+.creator-credit a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.creator-credit a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.creator-credit a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
