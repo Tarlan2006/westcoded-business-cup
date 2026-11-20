@@ -5,6 +5,7 @@ import { useContext, useEffect, useRef, useState, type CSSProperties, type React
 import { uiSound, useSoundEnabled } from "../audio/sfx";
 import { GrownUpsButton } from "./GrownUpsButton";
 import { ActivityNavigation } from "./ActivityHeader";
+import { HomeButton } from "./HomeButton";
 import { Mascot, poseFor, type MascotAction, type MascotMood } from "./Mascot";
 import { SessionActivity, SessionClock } from "./SessionControls";
 
@@ -47,7 +48,7 @@ export function MissionStage({ heading, round, total = 3, seconds, clockSeconds,
       </div>
       <SessionClock id="sessionClockDisplay" fallback={<div className="text-xs font-black text-[#FFD13B] uppercase tracking-wider tabular-nums" id="sessionClockDisplay" aria-label={t("missionStage.timeLeft")}>{clock}</div>} />
       <div className="flex flex-wrap items-center gap-2">
-        {paused && navigation && <button type="button" className="prototype-parent-button" aria-label={t("activityHeader.homeBackToActivities")} onClick={navigation.onHome}>🏠</button>}
+        {navigation && <HomeButton onHome={navigation.onHome} />}
         {toolbar}<GrownUpsButton variant="exit" disabled={exitDisabled || session?.finishing} onOpen={onExit} />
       </div>
     </header>

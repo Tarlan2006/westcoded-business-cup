@@ -1,8 +1,9 @@
 import { t } from "../i18n/index";
 import { useEffect, useRef } from "react";
 import { inventory } from "../state/garage";
+import { HomeButton } from "./HomeButton";
 
-export function Garage({ sessions, name, onClose }: { sessions: number; name?: string; onClose: () => void }) {
+export function Garage({ sessions, name, onClose, onHome = onClose }: { sessions: number; name?: string; onClose: () => void; onHome?: () => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const modal = dialog.current;
@@ -21,5 +22,6 @@ export function Garage({ sessions, name, onClose }: { sessions: number; name?: s
         <strong>{part.name}</strong><span>{part.count ? `×${part.count}` : t("garage.locked")}</span></li>
     ))}</ul>
     <button type="button" className="w-full py-3 rounded-2xl btn-game btn-purple text-white font-display font-bold text-base cursor-pointer" onClick={onClose}>{t("garage.awesome")}</button>
+    <HomeButton onHome={onHome} />
   </dialog>;
 }

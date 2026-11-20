@@ -295,9 +295,13 @@ export default function App() {
       setScreen(name === "quiz" ? { name: "quiz", id } : { name, id });
     }
 
-    function earn(id: string, activity: Activity, points: number) {
+    function earn(id: string, activity: Activity, points: number, destination: "reward" | "home" = "reward") {
       if (!profile || !timer.canAcceptResult(session?.startedAt)) return;
       setProgress(rewardActivity(id, profile.id, activity, points));
+      if (destination === "home" && canStartActivity()) {
+        setScreen({ name: "home" });
+        return;
+      }
       setScreen({ name: "reward", points, activity, topic: screen.name === "quiz" ? screen.topic : undefined,
         afterVideo: screen.name === "quiz" && screen.afterVideo });
     }
@@ -367,7 +371,7 @@ export default function App() {
     }
     if (screen.name === "memory" && profile.ageBand !== "1-2") {
       return <Memory key={screen.id} pairs={profile.ageBand === "6-8" ? 8 : 4}
-        onBack={goBack} onComplete={() => earn(screen.id, "memory", 20)} onReplay={() => {
+        onBack={goBack} onComplete={(destination) => earn(screen.id, "memory", 20, destination)} onReplay={() => {
           if (!canStartActivity()) {
             earn(screen.id, "memory", 20);
             return;

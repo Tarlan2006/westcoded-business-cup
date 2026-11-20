@@ -1,4 +1,4 @@
-import { t } from "../i18n/index";
+import { HomeButton } from "./HomeButton";
 import { useContext, type ReactNode } from "react";
 import { GrownUpsButton } from "./GrownUpsButton";
 import { Mascot } from "./Mascot";
@@ -22,7 +22,7 @@ export function PrototypeHeader({ name, label, detail, children, onParents, onHo
     <div className="flex flex-wrap items-center justify-end gap-2">
       <SessionClock />
       {children}
-      {onHome && <button type="button" className="prototype-parent-button" aria-label={t("activityHeader.homeBackToActivities")} onClick={onHome}>🏠</button>}
+      {onHome && <HomeButton onHome={onHome} />}
       <GrownUpsButton variant="parents" disabled={session?.finishing} onOpen={onParents} />
     </div>
   </header>;

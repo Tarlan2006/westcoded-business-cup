@@ -3,6 +3,7 @@ import { t } from "../i18n/index";
 import { APP_NAME } from "../brand";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { ActivityHeader } from "../components/ActivityHeader";
+import { HomeButton } from "../components/HomeButton";
 import { GameButton, SpeechBubble } from "../components/GameUI";
 import { useEncouragement } from "../audio/useClipSpeech";
 import { Mascot } from "../components/Mascot";
@@ -21,7 +22,7 @@ function shuffledDeck(pairs: number) {
 }
 
 export function Memory({ pairs, onBack, onComplete, onReplay }: {
-  pairs: 4 | 8; onBack: () => void; onComplete: () => void; onReplay: () => void;
+  pairs: 4 | 8; onBack: () => void; onComplete: (destination?: "home") => void; onReplay: () => void;
 }) {
   const [deck] = useState(() => shuffledDeck(pairs));
   const [shown, setShown] = useState<number[]>([]);
@@ -69,7 +70,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
   return (
     <div className="memory-view" data-pairs={pairs}>
       <main className="shell memory-shell">
-        <ActivityHeader title={t("activitySuggestions.memory")} onBack={onBack} />
+        <ActivityHeader title={t("activitySuggestions.memory")} onBack={onBack} onHome={won ? () => finish(() => onComplete("home")) : undefined} />
         <div className="memory-intro">
           <div>
             <h1>{t("activitySuggestions.memory")}</h1>
@@ -124,6 +125,7 @@ export function Memory({ pairs, onBack, onComplete, onReplay }: {
             <div className="memory-victory-actions">
               <GameButton className="memory-play-again" onClick={() => finish(onReplay)}>{t("balloonsGame.playAgain")}</GameButton>
               <GameButton tone="purple" onClick={() => finish(onComplete)}>{t("memory.trySomethingElse")}</GameButton>
+              <HomeButton className="prototype-parent-button justify-self-center" onHome={() => finish(() => onComplete("home"))} />
             </div>
           </dialog>
         </>}

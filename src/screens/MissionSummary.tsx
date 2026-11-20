@@ -3,6 +3,7 @@ import { useContext, useEffect, useState, type ReactNode } from "react";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { Garage } from "../components/Garage";
 import { ActivityNavigation } from "../components/ActivityHeader";
+import { HomeButton } from "../components/HomeButton";
 import { PrototypeParticles } from "../components/MissionStage";
 import { codenameFor, outroLine } from "../game/content";
 import { useBriefing } from "../game/useBriefing";
@@ -25,7 +26,7 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
   useEffect(() => uiSound("win", sound), [sound]);
 
   return <main className="relative w-full max-w-3xl mx-auto px-4 z-10">
-    {session && <header className="session-summary-header"><SessionHeaderActions /></header>}
+    <header className="session-summary-header"><HomeButton onHome={onHome} />{session && <SessionHeaderActions />}</header>
     {navigation && <nav className="sr-only" aria-label={t("activityHeader.breadcrumb")}>{navigation.breadcrumb}</nav>}
     <section id="screen-complete" className="prototype-screen py-4 flex flex-col items-center justify-center text-center" aria-label={t("rewardCard.missionComplete")}>
       <div className="bg-[#1C145C] rounded-3xl p-6 sm:p-8 border-4 border-[#FFD13B] shadow-[0_16px_48px_rgba(0,0,0,0.5)] w-full space-y-5">
@@ -57,6 +58,6 @@ export function MissionSummary({ profile, points, onReplay, onHome, children }: 
     </section>
     {children && <div className="w-full text-left">{children}</div>}
     <PrototypeParticles icon="🌟" count={16} />
-    {garage && <Garage name={name} sessions={sessions} onClose={() => setGarage(false)} />}
+    {garage && <Garage name={name} sessions={sessions} onHome={onHome} onClose={() => setGarage(false)} />}
   </main>;
 }
