@@ -1,6 +1,6 @@
 import type { SpeechFrame } from '../audio/speechMotion';
 import { watchMascot, wakeMascots } from './mascotClock';
-import { guideReady, painter, type Art } from './mascotPainter';
+import { loadGuide, painter, type Art } from './mascotPainter';
 
 export type Emotion = 'idle' | 'greeting' | 'listening' | 'thinking' | 'speaking' | 'correct' | 'wrong' | 'network';
 const duration: Partial<Record<Emotion, number>> = {greeting:3200, correct:1380, wrong:1500, network:1300};
@@ -112,7 +112,21 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
   });
   observer.observe(host);
   document.addEventListener('visibilitychange',sync);
-  void guideReady.then(ok => {ready=ok;sync();});
+  let retry: ReturnType<typeof setTimeout> | undefined;
+  let retried = false;
+  function prepare() {
+    if (ready || disposed) return;
+    void loadGuide().then(ok => {
+      if (disposed || ready) return;
+      if (ok) { ready = true; sync(); }
+      else if (!retried) {
+        retried = true;
+        retry = setTimeout(prepare, 600);
+      }
+    });
+  }
+  window.addEventListener('online', prepare);
+  prepare();
   return {
     update(emotion: Emotion, allowSpeech: boolean, eventKey?: string | number) {
       speaking = allowSpeech;
@@ -129,6 +143,8 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
     },
     dispose() {
       disposed = true; detach?.(); observer.disconnect();
+      clearTimeout(retry);
+      window.removeEventListener('online', prepare);
       document.removeEventListener('visibilitychange',sync);
     }
   };

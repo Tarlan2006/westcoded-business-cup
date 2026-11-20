@@ -9,7 +9,16 @@ from PIL import Image
 W, H = 320, 496
 old = subprocess.check_output(["git", "show", "133e2c5:public/mascot/frames/guide.webp"])
 source = Image.open(io.BytesIO(old)).convert("RGBA")
-keys = [source.crop((c*W, r*H, (c+1)*W, (r+1)*H)) for r in range(3) for c in range(3)]
+def clean_matte(key):
+    # The source cutouts retain pale, partially transparent background around the hair and collar.
+    pixels = np.asarray(key, dtype=float).copy()
+    alpha = pixels[:, :, 3:] / 255
+    pixels[:, :, :3] = np.clip((pixels[:, :, :3] - (1-alpha)*[238, 232, 233]) / np.maximum(alpha, .01), 0, 255)
+    pixels[:, :, 3:] = np.clip((alpha*255-162)/86, 0, 1)*255
+    return Image.fromarray(np.uint8(np.rint(pixels)))
+
+
+keys = [clean_matte(source.crop((c*W, r*H, (c+1)*W, (r+1)*H))) for r in range(3) for c in range(3)]
 X, Y = np.meshgrid(np.arange(W, dtype=float), np.arange(H, dtype=float))
 
 
@@ -87,12 +96,16 @@ arm_tiles = [wave(angle) for angle in np.linspace(-30, 0, 8)]
 
 # Three full, stable poses. Rows below contain only the pixels that can change.
 atlas = Image.new("RGBA", (960, 928))
-groups = [(eyes, eye_tiles, 496), (mouth, mouth_tiles, 529), (arm, arm_tiles, 559)]
+groups = [(eyes, eye_tiles, 0, 496), (mouth, mouth_tiles, 416, 496), (arm, arm_tiles, 0, 559)]
 for col, base in enumerate([keys[0], keys[5], keys[6]]):
     atlas.paste(base, (W*col, 0))
-for box, tiles, y in groups:
+occupied = []
+for box, tiles, x, y in groups:
+    region = (x, y, x + len(tiles)*tiles[0].width, y + tiles[0].height)
+    assert all(region[2] <= l or r <= x or region[3] <= t or b <= y for l,t,r,b in occupied)
+    occupied.append(region)
     for i, tile in enumerate(tiles):
-        atlas.paste(tile, (i*tile.width, y))
+        atlas.paste(tile, (x+i*tile.width, y))
 # Rigid head layers pivot at the collar. Keep the lower jacket and eye outlines fixed.
 head = (65, 0, 249, 189)
 gaze = (110, 96, 202, 135)
@@ -124,17 +137,24 @@ cheer = Image.alpha_composite(far_arm, body)
 atlas.paste(cheer.crop((0,64,153,253)), (530, 700))
 atlas.paste(cheer.crop((0,253,153,361)), (700, 700))
 atlas.save("public/mascot/frames/guide.webp", quality=91, method=6)
+poster = keys[5].copy()
+poster.paste(arm_tiles[0], arm[:2])
+poster.save("public/mascot/frames/welcome.webp", quality=91, method=6)
 
 # Enlarge the exact encoded runtime tiles on two backgrounds for visual review.
 result = Image.open("public/mascot/frames/guide.webp").convert("RGBA")
+# A one-row overlap used to punch a line through the chin in every speaking frame.
+for i in range(5):
+    row = np.asarray(result)[526, 416+i*51:467+i*51, 3]
+    assert np.array_equal(row, np.asarray(result)[157, 794:845, 3])
 out = Path("scripts/.cache/mascot-motion")
 out.mkdir(parents=True, exist_ok=True)
-for name, (box, tiles, y) in zip(["lids","mouth","arm"],groups):
+for name, (box, tiles, x, y) in zip(["lids","mouth","arm"],groups):
     width, height = tiles[0].size
     scale = 2 if name == "arm" else 3
     review = Image.new("RGB", (width*len(tiles)*scale, height*scale*2))
     for i in range(len(tiles)):
-        tile = result.crop((i*width,y,(i+1)*width,y+height))
+        tile = result.crop((x+i*width,y,x+(i+1)*width,y+height))
         tile = tile.resize((width*scale,height*scale),Image.Resampling.NEAREST)
         for row, bg in enumerate(["#FAF6EF","#231F52"]):
             cell = Image.new("RGB", tile.size, bg)

@@ -4,7 +4,7 @@ import {chromium} from 'playwright';
 import kk from '../src/i18n/kk.ts';
 const quiz=JSON.parse(await readFile('content/quiz.json','utf8')).filter(q=>q.ageBand==='6-8');
 const {clips}=JSON.parse(await readFile('public/audio/kk/manifest.json','utf8'));
-const out='docs/mascot/emotions';await mkdir(out,{recursive:true});
+const out=process.env.SMOKE_OUTPUT || 'docs/mascot/emotions';await mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
 const errors=[], answers=[], requests=[];
 try {

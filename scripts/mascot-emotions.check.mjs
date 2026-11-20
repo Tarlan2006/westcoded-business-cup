@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {chromium} from 'playwright';
 
-const dir='docs/mascot/emotions';
+const dir=process.env.SMOKE_OUTPUT || 'docs/mascot/emotions';
 const cache='scripts/.cache/mascot-emotions';
 await mkdir(dir,{recursive:true});
 await mkdir(cache,{recursive:true});
@@ -15,6 +15,30 @@ try {
   await page.goto((process.env.DEV_URL || 'http://127.0.0.1:5188')+'/scripts/mascot-lab/');
   const guide=page.locator('.stage [data-ready]');
   await guide.waitFor();
+  // A changing syllable must not postpone the end of the transition to speaking.
+  await page.evaluate(async () => {
+    const {painter, loadGuide} = await import('/src/components/mascotPainter.ts');
+    if (!await loadGuide()) throw Error('Missing mascot atlas');
+    function surface() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 496;
+      return canvas;
+    }
+    const canvas = surface(), reference = surface();
+    const draw = painter(canvas);
+    draw('idle', 0, 0, true);
+    draw('talk', 0, 10, false);
+    draw('talk', 1, 36, false);
+    draw('talk', 2, 61, false);
+    draw('talk', 3, 85, false);
+    painter(reference)('talk', 3, 85, true);
+    const head = c => c.getContext('2d').getImageData(0, 0, 320, 127).data;
+    const expected = head(reference);
+    if (head(canvas).some((v,i) => Math.abs(v-expected[i])>1)) {
+      throw Error('Speech restarted the whole-body transition');
+    }
+  });
   const rect=await guide.boundingBox();
   await page.evaluate(()=>{
     const marker=document.createElement('div');

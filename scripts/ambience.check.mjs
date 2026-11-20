@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 const contexts = [], spoken = [], requests = [];
 class Param { value = 0; setTargetAtTime(v) { this.value = v; } setValueAtTime(v) { this.value = v; } linearRampToValueAtTime(v) { this.value = v; } cancelScheduledValues() {} }
 class Node { connect(target) { return target; } disconnect() { this.disconnected = true; } }
@@ -18,20 +21,34 @@ globalThis.window = {setTimeout:()=>1,clearTimeout(){},speechSynthesis:{getVoice
 globalThis.fetch = async url => { requests.push(url); return {ok:true,json:async()=>url.includes('voice-index')?{voice:'aidos-luna-v1',texts:{'Hello, pal.':'/audio/test.mp3'}}:{voice:'aidos-luna-v1',clips:{}},arrayBuffer:async()=>new ArrayBuffer(10)}; };
 const {setMusic,pauseMusic,unlock,speakFallback}=await import('../src/audio/engine.ts');
 const {ambienceThemes,themeForActivity}=await import('../src/audio/ambienceThemes.ts');
+const {changeLanguage}=await import('../src/i18n/index.ts');
+await changeLanguage('en', false);
 setMusic(true,{theme:'cosmic'});assert.equal(contexts.length,0,'No AudioContext/autoplay before gesture');
-await unlock();const c=contexts[0], bus=c.gains[1];
+await unlock();await settle();const c=contexts[0], bus=c.gains[1];
 const active=()=>c.sources.filter(s=>s.loop&&!s.stopped);
-assert.equal(active().length,1);assert.equal(bus.gain.value,.028);
+assert.equal(active().length,1);assert.equal(bus.gain.value,.075);
 setMusic(true,{theme:'cosmic'});assert.equal(active().length,1,'No duplicate loop');
-for(const theme of Object.keys(ambienceThemes)) {
- setMusic(true,{theme});assert.equal(active().length,1);
- const samples=active()[0].buffer.getChannelData(0);assert.equal(samples[0],0);assert(Math.abs(samples.at(-1))<.00001);
- assert(samples.every(x=>Number.isFinite(x)&&Math.abs(x)<=1),'No NaN or clipping');
+const tracks = new Set();
+for (const theme of Object.keys(ambienceThemes)) {
+  setMusic(true, {theme});
+  await settle();
+  assert.equal(active().length, 1);
+  assert(requests.includes('/audio/music/' + theme + '.mp3?v=1'));
+  const file = await readFile('public/audio/music/' + theme + '.mp3');
+  tracks.add(createHash('sha256').update(file).digest('hex'));
 }
+assert.equal(tracks.size, 9);
+setMusic(true,{theme:'cosmic'});
+setMusic(true,{theme:'studio'});
+setMusic(false);
+await settle();
+assert.equal(active().length, 0, 'Stale downloads cannot restart muted music');
+setMusic(true,{theme:'studio'});
+await settle();
 const mic=Symbol(),tab=Symbol();pauseMusic(mic,true);assert.equal(bus.gain.value,0);assert.equal(active().length,0);
 pauseMusic(tab,true);pauseMusic(mic,false);assert.equal(active().length,0,'Another pause must keep silence');
 pauseMusic(tab,false);assert.equal(active().length,1);
-const speech=speakFallback('Hello, pal.');await new Promise(r=>setTimeout(r,0));assert.equal(bus.gain.value,.004,'Speech ducks background');c.sources.at(-1).onended();await speech;assert.equal(bus.gain.value,.028);
+const speech=speakFallback('Hello, pal.');await new Promise(r=>setTimeout(r,0));assert.equal(bus.gain.value,.010,'Speech ducks background');c.sources.at(-1).onended();await speech;assert.equal(bus.gain.value,.075);
 setMusic(false);assert.equal(active().length,0);assert.equal(bus.gain.value,0);
 assert.equal(themeForActivity('space'),'cosmic');assert.equal(themeForActivity('quiz'),'curious');assert.equal(themeForActivity('sketch'),'studio');
 assert(requests.every(p=>p.startsWith('/audio/')),'Cached speech and music need no external service');assert.equal(spoken.length,0,'No device speech');

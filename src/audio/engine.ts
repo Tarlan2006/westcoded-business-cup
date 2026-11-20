@@ -1,6 +1,6 @@
 import { contentText, getLanguage, subscribe } from "../i18n";
 import { AIDOS_VOICE, normalizeSpeech } from "../../shared/voice";
-import { ambienceThemes, type AmbienceTheme } from "./ambienceThemes";
+import type { AmbienceTheme } from "./ambienceThemes";
 import { changeVoicePlayback, setSpeechMeter, speechBoundary } from "./speechMotion";
 type SoundEffect = "siren" | "tick" | "radio" | "fanfare" | "whoosh";
 
@@ -27,6 +27,9 @@ const clips = new Map<string, Promise<AudioBuffer>>();
 let queue = Promise.resolve();
 let music: AudioBufferSourceNode | undefined;
 let musicBuffer: AudioBuffer | undefined;
+let loadingMusic: AbortController | undefined;
+let musicStart = 0;
+const musicOffsets = new Map<AmbienceTheme, number>();
 let musicGain: GainNode | undefined;
 let musicEnabled = false;
 let musicTheme: AmbienceTheme = "calm";
@@ -294,41 +297,64 @@ export function isSpeechActive(): boolean {
   return speechDepth > 0;
 }
 
-function createMusic(context: AudioContext) {
-  const { notes, beat } = ambienceThemes[musicTheme];
-  const buffer = context.createBuffer(1, Math.round(context.sampleRate * beat * notes.length), context.sampleRate);
-  const samples = buffer.getChannelData(0);
-  for (let index = 0; index < samples.length; index++) {
-    const time = index / context.sampleRate;
-    const note = notes[Math.min(notes.length - 1, Math.floor(time / beat))];
-    const fade = Math.sin(Math.PI * (time % beat) / beat) ** 2;
-    samples[index] = fade * (Math.sin(2 * Math.PI * note * time) +
-      0.35 * Math.sin(4 * Math.PI * note * time)) / 1.35;
+async function loadMusic(context: AudioContext, theme: AmbienceTheme) {
+  const request = new AbortController();
+  loadingMusic = request;
+  try {
+    const response = await fetch('/audio/music/' + theme + '.mp3?v=1', { signal: request.signal });
+    if (!response.ok) return;
+    const decoded = await context.decodeAudioData(await response.arrayBuffer());
+    if (loadingMusic !== request) return;
+    musicBuffer = decoded;
+    updateMusic();
+  } catch {
+    // An interrupted or unavailable soundtrack leaves the activity playable.
+  } finally {
+    if (loadingMusic === request) loadingMusic = undefined;
   }
-  return buffer;
+}
+
+function saveMusicPosition() {
+  if (musicBuffer && music && graph) {
+    musicOffsets.set(musicTheme, (graph.context.currentTime - musicStart) % musicBuffer.duration);
+  }
 }
 
 function updateMusic() {
   if (!graph) return;
   const { context, ambience } = graph;
   ambience.gain.setTargetAtTime(
-    musicEnabled && !musicPauses.size ? speechDepth > 0 && duckEnabled ? 0.004 : 0.028 : 0,
+    musicEnabled && !musicPauses.size ? speechDepth > 0 && duckEnabled ? 0.010 : 0.075 : 0,
     context.currentTime, 0.07,
   );
   if (!musicEnabled || musicPauses.size || music || context.state !== "running") return;
+  if (!musicBuffer) {
+    if (!loadingMusic) void loadMusic(context, musicTheme);
+    return;
+  }
   music = context.createBufferSource();
-  music.buffer = musicBuffer ??= createMusic(context);
+  music.buffer = musicBuffer;
   music.loop = true;
   musicGain = context.createGain();
   musicGain.gain.setValueAtTime(0, context.currentTime);
   musicGain.gain.linearRampToValueAtTime(1, context.currentTime + 0.18);
   music.connect(musicGain).connect(ambience);
-  music.start();
+  const offset = musicOffsets.get(musicTheme) ?? 0;
+  musicStart = context.currentTime - offset;
+  music.start(0, offset);
 }
 
 export function setMusic(on: boolean, opts?: { duck?: boolean; theme?: AmbienceTheme }): void {
   const changed = opts?.theme !== undefined && opts.theme !== musicTheme;
-  if (changed) { musicTheme = opts!.theme!; musicBuffer = undefined; }
+  if (!on || changed) {
+    saveMusicPosition();
+    loadingMusic?.abort();
+    loadingMusic = undefined;
+  }
+  if (opts?.theme && changed) {
+    musicTheme = opts.theme;
+    musicBuffer = undefined;
+  }
   musicEnabled = on;
   duckEnabled = opts?.duck ?? true;
   if ((!on || changed) && music && graph) {
@@ -350,6 +376,7 @@ export function pauseMusic(owner: symbol, paused: boolean): void {
   if (musicPauses.size && graph) {
     graph.ambience.gain.cancelScheduledValues(graph.context.currentTime);
     graph.ambience.gain.setValueAtTime(0, graph.context.currentTime);
+    saveMusicPosition();
     if (music) { music.onended = () => {}; music.stop(); music.disconnect(); musicGain?.disconnect(); musicGain = undefined; music = undefined; }
   }
   updateMusic();

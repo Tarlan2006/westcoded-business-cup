@@ -97,9 +97,9 @@ try {
   const silentCloseMs=await page.evaluate(async()=>{
     const canvas=document.querySelector('canvas[data-mouth]');
     const voice=window.voiceGain;
-    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=3';await guide.decode();
+    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=4';await guide.decode();
     const target=document.createElement('canvas');target.width=51;target.height=31;
-    const reference=target.getContext('2d');reference.drawImage(guide,0,529,51,31,0,0,51,31);
+    const reference=target.getContext('2d');reference.drawImage(guide,416,496,51,31,0,0,51,31);
     const expected=reference.getImageData(0,0,51,31).data;
     const ctx=canvas.getContext('2d');
     const start=performance.now();voice.gain.value=0;
@@ -143,4 +143,21 @@ try {
   await page.evaluate(()=>window.utterance.onend());
   assert.equal(await page.locator('[data-motion="talk"]').count(),0);
   console.log('PASS boundary, pause, resume, reduced motion and late end; release',Math.round(pauseMs),'ms');
+  const recovery = await browser.newPage();
+  let offline = true;
+  let failedRequests = 0;
+  await recovery.route('**/mascot/frames/guide.webp*', route => {
+    if (!offline) return route.continue();
+    failedRequests++;
+    return route.abort();
+  });
+  await recovery.goto(base);
+  await recovery.waitForTimeout(1600);
+  assert(failedRequests >= 2, 'Retry the first interrupted atlas load');
+  const recovered = recovery.locator('#screen-greeting .aidos-mascot');
+  assert.equal(await recovered.getAttribute('data-ready'), null);
+  offline = false;
+  await recovery.evaluate(() => window.dispatchEvent(new Event('online')));
+  await recovery.locator('#screen-greeting .aidos-mascot[data-ready="true"]').waitFor();
+  console.log('PASS first-load failure, bounded retry, online recovery without reload');
 } finally { await browser.close(); }

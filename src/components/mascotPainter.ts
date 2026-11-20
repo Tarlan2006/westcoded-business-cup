@@ -1,13 +1,24 @@
-const atlas = new Image();
-atlas.src = '/mascot/frames/guide.webp?v=3';
-export const guideReady = atlas.decode().then(() => true, () => false);
+let atlas: HTMLImageElement;
+let decoding: Promise<boolean> | undefined;
+
+export function loadGuide(): Promise<boolean> {
+  if (!decoding) {
+    atlas = new Image();
+    atlas.src = '/mascot/frames/guide.webp?v=4';
+    decoding = atlas.decode().then(() => true, () => {
+      decoding = undefined;
+      return false;
+    });
+  }
+  return decoding;
+}
 export type Art = 'idle' | 'wave' | 'talk' | 'listen' | 'think' | 'cheer';
 type Rect = [number, number, number, number];
 const whole: Rect = [0,0,320,496];
 const patches: Record<Art, { column: number; x: number; y: number; box: Rect }> = {
   idle: {column:0, x:0, y:496, box:[116,98,81,33]},
   wave: {column:1, x:0, y:559, box:[200,41,113,141]},
-  talk: {column:2, x:0, y:529, box:[154,127,51,31]},
+  talk: {column:2, x:416, y:496, box:[154,127,51,31]},
   listen: {column:0, x:0, y:889, box:[110,96,92,39]},
   cheer: {column:1, x:530, y:700, box:[0,64,153,189]},
   think: {column:0, x:460, y:889, box:[110,96,92,39]},
@@ -41,6 +52,16 @@ export function painter(canvas: HTMLCanvasElement) {
   return (next: Art, index: number, now: number, still: boolean) => {
     blend(now);
     if (mode === next && tile === index && !(still && fading)) return;
+    // A new syllable during a pose change must not restart the whole-body fade.
+    if (mode === next && full && fading && composite && !still) {
+      const { x, y, box } = patches[next];
+      composite.clearRect(...box);
+      composite.drawImage(atlas, x+index*box[2], y, box[2], box[3], ...box);
+      tile = index;
+      canvas.dataset.frame = String(index);
+      blend(now);
+      return;
+    }
     full = next !== mode || (fading && full);
     const fade = mode !== undefined && !still;
     mode = next; tile = index;

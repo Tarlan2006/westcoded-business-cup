@@ -6,10 +6,14 @@ const output=process.env.SMOKE_OUTPUT??'docs/audit-2026-11-17';await mkdir(outpu
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH});
 const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'});const checks=[];
 await page.addInitScript(()=>{
+ localStorage.setItem('mypal.lang','en');
  localStorage.setItem('mission-control.sound','off');
  Object.defineProperty(navigator,'connection',{configurable:true,value:{saveData:true}});
  const Native=window.AudioContext;
- window.AudioContext=class extends Native { constructor(...args){super(...args);this.auditGains=0;} createGain(){const gain=super.createGain(),index=this.auditGains++;if(index===1){for(const method of ['setTargetAtTime','setValueAtTime']){const original=gain.gain[method].bind(gain.gain);gain.gain[method]=(...args)=>{window.auditMusicGain=args[0];return original(...args);};}}return gain;} };
+ window.AudioContext=class extends Native { constructor(...args){super(...args);this.auditGains=0;}
+ createBufferSource(){const source=super.createBufferSource();const start=source.start.bind(source);
+ source.start=(...args)=>{if(source.loop && source.buffer?.duration>5)window.auditLoops=(window.auditLoops||0)+1;return start(...args);};return source;}
+ createGain(){const gain=super.createGain(),index=this.auditGains++;if(index===1){for(const method of ['setTargetAtTime','setValueAtTime']){const original=gain.gain[method].bind(gain.gain);gain.gain[method]=(...args)=>{window.auditMusicGain=args[0];return original(...args);};}}return gain;} };
 });
 try {
  await page.goto(base);await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
@@ -17,15 +21,16 @@ try {
  assert.equal(await page.locator('.amb-controls').count(),0,'No competing soundtrack in video');checks.push('video has no music');
  await page.getByRole('button',{name:'Home, back to activities',exact:true}).click();await page.getByRole('region',{name:'Start here',exact:true}).waitFor();
  assert.equal(await page.locator('.prototype').getAttribute('data-ambience'),'calm');assert(await page.locator('.amb-music-button').isDisabled());
- await page.getByRole('button',{name:'Sound off',exact:true}).click();await page.waitForFunction(()=>window.auditMusicGain>0);checks.push('starts only after Sound gesture');
+ await page.getByRole('button',{name:'Sound off',exact:true}).click();await page.waitForFunction(()=>window.auditMusicGain>0);await page.waitForFunction(()=>window.auditLoops===1);checks.push('starts only after Sound gesture');
  await page.locator('.amb-music-button').click();await page.waitForFunction(()=>window.auditMusicGain===0);assert.equal(await page.evaluate(()=>localStorage.getItem('mypal.music')),'off');checks.push('independent music mute persists');
  await page.locator('.amb-music-button').click();await page.waitForFunction(()=>window.auditMusicGain>0);
  await page.getByRole('button',{name:'Parents, press and hold',exact:true}).press('Enter',{delay:1600});await page.getByRole('dialog').waitFor();await page.waitForFunction(()=>window.auditMusicGain===0);checks.push('parent dialog pauses');await page.getByRole('button',{name:'Keep playing',exact:true}).click();await page.waitForFunction(()=>window.auditMusicGain>0);
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForFunction(()=>window.auditMusicGain===0);checks.push('hidden tab pauses');
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForFunction(()=>window.auditMusicGain>0);
  for(const [title,theme]of [['Memory','patterns'],['Space Scale','cosmic'],['Sketch Artist','studio'],['Ask AIdos','curious']]){
+  const before=await page.evaluate(()=>window.auditLoops);
   await page.locator('.activity-grid').getByRole('button',{name:new RegExp(title)}).click();await page.waitForFunction(t=>document.querySelector('.prototype')?.dataset.ambience===t,theme);
-  await page.waitForTimeout(300);assert.equal(await page.locator('.amb-mark').count(),4);
+  await page.waitForFunction(previous=>window.auditLoops>previous,before);assert.equal(await page.locator('.amb-mark').count(),4);
   if(theme==='cosmic')await page.screenshot({path:output+'/cosmic-mobile.png',fullPage:true});
   if(title==='Ask AIdos'){
     await page.getByPlaceholder('Type your question').waitFor();
