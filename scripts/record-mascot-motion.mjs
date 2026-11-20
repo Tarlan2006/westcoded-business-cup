@@ -7,7 +7,7 @@ import { chromium } from 'playwright';
 
 const base = process.env.SMOKE_URL || 'http://127.0.0.1:5191';
 const ffmpeg = process.env.FFMPEG || 'ffmpeg';
-const output = 'docs/mascot/recordings';
+const output = process.env.SMOKE_OUTPUT || 'docs/mascot/recordings';
 const cache = 'scripts/.cache/mascot-motion';
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
@@ -104,9 +104,10 @@ try {
       }
       await page.close();
       assert.deepEqual(errors,[],name);
-      assert.equal(result.forms.idle.length,5,name+' eyelids');
-      assert.equal(result.forms.wave.length,8,name+' wave');
-      assert.deepEqual(result.forms.talk,[0,1,2,3,4],name+' mouth');
+      assert.equal(result.forms.idle.length,9,name+' eyelids');
+      assert.equal(result.forms.wave.length,15,name+' wave');
+      assert(result.forms.talk.includes(0) && result.forms.talk.includes(3) &&
+        result.forms.talk.some(frame=>frame>=5),name+' speech uses closed, open and intermediate lips');
       const list=[];
       for(let i=0;i<frames.length;i++) {
         const file=i+'.jpg';
@@ -136,5 +137,5 @@ try {
   ].join(';');
   execFileSync(ffmpeg,['-hide_banner','-loglevel','error','-y','-i',cache+'/kk-preview.webm',
     '-i',cache+'/en-preview.webm','-filter_complex',sequence,'-map','[v]','-an',
-    '-c:v','libwebp_anim','-quality','82','-loop','0','docs/mascot/aidos-preview.webp']);
+    '-c:v','libwebp_anim','-quality','82','-loop','0',process.env.SMOKE_OUTPUT ? path.join(output,'aidos-preview.webp') : 'docs/mascot/aidos-preview.webp']);
 } finally { await browser.close(); }

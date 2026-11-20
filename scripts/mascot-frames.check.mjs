@@ -54,7 +54,7 @@ try {
       cls:shifts.reduce((a,b)=>a+b,0), fps:1000*gaps.length/gaps.reduce((a,b)=>a+b,0),
       p95Ms:sorted[Math.floor(sorted.length*.95)], maxMs:Math.max(...gaps)};
   });
-  assert.equal(performanceData.frames.length,8);
+  assert.equal(performanceData.frames.length,15);
   assert.equal(performanceData.boxes,1);
   assert.equal(performanceData.cls,0);
   assert(performanceData.distinctBlendImages>2);
@@ -97,9 +97,9 @@ try {
   const silentCloseMs=await page.evaluate(async()=>{
     const canvas=document.querySelector('canvas[data-mouth]');
     const voice=window.voiceGain;
-    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=4';await guide.decode();
+    const guide=new Image();guide.src='/mascot/frames/guide.webp?v=5';await guide.decode();
     const target=document.createElement('canvas');target.width=51;target.height=31;
-    const reference=target.getContext('2d');reference.drawImage(guide,416,496,51,31,0,0,51,31);
+    const reference=target.getContext('2d');reference.drawImage(guide,544,928,51,31,0,0,51,31);
     const expected=reference.getImageData(0,0,51,31).data;
     const ctx=canvas.getContext('2d');
     const start=performance.now();voice.gain.value=0;

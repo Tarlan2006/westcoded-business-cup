@@ -8,6 +8,11 @@ const tick=()=>sampleSpeech(now+=34);
 assert.deepEqual(tick(),{active:false,mouth:0});
 changeVoicePlayback('recorded',1);
 assert.deepEqual(tick(),{active:true,mouth:0});
+for (const [volume, expected] of [[.11,1], [.22,5], [.38,2], [.57,4], [.72,6]]) {
+  rms=volume;
+  for(let i=0;i<5;i++) tick();
+  assert.equal(sampleSpeech(now).mouth,expected);
+}
 rms=1;
 for(let i=0;i<6;i++)tick();
 assert.equal(sampleSpeech(now).mouth,3);

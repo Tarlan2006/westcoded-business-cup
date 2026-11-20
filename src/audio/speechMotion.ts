@@ -2,8 +2,8 @@
 export type SpeechFrame = Readonly<{ active: boolean; mouth: number }>;
 const idle: SpeechFrame = { active: false, mouth: 0 };
 let frame = idle;
-const thresholds = [.065, .24, .49, .78];
-const shapes = [0, 1, 2, 4, 3];
+const thresholds = [.065, .17, .29, .49, .66, .78];
+const shapes = [0, 1, 5, 2, 4, 6, 3];
 let level = 0, band = 0, recorded = 0, browser = 0;
 let lastSample = -Infinity, lastChange = 0, ended = -Infinity, pulse = 0;
 let meter = () => 0;
@@ -35,7 +35,7 @@ export function sampleSpeech(now: number): SpeechFrame {
   if (target < .015 && level < .38) level = 0;
   if (now-lastChange >= 60 || level === 0) {
     const previous = band;
-    while (band < 4 && level > thresholds[band]+.025) band++;
+    while (band < thresholds.length && level > thresholds[band]+.025) band++;
     while (band > 0 && level < thresholds[band-1]-.025) band--;
     if (band !== previous) lastChange = now;
   }

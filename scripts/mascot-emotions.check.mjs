@@ -83,7 +83,7 @@ try {
   await page.waitForFunction(()=>performance.now()-window.startMark>=61400);
   const log=await page.evaluate(()=>{clearInterval(window.timer);return {rows:window.samples,soundStarts:window.soundStarts};});
   assert.equal(log.rows[0].state,'idle');
-  assert(log.rows.filter(r=>r.ms<30000&&r.frame===4).length>1);
+  assert(log.rows.filter(r=>r.ms<30000&&r.frame>=7).length>1);
   assert(log.rows.at(-1).ms>61000);
   const states=[...new Set(log.rows.map(r=>r.state))];
   assert.equal(states.length,8);

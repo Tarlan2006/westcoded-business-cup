@@ -1,5 +1,5 @@
 .aidos-mascot { position: relative; isolation: isolate; vertical-align: bottom; flex-shrink: 0; }
 .hub-greeting > .aidos-mascot, .ask-host > .aidos-mascot { margin-inline: 0; }
 /* Keep its measured space while the full sheet decodes. The poster also covers a decode failure. */
-.aidos-mascot:not([data-ready]) { background: url("/mascot/frames/welcome.webp?v=4") center bottom / contain no-repeat; }
+.aidos-mascot:not([data-ready]) { background: url("/mascot/frames/welcome.webp?v=5") center bottom / contain no-repeat; }
 .aid-frames { transition-property: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; pointer-events: none; transform-origin: center bottom; }

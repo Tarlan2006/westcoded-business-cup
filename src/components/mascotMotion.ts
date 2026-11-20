@@ -4,11 +4,11 @@ import { loadGuide, painter, type Art } from './mascotPainter';
 
 export type Emotion = 'idle' | 'greeting' | 'listening' | 'thinking' | 'speaking' | 'correct' | 'wrong' | 'network';
 const duration: Partial<Record<Emotion, number>> = {greeting:3200, correct:1380, wrong:1500, network:1300};
-const lids = [0,1,2,3,4,3,2,1];
+const lids = [0,1,2,3,4,5,6,7,8,8,7,6,5,4,3,2,1];
 const random = (min: number, max: number) => min + Math.random()*(max-min);
 const tau = 2*Math.PI;
 function waveFrame(age: number) {
-  return Math.round(3.5*(1-Math.cos(tau*age/1350)));
+  return Math.round(7*(1-Math.cos(tau*age/1350)));
 }
 
 export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
@@ -18,7 +18,7 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
   let until: number | undefined;
   let entered = 0, speaking = true, blink = 0, double = false, glance = 0;
   let previousTick = 0;
-  let visible = false, ready = false, disposed = false, last = 0, lastSample = 0;
+  let visible = false, ready = false, disposed = false, last = 0;
   let y = 0, angle = 0, scale = 1;
   let detach: (() => void) | undefined;
 
@@ -40,7 +40,7 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
     }
     const age = now-entered;
     const slow = state === 'thinking';
-    const lidMs = slow ? 108 : 64;
+    const lidMs = slow ? 51 : 30;
     if (now >= blink + lids.length*lidMs) {
       const second = !double && Math.random() < .18;
       blink = second ? now+145 : blink+random(2000,4000);
@@ -48,11 +48,11 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
       if (slow && ++blinkCount >= 2) blink = Infinity;
     }
     if (now >= glance+920) glance += random(8000,12000);
-    const lid = reduced || now < blink ? 0 : lids[Math.min(7, Math.floor((now-blink)/lidMs))];
+    const lid = reduced || now < blink ? 0 : lids[Math.min(lids.length-1, Math.floor((now-blink)/lidMs))];
     let art: Art = 'idle', frame = lid;
     let tilt = 0, lift = 0;
     switch (state) {
-      case 'greeting': art = 'wave'; frame = reduced ? 4 : waveFrame(age); break;
+      case 'greeting': art = 'wave'; frame = reduced ? 7 : waveFrame(age); break;
       case 'correct':
         art = 'cheer'; frame = 0;
         lift = -7*Math.abs(Math.sin(Math.PI*Math.min(age,900)/450))*(1-Math.min(age,900)/1100);
@@ -88,14 +88,14 @@ export function animateMascot(host: HTMLElement, canvas: HTMLCanvasElement) {
     if (reduced) {
       canvas.style.transform = 'none';
       y = angle = 0; scale = 1;
-    } else if (changed || now-lastSample >= 30) {
+    } else if (changed || now-last >= 15) {
       const breath = (1-Math.cos(tau*now/3200))/2;
       const mix = 1-Math.exp(-Math.min(100,now-last)/32);
       y += (lift-breath*.85-y)*mix;
       angle += (tilt-angle)*mix;
       scale += (1+breath*.014-scale)*mix;
       canvas.style.transform = `translateY(${y.toFixed(3)}%) rotate(${angle.toFixed(3)}deg) scale(${scale.toFixed(5)})`;
-      last = lastSample = now;
+      last = now;
     }
     return until > now ? until : Infinity;
   }
