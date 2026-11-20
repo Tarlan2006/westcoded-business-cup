@@ -391,7 +391,7 @@ function changeSpeech(delta: number) {
 let voiceIndex: Promise<Record<string,string>> | undefined;
 const spokenBuffers = new Map<string, Promise<AudioBuffer>>();
 function loadVoiceIndex() {
-  voiceIndex ??= fetch('/audio/' + getLanguage() + '/voice-index.json?voice=' + voiceVersion(), {signal: AbortSignal.timeout(2500)})
+  voiceIndex ??= fetch('/audio/' + getLanguage() + '/voice-index.json?voice=' + voiceVersion(), {cache: 'no-cache', signal: AbortSignal.timeout(2500)})
     .then(async response => { if(!response.ok) throw new Error('voice_index'); const data=await response.json(); if(data.voice!==voiceVersion())throw new Error('voice_version');return data.texts as Record<string,string>; })
     .catch(() => { voiceIndex=undefined; return {}; });
   return voiceIndex;
@@ -417,30 +417,65 @@ async function voiceBuffer(text: string, context: AudioContext) {
   }
   try {return await result;}catch(error){spokenBuffers.delete(text);throw error;}
 }
-export function speakFallback(raw: string): Promise<void> {
-  const text=normalizeSpeech(raw);
-  if(!text) return Promise.resolve();
+export async function speakAnswer(raw: string): Promise<"played" | "unavailable" | "cancelled"> {
+  const text = normalizeSpeech(raw);
+  if (!text) return "unavailable";
   stopSpeech();
-  const generation=playbackGeneration;
-  return enqueue(async()=>{
-    const output=audioGraph();await ready(output);
-    const buffer=await voiceBuffer(text,output.context).catch(() => undefined);
-    if(generation!==playbackGeneration)return;
+  const generation = playbackGeneration;
+  let played = false;
+  await enqueue(async () => {
+    if (generation !== playbackGeneration) return;
+    try {
+      const output = audioGraph();
+      await ready(output);
+      const buffer = await voiceBuffer(text, output.context);
+      if (generation !== playbackGeneration) return;
+      changeSpeech(1);
+      try { await playBuffer(output, buffer); played = true; } finally { changeSpeech(-1); }
+      return;
+    } catch {
+      // Native speech can still work if Web Audio or the recording is unavailable.
+    }
+    if (generation !== playbackGeneration) return;
     changeSpeech(1);
-    try {if (buffer) await playBuffer(output,buffer); else await deviceSpeech(text);} finally {changeSpeech(-1);}
-  }).catch(()=>{ /* Captions remain available. */ });
+    try { played = await deviceSpeech(text); } finally { changeSpeech(-1); }
+  }).catch(() => {});
+  if (generation !== playbackGeneration) return "cancelled";
+  return played ? "played" : "unavailable";
 }
 
-function deviceSpeech(text: string): Promise<void> {
+export async function speakFallback(raw: string): Promise<void> {
+  await speakAnswer(raw);
+}
+
+async function deviceSpeech(text: string): Promise<boolean> {
   const synth = window.speechSynthesis;
+  if (!synth) return false;
+  const generation = playbackGeneration;
   const lang = getLanguage();
-  const voice = synth?.getVoices().find(v => v.lang.toLowerCase().split(/[-_]/)[0] === lang);
-  if (!voice) return Promise.resolve();
+  const matchingVoice = () => synth.getVoices().find(v => v.lang.toLowerCase().split(/[-_]/)[0] === lang);
+  let voice = matchingVoice();
+  if (!voice) {
+    await new Promise<void>(resolve => {
+      function finish() {
+        clearTimeout(timeout);
+        synth.removeEventListener("voiceschanged", changed);
+        resolve();
+      }
+      function changed() { if (matchingVoice()) finish(); }
+      const timeout = window.setTimeout(finish, 850);
+      synth.addEventListener("voiceschanged", changed);
+      changed();
+    });
+    voice = matchingVoice();
+  }
+  if (!voice || generation !== playbackGeneration) return false;
   return new Promise(resolve => {
     const words = new SpeechSynthesisUtterance(text);
     words.voice = voice;
     words.lang = lang === "kk" ? "kk-KZ" : "en-US";
     let started = false;
+    let completed = false;
     let finished = false;
     function finish() {
       if (finished) return;
@@ -448,7 +483,7 @@ function deviceSpeech(text: string): Promise<void> {
       clearTimeout(timeout);
       if (started) changeVoicePlayback('browser', -1);
       if (finishDeviceSpeech === finish) finishDeviceSpeech = undefined;
-      resolve();
+      resolve(completed);
     }
     const timeout = window.setTimeout(() => { finish(); synth.cancel(); }, 20000);
     finishDeviceSpeech = finish;
@@ -461,7 +496,8 @@ function deviceSpeech(text: string): Promise<void> {
     words.onpause = () => {
       if (started && !finished) { started = false; changeVoicePlayback('browser', -1); }
     };
-    words.onend = words.onerror = finish;
+    words.onend = () => { completed = true; finish(); };
+    words.onerror = finish;
     try { synth.speak(words); } catch { finish(); }
   });
 }

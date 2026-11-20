@@ -605,6 +605,7 @@
 | `ask.askAboutSpaceAnimalsOrHowThings` | Ask about space, animals, or how things work. Hold the button and talk! | Жануарлар, ғарыш немесе өзіңе қызық нәрсе туралы сұра. Сөйлеу үшін түймені басып тұр. |
 | `ask.youAsked` | You asked: “{asked}” | Сұрағың: «{asked}» |
 | `ask.hearAnswer` | Hear answer | Жауапты тыңдау |
+| `ask.voiceUnavailable` | I can’t read this one aloud right now. You can read it in the bubble. | Қазір дауыстап оқи алмадым. Жауабымды жоғарыдан оқи аласың. |
 | `ask.askAnother` | Ask another | Тағы сұрақ қою |
 | `ask.quickQuizAboutThis` | Quick quiz about this | Осы тақырыпта ойнау |
 | `ask.yourQuestion` | Your question | Сенің сұрағың |

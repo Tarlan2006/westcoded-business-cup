@@ -1,4 +1,5 @@
 import kazakh from "./faq-kk.json" with { type: "json" };
+import examples from "./ask-examples-kk.json" with { type: "json" };
 import { responses, type Language } from "./language.ts";
 import faq from "../content/faq.json" with { type: "json" };
 import type { AskResponse } from "./types";
@@ -46,6 +47,13 @@ function kazakhIndex(question: string) {
   return kazakh.findIndex(row => row.stems.some(phrase => phrase.split(" ").every(stem => words.some(word => word.startsWith(stem)))));
 }
 
+const normalizeKazakhQuestion = (text: string) => text.toLocaleLowerCase("kk").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+const recordedAnswers = new Map(kazakh.map(row => [normalizeKazakhQuestion(row.question), row.answer]));
+for (const row of Object.values(examples).flat()) {
+  const answer = "answer" in row ? row.answer : kazakh[kazakhIndex(row.question)]?.answer;
+  if (answer) recordedAnswers.set(normalizeKazakhQuestion(row.question), answer);
+}
+
 export function quizTopic(question: string, lang: Language = "en") {
   if (lang === "kk") return faq[kazakhIndex(question)]?.topic ?? "sky and space";
   return bestMatch(question)?.topic ?? "sky and space";
@@ -53,14 +61,18 @@ export function quizTopic(question: string, lang: Language = "en") {
 
 export function answerFromFaq(question: string, lang: Language = "en"): AskResponse {
   if (refuseQuestion(question)) return { answer: responses[lang].refusal, source: "refusal" };
-  if (lang === "kk") return { answer: kazakh[kazakhIndex(question)]?.answer ?? responses.kk.general, source: "faq" };
+  if (lang === "kk") return { answer: recordedAnswers.get(normalizeKazakhQuestion(question)) ?? kazakh[kazakhIndex(question)]?.answer ?? responses.kk.general, source: "faq" };
   return { answer: bestMatch(cleanQuestion(question))?.answer ?? generalAnswer, source: "faq" };
 }
 
 // Only complete, unambiguous topic phrases bypass the model. Extra meaningful
 // words (e.g. "red sky") must not receive the generic blue-sky explanation.
-export function quickFaqAnswer(question: string): AskResponse | undefined {
+export function quickFaqAnswer(question: string, lang: Language = "en"): AskResponse | undefined {
   if (refuseQuestion(question)) return undefined;
+  if (lang === "kk") {
+    const answer = recordedAnswers.get(normalizeKazakhQuestion(question));
+    return answer ? { answer, source: "faq" } : undefined;
+  }
   const filler = new Set(['why','how','what','is','are','do','does','the','a','an','we','you','can','tell','me','about','please','explain']);
   const key = (text: string) => [...new Set(text.toLowerCase().replace(/[^a-z ]/g,' ').split(/\s+/).filter(w=>w&&!filler.has(w)))].sort().join(' ');
   const questionKey = key(question);

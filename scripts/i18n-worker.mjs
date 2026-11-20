@@ -3,8 +3,16 @@ import { readFileSync } from "node:fs";
 import app from "../dist/westcoded_business_cup/index.js";
 import { matchQuizSpeech } from "../shared/quiz-speech.ts";
 import { responses } from "../shared/language.ts";
+import kazakhFaq from "../shared/faq-kk.json" with { type: "json" };
+import { quickFaqAnswer } from "../shared/ask-faq.ts";
 
 const headers = { "Content-Type":"application/json" };
+const voiceIndex = JSON.parse(readFileSync("public/audio/kk/voice-index.json", "utf8"));
+for (const { question, answer: text } of kazakhFaq) {
+  assert.deepEqual(quickFaqAnswer(question, "kk"), { answer: text, source: "faq" });
+  assert(voiceIndex.texts[text], question);
+}
+assert.equal(quickFaqAnswer("Аспан неге көк емес, қызыл болып тұр?", "kk"), undefined);
 const answer = async (question, lang, env = {}) => (await app.request("/api/ask", {
   method:"POST", headers, body:JSON.stringify({question, lang})
 }, env)).json();
@@ -40,6 +48,6 @@ for (const lang of ["kk","en"]) {
 assert.equal(matchQuizSpeech("мөө",["мө-ө","мияу","қиқ-қиқ"],"kk"),0);
 assert.equal(matchQuizSpeech("көкке",["көк","қызыл","сары"],"kk"),0);
 const start=Date.now();
-const timed=await answer("Мысық неге пырылдайды?","kk",{AI:{run:()=>new Promise(()=>{})}});
+const timed=await answer("Мысық жайланғанда неге пырылдайды?","kk",{AI:{run:()=>new Promise(()=>{})}});
 assert.equal(timed.source,"faq");assert.match(timed.answer,/мысық/iu);assert(Date.now()-start<8500);
 console.log("PASS bilingual Ask, trilingual refusals, validation, timeout, Whisper language contract and spoken quiz options");

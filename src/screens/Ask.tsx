@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { answerFromFaq, cleanQuestion, quizTopic } from "../../shared/ask-faq";
 import type { AskRequest, AskResponse } from "../../shared/types";
 import { suggestedQuestions, type TopicId } from "../../shared/topics";
-import { speakFallback, stopSpeech } from "../audio/engine";
+import { speakAnswer, stopSpeech, unlock } from "../audio/engine";
 import { usePushToTalk } from "../game/usePushToTalk";
 import { LearnPage } from "./Home";
 import { useSoundEnabled } from "../audio/sfx";
@@ -48,6 +48,12 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
   const input = useRef<HTMLTextAreaElement>(null);
   const request = useRef<AbortController | null>(null);
   const sound = useSoundEnabled();
+  const soundEnabled = useRef(sound);
+  const [voiceUnavailable, setVoiceUnavailable] = useState(false);
+  useEffect(() => {
+    soundEnabled.current = sound;
+    if (!sound) stopSpeech();
+  }, [sound]);
   const session = useContext(SessionActivity);
   const finishing = session?.finishing ?? false;
 
@@ -65,6 +71,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
 
   useEffect(() => {
     setResult(undefined);
+    setVoiceUnavailable(false);
     setBusy(false);
     return () => {
       request.current?.abort();
@@ -73,11 +80,17 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
     };
   }, [lang]);
 
+  async function readAnswer(text: string) {
+    setVoiceUnavailable(false);
+    if (await speakAnswer(text) === "unavailable") setVoiceUnavailable(true);
+  }
+
   async function submit(value: string, fromVoice = false) {
     const text = cleanQuestion(value);
     if (!text || request.current || (!fromVoice && session && !session.canStartActivity())) return;
     voice.release(true);
     stopSpeech();
+    if (sound) void unlock().catch(() => {});
     const controller = new AbortController();
     request.current = controller;
     setBusy(true);
@@ -91,7 +104,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
       setResult(response);
       setTopic(quizTopic(text, lang));
       if (response.source !== "refusal") onAnswer();
-      if (sound) void speakFallback(response.answer);
+      if (soundEnabled.current) void readAnswer(response.answer);
     } finally {
       window.clearTimeout(timeout);
       if (request.current === controller) {
@@ -120,7 +133,7 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
       }}>
           {result && asked && <p className="field-label ask-question">{t("ask.youAsked", { asked })}</p>}
           <div className={result ? "ask-host" : "contents"}>
-            <Mascot pose={busy ? "tablet" : "point"} size={result ? 72 : undefined}
+            <Mascot pose={busy ? "tablet" : "point"}
               emotion={recording ? "listening" : busy || voice.status === "decoding" ? "thinking" : result?.offline ? "network" : "idle"}
               className={result ? "ask-mascot" : "ask-mascot-large"} />
             {result && <SpeechBubble className="ask-answer" live>{result.answer}</SpeechBubble>}
@@ -128,9 +141,10 @@ export function Ask({ topics = [], onBack, onAnswer, onQuiz }: {
         {result ? <>
           {result.source !== "refusal" && <span className="field-label">+5 XP</span>}
           {sound && <button type="button" className="quiet-button" disabled={finishing} onClick={() => {
-            stopSpeech();
-            void speakFallback(result.answer);
+            void unlock().catch(() => {});
+            void readAnswer(result.answer);
           }}>{t("ask.hearAnswer")}</button>}
+          {sound && voiceUnavailable && <p className="field-label" role="status">{t("ask.voiceUnavailable")}</p>}
           <div className="answer-list">
             <button type="button" className="primary-button" disabled={finishing} onClick={() => {
               stopSpeech();

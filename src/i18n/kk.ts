@@ -378,6 +378,7 @@ export default {
   "ask.askAboutSpaceAnimalsOrHowThings": "Жануарлар, ғарыш немесе өзіңе қызық нәрсе туралы сұра. Сөйлеу үшін түймені басып тұр.",
   "ask.youAsked": "Сұрағың: «{asked}»",
   "ask.hearAnswer": "Жауапты тыңдау",
+  "ask.voiceUnavailable": "Қазір дауыстап оқи алмадым. Жауабымды жоғарыдан оқи аласың.",
   "ask.askAnother": "Тағы сұрақ қою",
   "ask.quickQuizAboutThis": "Осы тақырыпта ойнау",
   "ask.yourQuestion": "Сенің сұрағың",

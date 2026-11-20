@@ -1,3 +1,5 @@
+import kazakhExamples from "./ask-examples-kk.json" with { type: "json" };
+
 // The child's interests (parent setup: childInterests in src/state/preferences.ts) as
 // fixed topic ids. Only these ids ever reach the server, so no free text from the
 // profile goes into an AI prompt. `label` must match a childInterests entry.
@@ -24,39 +26,8 @@ export function topicLabels(ids: readonly TopicId[]): string[] {
   return ids.map((id) => topics.find((topic) => topic.id === id)!.label.toLowerCase());
 }
 
-const kazakhExamples: Record<TopicId, string[]> = {
-  "dinosaurs": [
-    "Тираннозаврдың бойы қандай болған?",
-    "Динозаврлар неге жойылды?"
-  ],
-  "space": [
-    "Ғарыш неге қараңғы?",
-    "Айдың пішіні неге өзгереді?"
-  ],
-  "animals": [
-    "Мысықтар неге пырылдайды?",
-    "Құстар қалай ұшады?"
-  ],
-  "vehicles": [
-    "Көліктер қалай жүреді?",
-    "Жүк көлігінің дөңгелегі неге үлкен?"
-  ],
-  "music": [
-    "Дыбысты қалай естиміз?",
-    "Барабан неге дүңкілдейді?"
-  ],
-  "art": [
-    "Түстер қалай пайда болады?",
-    "Көк пен сарыны араластырсаң, неге жасыл түс шығады?"
-  ],
-  "heroes": [
-    "Батыр адам қандай болады?",
-    "Адам ертегідегі батырдай ұша ала ма?"
-  ]
-};
-
 export function suggestedQuestions(ids: readonly TopicId[], count = 3, lang: "kk" | "en" = "en"): string[] {
   const chosen = ids.length ? ids : (["space", "animals", "heroes"] as TopicId[]);
-  const pool = chosen.flatMap((id): readonly string[] => lang === "kk" ? kazakhExamples[id] : topics.find((topic) => topic.id === id)!.examples);
+  const pool = chosen.flatMap((id): readonly string[] => lang === "kk" ? kazakhExamples[id].map(row => row.question) : topics.find((topic) => topic.id === id)!.examples);
   return pool.slice(0, count);
 }

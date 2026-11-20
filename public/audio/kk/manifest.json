@@ -245,6 +245,17 @@
     "ui_won": "/audio/kk/f8a7d449b51931895335.mp3",
     "ui_error": "/audio/kk/1e889e2f9b136a617227.mp3",
     "ui_greeting": "/audio/kk/2525bbd01e18c3f405b5.mp3",
-    "common_quiz_encourage": "/audio/kk/fa1159c94dab86022105.mp3"
+    "common_quiz_encourage": "/audio/kk/fa1159c94dab86022105.mp3",
+    "ask_dinosaurs_0": "/audio/kk/3d92542bc6d8b558643b.mp3",
+    "ask_dinosaurs_1": "/audio/kk/627d517ebd6c3d00ecc6.mp3",
+    "ask_space_0": "/audio/kk/40b22bd81114c0f0f2cc.mp3",
+    "ask_space_1": "/audio/kk/ece3fc28d9ebeb1fa56c.mp3",
+    "ask_vehicles_0": "/audio/kk/7aa9cd3a3d90b01cdf69.mp3",
+    "ask_vehicles_1": "/audio/kk/69dd9ed1f22a3bd9da7d.mp3",
+    "ask_music_1": "/audio/kk/e0079184d97544ff7756.mp3",
+    "ask_art_0": "/audio/kk/8897bf465ff16fc65415.mp3",
+    "ask_art_1": "/audio/kk/39b106a1ce5f1e5dda74.mp3",
+    "ask_heroes_0": "/audio/kk/733185470e6f8c02bdc8.mp3",
+    "ask_heroes_1": "/audio/kk/3da9b6dba5ee13b79db0.mp3"
   }
 }

@@ -376,6 +376,7 @@ export default {
   "ask.askAboutSpaceAnimalsOrHowThings": "Ask about space, animals, or how things work. Hold the button and talk!",
   "ask.youAsked": "You asked: “{asked}”",
   "ask.hearAnswer": "Hear answer",
+  "ask.voiceUnavailable": "I can’t read this one aloud right now. You can read it in the bubble.",
   "ask.askAnother": "Ask another",
   "ask.quickQuizAboutThis": "Quick quiz about this",
   "ask.yourQuestion": "Your question",

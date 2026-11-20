@@ -166,7 +166,7 @@ ask.post("/api/ask", bodyLimit({ maxSize: 8192, onError: (c) => {
   const question = cleanQuestion(body.question);
   const legacyClient = body.lang === undefined;
   const history = legacyClient ? readHistory(body.history) : [];
-  const quick = lang === "en" && !history.length && quickFaqAnswer(question);
+  const quick = !history.length && quickFaqAnswer(question, lang);
   if (quick) return c.json(quick);
   if ((!c.env.GROQ_API_KEY?.trim() && !c.env.AI) || !canCallModel(c.req.header("CF-Connecting-IP") ?? "local")) {
     return c.json(answerFromFaq(question, lang));
