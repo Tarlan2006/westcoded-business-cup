@@ -9,11 +9,4 @@ try {
   await page.evaluate(() => document.fonts.ready);
   await page.locator('img').evaluate(img => img.decode());
   await page.screenshot({ path: 'public/og-image.png' });
-  // Installation and home-screen icons use the same current brand, not legacy art.
-  const icon = await readFile('public/aidos-icon.svg', 'utf8');
-  for (const [size, file] of [[32, 'favicon.png'], [180, 'apple-touch-icon.png'], [512, 'icon-512.png']]) {
-    await page.setViewportSize({ width: size, height: size });
-    await page.setContent(`<style>body{margin:0}svg{display:block;width:100vw;height:100vh}</style>${icon}`);
-    await page.screenshot({ path: `public/${file}` });
-  }
 } finally { await browser.close(); }

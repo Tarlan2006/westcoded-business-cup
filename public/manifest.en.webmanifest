@@ -3,15 +3,11 @@
   "short_name": "AIdos",
   "start_url": "https://aidos.nexcel.kz/",
   "display": "standalone",
+  "theme_color": "#120A45",
   "icons": [
     {
-      "src": "/favicon.png",
-      "sizes": "32x32",
-      "type": "image/png"
-    },
-    {
-      "src": "/apple-touch-icon.png",
-      "sizes": "180x180",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
       "type": "image/png"
     },
     {
