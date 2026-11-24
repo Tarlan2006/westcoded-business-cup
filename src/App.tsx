@@ -416,7 +416,7 @@ export default function App() {
       </LearnPage>;
     }
     if (screen.name === "video") {
-      return <VideoCatalog ageBand={profile.ageBand} name={preferences.nickname ?? codenameFor(profile.codenameId)} onHome={goHome}
+      return <VideoCatalog watchedCount={profile.activities?.video ?? 0} ageBand={profile.ageBand} name={preferences.nickname ?? codenameFor(profile.codenameId)} onHome={goHome}
         onParents={openParents} onOpen={(video) => {
           if (canStartActivity()) setProgress(rewardActivity(`${screen.id}:${video}`, profile.id, "video", 5));
         }}

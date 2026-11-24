@@ -34,6 +34,8 @@ export function SessionClockProvider({ endsAt, children }: { endsAt: number | un
   return <SessionSeconds value={seconds}>{children}</SessionSeconds>;
 }
 
+export function useSessionSeconds() { return useContext(SessionSeconds); }
+
 export function SessionClock({ id, fallback }: { id?: string; fallback?: ReactNode }) {
   const seconds = useContext(SessionSeconds);
   if (seconds === null) return fallback ?? null;

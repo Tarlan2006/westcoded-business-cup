@@ -552,6 +552,7 @@ export default {
   "toddlerMission.woof": "🐶 Әуп!",
   "toddlerMission.mooooAmazingJob": "Дұрыс, мө-ө! Жарайсың! ⭐",
   "toddlerMission.playWith": "{brand}-пен ойна",
+  "videoCatalog.timeForGame": "Жаңа бейнеге уақыт аз қалды. Ойынға өтейік!",
   "videoCatalog.playInline": "Бейнені ойнату",
   "videoCatalog.openYoutube": "YouTube-та ашу",
   "videoCatalog.nextVideo": "Келесі бейне",

@@ -550,6 +550,7 @@ export default {
   "toddlerMission.woof": "🐶 Woof!",
   "toddlerMission.mooooAmazingJob": "Moooo! Amazing job! ⭐",
   "toddlerMission.playWith": "Play with {brand}",
+  "videoCatalog.timeForGame": "Time for a game before the session ends!",
   "videoCatalog.playInline": "Play video",
   "videoCatalog.openYoutube": "Open on YouTube",
   "videoCatalog.nextVideo": "Next video",
