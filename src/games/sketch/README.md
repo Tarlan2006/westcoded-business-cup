@@ -36,7 +36,7 @@ npm run build
 npm run check-content
 ```
 
-The synthetic checks cover blank, identical, approximate/shifted, flooded, wrong-color, transparent, almost-white and differently sized images; they also cover the checklist formula, reward cap, encouragement floor and failed-reference fallback. All 15 checks pass. The approximate fixture scores 85%; unrelated blue marks score 23%.
+The synthetic checks cover blank, identical, approximate/shifted, flooded, wrong-color, transparent, almost-white and differently sized images; they also cover the checklist formula, reward cap, encouragement floor and failed-reference fallback. The approximate fixture scores 85%; unrelated blue marks score 23%.
 
 `browser.check.mjs` is an optional developer harness, separate from the game. It uses an **existing** Playwright installation; do not add it as a project dependency for this module. Start the preview server first, then:
 
@@ -57,8 +57,8 @@ Screenshots of intro, drawing and reveal at **390px** and **1280px**, and the ma
 - The canvas keeps vector strokes in memory and replays them when its size/DPR changes. Mouse, pen and touch use Pointer Events and pointer capture; drawing has `touch-action: none`. Undo has no fixed step limit. Clear is explicitly confirmed. PNG export uses `toBlob`.
 - The reference is an inline original SVG. It is rasterized into an ordinary hidden canvas at the drawing's pixel dimensions using a local data URL. No OffscreenCanvas is used. Both images are area-averaged into a 32×40 grid with alpha composited onto white, then classified into empty/green/yellow/other buckets using HSV.
 - Automatic score: `100 × (0.6 × coverage + 0.4 × precision)^0.8`, with a two-cell circular search radius. Coverage requires the same color bucket; precision requires a nearby nonempty reference cell. `scoreSketch().match` equals its automatic `colorsAndShape` score because the pure function receives no checklist.
-- Displayed match: `round(0.5 × colorsAndShape + 0.5 × exactChecklistPercentage)`. The checklist percentage is rounded only for display. `sketchResult` applies the blank/flood safeguards to this final value too: empty stays 0%, a >70% single-bucket flood stays at most 25%. Five non-eraser strokes give a minimum 10% for a nonempty picture. Undo removes strokes from this count; Clear resets it.
-- If the reference cannot be decoded, match uses the checklist alone, retaining blank/flood protections. XP is `round(match / 100 × 24)` and 4 when every clue is checked, capped at 28. The all-checked bonus follows the child's checklist even when the drawing is empty; the blank match still stays 0%.
+- Displayed match: `round(0.5 × colorsAndShape + 0.5 × exactChecklistPercentage)`. The checklist percentage is rounded only for display. `sketchResult` applies the blank/flood safeguards to this final value too: empty stays 0%, a >70% single-bucket flood stays at most 25%. Five non-eraser strokes give a minimum 10% when the picture has a positive match. Undo removes strokes from this count; Clear resets it.
+- If the reference cannot be decoded, match uses the checklist alone, retaining blank/flood protections. XP is `round(match / 100 × 24)` and 4 when every clue is checked, capped at 28. Empty drawings and a zero automatic match earn 0 XP, including when every clue is checked.
 - The score is playful self-assessment, not image recognition or a measure of artistic ability. Text and all essential controls work without speech.
 
 ## Isolation and adding cases

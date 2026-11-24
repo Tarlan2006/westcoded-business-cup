@@ -1,13 +1,11 @@
-import { withSymbols } from "../components/InlineSymbol";
-import { t } from "../i18n/index";
-import { useContext, useEffect, useState } from "react";
+import { t, useLanguage } from "../i18n/index";
+import { useContext, useEffect, useMemo, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
 import { SessionActivity } from "../components/SessionControls";
 import { videosFor } from "../game/videos";
-import { Mascot } from "../components/Mascot";
 import { ToddlerCinema } from "./ToddlerCinema";
 import { YouTubeVideo } from "../components/YouTubeVideo";
 
@@ -17,15 +15,17 @@ type VideoCatalogProps = {
 };
 
 export function VideoCatalog(props: VideoCatalogProps) {
-  return props.ageBand === "1-2" ? <ToddlerCinema {...props} /> : <StandardVideoCatalog {...props} />;
+  const language = useLanguage();
+  return props.ageBand === "1-2" ? <ToddlerCinema key={language} {...props} /> : <StandardVideoCatalog key={language + props.ageBand} {...props} />;
 }
 
 function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay }: VideoCatalogProps) {
-  const videos = videosFor(ageBand);
+  const language = useLanguage();
+  const videos = useMemo(() => videosFor(ageBand, language), [ageBand, language]);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [watching, setWatching] = useState(false);
-  const [autoplay, setAutoplay] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const sound = useSoundEnabled();
   const navigation = useContext(ActivityNavigation);
@@ -43,13 +43,12 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
         const next = videos[index + 1];
         if (!next) return;
         setIndex(index + 1);
-        setAutoplay(true);
-        setWatching(true);
-        onOpen(next.id);
+        setUnavailable(false);
+        setWatching(false);
       }
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [countdown, index, videos, onOpen, session, finishing]);
+  }, [countdown, index, videos, session, finishing]);
 
   useEffect(() => {
     if (finishing && !watching) session?.finishActivity();
@@ -61,73 +60,48 @@ function StandardVideoCatalog({ ageBand, name, onParents, onHome, onOpen, onPlay
     setIndex(position);
     setPlaying(false);
     setWatching(false);
-    setAutoplay(false);
+    setUnavailable(false);
     setCountdown(null);
   }
 
-  const actions = <div className={playing ? "flex flex-wrap items-center justify-between gap-2" : "video-frame-controls absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2"}>
-    <button type="button" disabled={!selected || finishing} onClick={() => index + 1 >= videos.length ? onPlay(selected?.id) : choose(index + 1)}
-      className="px-5 py-2.5 rounded-2xl bg-[#2A1F8A] hover:bg-[#3A2BB5] border-2 border-[#8B5CF6] text-white font-display font-bold text-sm sm:text-base flex items-center gap-2 cursor-pointer">
-      <span aria-hidden="true">⏭️</span> {t("videoCatalog.nextVideo")}</button>
-    <button type="button" disabled={finishing} onClick={() => onPlay(selected?.id)}
-      className="px-6 py-3 rounded-2xl btn-game btn-mint text-[#062C1E] font-display font-bold text-base sm:text-lg flex items-center gap-2 cursor-pointer">
-      <Mascot pose="point" size={48} /> {t("video.playNow")}</button>
-  </div>;
-
-  return <main id="screen-video" className="prototype-screen relative flex-1 w-full max-w-4xl mx-auto px-4 py-4 flex flex-col justify-between z-10 space-y-4" aria-label={t("activitySuggestions.videoLibrary")}>
-    {selected && <h1 className="sr-only">{t("activitySuggestions.videoLibrary")}</h1>}
+  return <main id="screen-video" className="prototype-screen relative w-full max-w-4xl mx-auto px-4 py-4 space-y-4" aria-label={t("activitySuggestions.videoLibrary")}>
+    <h1 className="sr-only">{t("activitySuggestions.videoLibrary")}</h1>
     {navigation && <nav className="sr-only" aria-label={t("activityHeader.breadcrumb")}>{navigation.breadcrumb}</nav>}
-    <PrototypeHeader name={name} label={t("videoCatalog.videos")} detail={selected ? t("videoCatalog.episodeOf", { value1: index + 1, value2: videos.length, value3: selected.channel }) : t("videoCatalog.watchWithAGrownUp")}
+    <PrototypeHeader name={name} label={t("videoCatalog.videos")} detail={selected ? t("videoCatalog.episodeOf", { value1: index + 1, value2: videos.length, value3: selected.channel }) : undefined}
       onParents={onParents} onHome={onHome} />
-    <div className="flex-1 flex flex-col justify-center">
-      <div inert={finishing} className={`relative w-full aspect-video max-h-[430px] mx-auto rounded-3xl bg-[#120B4D] border-4 border-[#6C47FF] shadow-[0_14px_40px_rgba(0,0,0,0.5)] overflow-hidden ${playing ? "prototype-frame-video" : "prototype-video-placeholder flex flex-col items-center justify-center p-6 text-center"}`}>
-        {playing && selected ? <YouTubeVideo key={selected.id} id={selected.id} title={selected.title} autoplay={autoplay}
-          onPlaying={() => { setWatching(true); setCountdown(null); }}
+    {selected && <section className="cinema-card" inert={finishing} aria-labelledby="video-title">
+      <div className="cinema-stage video-frame-content">
+        {playing && !unavailable ? <YouTubeVideo key={selected.id} id={selected.id} title={selected.title} autoplay
+          onPlaying={() => { setWatching(true); setCountdown(null); onOpen(selected.id); }}
           onPaused={() => setWatching(false)}
+          onError={() => { setWatching(false); setUnavailable(true); setCountdown(null); }}
           onEnded={() => {
             setWatching(false);
             if (session && !session.canStartActivity()) { session.finishActivity(); return; }
-            if (selected.id === "CH1lo6lwQ6o") onPlay(selected.id);
-            else if (index + 1 < videos.length) setCountdown(5);
-          }} /> : <>
-          <div className="absolute top-4 left-4 right-4 flex items-start justify-between gap-3">
-            <nav aria-label={t("videoCatalog.videoEpisodes")} className="flex items-center gap-2 min-h-6">
-              {videos.length === 0 && <span aria-hidden="true" className="block w-8 h-2.5 rounded-full bg-[#FFD13B]" />}
-              {videos.map((video, position) => <button type="button" key={video.id} onClick={() => choose(position)}
-                aria-label={video.title} aria-current={index === position ? "true" : undefined} className="py-2">
-                <span aria-hidden="true" className={`block w-8 h-2.5 rounded-full transition-all ${index === position ? "bg-[#FFD13B]" : "bg-white/25"}`} />
-              </button>)}
-            </nav>
-            <span className="px-3 py-1 rounded-full bg-black/40 text-xs font-black text-indigo-200">{selected ? t("videoCatalog.watchOnYoutube") : t("videoCatalog.videosComingSoon")}</span>
-          </div>
-          <div className="video-frame-content space-y-3 max-w-md">
-            {selected ? <button type="button" className="max-w-full space-y-3 rounded-xl" aria-label={t("videoCatalog.openVideoWatchVideoPlaysOnYoutube", { value1: selected.title })}
-              onClick={() => {
-                if (session && !session.canStartActivity()) return;
-                setPlaying(true);
-                setWatching(true);
-                onOpen(selected.id);
-              }}>
-              <Mascot pose="tablet" className="video-mascot" />
-              <span className="block font-display text-2xl sm:text-3xl font-bold text-white">{selected.title}</span>
-              <span className="block text-xs sm:text-sm font-bold text-indigo-200">{withSymbols(t("videoCatalog.watchVideoPlaysOnYoutube"))}</span>
-            </button> : <>
-              <Mascot pose="tablet" className="video-mascot" />
-              <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">{t("videoCatalog.moreVideosComingSoon")}</h1>
-              <p className="text-xs sm:text-sm font-bold text-indigo-200">{t("videoCatalog.playWithWhileWeGetTheNext")}</p>
-            </>}
-          </div>
-          {actions}
-        </>}
+            if (index + 1 < videos.length) setCountdown(5);
+          }} /> :
+          <button type="button" className="cinema-poster" aria-label={t("videoCatalog.openVideoWatchVideoPlaysOnYoutube", { value1: selected.title })}
+            onClick={() => { if (!session || session.canStartActivity()) { setUnavailable(false); setPlaying(true); } }}>
+            <img key={selected.id} src={`https://i.ytimg.com/vi/${selected.id}/hqdefault.jpg`} alt=""
+              onError={event => { event.currentTarget.hidden = true; }} />
+            <span className="cinema-play-icon" aria-hidden="true">▶</span>
+            <span className="cinema-play-label">{unavailable ? t("toddlerCinema.tryAgain") : t("videoCatalog.playInline")}</span>
+          </button>}
       </div>
-      {playing && <div className="mt-4 space-y-3">
-        {countdown !== null && <div className="flex flex-wrap items-center justify-between gap-2">
-          <p role="status" aria-live="polite">{t("videoCatalog.nextVideoInSeconds", { countdown })}</p>
-          <button type="button" className="min-h-12 px-4 rounded-2xl btn-game" onClick={() => setCountdown(null)}>{t("videoCatalog.cancelAutoplay")}</button>
+      <div className="cinema-details">
+        <h2 id="video-title">{selected.title}</h2>
+        {unavailable && <p role="status">{t("toddlerCinema.thisVideoNeedsALittleHelp")}</p>}
+        <div className="cinema-actions">
+          <a className="cinema-action" href={`https://www.youtube.com/watch?v=${selected.id}`} target="_blank" rel="noopener noreferrer">{t("videoCatalog.openYoutube")}</a>
+          {videos.length > 1 && <button className="cinema-action" type="button" onClick={() => choose((index + 1) % videos.length)}>{t("videoCatalog.nextVideo")}</button>}
+          <button className="cinema-action btn-mint" type="button" onClick={() => onPlay(selected.id)}>{t("video.playNow")}</button>
+        </div>
+        {countdown !== null && <div className="cinema-countdown">
+          <p role="status">{t("videoCatalog.nextVideoInSeconds", { countdown })}</p>
+          <button type="button" className="cinema-action" onClick={() => setCountdown(null)}>{t("videoCatalog.cancelAutoplay")}</button>
         </div>}
-        <p className="text-xs text-indigo-300">{t("videoCatalog.videosPlayOnYoutube")}</p>
-        {actions}
-      </div>}
-    </div>
+      </div>
+    </section>}
+    {!selected && <p>{t("videoCatalog.moreVideosComingSoon")}</p>}
   </main>;
 }

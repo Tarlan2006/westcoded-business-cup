@@ -9,16 +9,16 @@ import { SessionActivity } from "../components/SessionControls";
 function makeRounds() { return [
   { seconds: 25, demoEmoji: "👏", demoWord: t("toddlerMission.clap"), prop: "👏", action: "clap", mood: "happy",
     shortPrompt: t("toddlerMission.clapHandsWith"), speech: t("toddlerMission.letUsClapOurHandsTogetherClap"),
-    replies: [t("toddlerMission.clapAlt"), t("toddlerMission.teeHee")], praise: t("toddlerMission.superClapping") },
+    correctIndex: 0, replies: [t("toddlerMission.clapAlt"), t("toddlerMission.teeHee")], praise: t("toddlerMission.superClapping") },
   { seconds: 25, demoEmoji: "🙈", demoWord: t("toddlerMission.peekABoo"), prop: "🙈", action: "wave", mood: "giggle",
     shortPrompt: t("toddlerMission.peekABooWaveTo"), speech: t("toddlerMission.peekABooISeeYouWave"),
-    replies: [t("toddlerMission.byeBye"), t("toddlerMission.peekABooAlt")], praise: t("toddlerMission.peekABooYouAreSoFast") },
+    correctIndex: 1, replies: [t("toddlerMission.byeBye"), t("toddlerMission.peekABooAlt")], praise: t("toddlerMission.peekABooYouAreSoFast") },
   { seconds: 25, demoEmoji: "🐮", demoWord: t("toddlerMission.mooo"), prop: "🐮", action: "jump", mood: "excited",
     shortPrompt: t("toddlerMission.whatDoesTheCowSay"), speech: t("toddlerMission.lookAFriendlyCowWhatDoesThe"),
-    replies: [t("toddlerMission.moooo"), t("toddlerMission.woof")], praise: t("toddlerMission.mooooAmazingJob") },
+    correctIndex: 0, replies: [t("toddlerMission.moooo"), t("toddlerMission.woof")], praise: t("toddlerMission.mooooAmazingJob") },
 ] as const satisfies ReadonlyArray<{
   seconds: number; demoEmoji: string; demoWord: string; prop: string; action: MascotAction; mood: MascotMood;
-  shortPrompt: string; speech: string; replies: readonly string[]; praise: string;
+  shortPrompt: string; speech: string; correctIndex: number; replies: readonly string[]; praise: string;
 }>; }
 let rounds = makeRounds();
 subscribe(() => { rounds = makeRounds(); });
@@ -28,7 +28,8 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
   const [index, setIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [seconds, setSeconds] = useState<number>(rounds[0].seconds);
-  const [feedback, setFeedback] = useState(false);
+  const [outcome, setOutcome] = useState<"correct" | "wrong">();
+  const feedback = outcome !== undefined;
   const [points, setPoints] = useState(0);
   const timer = useRef<number>(0);
   const transitioning = useRef(false);
@@ -63,13 +64,13 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
   }, [round, sound, speak, stop]);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
-  function advance() {
+  function advance(correct: boolean) {
     if (transitioning.current) return;
     transitioning.current = true;
-    const earned = points + 5;
-    setFeedback(true);
-    uiSound("win", sound);
-    if (sound) void speak(round.praise);
+    const earned = points + (correct ? 5 : 0);
+    setOutcome(correct ? "correct" : "wrong");
+    if (correct) uiSound("win", sound);
+    if (sound) void speak(correct ? round.praise : t("voice.common_quiz_encourage"));
     timer.current = window.setTimeout(() => {
       if (index + 1 === rounds.length || canStartActivity?.() === false) complete.current(earned);
       else {
@@ -77,15 +78,15 @@ export function ToddlerMission({ minutes, onExit, onComplete }: { minutes: numbe
         setIndex(index + 1);
         setPoints(earned);
         setSeconds(rounds[index + 1].seconds);
-        setFeedback(false);
+        setOutcome(undefined);
       }
     }, 1700);
   }
 
   return <MissionStage {...round} heading={t("toddlerMission.playWith")} round={index + 1} seconds={seconds} clockSeconds={Math.max(0, minutes * 60 - elapsed - round.seconds + seconds)}
-    ratio={seconds / round.seconds} onExit={onExit} emotion={feedback ? "correct" : index === 0 ? "greeting" : "idle"} mood={feedback ? "excited" : round.mood} feedback={feedback}
-    prompt={feedback ? round.praise : round.shortPrompt}
-    replies={round.replies.map((label) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={advance}>{label}</button>)}
+    ratio={seconds / round.seconds} onExit={onExit} emotion={outcome ?? (index === 0 ? "greeting" : "idle")} mood={outcome === "correct" ? "excited" : round.mood} feedback={outcome === "correct"}
+    prompt={outcome === "wrong" ? t("quiz.incorrectZeroXp") : feedback ? round.praise : round.shortPrompt}
+    replies={round.replies.map((label, i) => <button key={label} type="button" className={missionReplyStyle} disabled={feedback} onClick={() => advance(i === round.correctIndex)}>{label}</button>)}
     controls={<button type="button" className={`${missionButtonStyle} btn-mint text-[#062C1E] col-span-2`} disabled={feedback}
-      onClick={advance}><span aria-hidden="true">✅</span> {t("mission.iDidIt")}</button>} />;
+      onClick={() => advance(true)}><span aria-hidden="true">✅</span> {t("mission.iDidIt")}</button>} />;
 }

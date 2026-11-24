@@ -1,7 +1,13 @@
 [
-  { "id": "CH1lo6lwQ6o", "title": "Animal Sounds with Baby", "channel": "Joy Nest Kids", "ageBand": "1-2", "quizTopic": "animal sounds" },
-  { "id": "jYAWf8Y91hA", "title": "I See Something Blue", "channel": "Super Simple Songs", "ageBand": "1-2" },
-  { "id": "5oYKonYBujg", "title": "Old MacDonald Had a Farm", "channel": "Super Simple Songs", "ageBand": "1-2" },
-  { "id": "I1EETm17qbM", "title": "10 mins of Gus Goes to Dinosaur Land! | 🦖🌋 Learn 10 Dinosaurs for Kids | Fun Dinosaur Adventure!", "channel": "GUS ADVENTURES", "ageBand": "3-5" },
-  { "id": "ehUIlhKhzDA", "title": "Why Is the Sky Blue?", "channel": "NASA Space Place", "ageBand": "6-8" }
+  {"id": "CH1lo6lwQ6o", "title": "Animal Sounds with Baby", "channel": "Joy Nest Kids", "ageBand": "1-2", "quizTopic": "animal sounds", "language": "en"},
+  {"id": "jYAWf8Y91hA", "title": "I See Something Blue", "channel": "Super Simple Songs", "ageBand": "1-2", "language": "en"},
+  {"id": "5oYKonYBujg", "title": "Old MacDonald Had a Farm", "channel": "Super Simple Songs", "ageBand": "1-2", "language": "en"},
+  {"id": "I1EETm17qbM", "title": "10 mins of Gus Goes to Dinosaur Land! | 🦖🌋 Learn 10 Dinosaurs for Kids | Fun Dinosaur Adventure!", "channel": "GUS ADVENTURES", "ageBand": "3-5", "language": "en"},
+  {"id": "ehUIlhKhzDA", "title": "Why Is the Sky Blue?", "channel": "NASA Space Place", "ageBand": "6-8", "language": "en"},
+  {"id": "Trx6-7vsogM", "title": "Қошақаным", "channel": "Balafunny", "ageBand": "1-2", "language": "kk", "quizTopic": "animal sounds"},
+  {"id": "XpinTyH79TU", "title": "«Балапан» әнұраны", "channel": "Balapan TV", "ageBand": "1-2", "language": "kk"},
+  {"id": "9ZzDzaINwPU", "title": "Түрлі түстер · 1-бөлім", "channel": "BilimKids", "ageBand": "3-5", "language": "kk"},
+  {"id": "JfNykxbhXKk", "title": "Түрлі түстер · 2-бөлім", "channel": "BilimKids", "ageBand": "3-5", "language": "kk"},
+  {"id": "Dcw6X-TPQdM", "title": "Әли мен Айя · Мен ғарышкер боламын!", "channel": "Balapan TV", "ageBand": "6-8", "language": "kk"},
+  {"id": "wb9zCeRyzys", "title": "Ертегілер еліне саяхат · Мақта қыз", "channel": "Balapan TV", "ageBand": "6-8", "language": "kk"}
 ]

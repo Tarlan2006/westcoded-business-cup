@@ -12,7 +12,7 @@ npm run dev
 
 Open [the local preview](http://localhost:5173/dev/space-preview.html). Add `?view=1` for the viewer or `?text=1` to hide the speech control. The preview only selects installed English voices marked as local. If no local voice is available, the fact remains on screen. Back and Done display their callback results in the preview.
 
-Use a wheel or swipe over the scene, press ↑ or ↓ while focused inside the journey, tap a stop, or use Previous stop and Next. Select Done to report 8 XP for visiting the last stop, and 4 XP for each correct answer. The preview can continue offline once it loads. The game does not use storage or external assets.
+Use a wheel or swipe over the scene, press ↑ or ↓ while focused inside the journey, tap a stop, or use Previous stop and Next. Select Done to report 4 XP per correct quiz answer (8 XP for completing the exploration-only version). The preview can continue offline once it loads. The game does not use storage or external assets.
 
 ```sh
 node src/games/space/scale.check.ts
@@ -23,7 +23,7 @@ npm run check-content
 
 The checks cover monotonic zoom, screen-size bounds, exact stop alignment, ratios, and number formatting. The [screenshots](./screens/) show intro, journey, quiz, and result at 390 and 1280 px.
 
-In desktop Chrome, a scripted fast scroll across all stops produced a 16.7 ms median frame interval and a 16.9 ms 95th percentile at both widths. The 64-frame samples showed zero long tasks and zero vertical scene drift. Browser checks also covered emulated touch at 390 px, 48 px controls and no horizontal overflow at 360 px, reduced motion, local speech callback, offline completion, and the 8–28 XP range. These timings are from desktop Chrome, with mobile dimensions emulated.
+In desktop Chrome, a scripted fast scroll across all stops produced a 16.7 ms median frame interval and a 16.9 ms 95th percentile at both widths. The 64-frame samples showed zero long tasks and zero vertical scene drift. Browser checks also covered emulated touch at 390 px, 48 px controls and no horizontal overflow at 360 px, reduced motion, local speech callback, offline completion, and the original reward range. These timings are from desktop Chrome, with mobile dimensions emulated.
 
 ## Measurements and sources
 

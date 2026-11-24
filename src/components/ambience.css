@@ -12,7 +12,7 @@
 .amb-music-button { min-width: 100px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--border, #5946e3); border-radius: 12px; background: var(--bg-card-dark, #1e1666); color: #fff; font: 800 14px var(--font-heading); cursor: pointer; }
 .amb-music-button:focus-visible { outline: 3px solid var(--gold-star, #ffd13b); outline-offset: 3px; }
 .amb-music-button:disabled { opacity: .65; cursor: default; }
-.amb-music-button:active:not(:disabled) { transform: translateY(1px); }
+.amb-music-button:active:not(:disabled) { filter: brightness(.94); }
 [data-ambience-paused] .amb-mark { animation-play-state: paused; }
 @keyframes amb-drift { from { translate: 0 0; rotate: -4deg; } to { translate: 8px -16px; rotate: 6deg; } }
 @media (prefers-reduced-motion: reduce) { .amb-mark { animation: none; } }

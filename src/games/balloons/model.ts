@@ -109,4 +109,4 @@ export function layoutBalloons(count: number, width: number, height: number, bas
   throw new Error("Stage is too small to keep every balloon countable");
 }
 
-export function pointsFor(correct: number) { return Math.min(28, Math.max(0, Math.floor(correct)) * 4 + 8); }
+export function pointsFor(correct: number) { return Math.min(5, Math.max(0, Math.floor(correct))) * 4; }

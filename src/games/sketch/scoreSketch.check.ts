@@ -38,6 +38,7 @@ const random = picture((x, y) => {
   return seed % 4 === 0 ? [40, 60, 220, 255] : null;
 }, 32, 40);
 
+check(sketchResult(0, Array(6).fill(true), 5, drawingStats(blank)).points === 0, "erased drawing earns zero XP even with checked clues");
 check(scoreSketch(blank, reference).match === 0, "blank canvas = 0%");
 check(scoreSketch(reference, reference).match >= 90 && scoreSketch(reference, reference).match <= 100, "reference against itself = 90–100%");
 const approximate = scoreSketch(shifted, reference).match;
@@ -51,7 +52,7 @@ check(scoreSketch(reference, blank).match === 0, "empty reference is safe");
 check(scoreSketch(picture(hero, 321, 403), reference).match >= 90, "non-divisible sizes use area averaging");
 check(sketchResult(64, [true, true, true, true, true, false], 6, drawingStats(reference)).match === 74, "weighted score uses the exact checklist ratio");
 check(sketchResult(100, Array(6).fill(true), 6, drawingStats(reference)).points === 28, "maximum reward is 28 XP");
-check(sketchResult(0, Array(6).fill(false), 5, drawingStats(reference)).match === 10, "five strokes get encouragement floor");
+check(sketchResult(0, Array(6).fill(false), 5, drawingStats(reference)).points === 0, "five strokes without a match earn zero XP");
 check(sketchResult(0, Array(6).fill(true), 5, drawingStats(blank)).match === 0, "blank canvas stays at zero even with checked clues");
 check(sketchResult(25, Array(6).fill(true), 5, drawingStats(flood)).match <= 25, "checklist cannot bypass flood protection");
 check(sketchResult(null, [true, true, true, false, false, false], 2, drawingStats(reference)).match === 50, "failed reference falls back to Clues");

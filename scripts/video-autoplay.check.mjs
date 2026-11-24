@@ -1,43 +1,100 @@
-// Browser regression test with deterministic YouTube state events.
-// VIDEO_PLAYWRIGHT points to an installed Playwright module; VIDEO_URL defaults to local preview.
-import assert from 'node:assert/strict';
-import { pathToFileURL } from 'node:url';
-const { chromium } = await import(pathToFileURL(process.env.VIDEO_PLAYWRIGHT).href);
-const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+// Run against a local build with VIDEO_URL and optionally CHROME_PATH.
+import assert from "node:assert/strict";
+import { chromium } from "playwright";
+import kk from "../src/i18n/kk.ts";
+import en from "../src/i18n/en.ts";
+import questions from "../content/quiz.json" with { type: "json" };
+import videos from "../content/videos.json" with { type: "json" };
+
+const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
 try {
-  for (const width of [390, 1280]) {
-    const page = await browser.newPage({ viewport: { width, height: 844 } });
+  for (const [language, width] of [["kk", 320], ["kk", 390], ["en", 1280]]) {
+    const dict = language === "kk" ? kk : en;
+    const context = await browser.newContext({ viewport: { width, height: 844 } });
+    const page = await context.newPage();
+    page.setDefaultTimeout(12000);
     const errors = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ body: '<p>Player fixture</p>', contentType: 'text/html' }));
-    await page.route('https://www.youtube.com/iframe_api', route => route.fulfill({ contentType: 'text/javascript', body: `
-      window.YT = { Player: function(frame, options) {
-        window.videoState = data => options.events.onStateChange({data});
-        this.destroy = () => frame.remove();
-      }}; window.onYouTubeIframeAPIReady();
-    ` }));
-    await page.goto(process.env.VIDEO_URL ?? 'http://127.0.0.1:5178');
-    await page.getByRole('button', { name: 'CONTINUE', exact: true }).click();
-    await page.getByLabel("What should AIdos call your child?", { exact: true }).fill('Pal');
-    await page.getByRole('button', { name: '1–2 yrs', exact: true }).click();
-    await page.getByRole('button', { name: /START/ }).click();
-    await page.getByRole('button', { name: 'Open video: I See Something Blue', exact: true }).click();
-    await page.waitForFunction(() => typeof window.videoState === 'function');
-    await page.evaluate(() => window.videoState(0));
-    await page.getByText('Next video in 5 seconds', { exact: true }).waitFor();
-    await page.getByRole('button', { name: 'Cancel autoplay' }).click();
-    await page.waitForTimeout(5200);
-    assert((await page.locator('iframe').getAttribute('src')).includes('jYAWf8Y91hA'));
-    await page.evaluate(() => { window.videoState(1); window.videoState(0); });
-    await page.locator('iframe[title="Old MacDonald Had a Farm"]').waitFor({ timeout: 8000 });
-    assert((await page.locator('iframe').getAttribute('src')).includes('autoplay=1'));
-    await page.evaluate(() => window.videoState(0));
-    await page.locator('iframe[title="Animal Sounds"]').waitFor({ timeout: 8000 });
-    await page.evaluate(() => window.videoState(0));
-    await page.getByText('What does the cow say?', { exact: true }).waitFor();
-    assert.equal(await page.locator('iframe').count(), 0);
+    page.on("pageerror", error => errors.push(error.message));
+    await page.addInitScript(lang => {
+      localStorage.setItem("mypal.lang", lang);
+      localStorage.setItem("mission-control.sound", "off");
+    }, language);
+    const button = key => page.getByRole("button", { name: dict[key].replaceAll("{brand}", "AIdos"), exact: true });
+    const xp = () => page.evaluate(() => JSON.parse(localStorage.getItem("mission-control.progress")).profiles[0].xp);
+    await page.route("https://i.ytimg.com/**", route => route.abort());
+    await page.route("https://www.youtube-nocookie.com/**", route => route.fulfill({ contentType: "text/html", body: "<p>Player fixture</p>" }));
+    await page.route("https://www.youtube.com/iframe_api", route => route.fulfill({ contentType: "text/javascript", body: `
+      window.YT = { Player: class {
+        constructor(frame, { events }) { this.frame = frame; window.playerEvents = events; events.onReady(); }
+        destroy() { this.frame.remove(); }
+      }};
+      window.onYouTubeIframeAPIReady();` }));
+    await page.goto(process.env.VIDEO_URL || "http://127.0.0.1:5173");
+    await button("welcome.continue").click();
+    await page.locator("#profileNameInput").fill("Әли");
+    await page.locator('[data-age="6-8"]').click();
+    await page.locator(".profile-submit").click();
+    await page.locator(".cinema-poster").waitFor();
+    const catalogue = videos.filter(video => video.language === language && video.ageBand === "6-8");
+    for (const video of catalogue) {
+      assert.equal(await page.locator("#video-title").innerText(), video.title);
+      assert.equal(await page.locator(".cinema-actions a").getAttribute("href"), "https://www.youtube.com/watch?v=" + video.id);
+      if (catalogue.length > 1) await button("videoCatalog.nextVideo").click();
+    }
+    const parents = button("grownUpsButton.parentsPressAndHold");
+    const home = button("activityHeader.homeBackToActivities");
+    const bounds = async () => Promise.all([parents.boundingBox(), home.boundingBox()]);
+    await parents.focus();
+    const before = await bounds();
+    await page.keyboard.down("Space");
+    await page.locator(".hold-pressed").waitFor();
+    assert.deepEqual(await bounds(), before);
+    await page.keyboard.up("Space");
+    assert.deepEqual(await bounds(), before);
+    await parents.press("Enter", { delay: 1600 });
+    await page.getByRole("dialog").waitFor();
+    const other = language === "kk" ? "en" : "kk";
+    await page.getByRole("button", { name: other === "en" ? "EN" : "KZ", exact: true }).click();
+    const otherVideo = videos.find(video => video.language === other && video.ageBand === "6-8");
+    await page.waitForFunction(title => document.querySelector("#video-title")?.textContent === title, otherVideo.title);
+    await page.getByRole("button", { name: language === "kk" ? "KZ" : "EN", exact: true }).click();
+    await button("leaveGameDialog.keepPlaying").click();
+
+    const startingXp = await xp();
+    await page.locator(".cinema-poster").click();
+    await page.waitForFunction(() => !!window.playerEvents);
+    assert.match(await page.locator("iframe").getAttribute("src"), new RegExp(catalogue[0].id + ".*autoplay=1"));
+    await page.evaluate(() => window.playerEvents.onError());
+    await page.locator(".cinema-poster").waitFor();
+    assert.equal(await xp(), startingXp);
+    await page.evaluate(() => { window.playerEvents = null; });
+    await page.locator(".cinema-poster").click();
+    await page.waitForFunction(() => !!window.playerEvents);
+    await page.evaluate(() => { window.playerEvents.onStateChange({ data: 1 }); window.playerEvents.onStateChange({ data: 1 }); });
+    assert.equal(await xp(), startingXp + 5);
+    if (catalogue.length > 1) {
+      await page.evaluate(() => window.playerEvents.onStateChange({ data: 0 }));
+      await button("videoCatalog.cancelAutoplay").click();
+      assert.equal(await page.locator(".cinema-countdown").count(), 0);
+      await page.evaluate(() => { window.playerEvents.onStateChange({ data: 1 }); window.playerEvents.onStateChange({ data: 0 }); });
+      await page.locator('iframe[title="' + catalogue[1].title + '"]').waitFor();
+      assert.equal(await xp(), startingXp + 5);
+    }
+    await button("video.playNow").click();
+    for (let i = 0; i < 3; i++) {
+      const prompt = await page.locator("#screen-mission .caption").innerText();
+      const q = questions.find(q => q.ageBand === "6-8" && prompt.includes(dict["quiz." + q.id + ".question"]));
+      assert.ok(q, prompt);
+      const correct = language === "en" && i === 1;
+      const index = q.choices.findIndex(choice => (choice === q.answer) === correct);
+      await page.locator('[aria-label="' + dict["missionStage.quickReplies"] + '"] button').nth(index).click();
+      assert.match(await page.locator("#screen-mission .caption").innerText(), correct ? /10/ : /0/);
+      await button(i === 2 ? "quiz.finishQuiz" : "quiz.nextQuestion").click();
+    }
+    await page.locator("#screen-complete").waitFor();
+    assert.equal(await xp(), startingXp + 5 + (language === "en" ? 10 : 0));
     assert.deepEqual(errors, []);
-    console.log(`PASS ${width}px: cancellation, 5-second next video, Animal Sounds auto quiz, player cleanup`);
-    await page.close();
+    await context.close();
+    console.log(language, width, "catalogue, language switching, stable controls, player events and persisted quiz XP passed");
   }
 } finally { await browser.close(); }

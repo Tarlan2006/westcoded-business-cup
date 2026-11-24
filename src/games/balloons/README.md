@@ -33,7 +33,7 @@ The browser harness uses an existing external Playwright installation. Set `BALL
 
 `build.check.mjs` writes an ignored `.build/` under this folder and checks that the isolated preview's game chunk is below 40 KB gzip. The React runtime and local font assets are separate.
 
-The browser checks cover 390×844 and 1280×720, both ages, all five rounds, touch marking/renumbering, keyboard focus, timer and early submission, 400ms fade, correct/incorrect answers, all three final scores (8/20/28 XP), single delivery per run, replay, Back/Home, optional speech, reduced motion, no horizontal overflow and no storage/API/upload activity. Screenshots and a JSON report are in `screens/`. Physical iPhone/Safari testing remains manual.
+The browser checks cover 390×844 and 1280×720, both ages, all five rounds, touch marking/renumbering, keyboard focus, timer and early submission, 400ms fade, correct/incorrect answers, all three final scores (0/12/20 XP), single delivery per run, replay, Back/Home, optional speech, reduced motion, no horizontal overflow and no storage/API/upload activity. Screenshots and a JSON report are in `screens/`. Physical iPhone/Safari testing remains manual.
 
 ## Design and boundaries
 
@@ -41,7 +41,7 @@ The supplied Claude artifact URL required sign-in. The user subsequently provide
 
 The module reuses the repository's `GameButton`, `Chip` (preview), and `Mascot`/AIdos without modifying them. AIdos is not playful, so its optional sound path never runs. Its existing `surprised` expression represents the requested friendly “oops” state. The game adds only scoped `.bl-` rules; Fredoka SemiBold/Bold and Nunito Bold/ExtraBold are bundled with their SIL Open Font Licenses under `fonts/` and loaded from local assets, never a font CDN.
 
-There are no fetch calls, trackers, user fields, camera/microphone access, or storage writes. A host-provided `speak` callback controls its own behaviour. Result XP is `correct * 4 + 8`; duplicate answer/Done events are ignored. Play again starts a new run and allows one new completion callback. Back stops the timer even if a host keeps the component mounted.
+There are no fetch calls, trackers, user fields, camera/microphone access, or storage writes. A host-provided `speak` callback controls its own behaviour. Result XP is `correct * 4`; duplicate answer/Done events are ignored. Play again starts a new run and allows one new completion callback. Back stops the timer even if a host keeps the component mounted.
 
 The local `.gitignore` keeps Tailwind's scanner from interpreting game/test text as site utilities. Track intended new source, fonts, documents and screenshots with `git add -f`, excluding `.build/` and `.cache/`.
 

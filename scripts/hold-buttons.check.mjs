@@ -36,7 +36,7 @@ try {
     await parents.focus();
     await page.keyboard.down('Enter');
     await page.waitForTimeout(500);
-    assert.match(await parents.innerText(), /Keep holding.*s/);
+    assert.match(await page.locator('.hold-tip').innerText(), /Keep holding.*s/);
     assert(await parents.evaluate(el => el.classList.contains('hold-pressed')));
     await page.waitForTimeout(1100);
     await page.keyboard.up('Enter');
@@ -53,7 +53,7 @@ try {
     await talk.focus();
     await page.keyboard.down('Space');
     await page.waitForTimeout(1000);
-    assert.match(await talk.innerText(), /Let go to send/);
+    assert.match(await page.locator('.hold-tip').innerText(), /Let go to send/);
     await page.keyboard.up('Space');
     await page.getByText('Light makes the sky look blue.', { exact: true }).waitFor();
     assert.equal(transcriptions, 1);

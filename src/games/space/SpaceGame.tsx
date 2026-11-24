@@ -24,7 +24,7 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
   const [submitted, setSubmitted] = useState(false);
   const submittedRef = useRef(false);
   const resultTitle = useRef<HTMLHeadingElement>(null);
-  const points = journeyPoints + correct * 4;
+  const points = exploreOnly ? journeyPoints : correct * 4;
 
   useEffect(() => {
     if (stage === "result") resultTitle.current?.focus({ preventScroll: true });
@@ -72,7 +72,7 @@ function SpaceActivity({ onBack, onComplete, speak, header, exploreOnly }: Space
         <h1 tabIndex={-1} ref={resultTitle}>{t("spaceGame.whatAJourney")}</h1>
         <p>{t("spaceGame.youZoomedFromAChildAllThe", { value1: objects[objects.length - 1].name })}</p>
         <p className="sp-result-score">+{points} XP</p>
-        <p>{exploreOnly ? t("spaceGame.8XpForExploring") : t("spaceGame.8XpForExploringOutOf5", { correct })}</p>
+        <p>{exploreOnly ? t("spaceGame.8XpForExploring") : t("spaceGame.quizResult", { correct })}</p>
         <button type="button" className="sp-button sp-button-primary" disabled={submitted} onClick={finish}>{t("sketchGame.done")} <span aria-hidden="true"><InlineSymbol mark="✓" /></span>
         </button>
       </div>}

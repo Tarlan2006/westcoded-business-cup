@@ -100,12 +100,12 @@ try {
       await page.getByRole('button', { name: 'NEXT ROUND' }).click();
     }
     assert.equal(await page.locator('.bl-final h2').innerText(), 'You counted 3 of 5!');
-    assert.equal(await page.locator('.bl-earned').innerText(), '+20 XP');
+    assert.equal(await page.locator('.bl-earned').innerText(), '+12 XP');
     assert.equal(await page.locator('.bl-stars [data-earned="true"]').count(), 3);
     await checkLayout(page);
     if (age === '3-5') await shot(page, 'final', width);
     await page.getByRole('button', { name: 'DONE', exact: false }).evaluate((button) => { button.click(); button.click(); });
-    assert.equal(await page.locator('.bl-preview-message').innerText(), 'onComplete(20)');
+    assert.equal(await page.locator('.bl-preview-message').innerText(), 'onComplete(12)');
     assert(await page.getByRole('button', { name: 'DONE', exact: false }).isDisabled());
     await page.getByRole('button', { name: 'Play again', exact: false }).click();
     assert.equal(await page.locator('.bl-game').getAttribute('data-stage'), 'look');
@@ -116,7 +116,7 @@ try {
     await page.clock.runFor(60_000);
     assert.equal(await page.locator('.bl-game').count(), 0, "unmounted game has no late result");
     assert.deepEqual(await page.evaluate(() => [localStorage.length, sessionStorage.length]), [0, 0]);
-    await context.close(); pass(`${width}px ${age}: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 20 XP, replay, Home, keyboard and no overflow`);
+    await context.close(); pass(`${width}px ${age}: five rounds, marks/unmark/renumber, stable geometry, timer, 400ms fade, early count, correct/wrong answers, 12 XP, replay, Home, keyboard and no overflow`);
   }
   // Test callback deduplication and optional voice with a real host mounted through Vite.
   assert.deepEqual(network, [], "no gameplay HTTP requests in the standalone preview");
@@ -143,7 +143,7 @@ try {
       await game.getByRole('button', { name: String(value), exact: true }).click();
       await game.getByRole('button', { name: 'NEXT ROUND' }).click();
     }
-    assert.equal(await game.locator('.bl-earned').innerText(), allCorrect ? '+28 XP' : '+8 XP');
+    assert.equal(await game.locator('.bl-earned').innerText(), allCorrect ? '+20 XP' : '+0 XP');
     await shot(page, allCorrect ? 'final-perfect' : 'final-encouraging', 1280);
     await game.getByRole('button', { name: 'DONE', exact: false }).evaluate((button) => { button.click(); button.click(); });
     assert.equal(await page.evaluate(() => window.__balloonEvents.filter(([kind]) => kind === 'complete').length), allCorrect ? 2 : 1);
@@ -155,6 +155,6 @@ try {
   await context.close();
   assert.deepEqual(network, [], "no requests after the host fixture has loaded");
   assert.deepEqual(errors, []);
-  pass('0/5 and 5/5 results: 8 and 28 XP; onComplete once per run; throwing optional speech is safe; normal/reduced motion; no game API, uploads or storage writes');
+  pass('0/5 and 5/5 results: 0 and 20 XP; onComplete once per run; throwing optional speech is safe; normal/reduced motion; no game API, uploads or storage writes');
   await writeFile(resolve(output, 'verification.json'), JSON.stringify({ results, browserErrors: errors, gameplayRequests: network, testFixtureModuleLoads: fixtureModuleLoads, physicalPhoneTested: false }, null, 2) + '\n');
 } finally { await browser.close(); }

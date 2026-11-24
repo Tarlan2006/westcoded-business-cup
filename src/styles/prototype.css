@@ -29,7 +29,7 @@
   transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
 }
 .btn-game:active {
-  transform: translateY(5px);
+  filter: brightness(.96);
 }
 
 .btn-lime {
@@ -81,10 +81,10 @@
   transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .hub-tile:hover {
-  transform: translateY(-4px) scale(1.01);
+  filter: brightness(1.06);
 }
 .hub-tile:active {
-  transform: translateY(3px) scale(0.99);
+  filter: brightness(.96);
 }
 
 /* Duolingo-style Speech Bubble Tail */
@@ -164,9 +164,33 @@
 .prototype-parent-button:hover { background: #3729ad; }
 .prototype-parent-button:disabled { opacity: .55; }
 
-.prototype-frame-video { min-height: 208px; }
-.prototype-frame-video .video-player { border: 0; border-radius: 0; }
-.prototype-video-placeholder { min-height: 224px; }
+/* The cover, embedded player and fallback share one stable frame. */
+.cinema-card { border: 2px solid #5741bf; border-radius: 1.4rem; overflow: hidden; background: #20185b; }
+.cinema-stage { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #100c2f; }
+.cinema-stage .video-player { min-width: 0; min-height: 0; border: 0; border-radius: 0; }
+.cinema-poster { position: absolute; inset: 0; width: 100%; display: grid; align-content: center; justify-items: center; gap: .65rem;
+  background: url("/mascot/aidos-tablet.webp") no-repeat 12% 78% / auto 52%, radial-gradient(ellipse at 30% 15%, #584587, transparent 65%), linear-gradient(145deg, #382b67, #121033); }
+.cinema-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.cinema-poster::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent, #100c2f66); }
+.cinema-play-icon, .cinema-play-label { position: relative; z-index: 1; color: white; }
+.cinema-play-icon { display: grid; place-items: center; padding-left: .2rem; width: clamp(66px, 12vw, 88px); aspect-ratio: 1.45; background: #c91624;
+  border-radius: .9rem; font: 700 1.65rem/1 system-ui; box-shadow: 0 3px 14px #0006; }
+.cinema-play-label { padding: .35rem .8rem; border-radius: .55rem; background: #17122fe6; font-weight: 800; }
+.cinema-poster:focus-visible { outline-offset: -5px; outline: 3px solid #ffd13b; }
+.cinema-details { display: grid; gap: .85rem; padding: clamp(1rem, 3vw, 1.5rem); }
+.cinema-details h2 { color: white; font: 800 clamp(1.25rem, 3vw, 1.75rem)/1.2 var(--font-heading); }
+.cinema-actions, .cinema-countdown { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
+.cinema-action { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: .6rem 1rem; border: 1px solid #8174c6;
+  border-radius: .85rem; background-color: #33266e; color: #fff; text-decoration: none; font-weight: 800; }
+.cinema-action.btn-mint { margin-inline-start: auto; color: #062c1e; border-color: transparent; box-shadow: none; }
+.cinema-action:hover { filter: brightness(1.12); }
+@media (max-width: 520px) {
+  .cinema-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cinema-actions .cinema-action { text-align: center; padding-inline: .6rem; line-height: 1.25; }
+  .cinema-actions .btn-mint { margin: 0; }
+  .cinema-actions .btn-mint:nth-child(3) { grid-column: 1 / -1; }
+}
+
 .prototype-countdown { width: min(18rem, calc(100vw - 2rem)); aspect-ratio: 1; height: auto; }
 .prototype-countdown .countdown-fill { stroke-width: 16; stroke: var(--countdown-stroke); }
 .prototype-countdown > button:disabled { background: transparent; }
@@ -187,16 +211,10 @@
 .prototype .prototype-activity-header .activity-header-actions { min-width: 0; }
 .prototype .hub-tile { box-shadow: 0 10px 0 rgba(8, 5, 36, .55), 0 16px 32px rgba(0, 0, 0, .35); }
 .prototype .hub-tile .activity-icon { font-size: 1.8rem; }
-.prototype .hub-tile:hover { transform: translateY(-4px) scale(1.01); }
-.prototype .hub-tile:active { transform: translateY(3px) scale(.99); }
+.prototype .hub-tile:hover { filter: brightness(1.06); }
+.prototype .hub-tile:active { filter: brightness(.96); }
 .prototype-balloons :is(.bl-back, .bl-home, .bl-xp) { display: none; }
 @media (width >= 40rem) { .prototype-countdown { width: 20rem; } }
-@media (width < 40rem) {
-  .prototype-video-placeholder { aspect-ratio: auto; max-height: none; min-height: 308px; justify-content: space-between; gap: 1rem; }
-  .video-frame-content { margin-top: 2rem; }
-  .video-frame-controls { position: static; justify-content: center; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .prototype :is(.animate-bounce, .prototype-particle),
   .prototype .voice-pulse::before { animation: none !important; }

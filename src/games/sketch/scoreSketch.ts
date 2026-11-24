@@ -98,12 +98,12 @@ export function sketchResult(automatic: number | null, checked: readonly boolean
   const clues = checked.length ? checked.filter(Boolean).length / checked.length * 100 : 0;
   let match = Math.round(automatic === null ? clues : 0.5 * automatic + 0.5 * clues);
   // Blank/erased pictures and flood protection take precedence over encouragement.
-  if (state.empty) match = 0;
+  if (state.empty || automatic === 0) match = 0;
   else {
-    if (strokeCount >= 5) match = Math.max(10, match);
+    if (match > 0 && strokeCount >= 5) match = Math.max(10, match);
     match = Math.min(state.flooded ? 25 : 100, Math.max(0, match));
   }
-  const bonus = checked.length > 0 && checked.every(Boolean) ? 4 : 0;
+  const bonus = match > 0 && checked.length > 0 && checked.every(Boolean) ? 4 : 0;
   return { match, clues: Math.round(clues), points: Math.min(28, Math.round(match / 100 * 24) + bonus) };
 }
 

@@ -58,7 +58,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
   function choose(choice: string) {
     if (answer !== undefined) return;
     setAnswer(choice);
-    setPoints(points + (choice === current.answer ? 10 : 2));
+    if (choice === current.answer) setPoints(points + 10);
     if (sound && choice !== current.answer) {
       void speak(contentText("voice.common_quiz_encourage"), "common_quiz_encourage");
     } else stop();
@@ -102,7 +102,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
     return <MissionStage heading={t("activitySuggestions.quiz")} round={index + 1} total={quiz.length} seconds={roundSeconds} clockSeconds={seconds} ratio={roundSeconds / roundDuration}
       demoEmoji={current.emoji && !current.emoji.includes(" ") ? current.emoji : "🧠"} demoWord={t("quiz.quiz")} prop="💭"
       emotion={emotion} action={answer === current.answer ? "clap" : "none"} mood={answer === current.answer ? "excited" : "detective"} onExit={onExit}
-      prompt={answer === undefined ? [contentText("quiz." + current.id + ".question"), current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}
+      prompt={answer === undefined ? [contentText("quiz." + current.id + ".question"), current.emoji?.includes(" ") ? current.emoji : ""].filter(Boolean).join(" ") : answer === current.answer ? t("quiz.correct10Xp") : t("quiz.incorrectZeroXp")}
       feedback={answer === current.answer}
       replies={current.choices.map((choice, i) => <button type="button" key={choice} className={missionReplyStyle} disabled={answer !== undefined}
         data-result={answer !== undefined && choice === current.answer ? "correct" : undefined} onClick={() => choose(choice)}>{contentText("quiz." + current.id + ".option" + i)}</button>)}
@@ -134,7 +134,7 @@ export function Quiz({ ageBand, topic, missionMinutes, cycle = 0, onBack, onComp
           ))}
         </div>
         {answer !== undefined && <>
-          <p role="status">{answer === current.answer ? t("quiz.correct10Xp") : t("quiz.goodTry2Xp")}</p>
+          <p role="status">{answer === current.answer ? t("quiz.correct10Xp") : t("quiz.incorrectZeroXp")}</p>
           <GameButton onClick={next}>{nextLabel}</GameButton>
         </>}
       </section>}

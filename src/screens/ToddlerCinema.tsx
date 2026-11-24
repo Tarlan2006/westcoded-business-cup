@@ -11,13 +11,13 @@ import { ToddlerPlayer, type PlayerControls, type VideoStatus } from "../compone
 import { videosFor } from "../game/videos";
 import "./ToddlerCinema.css";
 
-const videos = videosFor("1-2");
 const breakMs = 10_000;
 
 export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
   name: string; onParents: () => void; onHome: () => void; onOpen: (id: string) => void;
   onPlay: (videoId?: string) => void;
 }) {
+  const videos = videosFor("1-2");
   const sound = useSoundEnabled();
   const session = useContext(SessionActivity);
   const finishing = session?.finishing ?? false;
@@ -122,14 +122,19 @@ export function ToddlerCinema({ name, onParents, onHome, onOpen, onPlay }: {
           <h2>{status === "error" ? t("toddlerCinema.thisVideoNeedsALittleHelp") : t("toddlerCinema.aLovelyLittlePause")}</h2>
           <p>{status === "error" ? t("toddlerCinema.checkYourConnectionTryAgainOrChoose") : t("toddlerCinema.readyForAnotherLittleAdventure")}</p>
           <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? t("toddlerCinema.tryAgain") : t("toddlerCinema.watchAgain")}</button>
-        </div> : <ToddlerPlayer key={`${selected.id}:${attempt}`} ref={player} videoId={selected.id} title={selected.title}
-          muted={muted} onStatus={setStatus} onEnded={ended} onMuted={() => setMuted(true)} />}
+        </div> : <>
+          {status === "loading" && <img className="toddler-loading-cover" src={`https://i.ytimg.com/vi/${selected.id}/hqdefault.jpg`} alt=""
+            onError={event => { event.currentTarget.hidden = true; }} />}
+          <ToddlerPlayer key={`${selected.id}:${attempt}`} ref={player} videoId={selected.id} title={selected.title}
+          muted={muted} onStatus={setStatus} onEnded={ended} onMuted={() => setMuted(true)} /></>}
       </div>
       <div className="toddler-tv-bottom"><span aria-hidden="true">{withSymbols("✦  ✦  ✦")}</span><span>{t("toddlerCinema.aLittleAdventureTogether")}</span><span className="toddler-speaker" aria-hidden="true"><InlineSymbol mark="▥" /></span></div>
     </section>
     <section className="toddler-now" aria-label={t("toddlerCinema.playbackControls")}>
       <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? t("toddlerCinema.comingUpNext") : t("toddlerCinema.yourLittleAdventure")}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? t("toddlerCinema.a10SecondBreatherBetweenEveryVideo") : selected.channel}</p></div></div>
       <div className="toddler-controls" inert={finishing}>
+        {!animalTime && !waiting && <a href={`https://www.youtube.com/watch?v=${selected.id}`} className="toddler-button toddler-secondary toddler-watch-link"
+          target="_blank" rel="noopener noreferrer">{t("videoCatalog.openYoutube")}</a>}
         {!animalTime && !waiting && !stopped && status !== "error" && <>
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
             if (status === "playing") player.current?.pauseVideo();

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 type Player = { destroy: () => void };
 type YouTubeAPI = { Player: new (element: HTMLIFrameElement, options: {
-  events: { onStateChange: (event: { data: number }) => void };
+  events: { onError: () => void; onReady: () => void; onStateChange: (event: { data: number }) => void };
 }) => Player };
 type YouTubeWindow = Window & { YT?: YouTubeAPI; onYouTubeIframeAPIReady?: () => void };
 let apiPromise: Promise<YouTubeAPI> | undefined;
@@ -24,16 +24,18 @@ function loadAPI() {
   });
 }
 
-export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying, onPaused }: {
-  id: string; title: string; autoplay?: boolean; onEnded: () => void; onPlaying?: () => void; onPaused?: () => void;
+export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying, onPaused, onError }: {
+  id: string; title: string; autoplay?: boolean; onEnded: () => void; onPlaying?: () => void; onPaused?: () => void; onError: () => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const callbacks = useRef({ onEnded, onPlaying, onPaused });
-  callbacks.current = { onEnded, onPlaying, onPaused };
+  const callbacks = useRef({ onEnded, onPlaying, onPaused, onError });
+  callbacks.current = { onEnded, onPlaying, onPaused, onError };
   useEffect(() => {
     let disposed = false;
     let player: Player | undefined;
     let ended = false;
+    const failed = () => { if (!disposed) callbacks.current.onError(); };
+    const timer = window.setTimeout(failed, 15000);
     const frame = document.createElement("iframe");
     frame.title = title;
     frame.className = "video-player absolute inset-0 w-full h-full";
@@ -44,14 +46,14 @@ export function YouTubeVideo({ id, title, autoplay = false, onEnded, onPlaying, 
     container.current?.append(frame);
     void loadAPI().then(api => {
       if (disposed) return;
-      player = new api.Player(frame, { events: { onStateChange: ({ data }) => {
+      player = new api.Player(frame, { events: { onError: failed, onReady: () => window.clearTimeout(timer), onStateChange: ({ data }) => {
         if (disposed) return;
-        if (data === 1) { ended = false; callbacks.current.onPlaying?.(); }
+        if (data === 1) { window.clearTimeout(timer); ended = false; callbacks.current.onPlaying?.(); }
         if (data === 2) callbacks.current.onPaused?.();
         if (data === 0 && !ended) { ended = true; callbacks.current.onEnded(); }
       } } });
     }).catch(() => { /* The ordinary iframe and manual navigation still work. */ });
-    return () => { disposed = true; player?.destroy(); frame.remove(); };
+    return () => { disposed = true; window.clearTimeout(timer); player?.destroy(); frame.remove(); };
   }, [id, title, autoplay]);
 
   return <div ref={container} className="absolute inset-0" />;
