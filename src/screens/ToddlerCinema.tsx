@@ -1,3 +1,4 @@
+import { VideoPlaylist } from "../components/VideoPlaylist";
 import { CreatorCredit } from "../components/CreatorCredit";
 import { InlineSymbol, withSymbols } from "../components/InlineSymbol";
 import { t } from "../i18n/index";
@@ -9,13 +10,13 @@ import { PrototypeHeader } from "../components/PrototypeHeader";
 import { SessionActivity } from "../components/SessionControls";
 import { ToddlerPlayer, type PlayerControls, type VideoStatus } from "../components/ToddlerPlayer";
 import type { CatalogueVideo } from "../game/videos";
-import { nextVideoIndex, playbackBudget, videoTime } from "../game/videoQueue";
+import { nextVideoIndex, videoTime } from "../game/videoQueue";
 import "./ToddlerCinema.css";
 
 const breakMs = 10_000;
 
-export function ToddlerCinema({ videos, available, name, onParents, onHome, onOpen, onPlay }: {
-  videos: CatalogueVideo[]; available: number;
+export function ToddlerCinema({ videos, name, onParents, onHome, onOpen, onPlay }: {
+  videos: CatalogueVideo[];
   name: string; onParents: () => void; onHome: () => void; onOpen: (id: string) => void;
   onPlay: (videoId?: string) => void;
 }) {
@@ -37,8 +38,7 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
   const opened = useRef(onOpen);
   opened.current = onOpen;
   const selected = videos[index];
-  const nextIndex = nextVideoIndex(videos, index, available - breakMs / 1000, true);
-  const fits = selected.durationSeconds <= available;
+  const nextIndex = nextVideoIndex(videos, index);
   const next = videos[pending ?? index];
   const waiting = pending !== null;
   const seconds = Math.ceil(remaining / 1000);
@@ -64,11 +64,6 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
       if (left > 0) return;
       window.clearInterval(interval);
       if (session && !session.canStartActivity()) return;
-      if (next.durationSeconds > playbackBudget(session?.endsAt)) {
-        setPending(null);
-        setStopped(true);
-        return;
-      }
       setIndex(pending);
       setStatus("loading");
       setStopped(false);
@@ -78,11 +73,11 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", visibilityChanged);
     };
-  }, [pending, next, finishing, session]);
+  }, [pending, finishing, session]);
 
   function queue(position: number) {
     if (session && !session.canStartActivity()) return;
-    if (waiting || position < 0 || videos[position].durationSeconds + breakMs / 1000 > playbackBudget(session?.endsAt)) return;
+    if (waiting || position < 0) return;
     setAnimalTime(false);
     setRemaining(breakMs);
     setPending(position);
@@ -95,14 +90,13 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
   function afterAnimals() {
     if (session && !session.canStartActivity()) { session.finishActivity(); return; }
     setAnimalTime(false);
-    const following = nextVideoIndex(videos, index, playbackBudget(session?.endsAt), false);
-    if (!autoplay || following < 0) return setStopped(true);
-    setIndex(following);
+    if (!autoplay || nextIndex < 0) return setStopped(true);
+    setIndex(nextIndex);
     setStatus("loading");
     setStopped(false);
   }
   function replay() {
-    if (selected.durationSeconds > playbackBudget(session?.endsAt) || (session && !session.canStartActivity())) return;
+    if (session && !session.canStartActivity()) return;
     setStopped(false);
     setStatus("loading");
     setAttempt((value) => value + 1);
@@ -129,7 +123,7 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
           <div className="toddler-rest-mascot"><Mascot emotion={status === "error" ? "network" : "greeting"} pose={status === "error" ? "point" : "wave"} /></div>
           <h2>{status === "error" ? t("toddlerCinema.thisVideoNeedsALittleHelp") : t("toddlerCinema.aLovelyLittlePause")}</h2>
           <p>{status === "error" ? t("toddlerCinema.checkYourConnectionTryAgainOrChoose") : t("toddlerCinema.readyForAnotherLittleAdventure")}</p>
-          <button type="button" className="toddler-button toddler-primary" disabled={!fits} onClick={replay}>{status === "error" ? t("toddlerCinema.tryAgain") : t("toddlerCinema.watchAgain")}</button>
+          <button type="button" className="toddler-button toddler-primary" onClick={replay}>{status === "error" ? t("toddlerCinema.tryAgain") : t("toddlerCinema.watchAgain")}</button>
         </div> : <>
           {status === "loading" && <img className="toddler-loading-cover" src={`https://i.ytimg.com/vi/${selected.id}/hqdefault.jpg`} alt=""
             onError={event => { event.currentTarget.hidden = true; }} />}
@@ -141,7 +135,7 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
     <section className="toddler-now" aria-label={t("toddlerCinema.playbackControls")}>
       <div className="toddler-now-title"><span className="toddler-episode">{String(index + 1).padStart(2, "0")}</span><div><p className="toddler-eyebrow">{waiting ? t("toddlerCinema.comingUpNext") : t("toddlerCinema.yourLittleAdventure")}</p><h2>{waiting ? next.title : selected.title}</h2><p>{waiting ? t("toddlerCinema.a10SecondBreatherBetweenEveryVideo") : selected.channel + " · " + videoTime(selected.durationSeconds)}</p></div></div>
       <div className="toddler-controls" inert={finishing}>
-        {fits && !animalTime && !waiting && <a href={`https://www.youtube.com/watch?v=${selected.id}`} className="toddler-button toddler-secondary toddler-watch-link"
+        {!animalTime && !waiting && <a href={`https://www.youtube.com/watch?v=${selected.id}`} className="toddler-button toddler-secondary toddler-watch-link"
           target="_blank" rel="noopener noreferrer">{t("videoCatalog.openYoutube")}</a>}
         {!animalTime && !waiting && !stopped && status !== "error" && <>
           <button type="button" className="toddler-button toddler-secondary" disabled={status === "loading"} onClick={() => {
@@ -162,13 +156,7 @@ export function ToddlerCinema({ videos, available, name, onParents, onHome, onOp
         setAutoplay((value) => !value);
         if (waiting) { setPending(null); setStopped(true); }
       }}><span className="toddler-toggle" aria-hidden="true" /> {t("toddlerCinema.autoplayNext")}</button></div>
-      <div className="toddler-episodes">{videos.map((video, position) => <button type="button" key={video.id} disabled={waiting || position === index || video.durationSeconds + breakMs / 1000 > available}
-        className="toddler-card" aria-label={`${t(position === index ? "toddlerCinema.nowShowing" : "cinema.playNext")}: ${video.title}`} aria-current={position === index ? "true" : undefined}
-        onClick={() => queue(position)}>
-        <div className="toddler-thumbnail"><img src={`https://i.ytimg.com/vi/${video.id}/mqdefault.jpg`} alt="" loading="lazy"
-          onError={event => { event.currentTarget.hidden = true; }} /><span>{position === index ? t("toddlerCinema.nowShowingAlt") : String(position + 1).padStart(2, "0")}</span></div>
-        <span className="toddler-card-title">{video.title}</span><span className="toddler-card-detail">{videoTime(video.durationSeconds)} · {position === index ? t("toddlerCinema.enjoyThisLittleMoment") : t("toddlerCinema.startsAfterA10SecondBreak")}</span>
-      </button>)}</div>
+      <VideoPlaylist videos={videos} index={index} disabled={waiting} onChoose={queue} />
     </section>
     <footer>
       <div className="toddler-footer"><p>{t("toddlerCinema.madeForWatchingTogetherVideosPlayThrough")}</p><p>{t("toddlerCinema.onlyThisLittlePlaylistPlaysNext")}</p></div>

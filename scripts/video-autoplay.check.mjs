@@ -1,5 +1,4 @@
 // Run against a local build with VIDEO_URL and optionally CHROME_PATH.
-import { planVideos, videoReserveSeconds } from "../src/game/videoQueue.ts";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import kk from "../src/i18n/kk.ts";
@@ -34,11 +33,18 @@ try {
     await button("welcome.continue").click();
     await page.locator("#profileNameInput").fill("Әли");
     await page.locator('[data-age="6-8"]').click();
-    await page.locator("#profileDurationPills input").fill("10");
+    await page.locator("#profileDurationPills input").fill("5");
     await page.locator(".profile-submit").click();
     await page.locator(".cinema-poster").waitFor();
-    const catalogue = planVideos(videos.filter(video => video.language === language && video.ageBand === "6-8"),
-      10 * 60 - videoReserveSeconds - 1, 5);
+    const catalogue = videos.filter(video => video.language === language && video.ageBand === "6-8");
+    const cards = page.locator(".toddler-card");
+    assert.deepEqual(await cards.locator(".toddler-card-title").allTextContents(), catalogue.map(video => video.title));
+    if (catalogue.length > 1) {
+      await cards.last().click();
+      await page.waitForFunction(() => !!window.playerEvents);
+      await page.evaluate(() => window.playerEvents.onStateChange({ data: 0 }));
+      await page.locator(`iframe[title="${catalogue[0].title}"]`).waitFor();
+    }
     for (const video of catalogue) {
       assert.equal(await page.locator("#video-title").innerText(), video.title);
       assert.equal(await page.locator(".cinema-actions a").getAttribute("href"), "https://www.youtube.com/watch?v=" + video.id);

@@ -2,10 +2,11 @@ import { t, useLanguage } from "../i18n/index";
 import { useContext, useEffect, useState } from "react";
 import type { AgeBand } from "../../shared/types";
 import { useSoundEnabled, uiSound } from "../audio/sfx";
+import { VideoPlaylist } from "../components/VideoPlaylist";
 import { PrototypeHeader } from "../components/PrototypeHeader";
 import { ActivityNavigation } from "../components/ActivityHeader";
-import { SessionActivity, useSessionSeconds } from "../components/SessionControls";
-import { nextVideoIndex, planVideos, playbackBudget, videoReserveSeconds, videoTime } from "../game/videoQueue";
+import { SessionActivity } from "../components/SessionControls";
+import { nextVideoIndex, planVideos, videoTime } from "../game/videoQueue";
 import { videosFor, type CatalogueVideo } from "../game/videos";
 import { ToddlerCinema } from "./ToddlerCinema";
 import { YouTubeVideo } from "../components/YouTubeVideo";
@@ -20,38 +21,22 @@ export function VideoCatalog(props: VideoCatalogProps) {
   return <SessionVideoCatalog key={language + props.ageBand} {...props} />;
 }
 
-type PlaylistProps = VideoCatalogProps & { videos: CatalogueVideo[]; available: number };
+type PlaylistProps = VideoCatalogProps & { videos: CatalogueVideo[] };
 
 function SessionVideoCatalog(props: VideoCatalogProps) {
-  const session = useContext(SessionActivity);
-  const seconds = useSessionSeconds();
-  const deadline = session?.endsAt;
-  const [entry] = useState(() => ({
-    now: Date.now(), catalogue: videosFor(props.ageBand), offset: props.watchedCount,
-    pause: props.ageBand === "1-2" ? 30 : 5,
-  }));
-  const [playlist, setPlaylist] = useState(() => ({
-    deadline, videos: planVideos(entry.catalogue, playbackBudget(deadline, entry.now), entry.pause, entry.offset),
-  }));
-  useEffect(() => {
-    if (deadline === undefined || deadline === playlist.deadline) return;
-    setPlaylist({ deadline, videos: planVideos(entry.catalogue, playbackBudget(deadline, entry.now), entry.pause,
-      entry.offset, playlist.videos) });
-  }, [deadline, entry, playlist]);
-
-  const available = seconds === null ? playbackBudget(deadline) : Math.max(0, seconds - videoReserveSeconds);
-  if (!playlist.videos.length || available <= 0) return <main id="screen-video" className="prototype-screen w-full max-w-4xl mx-auto px-4 py-4 space-y-4">
+  const [videos] = useState(() => planVideos(videosFor(props.ageBand), props.watchedCount));
+  if (!videos.length) return <main id="screen-video" className="prototype-screen w-full max-w-4xl mx-auto px-4 py-4 space-y-4">
     <PrototypeHeader name={props.name} label={t("videoCatalog.videos")} onParents={props.onParents} onHome={props.onHome} />
     <section className="cinema-card cinema-details">
-      <h2>{t("videoCatalog.timeForGame")}</h2>
+      <h2>{t("videoCatalog.moreVideosComingSoon")}</h2>
       <button type="button" className="cinema-action btn-mint" onClick={() => props.onPlay()}>{t("video.playNow")}</button>
     </section>
   </main>;
-  const childProps = { ...props, videos: playlist.videos, available };
+  const childProps = { ...props, videos };
   return props.ageBand === "1-2" ? <ToddlerCinema {...childProps} /> : <StandardVideoCatalog {...childProps} />;
 }
 
-function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOpen, onPlay }: PlaylistProps) {
+function StandardVideoCatalog({ videos, name, onParents, onHome, onOpen, onPlay }: PlaylistProps) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [watching, setWatching] = useState(false);
@@ -62,8 +47,7 @@ function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOp
   const session = useContext(SessionActivity);
   const finishing = session?.finishing ?? false;
   const selected = videos[index];
-  const fits = selected.durationSeconds <= available;
-  const nextManual = nextVideoIndex(videos, index, available, true);
+  const nextIndex = nextVideoIndex(videos, index);
 
   useEffect(() => {
     if (countdown === null || finishing) return;
@@ -72,25 +56,23 @@ function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOp
       if (countdown > 1) setCountdown(countdown - 1);
       else {
         setCountdown(null);
-        const next = nextVideoIndex(videos, index, playbackBudget(session?.endsAt), false);
-        if (next < 0) return;
-        setIndex(next);
+        setIndex(nextIndex);
         setUnavailable(false);
         setWatching(false);
       }
     }, 1000);
     return () => window.clearTimeout(timer);
-  }, [countdown, index, videos, session, finishing]);
+  }, [countdown, nextIndex, session, finishing]);
 
   useEffect(() => {
     if (finishing && !watching) session?.finishActivity();
   }, [finishing, watching, session]);
 
   function choose(position: number) {
-    if (position < 0 || videos[position].durationSeconds > playbackBudget(session?.endsAt) || (session && !session.canStartActivity())) return;
+    if (position < 0 || (session && !session.canStartActivity())) return;
     uiSound("chirp", sound);
     setIndex(position);
-    setPlaying(false);
+    setPlaying(true);
     setWatching(false);
     setUnavailable(false);
     setCountdown(null);
@@ -110,10 +92,11 @@ function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOp
           onEnded={() => {
             setWatching(false);
             if (session && !session.canStartActivity()) { session.finishActivity(); return; }
-            if (nextVideoIndex(videos, index, playbackBudget(session?.endsAt) - 5, false) >= 0) setCountdown(5);
+            if (nextIndex >= 0) setCountdown(5);
+            else setPlaying(false);
           }} /> :
-          <button type="button" className="cinema-poster" disabled={!fits} aria-label={t("videoCatalog.openVideoWatchVideoPlaysOnYoutube", { value1: selected.title })}
-            onClick={() => { if (selected.durationSeconds <= playbackBudget(session?.endsAt) && (!session || session.canStartActivity())) { setUnavailable(false); setPlaying(true); } }}>
+          <button type="button" className="cinema-poster" aria-label={t("videoCatalog.openVideoWatchVideoPlaysOnYoutube", { value1: selected.title })}
+            onClick={() => { if (!session || session.canStartActivity()) { setUnavailable(false); setPlaying(true); } }}>
             <img key={selected.id} src={`https://i.ytimg.com/vi/${selected.id}/hqdefault.jpg`} alt=""
               onError={event => { event.currentTarget.hidden = true; }} />
             <span className="cinema-play-icon" aria-hidden="true">▶</span>
@@ -122,11 +105,11 @@ function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOp
       </div>
       <div className="cinema-details">
         <h2 id="video-title">{selected.title}</h2>
-        <p>{videoTime(selected.durationSeconds)}{!fits && (!playing || unavailable) ? " · " + t("videoCatalog.timeForGame") : ""}</p>
+        <p>{videoTime(selected.durationSeconds)}</p>
         {unavailable && <p role="status">{t("toddlerCinema.thisVideoNeedsALittleHelp")}</p>}
         <div className="cinema-actions">
-          {fits && <a className="cinema-action" href={`https://www.youtube.com/watch?v=${selected.id}`} target="_blank" rel="noopener noreferrer">{t("videoCatalog.openYoutube")}</a>}
-          {nextManual >= 0 && <button className="cinema-action" type="button" onClick={() => choose(nextManual)}>{t("videoCatalog.nextVideo")}</button>}
+          <a className="cinema-action" href={`https://www.youtube.com/watch?v=${selected.id}`} target="_blank" rel="noopener noreferrer">{t("videoCatalog.openYoutube")}</a>
+          {nextIndex >= 0 && <button className="cinema-action" type="button" onClick={() => choose(nextIndex)}>{t("videoCatalog.nextVideo")}</button>}
           <button className="cinema-action btn-mint" type="button" onClick={() => onPlay(selected.id)}>{t("video.playNow")}</button>
         </div>
         {countdown !== null && <div className="cinema-countdown">
@@ -135,6 +118,9 @@ function StandardVideoCatalog({ videos, available, name, onParents, onHome, onOp
         </div>}
       </div>
     </section>}
-    {!selected && <p>{t("videoCatalog.moreVideosComingSoon")}</p>}
+    <section className="toddler-queue" inert={finishing} aria-labelledby="video-queue-heading">
+      <div className="toddler-queue-heading"><h2 id="video-queue-heading">{t("toddlerCinema.littleAdventuresLinedUp")}</h2></div>
+      <VideoPlaylist videos={videos} index={index} onChoose={choose} />
+    </section>
   </main>;
 }
