@@ -1,0 +1,54 @@
+name: Rebuild Kazakh narration
+on:
+  workflow_dispatch:
+  push:
+    branches: [raya-kazakh-voice]
+    paths: ['.github/workflows/kazakh-voice.yml']
+permissions:
+  contents: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Prepare versioned local voice and speech runtime
+        run: |
+          set -euo pipefail
+          dest="$PWD/public/voices/raya-v1"
+          mkdir -p "$dest"
+          cd "$RUNNER_TEMP"
+          curl -fsSL --retry 3 -o voice.tar.bz2 https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-kk_KZ-raya-x_low.tar.bz2
+          tar xjf voice.tar.bz2 vits-piper-kk_KZ-raya-x_low/{kk_KZ-raya-x_low.onnx,kk_KZ-raya-x_low.onnx.json,MODEL_CARD}
+          cp vits-piper-kk_KZ-raya-x_low/kk_KZ-raya-x_low.onnx "$dest/raya.bin"
+          cp vits-piper-kk_KZ-raya-x_low/MODEL_CARD "$dest/MODEL_CARD"
+          npm pack --silent @diffusionstudio/piper-wasm@1.0.0 onnxruntime-web@1.18.0
+          echo "42c15fec08bf8af3f167d5c5285a61cd0f789120  diffusionstudio-piper-wasm-1.0.0.tgz" | sha1sum -c
+          echo "cd46268d9472f89697da0a3282f13129f0acbfa0  onnxruntime-web-1.18.0.tgz" | sha1sum -c
+          tar xzf diffusionstudio-piper-wasm-1.0.0.tgz --strip-components=2 -C "$dest" package/build/piper_phonemize.{js,wasm,data}
+          tar xzf onnxruntime-web-1.18.0.tgz --strip-components=2 -C "$dest" package/dist/{ort.wasm.min.js,ort-wasm.wasm,ort-wasm-simd.wasm}
+          cd "$GITHUB_WORKSPACE"
+          pip install piper-tts==1.8.0 imageio-ffmpeg==0.6.0
+          python scripts/localized-audio.py --lang kk --model "$RUNNER_TEMP/vits-piper-kk_KZ-raya-x_low/kk_KZ-raya-x_low.onnx"
+      - name: Verify voice and build
+        run: |
+          npm ci
+          npm run typecheck
+          npm run build
+          npx playwright install --with-deps chromium
+          node scripts/check-kazakh-voice.mjs
+      - name: Commit verified generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/audio/kk public/voices/raya-v1
+          if ! git diff --staged --quiet; then
+            git commit -m "Publish verified Raya recordings and on-device speech runtime"
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi

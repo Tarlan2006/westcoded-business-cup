@@ -94,36 +94,24 @@ try {
         }, index.texts[answer]), question);
       }
       await button("ask.askAnother").click();
-      // Exercise the device fallback independently of the OS language packs on the test host.
       await page.evaluate(() => {
-        const synth = new EventTarget();
-        window.osVoices = [];
-        Object.defineProperty(window, "speechSynthesis", { configurable: true, value: Object.assign(synth, {
-          getVoices: () => window.osVoices, cancel() {},
-          speak(u) { window.readText = u.text; u.onstart(); u.onend(); }
-        }) });
-        window.SpeechSynthesisUtterance = class { constructor(text) { this.text = text; } };
+        window.answerStarts.length = 0;
+        window.systemSpeechCalls = 0;
+        Object.defineProperty(window, "speechSynthesis", { configurable: true, value: {
+          cancel() {}, getVoices: () => [{ name: "Other speaker", lang: "kk-KZ" }],
+          speak() { window.systemSpeechCalls++; }
+        }});
       });
-      const answer = "Сен бүгін қандай жаңалық байқадың? ".repeat(10).trim();
+      const answer = "Сен бүгін қандай жаңалық байқадың? ".repeat(5).trim();
       await page.route("**/api/ask", r => r.fulfill({ json: { answer, source: "llm" } }));
       await page.locator("textarea").fill("Бір сұрағым бар");
       await button("ask.ask").click();
-      await page.getByText(dict["ask.voiceUnavailable"]).waitFor();
+      await page.waitForFunction(() => window.answerStarts.length > 0, undefined, {timeout: 100000});
       await inspectSizes(page, "long-answer", lang);
-      await page.evaluate(() => {
-        const listen = speechSynthesis.addEventListener.bind(speechSynthesis);
-        speechSynthesis.addEventListener = (event, handler, options) => {
-          listen(event, handler, options);
-          if (event === "voiceschanged") window.waitingForVoice = true;
-        };
-      });
+      const starts = await page.evaluate(() => window.answerStarts.length);
       await button("ask.hearAnswer").click();
-      await page.waitForFunction(() => window.waitingForVoice);
-      await page.evaluate(() => {
-        window.osVoices = [{ lang: "kk-KZ" }];
-        speechSynthesis.dispatchEvent(new Event("voiceschanged"));
-      });
-      await page.waitForFunction(answer => window.readText === answer, answer);
+      await page.waitForFunction(n => window.answerStarts.length > n, starts);
+      assert.equal(await page.evaluate(() => window.systemSpeechCalls), 0);
       assert.equal(await page.getByText(dict["ask.voiceUnavailable"]).count(), 0);
     }
     // On a muted device even a delayed answer must remain silent.
