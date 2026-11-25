@@ -2,12 +2,15 @@ name: Rebuild Kazakh narration
 on:
   workflow_dispatch:
   push:
-    branches: [raya-kazakh-voice]
-    paths: ['.github/workflows/kazakh-voice.yml']
+    branches: [raya-clean-edges, main]
+    paths: ['.github/workflows/kazakh-voice.yml', 'public/audio/kk/manifest.json']
 permissions:
-  contents: write
+  contents: read
 jobs:
   generate:
+    if: github.event_name == 'workflow_dispatch' || github.ref != 'refs/heads/main'
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -52,3 +55,29 @@ jobs:
             git commit -m "Publish verified Raya recordings and on-device speech runtime"
             git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           fi
+
+  verify-live:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci && npm run build && npx playwright install --with-deps chromium
+      - name: Verify published recordings and generated speech
+        env:
+          SMOKE_URL: https://aidos.nexcel.kz
+        run: |
+          set -euo pipefail
+          version=$(jq -r .voice public/audio/kk/manifest.json)
+          for attempt in {1..40}; do
+            if curl -fsS --max-time 10 "$SMOKE_URL/audio/kk/manifest.json?voice=$version" | jq -e --arg v "$version" '.voice == $v' >/dev/null; then
+              node scripts/check-kazakh-voice.mjs
+              exit 0
+            fi
+            sleep 8
+          done
+          echo "Timed out waiting for $version on production"
+          exit 1
