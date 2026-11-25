@@ -10,6 +10,8 @@ import wave
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIO = ROOT / "public/audio"
+KK_VERSION = "kk-raya-v1"
+RAYA_MODEL_SHA256 = "98d1717f6ea66c69d3f926116fc2df1dcff462fff0842df0b6ff7abbf82f1064"
 def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
 def save(path, data):
@@ -33,9 +35,15 @@ def main():
         parser.error("--ask-only requires --lang kk")
     brand = (ROOT / "src/brand.ts").read_text().split("'")[1]
     if locale == "kk":
-        from piper import PiperVoice
+        from piper import PiperVoice, SynthesisConfig
         from piper.phonemize_espeak import ESPEAK_DATA_DIR
+        if not args.model or hashlib.sha256(args.model.read_bytes()).hexdigest() != RAYA_MODEL_SHA256:
+            parser.error("Use the Raya model from k2-fsa/sherpa-onnx release tts-models (vits-piper-kk_KZ-raya-x_low).")
+        if args.ask_only and any(read(directory / name).get("voice") != KK_VERSION
+                                 for name in ("manifest.json", "voice-index.json")):
+            parser.error("Changing speaker requires regenerating the entire pack.")
         voice = PiperVoice.load(args.model, espeak_data_dir=os.environ.get("ESPEAK_DATA_PATH", ESPEAK_DATA_DIR))
+        delivery = SynthesisConfig(length_scale=1.08, noise_scale=0.55, noise_w_scale=0.65)
         catalog += [{"id": key[6:]} for key in messages if key.startswith("voice.ui_")]
         ask_texts.update(row["answer"] for row in read(ROOT / "shared/faq-kk.json"))
         for topic, rows in read(ROOT / "shared/ask-examples-kk.json").items():
@@ -52,19 +60,23 @@ def main():
         from imageio_ffmpeg import get_ffmpeg_exe
         ffmpeg = get_ffmpeg_exe()
     clips, texts = {}, {}
+    previous = set()
+    if locale == "kk" and (directory / "manifest.json").exists():
+        previous.update(read(directory / "manifest.json")["clips"].values())
     with tempfile.TemporaryDirectory() as tmp:
         for row in catalog:
             text = messages["voice." + row["id"]].replace("{brand}", brand)
             normalized = " ".join(text.split())
             if normalized not in texts:
                 # Hash the text so repeated lines share a single recording.
-                filename = hashlib.sha256(normalized.encode()).hexdigest()[:20] + ".mp3"
+                identity = KK_VERSION + "\n" + normalized if locale == "kk" else normalized
+                filename = hashlib.sha256(identity.encode()).hexdigest()[:20] + ".mp3"
                 target = directory / filename
                 source = args.english_source / row.get("file", "").removeprefix("/audio/")
                 if locale == "kk":
                     source = Path(tmp) / "speech.wav"
                     with wave.open(str(source), "wb") as wav:
-                        voice.synthesize_wav(text.replace(brand, "Айдос"), wav)
+                        voice.synthesize_wav(text.replace(brand, "Айдос"), wav, syn_config=delivery)
                 if source.resolve() == target.resolve() and target.is_file():
                     texts[normalized] = "/audio/" + locale + "/" + filename
                     clips[row["id"]] = texts[normalized]
@@ -77,12 +89,16 @@ def main():
                 target.write_bytes(intermediate.read_bytes())
                 texts[normalized] = "/audio/" + locale + "/" + filename
             clips[row["id"]] = texts[normalized]
-    metadata = {"lang": locale, "voice": "kk-iseke-v1" if locale == "kk" else "aidos-luna-v1"}
+    metadata = {"lang": locale, "voice": KK_VERSION if locale == "kk" else "aidos-luna-v1"}
     if args.ask_only:
         clips = {**read(directory / "manifest.json")["clips"], **clips}
         texts = {**read(directory / "voice-index.json")["texts"], **texts}
     save(directory / "manifest.json", {**metadata, "clips": clips})
     save(directory / "voice-index.json", {**metadata, "texts": texts})
+    for old_path in previous - set(texts.values()):
+        name = Path(old_path).name
+        if old_path == "/audio/kk/" + name and name.endswith(".mp3"):
+            (directory / name).unlink(missing_ok=True)
     print(locale, len(clips), "clips,", len(texts), "unique recordings")
 if __name__ == "__main__":
     main()
