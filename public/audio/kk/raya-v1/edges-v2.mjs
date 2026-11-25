@@ -27,7 +27,8 @@ export function cleanSentence(samples, sampleRate = 16000) {
   const start = first < 0 ? 0 : Math.max(0, (first - 9) * frame);
   const end = last < 0 ? samples.length : Math.min(samples.length, (last + 11) * frame);
   const length = end - start;
-  const pad = 4 * frame;
+  // Leave room for MP3 transform overlap and browser resampling at the boundary.
+  const pad = 8 * frame;
   const output = new Float32Array(length + 2 * pad);
   output.set(samples.subarray(start, end), pad);
   // The ramp only touches the margin outside detected speech. Use a minimal
