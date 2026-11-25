@@ -19,6 +19,7 @@ async function synthesize(text) {
   });
   sentences = [];
   phonemizer.callMain(["-l", "kk", "--input", JSON.stringify([{ text }]), "--espeak_data", "/espeak-ng-data"]);
+  const { cleanSentence } = await import("./edges-v2.mjs");
   const chunks = [];
   for (const ids of sentences) {
     const inputs = {
@@ -28,7 +29,7 @@ async function synthesize(text) {
     };
     const result = await session.run(inputs);
     const samples = result[session.outputNames[0]].data;
-    if (samples.length) chunks.push(samples);
+    if (samples.length) chunks.push(cleanSentence(samples));
   }
   if (!chunks.length) throw new Error("Empty speech");
   const pause = 1600;
