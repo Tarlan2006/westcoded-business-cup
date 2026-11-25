@@ -10,7 +10,7 @@ import wave
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIO = ROOT / "public/audio"
-KK_VERSION = "kk-raya-v1"
+KK_VERSION = "kk-raya-v2"
 RAYA_MODEL_SHA256 = "98d1717f6ea66c69d3f926116fc2df1dcff462fff0842df0b6ff7abbf82f1064"
 def read(path):
     return json.loads(path.read_text(encoding="utf-8"))
@@ -76,7 +76,14 @@ def main():
                 if locale == "kk":
                     source = Path(tmp) / "speech.wav"
                     with wave.open(str(source), "wb") as wav:
-                        voice.synthesize_wav(text.replace(brand, "Айдос"), wav, syn_config=delivery)
+                        wav.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+                        for sentence in voice.synthesize(text.replace(brand, "Айдос"), syn_config=delivery):
+                            pcm = sentence.audio_float_array.astype("<f4", copy=False).tobytes()
+                            cleaned = subprocess.run(
+                                ["node", str(ROOT / "scripts/clean-raya-sentence.mjs")],
+                                input=pcm, stdout=subprocess.PIPE, check=True,
+                            )
+                            wav.writeframes(cleaned.stdout)
                 if source.resolve() == target.resolve() and target.is_file():
                     texts[normalized] = "/audio/" + locale + "/" + filename
                     clips[row["id"]] = texts[normalized]
