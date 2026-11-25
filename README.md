@@ -103,7 +103,7 @@ Cloudflare Builds publishes `main` automatically to the `westcoded-business-cup`
 
 Games and quizzes share nine quiet music themes and matching animated decorations. **Music on/off** controls the background separately; **Sound off** mutes it too. Music pauses for microphone use, hidden tabs and parent dialogs, and stays off during videos. Reduced-motion settings disable decoration movement. Tracks are generated locally without audio downloads. See the [follow-up audit and staged plan](docs/AUDIT-2026-11-17.md) for checks and device-testing limits.
 
-The English pack contains 238 line IDs recorded with Cloudflare Aura-2 Luna. The Kazakh pack contains 243 IDs recorded with Piper iseke. Identical lines share a recording. Each pack has its own manifest and text index in `public/audio/en/` or `public/audio/kk/`. Known lines play locally. New English replies can use the pinned cloud voice. For missing Kazakh recordings, the app uses an available Kazakh device voice and keeps the caption visible when speech is unavailable. Parent notes and nicknames stay local.
+The English pack contains 238 line IDs recorded with Cloudflare Aura-2 Luna. The Kazakh pack contains 255 IDs recorded with Piper Raya. Identical lines share a recording. Each pack has its own manifest and text index in `public/audio/en/` or `public/audio/kk/`. Known lines play locally. New English replies can use the pinned cloud voice. For missing Kazakh recordings, the app loads the Raya model on demand and synthesizes the text on the device and keeps the caption visible when speech is unavailable. Parent notes and nicknames stay local.
 
 AIdos uses three fixed poses and transparent eyelid, arm and lip patches in `public/mascot/frames/guide.webp`. Recorded speech drives five mouth shapes from the voice level. Device speech follows word boundaries and a gentle syllable rhythm. Reduced-motion mode shows a still pose. The guide now listens, thinks and responds to quiz results. Run the dev server and open `/scripts/mascot-lab/` to try each expression. [Current emotion recordings and measurements](docs/mascot/emotions/report.md).
 
@@ -111,8 +111,9 @@ To rebuild the Kazakh pack, install Piper and FFmpeg support and download the vo
 
 ```sh
 python -m pip install piper-tts==1.8.0 imageio-ffmpeg
-python -m piper.download_voices --data-dir scripts/.cache/models kk_KZ-iseke-x_low
-npm run gen-audio -- --lang kk --model scripts/.cache/models/kk_KZ-iseke-x_low.onnx
+curl -fLO https://github.com/k2-fsa/sherpa-onnx/releases/download/tts-models/vits-piper-kk_KZ-raya-x_low.tar.bz2
+tar xjf vits-piper-kk_KZ-raya-x_low.tar.bz2
+npm run gen-audio -- --lang kk --model vits-piper-kk_KZ-raya-x_low/kk_KZ-raya-x_low.onnx
 npm run gen-audio -- --lang en
 npm run check-content -- --require-audio
 ```
