@@ -25,7 +25,28 @@ let browser;
 try {
   browser = await chromium.launch({executablePath: process.env.CHROME_PATH});
   const page = await browser.newPage();
+  if (process.env.SMOKE_URL) {
+    await page.addInitScript(() => {
+      localStorage.setItem("mypal.lang", "kk");
+      localStorage.setItem("mission-control.sound", "on");
+      window.greetingPlayback = [];
+      const start = AudioBufferSourceNode.prototype.start;
+      AudioBufferSourceNode.prototype.start = function (...args) {
+        if (this.buffer?.duration > 0.15 && !this.loop) window.greetingPlayback.push(this.buffer.duration);
+        return start.apply(this, args);
+      };
+    });
+  }
   await page.goto(process.env.SMOKE_URL || "http://127.0.0.1:" + server.address().port);
+  if (process.env.SMOKE_URL) {
+    const pack = JSON.parse(await readFile(resolve(root, "audio/kk/manifest.json"), "utf8"));
+    const dict = (await import("../src/i18n/kk.ts")).default;
+    const greeting = page.waitForResponse(r => new URL(r.url()).pathname === pack.clips.common_setup_greeting && r.ok());
+    await page.getByRole("button", {name: dict["welcome.continue"], exact: true}).click();
+    await greeting;
+    await page.waitForFunction(() => window.greetingPlayback.length > 0);
+    console.log("Live greeting played", pack.clips.common_setup_greeting);
+  }
   const report = await page.evaluate(async () => {
     const json = async name => (await fetch("/audio/kk/" + name)).json();
     const [manifest, index] = await Promise.all([json("manifest.json"), json("voice-index.json")]);
