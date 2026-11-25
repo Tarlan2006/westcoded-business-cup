@@ -73,6 +73,7 @@ export async function unlock(): Promise<void> {
   silent.connect(speech);
   silent.onended = () => silent.disconnect();
   silent.start();
+  if (getLanguage() === "kk") window.speechSynthesis?.getVoices();
   void loadManifest();
   void loadVoiceIndex();
   void preload(["common_setup_greeting"]);
@@ -163,15 +164,26 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
   return new Promise((resolve) => {
     const source = graph.context.createBufferSource();
     source.buffer = buffer;
-    source.playbackRate.value = rate;
+    const soften = voice && getLanguage() === "kk";
+    const playbackRate = soften ? rate * 0.97 : rate;
+    source.playbackRate.value = playbackRate;
     const envelope = graph.context.createGain();
     const start = graph.context.currentTime;
-    const duration = buffer.duration / rate;
+    const duration = buffer.duration / playbackRate;
     envelope.gain.setValueAtTime(0, start);
     envelope.gain.linearRampToValueAtTime(1, start + Math.min(.005, duration / 3));
     envelope.gain.setValueAtTime(1, start + Math.max(.005, duration - .012));
     envelope.gain.linearRampToValueAtTime(0, start + duration);
-    source.connect(envelope).connect(output);
+    const warmth = soften ? graph.context.createBiquadFilter() : undefined;
+    if (warmth) {
+      warmth.type = "highshelf";
+      warmth.frequency.value = 3000;
+      warmth.gain.value = -3;
+      source.connect(warmth).connect(envelope);
+    } else {
+      source.connect(envelope);
+    }
+    envelope.connect(output);
     let stopping = false;
     const stop = () => {
       if (stopping || finished) return;
@@ -181,7 +193,7 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
       envelope.gain.setTargetAtTime(0, now, .004);
       source.stop(now + .02);
     };
-    const timeout = window.setTimeout(stop, buffer.duration * 1000 / rate + 700);
+    const timeout = window.setTimeout(stop, duration * 1000 + 700);
     let finished = false;
     function finish() {
       if (finished) return;
@@ -190,6 +202,7 @@ function playBuffer(graph: AudioGraph, buffer: AudioBuffer, rate = 1, output: Au
       window.clearTimeout(timeout);
       if (stopCurrentClip === stop) stopCurrentClip = undefined;
       source.disconnect();
+      warmth?.disconnect();
       envelope.disconnect();
       resolve();
     }
@@ -207,20 +220,22 @@ export function playQueue(ids: string[], opts?: { gapMs?: number }): Promise<voi
     const graph = audioGraph();
     await ready(graph);
     const gap = Math.min(2000, Math.max(0, opts?.gapMs ?? 160));
-    let clip = loadClip(ids[0], graph.context);
     changeSpeech(1);
     try {
       for (let index = 0; index < ids.length; index++) {
-        const buffer = await clip.catch(() => undefined);
         if (generation !== playbackGeneration) return;
+        const id = ids[index];
         const next = ids[index + 1];
-        if (next) {
-          clip = loadClip(next, graph.context);
-          // Playback awaits this prefetch after the preceding clip.
-          void clip.catch(() => {});
+        if (next) void preload([next]);
+        const preferred = preferredKazakhVoice();
+        const spoken = preferred && await deviceSpeech(contentText("voice." + id), preferred);
+        if (generation !== playbackGeneration) return;
+        if (!spoken) {
+          const buffer = await loadClip(id, graph.context).catch(() => undefined);
+          if (generation !== playbackGeneration) return;
+          if (buffer) await playBuffer(graph, buffer);
+          else if (!preferred) await deviceSpeech(contentText("voice." + id));
         }
-        if (buffer) await playBuffer(graph, buffer);
-        else await deviceSpeech(contentText("voice." + ids[index]));
         if (next && gap) await wait(gap);
       }
     } finally {
@@ -425,6 +440,12 @@ export async function speakAnswer(raw: string): Promise<"played" | "unavailable"
   let played = false;
   await enqueue(async () => {
     if (generation !== playbackGeneration) return;
+    const preferred = preferredKazakhVoice();
+    if (preferred) {
+      changeSpeech(1);
+      try { played = await deviceSpeech(text, preferred); } finally { changeSpeech(-1); }
+      if (played || generation !== playbackGeneration) return;
+    }
     try {
       const output = audioGraph();
       await ready(output);
@@ -436,7 +457,7 @@ export async function speakAnswer(raw: string): Promise<"played" | "unavailable"
     } catch {
       // Native speech can still work if Web Audio or the recording is unavailable.
     }
-    if (generation !== playbackGeneration) return;
+    if (preferred || generation !== playbackGeneration) return;
     changeSpeech(1);
     try { played = await deviceSpeech(text); } finally { changeSpeech(-1); }
   }).catch(() => {});
@@ -448,12 +469,18 @@ export async function speakFallback(raw: string): Promise<void> {
   await speakAnswer(raw);
 }
 
-async function deviceSpeech(text: string): Promise<boolean> {
+function preferredKazakhVoice() {
+  if (getLanguage() !== "kk") return undefined;
+  return window.speechSynthesis?.getVoices().find(voice =>
+    /^kk(?:[-_]|$)/i.test(voice.lang) && /aigul|айгүл/i.test(voice.name));
+}
+
+async function deviceSpeech(text: string, preferred?: SpeechSynthesisVoice): Promise<boolean> {
   const synth = window.speechSynthesis;
   if (!synth) return false;
   const generation = playbackGeneration;
   const lang = getLanguage();
-  const matchingVoice = () => synth.getVoices().find(v => v.lang.toLowerCase().split(/[-_]/)[0] === lang);
+  const matchingVoice = () => preferred ?? preferredKazakhVoice() ?? synth.getVoices().find(v => v.lang.toLowerCase().split(/[-_]/)[0] === lang);
   let voice = matchingVoice();
   if (!voice) {
     await new Promise<void>(resolve => {
@@ -471,9 +498,13 @@ async function deviceSpeech(text: string): Promise<boolean> {
   }
   if (!voice || generation !== playbackGeneration) return false;
   return new Promise(resolve => {
-    const words = new SpeechSynthesisUtterance(text);
+    const words = new SpeechSynthesisUtterance(lang === "kk" ? text.replace(/\bAIdos\b/gi, "Айдос") : text);
     words.voice = voice;
     words.lang = lang === "kk" ? "kk-KZ" : "en-US";
+    if (lang === "kk") {
+      words.rate = 0.92;
+      words.volume = 0.94;
+    }
     let started = false;
     let completed = false;
     let finished = false;
