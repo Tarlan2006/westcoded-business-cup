@@ -5,7 +5,7 @@ import { resolve, extname, sep } from "node:path";
 import { chromium } from "playwright";
 
 const root = resolve("dist/client");
-const mime = { ".js": "text/javascript", ".wasm": "application/wasm", ".json": "application/json", ".mp3": "audio/mpeg" };
+const mime = { ".js": "text/javascript", ".mjs": "text/javascript", ".wasm": "application/wasm", ".json": "application/json", ".mp3": "audio/mpeg" };
 const server = createServer(async (request, response) => {
   const path = resolve(root, "." + new URL(request.url, "http://localhost").pathname);
   if (path === root) {
@@ -25,23 +25,31 @@ let browser;
 try {
   browser = await chromium.launch({executablePath: process.env.CHROME_PATH});
   const page = await browser.newPage();
-  await page.goto("http://127.0.0.1:" + server.address().port);
+  await page.goto(process.env.SMOKE_URL || "http://127.0.0.1:" + server.address().port);
   const report = await page.evaluate(async () => {
     const json = async name => (await fetch("/audio/kk/" + name)).json();
     const [manifest, index] = await Promise.all([json("manifest.json"), json("voice-index.json")]);
-    if (manifest.voice !== "kk-raya-v1" || index.voice !== manifest.voice) throw Error("Wrong Kazakh voice metadata");
+    if (manifest.voice !== "kk-raya-v2" || index.voice !== manifest.voice) throw Error("Wrong Kazakh voice metadata");
     const files = [...new Set(Object.values(index.texts))];
     const clipFiles = new Set(Object.values(manifest.clips));
     if (files.length !== clipFiles.size || !files.every(path => clipFiles.has(path))) throw Error("Recording indexes disagree");
+    function checkEdges(pcm, rate, label) {
+      const n = Math.round(rate * 0.025);
+      for (const segment of [pcm.subarray(0, n), pcm.subarray(pcm.length - n)]) {
+        const rms = Math.sqrt(segment.reduce((sum, sample) => sum + sample * sample, 0) / segment.length);
+        if (!(rms < 0.001)) throw Error("Noisy sentence edge: " + label + " RMS " + rms);
+      }
+    }
     const context = new AudioContext();
     for (const path of files) {
       const response = await fetch(path);
       if (!response.ok) throw Error("Missing " + path);
       const buffer = await context.decodeAudioData(await response.arrayBuffer());
+      checkEdges(buffer.getChannelData(0), buffer.sampleRate, path);
       if (buffer.duration < 0.12 || !buffer.getChannelData(0).some(x => Math.abs(x) > 0.02)) throw Error("Silent " + path);
     }
     await context.close();
-    const worker = new Worker("/audio/kk/raya-v1/synthesis.js");
+    const worker = new Worker("/audio/kk/raya-v1/synthesis.js?v=2");
     try {
       const durations = [];
       for (const [id, text] of ["Бүгін аспанда қанша бұлт бар екен?", "Кішкентай досым, бірге гүл салайық."].entries()) {
@@ -53,6 +61,7 @@ try {
           worker.postMessage({id, text});
         });
         if (!(pcm instanceof Float32Array) || pcm.length < 8000 || !pcm.some(x => Math.abs(x) > 0.02)) throw Error("Invalid synthesized speech");
+        checkEdges(pcm, 16000, text);
         durations.push(pcm.length / 16000);
       }
       return { count: Object.keys(manifest.clips).length, files, durations };
