@@ -3,7 +3,13 @@ on:
   workflow_dispatch:
   push:
     branches: [raya-clean-edges, main]
-    paths: ['.github/workflows/kazakh-voice.yml', 'public/audio/kk/manifest.json']
+    paths:
+      - '.github/workflows/kazakh-voice.yml'
+      - 'public/audio/kk/manifest.json'
+      - 'public/audio/kk/raya-v1/**'
+      - 'scripts/clean-raya-sentence.mjs'
+      - 'scripts/localized-audio.py'
+      - 'scripts/check-kazakh-voice.mjs'
 permissions:
   contents: read
 jobs:
