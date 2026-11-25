@@ -21,7 +21,7 @@ interface AudioGraph {
   analyser: AnalyserNode;
 }
 
-const voiceVersion = () => getLanguage() === "kk" ? "kk-raya-v1" : AIDOS_VOICE;
+const voiceVersion = () => getLanguage() === "kk" ? "kk-raya-v2" : AIDOS_VOICE;
 let graph: AudioGraph | undefined;
 let manifest: Promise<Map<string, string>> | undefined;
 const clips = new Map<string, Promise<AudioBuffer>>();

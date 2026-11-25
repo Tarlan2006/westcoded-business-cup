@@ -11,7 +11,7 @@ function reset() {
 
 export async function synthesizeRaya(text: string, context: AudioContext): Promise<AudioBuffer> {
   if (!worker) {
-    worker = new Worker("/audio/kk/raya-v1/synthesis.js");
+    worker = new Worker("/audio/kk/raya-v1/synthesis.js?v=2");
     worker.onerror = reset;
     worker.onmessageerror = reset;
     worker.onmessage = ({ data }) => {
